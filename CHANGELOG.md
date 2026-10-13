@@ -3,10 +3,10 @@
 All notable changes to ERA. Versions `era-vN` are internal self-improvement
 checkpoints (annotated git tags); `vX.Y.Z` are releases.
 
-## v0.1.0 — unreleased
+## v0.1.0 — 2026-10-13
 
-First public release candidate: internal version **era-v4** plus the
-independent-audit remediation below. Not yet published.
+First public release: internal version **era-v4** plus the
+independent-audit remediation below.
 
 ### Independent audit remediation (docs/audit-remediation.md)
 - F01 approval bound to the evaluated commit/tree/patch; F02 supervisor-owned
