@@ -1,0 +1,17 @@
+{
+  "id": "shop-fix",
+  "mode": "modify",
+  "source": "~/code/shop",
+  "task": "Fix the cart total: it must account for item quantity",
+  "team": {
+    "preset": "claude+codex",
+    "review": { "rounds": 1, "block_on": "high" }
+  },
+  "exposure": { "remote_consent": ["claude-code", "codex"] },
+  "commands": { "test": ["npm test --silent"] },
+  "acceptance": {
+    "criteria": ["The total of a cart line is price times quantity"],
+    "commands": [{ "name": "cart-quantity", "command": "node --test acceptance/cart-quantity.test.js", "baseline": "fail" }]
+  },
+  "limits": { "maxCostUsd": 3, "maxAttempts": 2 }
+}

@@ -13,6 +13,7 @@ import { createCodingAgent } from '../agents/coding-agents.js';
 import { InterruptedError, createInterruptGuard } from '../orchestration/interrupt.js';
 import { spentUsd } from '../orchestration/cycle.js';
 import { SafetyError, acquireLock, assertNotCI, lockHolder } from '../safety/policy.js';
+import { assertRemoteConsent, rolesOf } from '../agents/team.js';
 import { nullLogger } from '../core/log.js';
 import { RunContext, Pause } from './context.js';
 import { assertExternalPath, assertReady, normalizeProject } from './schema.js';
@@ -49,7 +50,7 @@ export class ProjectLab {
   create(input) {
     const merged = { ...input };
     if (this.store.exists(merged.id)) throw new Error(`Project "${merged.id}" already exists. Use \`era project show ${merged.id}\`, or choose another id.`);
-    const project = normalizeProject({ agent: this.config.projectLab?.agent ?? null, ...merged });
+    const project = normalizeProject({ agent: this.config.projectLab?.agent ?? null, ...merged }, { config: this.config });
     this.store.save(project);
     this.store.log(project.id, { type: 'project-created', mode: project.mode });
     this.log.info('project.created', { project_id: project.id, mode: project.mode });
@@ -59,7 +60,7 @@ export class ProjectLab {
   update(id, patch) {
     const existing = this.store.load(id);
     if (this.latestRunning(id)) throw new Error(`Project "${id}" has a running operation; wait for it or cancel it first.`);
-    const project = normalizeProject({ ...patch, id }, { existing });
+    const project = normalizeProject({ ...patch, id }, { existing, config: this.config });
     this.store.save(project);
     return project;
   }
@@ -93,7 +94,7 @@ export class ProjectLab {
     const events = this.store.events(id);
     const staleRunning = latest?.status === 'running' && !holder;
     return {
-      project: { id: project.id, mode: project.mode, status: project.status, task: project.task, source: project.source, reference: project.reference, destination: project.destination, agent: project.agent ?? this.config.projectLab?.agent ?? 'manual', approval: project.approval },
+      project: { id: project.id, mode: project.mode, status: project.status, task: project.task, source: project.source, reference: project.reference, destination: project.destination, agent: project.agent ?? this.config.projectLab?.agent ?? 'manual', team: project.team, remote_consent: project.exposure?.remote_consent ?? [], approval: project.approval },
       running: !!holder,
       latest_run: latest && { run_id: latest.run_id, op: latest.op, status: staleRunning ? 'interrupted' : latest.status, current_step: latest.current_step ?? null, steps: Object.fromEntries(Object.entries(latest.steps).map(([k, v]) => [k, v.status])), attempts: latest.attempts, error: latest.error ?? null, pause_message: latest.pause_message ?? null, workspace: this.store.workDir(id, latest.run_id), updated_at: latest.updated_at },
       runs: runs.map((r) => ({ run_id: r.run_id, op: r.op, status: r.status === 'running' && !holder ? 'interrupted' : r.status, created_at: r.created_at })),
@@ -138,10 +139,16 @@ export class ProjectLab {
     return this.start(id, 'rebuild', opts);
   }
 
-  async start(id, op, { trust = false, agent = null } = {}) {
+  async start(id, op, { trust = false, agent = null, allowRemote = [] } = {}) {
     assertNotCI();
     let project = this.store.load(id);
-    if (agent) project = this.store.save({ ...project, agent });
+    if (agent) project = this.store.save({ ...project, agent, team: project.team ? { ...project.team, roles: { ...project.team.roles, implementer: agent } } : null });
+    if (allowRemote.length) {
+      // Consent is a recorded decision of the user, never inferred.
+      project = this.update(id, { exposure: { remote_consent: [...new Set([...(project.exposure?.remote_consent ?? []), ...allowRemote])] } });
+      this.store.log(id, { type: 'remote-consent', providers: allowRemote, at: new Date().toISOString() });
+    }
+    assertRemoteConsent(rolesOf(project), project.exposure?.remote_consent ?? [], this.config);
     // Re-validate paths at every start: the project may have moved since creation.
     for (const key of ['source', 'reference', 'destination']) if (project[key]) assertExternalPath(project[key], key);
     assertReady(project, op);
@@ -151,6 +158,7 @@ export class ProjectLab {
     if (open.length) throw new Error(`Project "${id}" already has an open run (${open[0].run_id}, ${open[0].status}). ${this.nextAction(project, open[0], false)}`);
     const run = this.store.newRun(project, op);
     run.agent = project.agent ?? this.config.projectLab?.agent ?? 'manual';
+    run.team = project.team ? { preset: project.team.preset, roles: { ...project.team.roles } } : null;
     run.trust_project = trust;
     run.task = project.task;
     return this.execute(project, run);
@@ -213,7 +221,10 @@ export class ProjectLab {
       }
     } finally {
       this.checkIntegrity(project, run, c);
-      if (run.status === 'cancelled') removeWorkspace(c.workspace);
+      if (run.status === 'cancelled') {
+        removeWorkspace(c.workspace);
+        c.dropSnapshots();
+      }
       try {
         writeFileSync(join(c.runDir, 'report.md'), renderRun(project, run));
       } catch {
@@ -275,7 +286,7 @@ export class ProjectLab {
     fresh.cancelled_at = new Date().toISOString();
     this.store.saveRun(fresh);
     removeWorkspace(this.store.workDir(id, run.run_id));
-    rmSync(this.store.workDir(id, run.run_id) + '.tmp', { recursive: true, force: true });
+    for (const extra of ['.tmp', '.roles', '.roles.tmp']) rmSync(this.store.workDir(id, run.run_id) + extra, { recursive: true, force: true });
     project.status = 'cancelled';
     project.approval = project.approval.status === 'pending' ? { status: 'withdrawn', by: null, at: new Date().toISOString() } : project.approval;
     this.store.save(project);

@@ -40,6 +40,13 @@ export const DEFAULT_CONFIG = Object.freeze({
     maxAttempts: 2,
     // Per-project spending caps (USD). Metered agents only; unmetered agents need opt-in.
     budget: { maxCostUsdPerRun: 5, maxCostUsdTotal: 20, allowUnmeteredAgents: false },
+    // Multi-agent teams. Data only: add presets or declare local command agents without touching code.
+    //   presets:       { "name": { "architect": "<agent>", "implementer": "<agent>", "reviewer": "<agent>" } }
+    //   customAgents:  { "name": { "command": "...", "remote": false, "capabilities": {...} } }  → agent id "custom:name"
+    //   agentOverrides:{ "<agent id>": { "remote": true } }  → adjust the declared capabilities of an adapter
+    presets: {},
+    customAgents: {},
+    agentOverrides: {},
   },
   agents: {
     'claude-code': { command: 'claude', model: null },

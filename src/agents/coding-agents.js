@@ -22,8 +22,16 @@ const fullOutput = (s) => redactText(String(s).slice(-200_000));
 
 const CODEX_FALLBACKS = ['/Applications/ChatGPT.app/Contents/Resources/codex-cli/bin/codex', '/Applications/Codex.app/Contents/Resources/codex-cli/bin/codex'];
 
-function agentEnv(task) {
-  const env = { ...process.env, ERA_WORKTREE: task.worktree, ERA_CYCLE_ID: task.cycleId };
+// Provider CLIs get an allowlisted environment: their own credentials and what a CLI needs to run,
+// not the rest of the user's secrets (cloud keys, registry tokens, CI variables).
+const PROVIDER_ENV = /^(PATH|HOME|USER|LOGNAME|SHELL|LANG|LC_[A-Z_]+|TERM|TMPDIR|TZ|COLORTERM|NO_COLOR|HTTPS?_PROXY|NO_PROXY|ALL_PROXY|SSL_CERT_(FILE|DIR)|NODE_EXTRA_CA_CERTS|XDG_[A-Z_]+|CODEX_[A-Z_]+|OPENAI_[A-Z_]+|ANTHROPIC_[A-Z_]+|CLAUDE[A-Z_]*)$/i;
+// passEnv: extra variable names the user chose to forward (agents.<id>.passEnv in era.config.json).
+export function providerEnv(source = process.env, passEnv = []) {
+  return Object.fromEntries(Object.entries(source).filter(([k]) => PROVIDER_ENV.test(k) || passEnv.includes(k)));
+}
+
+function agentEnv(task, { filtered = false, passEnv = [] } = {}) {
+  const env = { ...(filtered ? providerEnv(process.env, passEnv) : process.env), ERA_WORKTREE: task.worktree, ERA_CYCLE_ID: task.cycleId };
   for (const [key, value] of [['ERA_PROPOSAL_FILE', task.proposalFile], ['ERA_INSTRUCTIONS_FILE', task.instructionsFile], ['ERA_PHASE', task.phase], ['ERA_READ_ONLY', task.readOnly ? '1' : undefined]]) {
     if (value !== undefined) env[key] = value;
   }
@@ -90,12 +98,24 @@ export function parseClaudeResult(stdout) {
   }
 }
 
-export function claudeCodeAgent({ command = 'claude', model = null } = {}) {
+export function claudeCodeAgent({ command = 'claude', model = null, passEnv = [] } = {}) {
   return {
     id: 'claude-code',
     description: 'Headless Claude Code (`claude -p`) with acceptEdits permissions, cwd = worktree, and --max-budget-usd.',
     metered: true,
     probe: () => probeBinary(command),
+    // `claude auth status` prints JSON ({loggedIn, authMethod}); a standalone CLI can be logged out
+    // even when another Claude Code surface on the same machine is signed in.
+    async auth() {
+      const r = await runProcess(command, ['auth', 'status'], { timeoutMs: 20_000 });
+      if (r.spawnError) return { authenticated: null, detail: `${command}: ${r.spawnError}` };
+      try {
+        const j = JSON.parse(r.stdout);
+        return j.loggedIn ? { authenticated: true, detail: `signed in (${j.authMethod ?? 'unknown method'})` } : { authenticated: false, detail: `not signed in; run \`${command} auth login\`` };
+      } catch {
+        return { authenticated: null, detail: `could not read \`${command} auth status\` (exit ${r.exitCode})` };
+      }
+    },
     argv(task, prompt) {
       const args = ['-p', prompt, '--output-format', 'json', '--permission-mode', task.readOnly ? 'plan' : 'acceptEdits'];
       if (task.budgetUsd !== null && task.budgetUsd !== undefined) args.push('--max-budget-usd', String(task.budgetUsd));
@@ -104,7 +124,7 @@ export function claudeCodeAgent({ command = 'claude', model = null } = {}) {
     },
     async implement(task) {
       const args = this.argv(task, promptFor(task));
-      const r = await runProcess(command, args, { cwd: task.worktree, env: agentEnv(task), timeoutMs: task.timeoutMs, watchdog: true });
+      const r = await runProcess(command, args, { cwd: task.worktree, env: agentEnv(task, { filtered: true, passEnv }), timeoutMs: task.timeoutMs, watchdog: true });
       const parsed = parseClaudeResult(r.stdout);
       return {
         ok: r.exitCode === 0 && !r.timedOut && !parsed.isError,
@@ -146,7 +166,7 @@ export function parseCodexEvents(stdout) {
   return { usage: seen ? usage : null, failed };
 }
 
-export function codexAgent({ command = null, model = null } = {}) {
+export function codexAgent({ command = null, model = null, passEnv = [] } = {}) {
   const resolved = command ?? 'codex';
   const candidates = command ? [command] : ['codex', ...CODEX_FALLBACKS];
   return {
@@ -165,8 +185,19 @@ export function codexAgent({ command = null, model = null } = {}) {
       }
       return { available: false, version: null, detail: `none of ${candidates.join(', ')} is runnable` };
     },
+    async auth() {
+      await this.probe();
+      const r = await runProcess(this.binary, ['login', 'status'], { timeoutMs: 20_000 });
+      if (r.spawnError) return { authenticated: null, detail: `${this.binary}: ${r.spawnError}` };
+      const text = `${r.stdout}${r.stderr}`.trim().split('\n')[0] ?? '';
+      return r.exitCode === 0 ? { authenticated: true, detail: text || 'signed in' } : { authenticated: false, detail: text || `not signed in; run \`codex login\`` };
+    },
     argv(task, prompt, lastMessageFile) {
-      const args = ['exec', '-C', task.worktree, '-s', task.readOnly ? 'read-only' : 'workspace-write', '--json', '-o', lastMessageFile];
+      // --skip-git-repo-check: role snapshots are plain directories; --ephemeral: no session files left behind.
+      const args = ['exec', '-C', task.worktree, '-s', task.readOnly ? 'read-only' : 'workspace-write', '--skip-git-repo-check', '--ephemeral', '--json', '-o', lastMessageFile];
+      // Codex's workspace-write sandbox also allows $TMPDIR and /tmp by default, which put a working copy's
+      // parent directory in reach (found by scripts/validate-providers.mjs). Keep writes inside the working copy.
+      if (!task.readOnly) args.push('-c', 'sandbox_workspace_write.exclude_tmpdir_env_var=true', '-c', 'sandbox_workspace_write.exclude_slash_tmp=true');
       if (model) args.push('-m', model);
       args.push(prompt);
       return args;
@@ -175,7 +206,7 @@ export function codexAgent({ command = null, model = null } = {}) {
       await this.probe();
       const lastMessage = join(mkdtempSync(join(tmpdir(), 'era-codex-')), 'last-message.txt');
       const args = this.argv(task, promptFor(task), lastMessage);
-      const r = await runProcess(this.binary, args, { cwd: task.worktree, env: agentEnv(task), timeoutMs: task.timeoutMs, watchdog: true });
+      const r = await runProcess(this.binary, args, { cwd: task.worktree, env: agentEnv(task, { filtered: true, passEnv }), timeoutMs: task.timeoutMs, watchdog: true });
       const parsed = parseCodexEvents(r.stdout);
       return {
         ok: r.exitCode === 0 && !r.timedOut && !parsed.failed,
@@ -194,20 +225,64 @@ export function codexAgent({ command = null, model = null } = {}) {
   };
 }
 
-export function createCodingAgent(id, config = {}) {
-  const agents = config.agents ?? {};
-  switch (id) {
-    case 'manual':
-      return manualAgent;
-    case 'command':
-      return commandAgent(config.improvement?.implementerCommand ?? null);
-    case 'claude-code':
-      return claudeCodeAgent(agents['claude-code'] ?? {});
-    case 'codex':
-      return codexAgent(agents.codex ?? {});
-    default:
-      throw new Error(`Unknown coding agent "${id}". Known: manual, command, claude-code, codex.`);
+// ---- provider registry and capability model -------------------------------------------
+// Capabilities describe what an adapter CAN do; workflows ask for capabilities by role and never
+// name a provider. Third-party adapters register themselves with registerCodingAgent().
+//   read / write / execute  filesystem inspection, edits, running commands
+//   readOnlyMode            'native' (the CLI enforces it) | 'verified' (ERA verifies nothing changed) | 'none'
+//   automated               can run without a human
+//   metered                 reports a dollar cost ERA can enforce a budget on
+//   remote                  sends project content to a remote service
+//   readsInstructionFiles   loads AGENTS.md / CLAUDE.md style files from its working directory
+const BASE_CAPABILITIES = Object.freeze({ read: true, write: true, execute: true, readOnlyMode: 'none', automated: true, metered: false, remote: false, readsInstructionFiles: false });
+const REGISTRY = new Map();
+
+export function registerCodingAgent(id, { create, capabilities = {}, description = '' }) {
+  if (!/^[a-z0-9][a-z0-9:_-]{0,40}$/.test(id)) throw new Error(`Invalid coding agent id "${id}".`);
+  if (typeof create !== 'function') throw new Error(`Coding agent "${id}" needs a create(config) function.`);
+  REGISTRY.set(id, { create, capabilities: Object.freeze({ ...BASE_CAPABILITIES, ...capabilities }), description });
+}
+
+registerCodingAgent('manual', { create: () => manualAgent, capabilities: { automated: false, metered: true, readOnlyMode: 'none' }, description: 'A human edits the working copy.' });
+registerCodingAgent('command', { create: (config) => commandAgent(config.improvement?.implementerCommand ?? null), capabilities: { readOnlyMode: 'verified' }, description: 'A shell command configured by the user.' });
+registerCodingAgent('claude-code', { create: (config) => claudeCodeAgent(config.agents?.['claude-code'] ?? {}), capabilities: { readOnlyMode: 'native', metered: true, remote: true, readsInstructionFiles: true }, description: 'Anthropic Claude Code CLI.' });
+registerCodingAgent('codex', { create: (config) => codexAgent(config.agents?.codex ?? {}), capabilities: { readOnlyMode: 'native', remote: true, readsInstructionFiles: true }, description: 'OpenAI Codex CLI.' });
+
+// "custom:<name>" agents are command agents declared in projectLab.customAgents.<name>.
+function customDefinition(id, config) {
+  const name = id.slice('custom:'.length);
+  const def = config.projectLab?.customAgents?.[name];
+  if (!def || typeof def.command !== 'string' || !def.command.trim()) throw new Error(`Unknown custom coding agent "${id}": declare projectLab.customAgents.${name}.command in era.config.json.`);
+  return def;
+}
+
+// strict=false: ids without a registered adapter (an injected test double) get the conservative base capabilities.
+export function agentCapabilities(id, config = {}, { strict = true } = {}) {
+  if (id.startsWith('custom:')) {
+    const def = customDefinition(id, config);
+    return Object.freeze({ ...BASE_CAPABILITIES, readOnlyMode: 'verified', remote: def.remote === true, metered: false, ...(def.capabilities ?? {}) });
   }
+  const entry = REGISTRY.get(id);
+  if (!entry) {
+    if (!strict) return BASE_CAPABILITIES;
+    throw new Error(`Unknown coding agent "${id}". Known: ${codingAgentIds().join(', ')}.`);
+  }
+  const override = config.projectLab?.agentOverrides?.[id];
+  return override ? Object.freeze({ ...entry.capabilities, ...override }) : entry.capabilities;
+}
+
+export function codingAgentIds() {
+  return [...REGISTRY.keys()];
+}
+
+export function createCodingAgent(id, config = {}) {
+  if (id.startsWith('custom:')) {
+    const agent = commandAgent(customDefinition(id, config).command);
+    return { ...agent, id };
+  }
+  const entry = REGISTRY.get(id);
+  if (!entry) throw new Error(`Unknown coding agent "${id}". Known: ${codingAgentIds().join(', ')}, custom:<name>.`);
+  return entry.create(config);
 }
 
 export const CODING_AGENT_IDS = ['manual', 'command', 'claude-code', 'codex'];

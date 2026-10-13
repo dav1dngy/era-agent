@@ -8,6 +8,8 @@ import { join } from 'node:path';
 import { Pause } from './context.js';
 import { reaJavaScriptAnalysis, staticFindings } from './evidence.js';
 import { regressions } from './runner.js';
+import { reviewAndCorrect, runArchitect } from './team.js';
+import { independence } from '../agents/team.js';
 import { resolveCommands, runVerification, stepDetect, stepWorkspace, summarizeCommands } from './steps.js';
 import { protectedViolations, workspaceChanges, writePatch } from './workspace.js';
 
@@ -160,16 +162,30 @@ export async function runModify(c) {
     rea: detection.javascript_files > 0 ? await reaJavaScriptAnalysis({ dir: c.workspace, rea: c.rea, workDir: c.runDir, log: c.log, maxPasses: 4 }) : { ran: false, reason: `not a JavaScript project (${detection.primary_language ?? 'unknown'})`, findings: [] },
   }));
 
+  const files = relevantFiles(
+    await workspaceFileList(c.workspace),
+    project.task,
+    baseline.acceptance.filter((r) => !r.ok).map((r) => `${r.stdout_tail}\n${r.stderr_tail}`),
+  );
+  // Optional ARCHITECT role: read-only technical design from a baseline snapshot.
+  const design = c.hasRole('architect') ? await runArchitect(c, { project, detection, baseline, analysis, files }) : null;
+
   const plan = await c.step('plan', async () => {
-    const files = relevantFiles(
-      (await workspaceFileList(c.workspace)),
-      project.task,
-      baseline.acceptance.filter((r) => !r.ok).map((r) => `${r.stdout_tail}\n${r.stderr_tail}`),
-    );
-    const text = buildPlan({ project, detection, baseline, analysis, files });
+    const text = buildPlan({ project, detection, baseline, analysis, files }) + (design ? `\n\n## Architecture design\n\n${design.text}` : '');
     c.writeArtifact('plan.md', text);
     return { text, relevant_files: files, path: join(c.runDir, 'plan.md') };
   });
+
+  // The verified outcome of the current working copy (used after each attempt and each correction).
+  const verifyCurrent = async (impl = null) => {
+    const changes = await workspaceChanges(c.workspace, ws.baseline_commit);
+    if (changes.files.length === 0) {
+      return { skipped: true, decision: { pass: false, reasons: [impl && impl.ok === false ? `The coding agent failed (exit ${impl.exit_code}${impl.timed_out ? ', timed out' : ''}) and changed nothing.` : 'The coding agent made no changes.'], warnings: [] }, verification: { build: [], test: [], acceptance: [], tests: null }, changed: [] };
+    }
+    const verification = await runVerification(c, commands, { acceptance: true });
+    const decision = evaluateChange({ project, baseline, after: verification, changes });
+    return { decision, verification, changed: changes.files, stat: changes.stat };
+  };
 
   const maxAttempts = project.limits.maxAttempts;
   let last = null;
@@ -184,15 +200,7 @@ export async function runModify(c) {
       const r = await c.invokeAgent({ phase: 'implement', prompt: implementPrompt({ project, plan: plan.text, baseline, feedback, attempt: n }), attempt: n });
       return { ...r, output: undefined };
     });
-    const verify = await c.step(`verify-${n}`, async () => {
-      const changes = await workspaceChanges(c.workspace, ws.baseline_commit);
-      if (changes.files.length === 0) {
-        return { skipped: true, decision: { pass: false, reasons: [impl.ok === false ? `The coding agent failed (exit ${impl.exit_code}${impl.timed_out ? ', timed out' : ''}) and changed nothing.` : 'The coding agent made no changes.'], warnings: [] }, verification: { build: [], test: [], acceptance: [], tests: null }, changed: [] };
-      }
-      const verification = await runVerification(c, commands, { acceptance: true });
-      const decision = evaluateChange({ project, baseline, after: verification, changes });
-      return { decision, verification, changed: changes.files, stat: changes.stat };
-    });
+    const verify = await c.step(`verify-${n}`, () => verifyCurrent(impl));
     last = verify;
     c.run.attempts = [...c.run.attempts.filter((a) => a.n !== n), { n, agent: impl.agent, ok: impl.ok ?? true, pass: verify.decision.pass, reasons: verify.decision.reasons, cost_usd: impl.cost_usd ?? null }];
     c.save();
@@ -203,15 +211,35 @@ export async function runModify(c) {
     }
   }
 
+  // Optional REVIEWER role: independent review of the verified change, bounded corrections, re-verification.
+  let review = null;
+  if (c.hasRole('reviewer') && last?.decision.pass) {
+    const out = await reviewAndCorrect(c, { ws, last, design, verifyChange: () => verifyCurrent(null) });
+    last = out.last;
+    review = out.review;
+  }
+
   return c.step('finalize', async () => {
+    c.dropSnapshots();
     const changes = await workspaceChanges(c.workspace, ws.baseline_commit);
     const patchFile = join(c.runDir, 'change.patch');
     if (changes.patch) writePatch(patchFile, changes.patch);
-    const decision = last.decision;
+    const decision = { ...last.decision, reasons: [...last.decision.reasons], warnings: [...last.decision.warnings] };
+    if (review?.unresolved.length) {
+      decision.pass = false;
+      decision.reasons.push(`The independent review (${review.reviewer}) left ${review.unresolved.length} unresolved ${review.block_on}-or-higher finding(s): ${review.unresolved.slice(0, 5).map((f) => f.title).join('; ')}.`);
+    }
+    if (review) {
+      const lowOnes = (review.rounds.at(-1)?.accepted.length ?? 0) - (review.rounds.at(-1)?.blocking.length ?? 0);
+      if (lowOnes > 0) decision.warnings.push(`The review reported ${lowOnes} further finding(s) below the blocking threshold or with unverified quotes; see the report.`);
+      if (!review.reviewed_final) decision.warnings.push('The last review does not cover the final state of the working copy.');
+    }
     return {
       pass: decision.pass,
       reasons: decision.reasons,
       warnings: decision.warnings,
+      team: c.project.team ? { roles: c.project.team.roles, preset: c.project.team.preset, independence: independence(c.project.team.roles) } : null,
+      review,
       files: changes.files,
       stat: changes.stat,
       patch_file: existsSync(patchFile) ? patchFile : null,

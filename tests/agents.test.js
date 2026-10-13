@@ -36,7 +36,7 @@ test('claude-code adapter reports failures and error results', async () => {
     const { dir } = initRepo();
     process.env.FAKE_AGENT_MODE = mode;
     try {
-      const r = await claudeCodeAgent({ command: join(FIXTURES, 'fake-claude.mjs') }).implement(task(dir));
+      const r = await claudeCodeAgent({ command: join(FIXTURES, 'fake-claude.mjs'), passEnv: ['FAKE_AGENT_MODE'] }).implement(task(dir));
       assert.equal(r.ok, false, mode);
     } finally {
       delete process.env.FAKE_AGENT_MODE;

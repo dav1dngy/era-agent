@@ -6,6 +6,7 @@ import { existsSync, readdirSync, realpathSync, statSync } from 'node:fs';
 import { dirname, isAbsolute, join, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { HARD_LIMITS, SafetyError } from '../safety/policy.js';
+import { normalizeExposure, normalizeTeam } from '../agents/team.js';
 
 export const MODES = ['review', 'modify', 'rebuild'];
 export const ID_PATTERN = /^[a-z0-9][a-z0-9_-]{0,62}$/;
@@ -85,7 +86,7 @@ export function normalizeAcceptance(input = {}) {
   return { criteria: list(input.criteria, 'acceptance.criteria'), commands, behaviors };
 }
 
-export function normalizeProject(input, { existing = null, eraRoot = ERA_ROOT } = {}) {
+export function normalizeProject(input, { existing = null, eraRoot = ERA_ROOT, config = {} } = {}) {
   if (!input || typeof input !== 'object') throw new Error('Project configuration must be an object.');
   const id = String(input.id ?? existing?.id ?? '');
   if (!ID_PATTERN.test(id)) throw new Error(`Project id "${id}" is invalid: use 1-63 lowercase letters, digits, "-" or "_", starting with a letter or digit.`);
@@ -130,6 +131,10 @@ export function normalizeProject(input, { existing = null, eraRoot = ERA_ROOT } 
   const protectedGlobs = list(input.protected ?? existing?.protected, 'protected');
   for (const g of protectedGlobs) if (isAbsolute(g) || g.split('/').includes('..')) throw new Error(`protected pattern "${g}" must be relative to the project and must not contain "..".`);
 
+  const agent = input.agent ?? existing?.agent ?? null;
+  const teamInput = input.team === null ? null : input.team ?? existing?.team ?? null;
+  const team = teamInput ? normalizeTeam(teamInput, config, { implementerFallback: agent }) : null;
+  const exposure = normalizeExposure(input.exposure, existing?.exposure);
   const authorization = input.authorization ?? existing?.authorization ?? null;
   const approval = existing?.approval ?? { status: 'none', by: null, at: null };
   return {
@@ -139,7 +144,10 @@ export function normalizeProject(input, { existing = null, eraRoot = ERA_ROOT } 
     reference,
     destination,
     task: String(input.task ?? existing?.task ?? '').trim(),
-    agent: input.agent ?? existing?.agent ?? null,
+    // With a team, "agent" mirrors the implementer so single-agent code paths keep working.
+    agent: team ? team.roles.implementer : agent,
+    team,
+    exposure,
     // Shell command for the "command" agent (cwd = the isolated working copy).
     agent_command: input.agent_command ?? existing?.agent_command ?? null,
     commands,

@@ -1,0 +1,66 @@
+diff --git a/src/catalog.js b/src/catalog.js
+index fc82ad0..d203e6c 100644
+--- a/src/catalog.js
++++ b/src/catalog.js
+@@ -1,4 +1,4 @@
+-// Product catalog (fixture project: the search function is missing).
++// Product catalog.
+ const PRODUCTS = [
+   { id: 1, name: 'Red Mug', tags: ['kitchen', 'ceramic'] },
+   { id: 2, name: 'Blue Mug', tags: ['kitchen'] },
+@@ -9,4 +9,12 @@ function list() {
+   return PRODUCTS.map((p) => ({ ...p }));
+ }
+ 
+-module.exports = { list };
++function search(query) {
++  const normalizedQuery = query.toLowerCase();
++  return list().filter((product) =>
++    product.name.toLowerCase().includes(normalizedQuery) ||
++    product.tags.some((tag) => tag.toLowerCase().includes(normalizedQuery))
++  );
++}
++
++module.exports = { list, search };
+diff --git a/tests/search.test.js b/tests/search.test.js
+new file mode 100644
+index 0000000..8f8950e
+--- /dev/null
++++ b/tests/search.test.js
+@@ -0,0 +1,36 @@
++const { test } = require('node:test');
++const assert = require('node:assert/strict');
++const { list, search } = require('../src/catalog.js');
++
++test('search matches names case-insensitively in catalog order', () => {
++  assert.deepEqual(search('mUg').map((product) => product.id), [1, 2]);
++});
++
++test('search matches tags case-insensitively, including partial tags', () => {
++  assert.deepEqual(search('OFFICE').map((product) => product.id), [3]);
++  assert.deepEqual(search('KiT').map((product) => product.id), [1, 2]);
++  assert.deepEqual(search('CERAMIC').map((product) => product.id), [1]);
++});
++
++test('search returns no products for unmatched or literal special characters', () => {
++  assert.deepEqual(search('zzz'), []);
++  assert.deepEqual(search('.*'), []);
++});
++
++test('search with an empty query returns every product in catalog order', () => {
++  assert.deepEqual(search(''), list());
++});
++
++test('search returns each product once when multiple fields match', () => {
++  assert.deepEqual(search('e').map((product) => product.id), [1, 2, 3]);
++});
++
++test('search returns shallow copies without changing the catalog', () => {
++  const result = search('red');
++  const original = list()[0];
++  assert.notStrictEqual(result[0], original);
++  assert.strictEqual(result[0].tags, original.tags);
++  result[0].name = 'changed';
++  assert.equal(list()[0].name, 'Red Mug');
++  assert.equal(search('red')[0].name, 'Red Mug');
++});

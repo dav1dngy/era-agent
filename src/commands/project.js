@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import { createProjectLab } from '../project_lab/lab.js';
 import { confirm } from './lab.js';
 
+const splitList = (v) => (typeof v === 'string' ? v.split(',').map((x) => x.trim()).filter(Boolean) : []);
 const print = (value, asJson) => process.stdout.write(asJson ? `${JSON.stringify(value, null, 2)}\n` : `${value}\n`);
 
 const EXIT = { complete: 0, 'awaiting-approval': 0, 'awaiting-implementation': 0, applied: 0, rejected: 1, failed: 1, interrupted: 130, cancelled: 130 };
@@ -36,6 +37,17 @@ export function projectInputFromArgs({ positional, flags }) {
   if (flags['max-attempts']) limits.maxAttempts = Number(flags['max-attempts']);
   if (Object.keys(limits).length) input.limits = limits;
   if (flags['trust-project']) input.trust_project = true;
+  // Multi-agent team and data-exposure consent.
+  const teamKeys = { architect: flags.architect, implementer: flags.implementer, reviewer: flags.reviewer };
+  if (flags.team || Object.values(teamKeys).some(Boolean)) {
+    const roles = { ...input.team?.roles, ...Object.fromEntries(Object.entries(teamKeys).filter(([, v]) => typeof v === 'string')) };
+    const review = { ...input.team?.review, ...(flags['review-rounds'] !== undefined ? { rounds: Number(flags['review-rounds']) } : {}), ...(flags['block-on'] ? { block_on: String(flags['block-on']) } : {}) };
+    input.team = { ...input.team, ...(typeof flags.team === 'string' ? { preset: flags.team } : {}), roles, ...(Object.keys(review).length ? { review } : {}) };
+  }
+  const consent = splitList(flags['allow-remote']);
+  if (consent.length || flags['allow-secret-content'] || flags['keep-instruction-files']) {
+    input.exposure = { ...input.exposure, ...(consent.length ? { remote_consent: [...(input.exposure?.remote_consent ?? []), ...consent] } : {}), ...(flags['allow-secret-content'] ? { allow_secret_content: true } : {}), ...(flags['keep-instruction-files'] ? { keep_instruction_files: true } : {}) };
+  }
   return input;
 }
 
@@ -65,7 +77,7 @@ export async function run(command, ctx, { positional, flags }) {
     if (!id) throw new Error(`Usage: era project ${sub} <id>`);
     return id;
   };
-  const opts = { trust: !!flags['trust-project'], agent: flags.agent ?? null };
+  const opts = { trust: !!flags['trust-project'], agent: flags.agent ?? null, allowRemote: splitList(flags['allow-remote']) };
   const finish = (result) => {
     if (flags.json) print({ project_id: result.project.id, run_id: result.run.run_id, op: result.run.op, status: result.run.status, error: result.run.error ?? null, results: result.run.results, attempts: result.run.attempts }, true);
     else {
@@ -89,6 +101,16 @@ export async function run(command, ctx, { positional, flags }) {
       if (flags.json) return print(rows, true), 0;
       print(table(rows, [['ID', (r) => r.id], ['MODE', (r) => r.mode], ['STATUS', (r) => r.status], ['APPROVAL', (r) => r.approval], ['TARGET', (r) => r.source ?? r.reference]]));
       return 0;
+    }
+    case 'team': {
+      const { detectTeam } = await import('../agents/team.js');
+      const project = lab.get(need());
+      const roles = project.team?.roles ?? { architect: null, implementer: project.agent ?? ctx.config.projectLab?.agent ?? 'manual', reviewer: null };
+      const rows = await detectTeam({ roles }, ctx.config);
+      const out = { project: project.id, preset: project.team?.preset ?? 'single', roles, review: project.team?.review ?? null, remote_consent: project.exposure.remote_consent, providers: rows };
+      if (flags.json) return print(out, true), 0;
+      print([`Project ${project.id}: team "${out.preset}"`, ...Object.entries(roles).map(([r, a]) => `  ${r.padEnd(12)} ${a ?? '—'}`), `Authorized to receive source code: ${out.remote_consent.join(', ') || 'nobody'}`, ...rows.map((p) => `  ${p.id.padEnd(12)} ${p.available ? 'available' : 'unavailable'}, ${p.authenticated === true ? 'signed in' : p.authenticated === false ? 'NOT signed in' : 'sign-in unknown'}; ${p.capabilities.remote ? 'REMOTE' : 'local'}; ${p.detail}`)].join('\n'));
+      return rows.every((p) => p.ready) ? 0 : 1;
     }
     case 'review':
       return finish(await lab.review(need(), opts));

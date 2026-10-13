@@ -36,6 +36,20 @@ src/commands/project.js  (CLI, thin)  ──►  src/project_lab/lab.js  Project
                                                  orchestration/{interrupt,ledger}.js, analysis/analyze.js, self_analysis passes, rea_integration
 ```
 
+### Multi-agent layer
+
+```
+agents/coding-agents.js  adapters + capability registry (registerCodingAgent, agentCapabilities, custom:<name>)
+agents/team.js           roles, presets (data), capability checks, remote-consent, detection  — no workflow logic
+project_lab/team.js      architect → implementer → reviewer loop (prompts, hand-offs, validation, corrections)
+project_lab/exposure.js  what an agent may see: credential/instruction-file withholding, secret-content scan
+project_lab/context.js   agentFor(role), invokeAgent (consent, auth, one-at-a-time, read-only verification), snapshots, handoff
+```
+
+The workflow asks for *roles*; `team.roles` maps them to agent ids; the registry maps ids to adapters
+and their capabilities. Reasoning providers (text-only) and REA stay separate layers. See
+[multi-agent.md](multi-agent.md).
+
 Project Lab and the Improvement Lab share infrastructure (agents, sandbox, locks, ledger,
 REA client) but no state, and Project Lab refuses ERA's own tree as a project. The
 interface to a graphical client is the `ProjectLab` class, `--json` output and the JSON/JSONL

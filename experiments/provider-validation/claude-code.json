@@ -1,0 +1,92 @@
+{
+  "provider": "claude-code",
+  "validated_at": "2026-10-13T22:14:40.035Z",
+  "host": {
+    "platform": "darwin",
+    "release": "27.0.0",
+    "node": "v24.20.0"
+  },
+  "checks": {
+    "error-recovery:not-signed-in": {
+      "status": "pass",
+      "duration_ms": 2941,
+      "note": "the adapter reports failure with the provider's message and spends nothing",
+      "evidence": {
+        "ok": false,
+        "exit_code": 1,
+        "timed_out": false,
+        "duration_ms": 2886,
+        "cost_usd": 0,
+        "cost_reported": true,
+        "tokens": {
+          "output_tokens_details": {
+            "thinking_tokens": 0
+          },
+          "input_tokens": 0,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "output_tokens": 0,
+          "server_tool_use": {
+            "web_search_requests": 0,
+            "web_fetch_requests": 0
+          },
+          "service_tier": "standard",
+          "cache_creation": {
+            "ephemeral_1h_input_tokens": 0,
+            "ephemeral_5m_input_tokens": 0
+          },
+          "inference_geo": "",
+          "iterations": [],
+          "speed": "standard"
+        },
+        "output_tail": "Not logged in · Please run /login",
+        "stderr_tail": ""
+      }
+    },
+    "write-task": {
+      "status": "skipped",
+      "note": "not signed in: not signed in; run `claude auth login`",
+      "evidence": null
+    },
+    "workspace-isolation": {
+      "status": "skipped",
+      "note": "not signed in: not signed in; run `claude auth login`",
+      "evidence": null
+    },
+    "read-only-mode": {
+      "status": "skipped",
+      "note": "not signed in: not signed in; run `claude auth login`",
+      "evidence": null
+    },
+    "timeout": {
+      "status": "skipped",
+      "note": "not signed in: not signed in; run `claude auth login`",
+      "evidence": null
+    },
+    "cost-reporting": {
+      "status": "skipped",
+      "note": "not signed in: not signed in; run `claude auth login`",
+      "evidence": null
+    },
+    "cancellation": {
+      "status": "skipped",
+      "note": "not signed in: not signed in; run `claude auth login`",
+      "evidence": null
+    },
+    "review-output": {
+      "status": "skipped",
+      "note": "not signed in: not signed in; run `claude auth login`",
+      "evidence": null
+    },
+    "bad-model-recovery": {
+      "status": "skipped",
+      "note": "not signed in: not signed in; run `claude auth login`",
+      "evidence": null
+    }
+  },
+  "available": true,
+  "version": "2.1.260 (Claude Code)",
+  "authenticated": false,
+  "auth_detail": "not signed in; run `claude auth login`",
+  "status": "unavailable"
+}

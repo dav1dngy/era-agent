@@ -36,6 +36,10 @@ ERA Project Lab (external, authorized projects; the original is never changed wi
                 [--build CMD]... [--test CMD]... [--accept CMD]... [--accept-fail CMD]...
                 [--agent-command CMD] [--criteria TEXT]... [--protect GLOB]... [--reference PATH --destination DIR
                 --authorization TEXT --run CMD] [--config FILE.json] [--max-cost USD]
+                Multi-agent: [--team claude-only|codex-only|claude+codex|custom]
+                [--architect A] [--implementer A] [--reviewer A] [--review-rounds N] [--block-on high]
+                [--allow-remote claude-code,codex] [--allow-secret-content]
+  project team <id>             Roles, capabilities, availability and sign-in of the project's agents
   project list                  Projects and their status
   project review <id>           Review: architecture, findings, evidence (read-only)
   project modify <id>           Modify: isolated change, tests, regression check, diff
@@ -75,7 +79,7 @@ Options: --help, --version
 Environment: ERA_REA_BIN, ERA_STATE_DIR, ERA_LOG_LEVEL (debug|info|warn|error), ERA_LOG=off
 `;
 
-const VALUED = new Set(['cycles', 'repetitions', 'out', 'versions', 'implementer', 'finding', 'agent', 'provider', 'by', 'reason', 'manifest', 'plan', 'id', 'mode', 'source', 'reference', 'destination', 'task', 'run', 'authorization', 'config', 'max-cost', 'timeout-ms', 'max-attempts', 'agent-command']);
+const VALUED = new Set(['cycles', 'repetitions', 'out', 'versions', 'implementer', 'finding', 'agent', 'provider', 'by', 'reason', 'manifest', 'plan', 'id', 'mode', 'source', 'reference', 'destination', 'task', 'run', 'authorization', 'config', 'max-cost', 'timeout-ms', 'max-attempts', 'agent-command', 'team', 'architect', 'reviewer', 'allow-remote', 'review-rounds', 'block-on']);
 // Flags that may be given several times (collected into arrays).
 const REPEATABLE = new Set(['arg', 'build', 'test', 'criteria', 'accept', 'accept-fail', 'protect']);
 

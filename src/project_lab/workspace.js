@@ -48,9 +48,14 @@ export function treeDigest(root) {
 
 // Copies the project into `dest`, refusing oversized trees, and never following
 // symlinks (links that leave the tree are skipped and reported).
-export function copyProject(src, dest, { maxBytes, maxFiles }) {
+export function copyProject(src, dest, { maxBytes, maxFiles, exclude = null }) {
   const skipped = [];
-  const files = walkFiles(src, { onSkip: (p, why) => skipped.push({ path: relative(src, p), reason: why }) });
+  const excluded = [];
+  const files = walkFiles(src, { onSkip: (p, why) => skipped.push({ path: relative(src, p), reason: why }) }).filter((f) => {
+    const why = exclude?.(f.rel) ?? null;
+    if (why) excluded.push({ path: f.rel, reason: why });
+    return !why;
+  });
   if (files.length > maxFiles) throw new Error(`Project has ${files.length} files (limit ${maxFiles}); raise limits.maxCopyFiles or exclude generated files.`);
   const bytes = files.reduce((s, f) => s + (f.size ?? 0), 0);
   if (bytes > maxBytes) throw new Error(`Project is ${bytes} bytes (limit ${maxBytes}); raise limits.maxCopyBytes or exclude generated files.`);
@@ -71,7 +76,7 @@ export function copyProject(src, dest, { maxBytes, maxFiles }) {
       copyFileSync(f.full, target);
     }
   }
-  return { files: files.length, bytes, skipped };
+  return { files: files.length, bytes, skipped, excluded };
 }
 
 // ---- git, strictly confined to the working copy

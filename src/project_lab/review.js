@@ -50,10 +50,11 @@ export async function runReview(c) {
 
   const known = [...analysis.static, ...analysis.baseline_findings, ...(analysis.rea?.findings ?? [])];
   const agentReview = await c.step('agent-review', async () => {
-    const agent = c.agent();
+    const role = c.hasRole('reviewer') ? 'reviewer' : 'implementer';
+    const agent = c.agentFor(role);
     if (agent.id === 'manual') return { ran: false, reason: 'no coding agent configured (set projectLab.agent or --agent claude-code|codex|command); only ERA static and REA evidence is reported' };
     const prompt = reviewPrompt({ project, detection, baselineSummary: summarizeCommands(baseline), known: known.slice(0, 30).map((f) => `${f.title} (${f.locations[0]?.file ?? 'project'})`) });
-    const r = await c.invokeAgent({ phase: 'review', prompt, readOnly: true });
+    const r = await c.invokeAgent({ role, phase: 'review', prompt, readOnly: true });
     if (!r.ok) return { ran: false, agent: r.agent, error: `agent failed (exit ${r.exit_code}${r.timed_out ? ', timed out' : ''}): ${r.stderr_tail.slice(-300)}`, cost_usd: r.cost_usd };
     const raw = extractJsonArray(r.output);
     const { accepted, rejected } = validateAgentFindings(raw, c.workspace);

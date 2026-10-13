@@ -45,7 +45,7 @@ Verified on macOS 27 arm64, Node 24.20, REA 6.4.0, Hopper 6.6.0-demo:
 | Every original REA command, MCP server, agent setup | `era rea …`, `era rea mcp`, `era rea setup` | passthrough | ✅ (real MCP session tested) |
 | Improvement Lab: self-analysis, experiments, approval, rebase, rollback, cancel, recover | `era self-analyze`, `era improve …`, `era rollback` | REA self-analysis | ✅ |
 | Coding agents | `era improve implement --agent …` | — | `manual` ✅ real; `claude-code`, `codex`, `command` ✅ adapters tested with fake CLIs, not run against real models |
-| **Project Lab** (v0.2.0, in development): review, modify or rebuild an authorized *external* project in an isolated copy, with human approval and rollback | `era project …` | REA for JavaScript projects and for Rebuild references | ✅ with scripted *mock* agents + the projects' own tests; real Claude Code/Codex not yet run through it |
+| **Project Lab** (v0.2.0, in development): review, modify or rebuild an authorized *external* project in an isolated copy, with human approval and rollback | `era project …` | REA for JavaScript projects and for Rebuild references | ✅ with scripted *mock* agents + the projects' own tests; **real Codex** validated (small tasks); **Claude Code not validated** (signed out on the dev machine) |
 | Benchmarks, version comparison, REA overhead | `era benchmark [--versions …] [--rea-baseline]` | via `era analyze` / direct REA | ✅ |
 | Status, history, JSONL logs, static dashboard | `era status`, `era history`, `era dashboard` | `providers` | ✅ |
 
@@ -216,12 +216,35 @@ era project approve demo        # confirmation, then the verified diff is applie
 era project rollback demo
 ```
 
+### Multi-agent engineering (v0.2.0, in development)
+
+Modify can coordinate **several coding agents by role**: an architecture agent designs (read-only),
+an implementation agent changes the isolated copy, an independent review agent inspects the
+verified diff (read-only), and the implementer makes bounded corrections that ERA re-tests.
+ERA itself runs the tests, validates the review findings against the real code and decides; you
+approve. Roles are configuration (`claude-only`, `codex-only`, `claude+codex`, or any agent per role),
+and remote providers need your explicit, recorded consent before any source code is sent.
+
+```bash
+era agents                                   # providers, capabilities, availability, sign-in
+era project create demo --source ~/code/shop --task "Fix the cart total" --team codex-only \
+    --allow-remote codex --accept-fail "node --test acceptance/cart.test.js"
+era project team demo && era project modify demo
+```
+
+**Validated for real:** OpenAI Codex (all roles, including a real end-to-end run and a real review
+that caught a planted flaw). **Not validated:** Claude Code. The CLI on the development machine was
+not signed in, so every Claude-specific path was tested only against scripted agents. Evidence and
+gaps: [provider-validation.md](docs/provider-validation.md); design and security:
+[multi-agent.md](docs/multi-agent.md); setup: [provider-configuration.md](docs/provider-configuration.md);
+tests: [multi-agent-testing.md](docs/multi-agent-testing.md).
+
 Per-project state, locks, limits and cost caps; cancellation, interruption and resume;
 a sandbox for the project's own code. Docs: [project-lab.md](docs/project-lab.md),
 [project-configuration.md](docs/project-configuration.md),
 [project-lab-testing.md](docs/project-lab-testing.md). **Limits:** macOS-focused sandbox;
-Project Lab has only been exercised with scripted mock agents (the Claude Code and Codex
-adapters have not run through it); it does not recover source code and does not support
+Project Lab has run with scripted mock agents and, for Codex only, real multi-agent runs on small
+projects (Claude Code is not validated); it does not recover source code and does not support
 arbitrary formats.
 
 ## Connect AI agents

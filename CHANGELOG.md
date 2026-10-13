@@ -24,7 +24,31 @@ checkpoints (annotated git tags); `vX.Y.Z` are releases.
 - Coding-agent adapters gain a prompt override, a read-only mode (Claude Code `plan`,
   Codex `read-only`), `ERA_PHASE`/`ERA_READ_ONLY` hints and complete output capture.
 
-### Fixes found by the new tests
+### Multi-agent engineering
+- Modify can coordinate an architecture agent, an implementation agent and an independent review
+  agent as configurable **roles** (`--team claude-only|codex-only|claude+codex|custom`, or
+  `--architect/--implementer/--reviewer`); presets, third-party adapters and local `custom:<name>`
+  command agents are configuration/registration, not code paths.
+- Capability model and detection (`era agents`, `era project team`): read/write/execute, read-only
+  mode (native or verified), automation, metering, remote transmission; roles are refused for agents
+  lacking what they need. Authentication is checked before an agent starts.
+- Explicit, hashed artifact hand-offs; least-context prompts; read-only roles work on private
+  snapshots and ERA verifies they changed nothing; agents never run concurrently.
+- Independent review: findings validated against real files/lines/quotes, bounded corrections,
+  ERA re-runs build/tests/acceptance, unresolved blocking findings reject the run.
+- Security: per-provider **consent** before source code goes to a remote provider; credential
+  files and agent instruction files withheld from agent copies; secret-looking content blocks remote
+  transmission; allowlisted environment for provider CLIs.
+- `scripts/validate-providers.mjs`: real-provider validation with recorded evidence. **Codex validated;
+  Claude Code could not be validated (not signed in).** See `docs/provider-validation.md`.
+
+### Fixes found by the new tests and by real provider runs
+- Codex's `workspace-write` sandbox allowed writes to `$TMPDIR` and `/tmp`, so a working copy's
+  parent directory was writable (found by real validation); now excluded.
+- Token usage was masked as `[REDACTED]` in the ledger (key name contained "token"); now `usage`.
+- A stored team with a derived preset label (`single`/`custom`) could not be re-validated by `update`.
+
+### Earlier fixes found by the Project Lab tests
 - Sandboxed/agent child processes no longer inherit `NODE_TEST_CONTEXT` (a nested
   `node --test` silently exited 0 without running tests).
 - Lock acquisition created the lock file empty before writing it, so a competing

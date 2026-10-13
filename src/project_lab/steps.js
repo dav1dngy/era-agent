@@ -1,5 +1,6 @@
 // Steps shared by the Review, Modify and Rebuild workflows.
 import { detectProject } from './detect.js';
+import { exposureFilter } from './exposure.js';
 import { copyProject, initBaseline, removeWorkspace, treeDigest } from './workspace.js';
 
 export async function stepDetect(c) {
@@ -11,13 +12,14 @@ export async function stepWorkspace(c) {
   return c.step('workspace', async () => {
     removeWorkspace(c.workspace); // a previous attempt may have been interrupted mid-copy
     const before = treeDigest(c.project.source);
-    const copied = copyProject(c.project.source, c.workspace, { maxBytes: c.project.limits.maxCopyBytes, maxFiles: c.project.limits.maxCopyFiles });
+    const copied = copyProject(c.project.source, c.workspace, { maxBytes: c.project.limits.maxCopyBytes, maxFiles: c.project.limits.maxCopyFiles, exclude: exposureFilter(c.project, c.config) });
+    const exposure = c.exposureCheck(copied);
     const baseline = await initBaseline(c.workspace);
     const after = treeDigest(c.project.source);
     if (before.sha256 !== after.sha256) throw new Error('The source project changed while it was being copied; nothing was recorded. Re-run when it is stable.');
     c.run.source_digest = before.sha256;
     c.save();
-    return { baseline_commit: baseline, source_digest: before.sha256, files: copied.files, bytes: copied.bytes, skipped: copied.skipped };
+    return { baseline_commit: baseline, source_digest: before.sha256, files: copied.files, bytes: copied.bytes, skipped: copied.skipped, excluded: copied.excluded, exposure };
   });
 }
 

@@ -71,6 +71,27 @@ function changeSection(fin) {
   ];
 }
 
+// Multi-agent section: who did what, what they received and what leaves this machine.
+function teamSection(run) {
+  const fin = run.results.finalize;
+  const roles = run.team?.roles ?? fin?.team?.roles;
+  if (!roles) return [];
+  const out = ['## Team', '', '| Role | Agent |', '|---|---|', ...Object.entries(roles).map(([r, a]) => `| ${r} | ${a ?? '—'} |`), ''];
+  if (fin?.team?.independence) out.push(`Review independence: ${fin.team.independence}.`, '');
+  const ex = run.exposure;
+  if (ex) out.push('### Data exposure', '', ex.remote_providers.length ? `- Source code was made available to remote provider(s): ${ex.remote_providers.join(', ')} (authorized by the user: ${ex.consented_providers.join(', ') || 'none'}).` : '- No remote provider received project content.', `- Withheld from agents: ${ex.withheld_files.length ? ex.withheld_files.slice(0, 10).join('; ') : 'nothing needed withholding'}.`, ...(ex.secret_content_files.length ? [`- Secret-looking content in: ${ex.secret_content_files.join('; ')} (${ex.secret_content_allowed ? 'allowed by the user' : 'blocked'}).`] : []), '');
+  const design = run.results.architecture;
+  if (design) out.push('### Architecture', '', `By \`${design.agent}\`${design.parsed ? '' : ' (output was not structured JSON; shown as text)'}${typeof design.cost_usd === 'number' ? `, cost $${design.cost_usd.toFixed(4)}` : ''}: ${design.design.summary || '(no summary)'}`, '', `${design.design.files.length} file(s) planned; full design in \`handoffs/design.md\`.`, '');
+  const review = fin?.review;
+  if (review) {
+    out.push('### Independent review', '', `Reviewer \`${review.reviewer}\`; blocking threshold: ${review.block_on}; correction rounds used: ${review.corrections}.`, '');
+    for (const r of review.rounds) out.push(`- Round ${r.round}: ${r.accepted.length} finding(s) accepted, ${r.rejected.length} rejected as unverifiable, ${r.blocking.length} blocking.${typeof r.cost_usd === 'number' ? ` Cost $${r.cost_usd.toFixed(4)}.` : ''}`, ...r.accepted.slice(0, 8).map((f) => `  - [${f.severity}] ${f.title} (${f.locations[0]?.file ?? '?'}${f.locations[0]?.line ? `:${f.locations[0].line}` : ''})`));
+    out.push('', review.unresolved.length ? `**Unresolved blocking findings: ${review.unresolved.length}.**` : 'No unresolved blocking findings.', '');
+  }
+  if (run.handoffs?.length) out.push('### Hand-offs', '', '| From | To | Artifact | sha256 |', '|---|---|---|---|', ...run.handoffs.map((h) => `| ${h.from} | ${h.to} | \`${h.artifact}\` | \`${h.sha256.slice(0, 12)}…\` |`), '');
+  return out;
+}
+
 export function renderModify(project, run) {
   const fin = run.results.finalize;
   const out = [...header(project, run, 'Project modification')];
@@ -79,6 +100,7 @@ export function renderModify(project, run) {
   const an = run.results.analysis;
   if (an) out.push('## Analysis', '', an.rea?.ran ? `- REA analyzed ${an.rea.modules} modules in ${an.rea.passes} pass(es); evidence IDs ${an.rea.evidence_ids.map((e) => `\`${e.slice(0, 20)}…\``).join(', ')}.` : `- REA: not used — ${an.rea?.reason}.`, `- ${an.static.length} static finding(s) of severity low or above (see \`era project review\` for the full list).`, '');
   if (run.results.plan) out.push('## Plan', '', `See \`plan.md\` (${run.results.plan.relevant_files.length} relevant file hint(s)).`, '');
+  out.push(...teamSection(run));
   out.push('## Attempts', '', ...(run.attempts.length ? run.attempts.map((a) => `- Attempt ${a.n} (${a.agent}): ${a.pass ? '**passed verification**' : `failed — ${a.reasons.join(' ')}`}`) : ['- none']), '');
   if (!fin) return [...out, `_The run is ${run.status}${run.error ? `: ${run.error}` : ''}._`].join('\n');
   out.push('## Decision', '', fin.pass ? '**Accepted for review**: every acceptance check passed and no regression was detected. Nothing has been applied to the original project.' : `**Rejected**:\n${fin.reasons.map((r) => `- ${r}`).join('\n')}`, '');
