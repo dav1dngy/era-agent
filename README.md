@@ -150,7 +150,40 @@ reports, ledger) is in [`experiments/`](experiments/). The narrative is in
 
 ## Benchmarks
 
-BENCHMARK_TABLE_PLACEHOLDER
+Measured on macOS 27 arm64, REA 6.4.0, Hopper 6.6.0-demo, 3 repetitions per case,
+quiet host (`benchmarks/results/versions-v1-v2-v3.json`,
+`benchmarks/results/main-with-rea-baseline.json`):
+
+| Metric | era-v1 | era-v2 | era-v3 | main (RC) |
+|---|---|---|---|---|
+| Accuracy (F1) | 0.956 | 0.956 | 0.987 | 0.987 |
+| Precision | 0.988 | 0.988 | 0.988 | 0.988 |
+| Completeness (recall) | 0.933 | 0.933 | 0.987 | 0.987 |
+| Execution time (ms, Σ medians) | 37,351 | 44,534 | 47,968 | 51,458 |
+| CPU time (s, Σ medians) | 33.18 | 35.26 | 34.19 | 34.06 |
+| Peak memory (MB RSS) | 389.6 | 389.6 | 389.8 | 389.5 |
+| Error rate | 0.000 | 0.000 | 0.000 | 0.000 |
+| Reliability | 1.000 | 1.000 | 1.000 | 1.000 |
+| REA executions per pass | 10 | 10 | 10 | 10 |
+
+Wall time is dominated by Hopper start-up and varies by up to ~25% between
+identical runs. The rise from era-v1 to main is within that noise for the
+native cases, but CPU time is flat. Accuracy is deterministic.
+
+**ERA vs direct REA** (same REA commands, median wall ms; `--rea-baseline`):
+
+| Case | REA direct | ERA analyze | Overhead |
+|---|---|---|---|
+| js-commonjs-app | 1,786 | 3,555 | +1,769 ms |
+| js-esm-app | 1,757 | 3,466 | +1,709 ms |
+| native-macho | 20,928 | 19,727 | −1,201 ms (Hopper noise) |
+| native-macho-runtime | 25,014 | 22,339 | −2,675 ms (Hopper noise) |
+| zip-archive | 713 | 2,371 | +1,658 ms |
+
+ERA adds a fixed ~1.7 s per analysis. Most of it is the `rea providers` probe
+that `era analyze` runs before every target, even when no decompilation is
+needed. That is an open performance finding. ERA is **not** faster than REA;
+the negative native figures are run-to-run Hopper variance.
 
 Methodology: [docs/benchmark-methodology.md](docs/benchmark-methodology.md).
 
