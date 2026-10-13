@@ -52,6 +52,11 @@ ERA Project Lab (external, authorized projects; the original is never changed wi
   project rollback <id>         Undo an approved change
   (add --json for machine-readable output; --trust-project only for trusted code)
 
+ERA Studio (desktop/browser workbench over the same backend):
+  studio serve [--port N] [--open]  Start the loopback control plane and print the (tokenized) URL
+  studio app                    Open the Electron desktop shell (after npm install --prefix apps/studio)
+  studio doctor                 Check what ERA Studio needs on this machine
+
 ERA Improvement Lab (ERA improves itself):
   self-analyze                  Pack ERA, analyze it with REA, report findings
       --plan <dir> --json       Only print the REA pass plan for an artifact directory
@@ -79,7 +84,7 @@ Options: --help, --version
 Environment: ERA_REA_BIN, ERA_STATE_DIR, ERA_LOG_LEVEL (debug|info|warn|error), ERA_LOG=off
 `;
 
-const VALUED = new Set(['cycles', 'repetitions', 'out', 'versions', 'implementer', 'finding', 'agent', 'provider', 'by', 'reason', 'manifest', 'plan', 'id', 'mode', 'source', 'reference', 'destination', 'task', 'run', 'authorization', 'config', 'max-cost', 'timeout-ms', 'max-attempts', 'agent-command', 'team', 'architect', 'reviewer', 'allow-remote', 'review-rounds', 'block-on']);
+const VALUED = new Set(['cycles', 'repetitions', 'out', 'versions', 'implementer', 'finding', 'agent', 'provider', 'by', 'reason', 'manifest', 'plan', 'id', 'mode', 'source', 'reference', 'destination', 'task', 'run', 'authorization', 'config', 'max-cost', 'timeout-ms', 'max-attempts', 'agent-command', 'team', 'architect', 'reviewer', 'allow-remote', 'review-rounds', 'block-on', 'port']);
 // Flags that may be given several times (collected into arrays).
 const REPEATABLE = new Set(['arg', 'build', 'test', 'criteria', 'accept', 'accept-fail', 'protect']);
 
@@ -104,6 +109,7 @@ const COMMANDS = {
   inspect: () => import('./commands/analysis.js'),
   explain: () => import('./commands/analysis.js'),
   project: () => import('./commands/project.js'),
+  studio: () => import('./commands/studio.js'),
   extract: () => import('./commands/analysis.js'),
   'self-analyze': () => import('./commands/lab.js'),
   improve: () => import('./commands/lab.js'),
