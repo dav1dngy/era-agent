@@ -70,8 +70,9 @@ export async function proposeCycle({ root, config, rea, findingId = null }) {
     let ranked = rankCandidates(baselineSelf.findings, baselineBench, attempted);
     if (findingId) {
       // Operator selection among the REA-derived candidates (may retry an attempted one).
-      const chosen = rankCandidates(baselineSelf.findings, baselineBench).find((c) => c.id === findingId);
-      if (!chosen) throw new Error(`Finding ${findingId} is not among the current REA-derived candidates.`);
+      const all = rankCandidates(baselineSelf.findings, baselineBench);
+      const chosen = all.find((c) => c.id === findingId);
+      if (!chosen) throw new Error(`Finding ${findingId} is not among the current REA-derived candidates:\n${all.map((c) => `  ${c.id}  ${c.area}  ${c.title}`).join('\n')}`);
       ranked = [chosen, ...ranked.filter((c) => c.id !== findingId)];
     }
     if (ranked.length === 0) {
