@@ -4,6 +4,8 @@ import { join, resolve } from 'node:path';
 import { spawn } from 'node:child_process';
 import { analyzeTarget } from '../analysis/analyze.js';
 import { detectTarget } from '../analysis/detect.js';
+import { groupFacts } from '../analysis/facts.js';
+import { renderAnalysisReport } from '../analysis/report.js';
 import { createReasoningProvider, assertEgressAllowed, reasoningPrompt } from '../agents/reasoning.js';
 import { assertTargetPath } from '../safety/policy.js';
 import { writeText } from '../core/util.js';
@@ -45,7 +47,29 @@ export function resolveAnalysis(stateDir, ref) {
   const candidates = [ref, join(ref ?? '', 'analysis.json'), join(stateDir, 'analyses', ref ?? '', 'analysis.json')];
   const file = candidates.find((c) => c && existsSync(c) && c.endsWith('.json'));
   if (!file) throw new Error(`No analysis found for "${ref}". Pass an analysis ID from \`era analyze\` or a path to analysis.json.`);
-  return { file, analysis: JSON.parse(readFileSync(file, 'utf8')) };
+  return { file, analysis: validateAnalysis(JSON.parse(readFileSync(file, 'utf8'))) };
+}
+
+const isStr = (v) => typeof v === 'string';
+
+// Imported analyses are untrusted: keep only the fields ERA renders, and never
+// follow file paths they contain (report_path, output_file, ...).
+export function validateAnalysis(a) {
+  if (!a || typeof a !== 'object' || !a.target || !isStr(a.target.path) || !isStr(a.target.kind) || !Array.isArray(a.facts) || !a.facts.every(isStr)) {
+    throw new Error('Not a valid ERA analysis record (target.path, target.kind and facts[] are required).');
+  }
+  const runs = Array.isArray(a.runs) ? a.runs : [];
+  const evidence = Array.isArray(a.evidence) ? a.evidence : [];
+  return {
+    analysis_id: isStr(a.analysis_id) ? a.analysis_id : 'imported',
+    target: { path: a.target.path, kind: a.target.kind, detection: isStr(a.target.detection) ? a.target.detection : '' },
+    engine: { version: isStr(a.engine?.version) ? a.engine.version : 'unknown' },
+    status: isStr(a.status) ? a.status : 'unknown',
+    runs: runs.map((r) => ({ label: String(r.label ?? ''), command: Array.isArray(r.command) ? r.command.map(String).slice(0, 3) : ['rea'], status: String(r.status ?? ''), duration_ms: Number(r.duration_ms) || 0, evidence_id: isStr(r.evidence_id) ? r.evidence_id : null, errors: Array.isArray(r.errors) ? r.errors.map(String) : [] })),
+    evidence: evidence.map((e) => ({ operation: String(e.operation ?? ''), provider: String(e.provider ?? ''), coverage: e.coverage ?? null, unknowns: Number.isFinite(e.unknowns) ? e.unknowns : null, limitations: Array.isArray(e.limitations) ? e.limitations.map(String) : [], ...(e.function?.pseudocode ? { function: { name: String(e.function.name), address: String(e.function.address), signature: e.function.signature ? String(e.function.signature) : null, pseudocode: String(e.function.pseudocode) } } : {}) })),
+    facts: a.facts,
+    fact_groups: groupFacts(a.facts),
+  };
 }
 
 async function explain(ctx, { positional, flags }) {
@@ -53,7 +77,8 @@ async function explain(ctx, { positional, flags }) {
   const providerId = flags.provider ?? ctx.config.reasoning?.provider ?? 'none';
   const provider = createReasoningProvider(providerId, ctx.config);
   assertEgressAllowed(provider, { config: ctx.config, allowRemoteFlag: !!flags['allow-remote'] });
-  const report = existsSync(analysis.report_path) ? readFileSync(analysis.report_path, 'utf8') : '';
+  // The report is rebuilt from the validated record; no file named in it is read.
+  const report = renderAnalysisReport(analysis);
   const started = Date.now();
   const { text } = await provider.explain({ analysis, report, prompt: reasoningPrompt(analysis, report) });
   const out = join(file, '..', `explanation-${provider.id}.md`);

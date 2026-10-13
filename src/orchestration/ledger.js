@@ -39,7 +39,7 @@ function lastStateEvents(events) {
 
 // Cycles still being worked on (proposed, rebased, or under evaluation).
 export function pendingCycles(events) {
-  return lastStateEvents(events).filter((e) => e.type === 'cycle-proposed' || e.type === 'cycle-rebased');
+  return lastStateEvents(events).filter((e) => e.type === 'cycle-proposed' || e.type === 'cycle-rebased' || (e.type === 'cycle-decided' && e.status === 'inconclusive'));
 }
 
 // Evaluated cycles that passed all criteria and wait for a maintainer decision.

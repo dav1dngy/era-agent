@@ -79,3 +79,28 @@ test('ledger state follows the latest event per cycle (rebase and re-evaluation)
   assert.equal(pendingCycles(events).length, 0);
   assert.equal(awaitingApproval(events).length, 0);
 });
+
+test('approval refuses a branch that moved after evaluation and integrates only the evaluated commit', async () => {
+  const { approveCycle } = await import('../src/orchestration/cycle.js');
+  const { loadConfig } = await import('../src/core/config.js');
+  const { writeJson } = await import('../src/core/util.js');
+  const { dir, git } = initRepo();
+  const base = await vm.headCommit(dir);
+  git('checkout', '-q', '-b', 'experiment/c1');
+  writeFileSync(join(dir, 'file.txt'), 'evaluated\n');
+  git('commit', '-qam', 'evaluated change');
+  const evaluatedRef = await vm.candidateIdentity(dir, base, 'experiment/c1');
+  writeFileSync(join(dir, 'file.txt'), 'unevaluated\n');
+  git('commit', '-qam', 'later change');
+  git('checkout', '-q', 'main');
+  const config = loadConfig(dir, {});
+  writeJson(join(config.stateDirAbs, 'cycles', 'c1', 'cycle.json'), { cycle_id: 'c1', status: 'awaiting-approval', base_commit: base, branch: 'experiment/c1', worktree: join(dir, '.era', 'wt'), proposal: { finding: { id: 'F-1' }, hypothesis: 'h' }, evaluation: { candidate_ref: evaluatedRef } });
+  await assert.rejects(approveCycle({ root: dir, config, cycleId: 'c1', approver: 't' }), /changed after evaluation/);
+  assert.equal(await vm.headCommit(dir), base, 'stable branch untouched');
+  assert.deepEqual((await vm.listVersions(dir)).map((v) => v.tag), ['era-v1'], 'no tag created');
+  // Restore the branch to the evaluated commit: approval now integrates exactly that tree.
+  git('branch', '-f', 'experiment/c1', evaluatedRef.commit);
+  const done = await approveCycle({ root: dir, config, cycleId: 'c1', approver: 't' });
+  assert.equal(done.status, 'integrated');
+  assert.equal(readFileSync(join(dir, 'file.txt'), 'utf8'), 'evaluated\n');
+});

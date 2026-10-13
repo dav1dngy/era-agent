@@ -35,13 +35,15 @@ test('benchmark manifest and acceptance criteria load', () => {
   assert.equal(a.maxAccuracyDrop, 0);
 });
 
-const agg = (o = {}) => ({ aggregate: { accuracy_f1: 0.8, error_rate: 0, reliability: 1, total_median_wall_ms: 1000, max_rss_bytes: 100, ...o } });
+const okCases = [{ id: 'x', error_rate: 0, succeeded: 3, repetitions: 3 }];
+const agg = (o = {}, cases = okCases) => ({ cases, aggregate: { accuracy_f1: 0.8, error_rate: 0, reliability: 1, total_median_wall_ms: 1000, max_rss_bytes: 100, ...o } });
+const inv = (...names) => names.map((n) => ({ name: n, status: 'pass' }));
 const acceptance = { maxAccuracyDrop: 0, maxErrorRateIncrease: 0, maxTimeRegressionPct: 15, maxMemoryRegressionPct: 20, minImprovement: { accuracy_f1: 0.01, startup_pct: 10 } };
 const ctx = (over = {}) => ({
   baseline: agg(),
   candidate: agg({ accuracy_f1: 0.9 }),
-  baselineTests: { ok: true, passed: 10 },
-  candidateTests: { ok: true, passed: 11 },
+  baselineTests: { ok: true, passed: 2, inventory: inv('a', 'b') },
+  candidateTests: { ok: true, passed: 3, inventory: inv('a', 'b', 'c') },
   baselineSelf: { findings: [{ id: 'F-1' }, { id: 'F-2' }], metrics: { startup_ms: 200 } },
   candidateSelf: { findings: [{ id: 'F-2' }], metrics: { startup_ms: 150 } },
   protectedChanged: [],
@@ -56,7 +58,7 @@ test('decide accepts when guards pass and target is met', () => {
 
 test('decide rejects protected-path changes, failing tests and regressions', () => {
   assert.equal(decide(ctx({ protectedChanged: ['src/safety/policy.js'] }), acceptance).accepted, false);
-  assert.equal(decide(ctx({ candidateTests: { ok: false, passed: 9, failed: 1 } }), acceptance).accepted, false);
+  assert.equal(decide(ctx({ candidateTests: { ok: false, passed: 9, failed: 1, inventory: inv('a', 'b') } }), acceptance).accepted, false);
   assert.equal(decide(ctx({ candidate: agg({ accuracy_f1: 0.79 }), proposal: { target: { metric: 'finding_resolved', finding_id: 'F-1' } } }), acceptance).accepted, false);
   assert.equal(decide(ctx({ candidate: agg({ accuracy_f1: 0.9, total_median_wall_ms: 1200 }) }), acceptance).accepted, false);
   assert.equal(decide(ctx({ candidate: agg({ accuracy_f1: 0.9, error_rate: 0.1 }) }), acceptance).accepted, false);
@@ -77,4 +79,33 @@ test('evaluateTarget supports finding, startup and test-count targets', () => {
   assert.equal(evaluateTarget({ metric: 'startup_ms', min_delta: 30 }, ctx()).met, false);
   assert.equal(evaluateTarget({ metric: 'test_count', min_delta: 1 }, ctx()).met, true);
   assert.equal(evaluateTarget({ metric: 'nope' }, ctx()).met, false);
+});
+
+test('equal benchmark failures on both sides are inconclusive, never accepted', () => {
+  const broken = [{ id: 'native', error_rate: 0.4, succeeded: 1, repetitions: 3 }];
+  const d = decide(ctx({ baseline: agg({ error_rate: 0.4, reliability: 0.6 }, broken), candidate: agg({ accuracy_f1: 0.9, error_rate: 0.4, reliability: 0.6 }, broken), proposal: { target: { metric: 'finding_resolved', finding_id: 'F-1' } } }), acceptance);
+  assert.equal(d.accepted, false);
+  assert.equal(d.inconclusive, true);
+  assert.match(d.summary, /inconclusive: baseline benchmark cases failed: native/);
+});
+
+test('an empty baseline test inventory is inconclusive', () => {
+  const d = decide(ctx({ baselineTests: { ok: false, passed: null, inventory: [] } }), acceptance);
+  assert.equal(d.inconclusive, true);
+});
+
+test('removing, skipping or breaking baseline tests is rejected; repairing a failing baseline test is allowed', () => {
+  const removed = decide(ctx({ candidateTests: { ok: true, passed: 1, inventory: inv('a') } }), acceptance);
+  assert.equal(removed.accepted, false);
+  assert.match(removed.summary, /no baseline test removed/);
+  const skipped = decide(ctx({ candidateTests: { ok: true, passed: 1, inventory: [{ name: 'a', status: 'pass' }, { name: 'b', status: 'skip' }] } }), acceptance);
+  assert.equal(skipped.accepted, false);
+  const repaired = decide(ctx({ baselineTests: { ok: false, passed: 1, failed: 1, inventory: [{ name: 'a', status: 'pass' }, { name: 'b', status: 'fail' }] }, candidateTests: { ok: true, passed: 2, inventory: inv('a', 'b') } }), acceptance);
+  assert.equal(repaired.accepted, true, repaired.summary);
+});
+
+test('parseTapTests reads top-level results including skips', async () => {
+  const { parseTapTests } = await import('../src/evaluation/tests.js');
+  const t = parseTapTests('ok 1 - alpha\n    ok 1 - sub\nnot ok 2 - beta\nok 3 - gamma # SKIP no sandbox\n');
+  assert.deepEqual(t, [{ name: 'alpha', status: 'pass' }, { name: 'beta', status: 'fail' }, { name: 'gamma', status: 'skip' }]);
 });

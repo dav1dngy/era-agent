@@ -141,7 +141,7 @@ export async function evaluateCycle({ root, config, rea, cycleId, repetitions, g
   const stateDir = config.stateDirAbs;
   const limits = effectiveLimits(config.limits, config.improvement);
   const cycle = loadCycle(stateDir, cycleId);
-  if (cycle.status !== 'proposed') throw new Error(`Cycle ${cycleId} is already ${cycle.status}.`);
+  if (!['proposed', 'inconclusive'].includes(cycle.status)) throw new Error(`Cycle ${cycleId} is already ${cycle.status}.`);
   await vm.assertStable(root);
   if ((await vm.headCommit(root)) !== cycle.base_commit) throw new SafetyError(`The stable branch moved since this cycle was proposed; run \`era improve rebase ${cycleId}\` first.`);
   const release = acquireLock(stateDir, `evaluate ${cycleId}`);
@@ -153,15 +153,21 @@ export async function evaluateCycle({ root, config, rea, cycleId, repetitions, g
     const budget = reaBudget(limits);
     budget.add(cycle.baseline_self_analysis);
     await vm.commitAll(cycle.worktree, `experiment ${cycleId}: uncommitted changes`);
-    const ahead = await vm.commitsAhead(root, cycle.base_commit, cycle.branch);
-    const changed = await vm.changedFiles(root, cycle.base_commit, cycle.branch);
+    // The evaluation is bound to this exact candidate commit/tree/patch.
+    const candidateRef = await vm.candidateIdentity(root, cycle.base_commit, cycle.branch);
+    const ahead = await vm.commitsAhead(root, cycle.base_commit, candidateRef.commit);
+    const changed = await vm.changedFiles(root, cycle.base_commit, candidateRef.commit);
     const reps = repetitions ?? config.benchmark.repetitions;
     const datasetsDir = join(root, 'benchmarks', 'datasets');
     const acceptance = loadAcceptance(root);
+    const protectedChanged = protectedChanges(changed);
 
     let evaluation;
     if (ahead === 0 || changed.length === 0) {
       evaluation = { accepted: false, summary: 'rejected: experiment branch has no changes', guards: [], target: { met: false, observed: 'no changes' } };
+    } else if (protectedChanged.length) {
+      // Rejected before any candidate code runs.
+      evaluation = { accepted: false, summary: `rejected: protected paths changed (${protectedChanged.join(', ')}); candidate code was not executed`, guards: [{ name: 'protected paths unchanged', ok: false, detail: protectedChanged.join(', ') }], target: { met: false, observed: 'not evaluated' } };
     } else {
       const step = async (fn) => {
         interrupt.check();
@@ -182,23 +188,31 @@ export async function evaluateCycle({ root, config, rea, cycleId, repetitions, g
         candidateTests,
         baselineSelf: cycle.baseline_self_analysis,
         candidateSelf,
-        protectedChanged: protectedChanges(changed),
+        protectedChanged,
         proposal: cycle.proposal,
       };
       evaluation = { ...decide(ctx, acceptance), baselineTests, candidateTests, baseline, candidate, candidate_self_analysis: selfSummary(candidateSelf) };
+      // The candidate must not have changed while it was being evaluated.
+      const after = await vm.candidateIdentity(root, cycle.base_commit, cycle.branch);
+      const dirty = await vm.trackedChanges(cycle.worktree);
+      if (after.commit !== candidateRef.commit || dirty.length) {
+        evaluation = { ...evaluation, accepted: false, summary: `rejected: the candidate changed during evaluation (${after.commit !== candidateRef.commit ? 'branch moved' : `modified: ${dirty.slice(0, 5).join(', ')}`})` };
+      }
     }
     interrupt.check();
+    evaluation.candidate_ref = candidateRef;
     evaluation.changed_files = changed;
     evaluation.diffstat = changed.length ? await vm.diffStat(root, cycle.base_commit, cycle.branch) : '';
 
     // Accepted experiments are never merged here: they wait for a maintainer's
     // explicit `era improve approve`. The stable branch is untouched either way.
-    cycle.status = evaluation.accepted ? 'awaiting-approval' : 'rejected';
-    await vm.removeWorktree(root, cycle.worktree);
+    // Inconclusive evaluations keep the worktree so they can be re-evaluated.
+    cycle.status = evaluation.accepted ? 'awaiting-approval' : evaluation.inconclusive ? 'inconclusive' : 'rejected';
+    if (!evaluation.inconclusive) await vm.removeWorktree(root, cycle.worktree);
     cycle.evaluation = evaluation;
     cycle.decided_at = new Date().toISOString();
     const dir = cycleDir(stateDir, cycleId);
-    if (changed.length) writeText(join(dir, 'change.patch'), await vm.diffPatch(root, cycle.base_commit, cycle.branch));
+    if (changed.length) writeText(join(dir, 'change.patch'), await vm.diffPatch(root, cycle.base_commit, candidateRef.commit));
     saveCycle(stateDir, cycle);
     writeText(join(dir, 'report.md'), renderCycleReport(cycle));
     appendLedger(stateDir, {
@@ -267,8 +281,18 @@ export async function approveCycle({ root, config, cycleId, approver }) {
   }
   const release = acquireLock(stateDir, `approve ${cycleId}`);
   try {
+    // Integrate exactly the evaluated candidate: same commit, tree and patch,
+    // and still no protected-path change.
+    const evaluated = cycle.evaluation?.candidate_ref;
+    if (!evaluated?.commit) throw new SafetyError(`Cycle ${cycleId} has no recorded candidate commit; evaluate it again.`);
+    const current = await vm.candidateIdentity(root, cycle.base_commit, cycle.branch);
+    if (current.commit !== evaluated.commit || current.tree !== evaluated.tree || current.patch_sha256 !== evaluated.patch_sha256) {
+      throw new SafetyError(`The experiment branch ${cycle.branch} changed after evaluation (evaluated ${evaluated.commit.slice(0, 12)}, now ${current.commit.slice(0, 12)}); unevaluated changes cannot be approved. Evaluate it again.`);
+    }
+    const protectedNow = protectedChanges(await vm.changedFiles(root, cycle.base_commit, evaluated.commit));
+    if (protectedNow.length) throw new SafetyError(`Protected paths changed: ${protectedNow.join(', ')}.`);
     const tag = await vm.nextVersionTag(root);
-    const merge = await vm.promote(root, cycle.branch, `era: integrate ${cycleId} (${cycle.proposal.finding.id}) as ${tag}\n\nApproved-by: ${approver}`);
+    const merge = await vm.promote(root, evaluated.commit, `era: integrate ${cycleId} (${cycle.proposal.finding.id}) as ${tag}\n\nCandidate: ${evaluated.commit}\nApproved-by: ${approver}`);
     await vm.tagVersion(root, tag, `${tag}: ${cycle.proposal.hypothesis.slice(0, 200)}`);
     Object.assign(cycle, { status: 'integrated', version: tag, merge_commit: merge, approved_by: approver, approved_at: new Date().toISOString() });
     saveCycle(stateDir, cycle);
@@ -291,7 +315,7 @@ export async function declineCycle({ config, cycleId, approver, reason = 'declin
 
 export async function abandonCycle({ root, config, cycleId, reason = 'abandoned by user' }) {
   const cycle = loadCycle(config.stateDirAbs, cycleId);
-  if (cycle.status !== 'proposed') throw new Error(`Cycle ${cycleId} is already ${cycle.status}.`);
+  if (!['proposed', 'inconclusive'].includes(cycle.status)) throw new Error(`Cycle ${cycleId} is already ${cycle.status}.`);
   await vm.removeWorktree(root, cycle.worktree);
   cycle.status = 'abandoned';
   cycle.abandon_reason = reason;

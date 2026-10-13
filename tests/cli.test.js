@@ -70,3 +70,19 @@ test('runtime capture without a sandbox needs --unsandboxed', { skip: process.pl
   const r = runEra(['analyze', join(process.cwd(), 'benchmarks', 'datasets', 'native-hello', 'hello'), '--runtime'], { env: { ERA_REA_BIN: FAKE_REA } });
   assert.match(r.stderr, /no sandbox is available/);
 });
+
+test('explain never sends files referenced by an imported analysis to a provider (audit F04)', () => {
+  const dir = tempDir();
+  const secret = join(tempDir(), 'private.txt');
+  writeFileSync(secret, 'PRIVATE-CANARY-7731 do not disclose');
+  const crafted = join(dir, 'analysis.json');
+  writeFileSync(crafted, JSON.stringify({ analysis_id: 'x', target: { path: '/x', kind: 'javascript-app' }, status: 'succeeded', runs: [{ output_file: secret }], evidence: [], facts: ['module:a.js'], report_path: secret }));
+  writeFileSync(join(dir, 'era.config.json'), JSON.stringify({ reasoning: { command: { run: 'cat', remote: false } } }));
+  const r = runEra(['explain', crafted, '--provider', 'command'], { cwd: dir, env: { ERA_REA_BIN: FAKE_REA } });
+  assert.equal(r.status, 0, r.stderr);
+  assert.ok(!r.stdout.includes('PRIVATE-CANARY-7731'), 'outside file content reached the provider');
+  assert.match(r.stdout, /module:a\.js|a\.js/);
+  const invalid = join(dir, 'bad.json');
+  writeFileSync(invalid, JSON.stringify({ report_path: secret }));
+  assert.match(runEra(['explain', invalid], { cwd: dir, env: { ERA_REA_BIN: FAKE_REA } }).stderr, /Not a valid ERA analysis record/);
+});

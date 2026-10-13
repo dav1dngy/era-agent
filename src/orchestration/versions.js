@@ -1,5 +1,6 @@
 // Version Manager: git branches/worktrees for experiments, annotated tags for
 // accepted versions, non-destructive rollback. Never force-pushes or rewrites history.
+import { createHash } from 'node:crypto';
 import { runProcess } from '../core/process.js';
 
 export const STABLE_BRANCH = 'main';
@@ -99,6 +100,20 @@ export async function diffStat(cwd, base, branch) {
 
 export async function diffPatch(cwd, base, branch) {
   return (await git(cwd, ['diff', `${base}...${branch}`])).stdout + '\n';
+}
+
+// Immutable identity of an experiment candidate: commit, tree and patch digest.
+export async function candidateIdentity(cwd, base, branch) {
+  const commit = await headCommit(cwd, branch);
+  const tree = (await git(cwd, ['rev-parse', `${commit}^{tree}`])).stdout;
+  const patch = await diffPatch(cwd, base, commit);
+  return { commit, tree, patch_sha256: createHash('sha256').update(patch).digest('hex') };
+}
+
+// Tracked files modified or deleted in a worktree (ignored files excluded).
+export async function trackedChanges(cwd) {
+  const r = await git(cwd, ['status', '--porcelain', '--untracked-files=no'], { allowFail: true });
+  return r.stdout.split('\n').filter(Boolean).map((l) => l.slice(3));
 }
 
 export async function promote(cwd, branch, message) {
