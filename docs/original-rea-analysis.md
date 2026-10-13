@@ -15,12 +15,12 @@ marketing claims.
 | MCP server | `rea mcp` registered in the Claude Code config as server `rea`; 170 MCP tools, 6 prompts (`binary_session` → `server_identity.catalog`) |
 | Agent skill | `reverse-engineer-anything` (skill version 37) in `~/.claude/skills` |
 | Language / runtime | Node.js ESM. Requires Node `^22.19.0 \|\| ^24.11.0 \|\| >=26.0.0` |
-| License | **MIT**, Copyright (c) 2026 morluto. Modification and redistribution are permitted if the notice is kept (see [NOTICE.md](../NOTICE.md)) |
+| License | **MIT**, Copyright (c) 2026 morluto. Modification and redistribution are permitted if the notice is kept (see [THIRD_PARTY_NOTICES.md](../THIRD_PARTY_NOTICES.md)) |
 | Unpacked size | 7.8 MB package; 93 MB installed with dependencies |
 
 ERA does not vendor or modify REA source code. It depends on `rea-agents@6.4.0`
 and executes REA's CLI, so REA's license obligations reduce to keeping the
-copyright and permission notice. That is done in `NOTICE.md`.
+copyright and permission notice. That is done in `THIRD_PARTY_NOTICES.md`.
 
 ## Host environment
 

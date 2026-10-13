@@ -5,22 +5,22 @@ around the original REA engine. ERA never re-implements reverse engineering.
 Every analysis fact comes from a recorded REA execution.
 
 ```
-                         bin/era.mjs → src/cli.js
-                                   │
-        ┌──────────────────────────┼──────────────────────────────┐
-        │ Analysis Mode            │ Self-Improvement Mode         │
-        ▼                          ▼                               │
- analysis/analyze.js        orchestration/cycle.js  ◄── safety/policy.js
-  ├─ analysis/detect.js       ├─ evaluation/self-eval.js ─► self_analysis/self-analyze.js
-  ├─ analysis/facts.js        │                              └─ self_analysis/rules.js
-  └─ analysis/report.js       ├─ improvement/planner.js
-        │                     ├─ git worktree ──► improvement/modification.js (implementer)
-        │                     ├─ evaluation/tests.js
-        │                     ├─ evaluation/benchmark.js ─► evaluation/score.js
-        │                     ├─ evaluation/decision.js ◄── benchmarks/acceptance.json
-        │                     └─ orchestration/versions.js + ledger.js
-        ▼                          ▼
-   rea_integration/rea-client.js  ──►  `rea <command> --format json`  (rea-agents 6.4.0)
+bin/era.mjs → src/cli.js (parse, context, logging, signals)
+   └─ lazily loaded command modules: src/commands/{analysis,lab,info}.js
+        │
+        ├─ Analysis Mode ─────────────── analysis/analyze.js ── detect.js · facts.js · report.js
+        │                                  └─ safety/sandbox.js (runtime capture)
+        ├─ Reasoning ─────────────────── agents/reasoning.js (none | command | claude-code)
+        └─ Improvement Lab ───────────── orchestration/cycle.js ◄── safety/policy.js (limits, budget, locks)
+                                           ├─ evaluation/self-eval.js ─► self_analysis/self-analyze.js + rules.js
+                                           ├─ improvement/planner.js
+                                           ├─ improvement/modification.js ─► agents/coding-agents.js
+                                           │                                (manual | command | claude-code | codex)
+                                           ├─ evaluation/{tests,benchmark,score,decision}.js ◄── benchmarks/acceptance.json
+                                           ├─ orchestration/{versions,ledger,interrupt}.js
+                                           └─ reporting/{table,dashboard}.js
+                 all REA executions ──► rea_integration/rea-client.js ──► core/process.js ──► core/watchdog.mjs ──► `rea … --format json`
+                 observability ────────► core/log.js (JSONL, redaction via safety/secrets.js)
 ```
 
 ## Components
@@ -37,7 +37,25 @@ Every analysis fact comes from a recorded REA execution.
 | 8 | Version Manager | `src/orchestration/versions.js` | Experiment branches/worktrees, `--no-ff` promotion to `main`, annotated `era-vN` tags, non-destructive rollback |
 | 9 | Recursive Improvement Controller | `src/orchestration/cycle.js` | propose → implement → evaluate → decide, bounded and logged to `.era/ledger.jsonl` |
 | 10 | Reporting Engine | `src/analysis/report.js`, `src/reporting/` | Markdown analysis/cycle reports, benchmark tables, optional static HTML dashboard |
-| 11 | Safety Controller | `src/safety/policy.js` | Hard limits, protected paths, CI refusal, single-writer lock, target path validation |
+| 11 | Safety Controller | `src/safety/policy.js`, `sandbox.js`, `secrets.js` | Hard limits, API budgets, protected paths, CI refusal, single-writer lock, target path validation, runtime sandbox, secret redaction |
+| 12 | Coding-agent integration | `src/agents/coding-agents.js` | `{ id, metered, probe(), implement(task) }` adapters: manual, command, claude-code, codex |
+| 13 | AI reasoning integration | `src/agents/reasoning.js` | `{ id, remote, probe(), explain() }` providers with data-egress authorization |
+| 14 | Logging and process control | `src/core/log.js`, `src/core/process.js`, `src/core/watchdog.mjs`, `src/orchestration/interrupt.js` | JSONL logs with execution/correlation IDs; process-group timeouts; parent-death and deadline watchdog; cancellation |
+
+## Design decisions
+
+* **CLI subprocess, not a library binding, for REA.** It keeps REA unmodified,
+  records exact commands, and is the interface REA documents for scripting.
+  REA's MCP server stays available unchanged (`era rea mcp`).
+* **No framework, no database, no services.** ESM modules, `node:` built-ins,
+  JSON/JSONL files under `.era/`, git for versions.
+* **Dependency inversion where it pays.** The cycle controller depends on agent
+  and provider interfaces chosen by configuration. The evaluator and the
+  candidate communicate only through subprocess contracts (`era analyze --json`,
+  `era self-analyze --json`).
+* **Secure by default.** Manual coding agent, local reasoning provider, remote
+  egress off, sandboxed runtime capture, unmetered agents refused, no merge without
+  approval.
 
 ## Trust boundaries in self-improvement
 
@@ -63,5 +81,8 @@ The candidate code under evaluation is never trusted to judge itself:
   cycles/<id>/              cycle.json, instructions.md, report.md
   worktrees/<id>/           experiment worktrees (removed after a decision)
   benchmarks/               benchmark result JSON
-  ledger.jsonl              append-only cycle/rollback ledger
+  logs/era-YYYY-MM-DD.jsonl structured logs
+  improve.lock              single-writer lock (stale locks cleared by `era improve recover`)
+  ledger.jsonl              append-only ledger: proposals, agent runs (cost), decisions,
+                            approvals, rebases, interruptions, recoveries, rollbacks
 ```

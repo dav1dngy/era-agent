@@ -3,7 +3,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { createInterface } from 'node:readline/promises';
 import { selfAnalyze } from '../self_analysis/self-analyze.js';
-import { proposeCycle, implementCycle, evaluateCycle, abandonCycle, approveCycle, declineCycle, recoverState, loadCycle, renderCycleReport } from '../orchestration/cycle.js';
+import { proposeCycle, implementCycle, evaluateCycle, abandonCycle, approveCycle, declineCycle, rebaseCycle, recoverState, loadCycle, renderCycleReport } from '../orchestration/cycle.js';
 import * as vm from '../orchestration/versions.js';
 import { createCodingAgent, selectedAgentId, CODING_AGENT_IDS } from '../agents/coding-agents.js';
 import { createReasoningProvider, REASONING_PROVIDER_IDS } from '../agents/reasoning.js';
@@ -122,6 +122,12 @@ async function improve(ctx, { positional, flags }) {
       await abandonCycle({ ...base, cycleId: id, reason: flags.reason ?? 'cancelled by user' });
       log.info('cycle.cancelled', {});
       print(`${id}: cancelled`);
+      return 0;
+    }
+    case 'rebase': {
+      const { cycle, changed } = await rebaseCycle({ ...base, cycleId: id });
+      log.info('cycle.rebased', { changed, base_commit: cycle.base_commit });
+      print(changed ? `${id}: merged ${vm.STABLE_BRANCH} (${cycle.base_commit.slice(0, 12)}) into ${cycle.branch}; baseline re-analyzed with REA. Next: era improve evaluate ${id}` : `${id}: already based on the current ${vm.STABLE_BRANCH}.`);
       return 0;
     }
     case 'recover': {

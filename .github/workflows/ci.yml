@@ -8,60 +8,73 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   checks:
-    name: Code quality and dependency validation
+    name: Lint, secrets and dependency validation
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 24
           cache: npm
       - run: npm ci --ignore-scripts
+      - name: ESLint
+        run: npm run lint
       - name: Syntax check and secret scan
         run: node scripts/check.mjs
-      - name: Dependency tree is consistent with the lockfile
+      - name: Dependency tree matches the lockfile
         run: npm ls --omit=dev
-      - name: Registry signatures
+      - name: Registry signatures and provenance of dependencies
         run: npm audit signatures
-      - name: Known vulnerabilities (critical only blocks)
-        run: npm audit --omit=dev --audit-level=critical
+      - name: Known vulnerabilities (high and critical block)
+        run: npm audit --omit=dev --audit-level=high
 
   unit-linux:
-    name: Unit tests (Linux, REA integration skipped)
+    name: Unit and fake-engine tests (Linux)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 24
           cache: npm
       - run: npm ci
+      - run: git config --global user.name ci && git config --global user.email ci@localhost
       - run: npm test
         env:
           ERA_SKIP_REA: '1'
 
-  test-macos:
-    name: Tests + REA smoke test (macOS)
+  rea-compatibility-macos:
+    name: REA compatibility and integration (macOS)
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@v4
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 24
           cache: npm
       - run: npm ci
+      - run: git config --global user.name ci && git config --global user.email ci@localhost
       - name: REA engine status
         run: node bin/era.mjs status
-      - name: Unit and REA integration tests
+      - name: Tests (real REA, MCP, sandbox; CI has no native decompiler)
         run: npm test
       - name: REA smoke test (JavaScript application)
-        run: node bin/era.mjs analyze benchmarks/datasets/js-app --json | node -e "const a=JSON.parse(require('fs').readFileSync(0,'utf8')); if(a.status!=='succeeded'||!a.facts.includes('import:src/main.js->src/net.js')) process.exit(1); console.log(a.runs.map(r=>r.command.slice(1,2)+' '+r.status).join('\n'))"
+        run: node bin/era.mjs analyze benchmarks/datasets/js-app --json > js.json && node -e "const a=require('./js.json'); if(a.status!=='succeeded'||!a.facts.includes('import:src/main.js->src/net.js')) process.exit(1)"
       - name: REA smoke test (Mach-O)
-        run: node bin/era.mjs analyze benchmarks/datasets/native-hello/hello --no-decompile --json | node -e "const a=JSON.parse(require('fs').readFileSync(0,'utf8')); if(!a.facts.includes('export:_greet')) process.exit(1); console.log('ok')"
+        run: node bin/era.mjs analyze benchmarks/datasets/native-hello/hello --no-decompile --json > macho.json && node -e "const a=require('./macho.json'); if(!a.facts.includes('export:_greet')) process.exit(1)"
       - name: Self-improvement is refused in CI
         run: |
           if node bin/era.mjs improve propose; then echo "improve must refuse in CI"; exit 1; fi

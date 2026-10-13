@@ -143,7 +143,7 @@ export async function evaluateCycle({ root, config, rea, cycleId, repetitions, g
   const cycle = loadCycle(stateDir, cycleId);
   if (cycle.status !== 'proposed') throw new Error(`Cycle ${cycleId} is already ${cycle.status}.`);
   await vm.assertStable(root);
-  if ((await vm.headCommit(root)) !== cycle.base_commit) throw new SafetyError('The stable branch moved since this cycle was proposed; abandon and re-propose.');
+  if ((await vm.headCommit(root)) !== cycle.base_commit) throw new SafetyError(`The stable branch moved since this cycle was proposed; run \`era improve rebase ${cycleId}\` first.`);
   const release = acquireLock(stateDir, `evaluate ${cycleId}`);
   const interrupt = guard ?? createInterruptGuard();
   cycle.status = 'evaluating';
@@ -226,6 +226,36 @@ export async function evaluateCycle({ root, config, rea, cycleId, repetitions, g
   }
 }
 
+// Merges the current stable HEAD into an experiment branch and re-captures the
+// baseline REA self-analysis, so the experiment is evaluated (and approved)
+// against the code it would actually be merged into. Earlier evaluations are kept.
+export async function rebaseCycle({ root, config, rea, cycleId }) {
+  assertNotCI();
+  const stateDir = config.stateDirAbs;
+  const cycle = loadCycle(stateDir, cycleId);
+  if (!['proposed', 'awaiting-approval'].includes(cycle.status)) throw new Error(`Cycle ${cycleId} is ${cycle.status}; only proposed or awaiting-approval cycles can be rebased.`);
+  await vm.assertStable(root);
+  const head = await vm.headCommit(root);
+  if (head === cycle.base_commit) return { cycle, changed: false };
+  const release = acquireLock(stateDir, `rebase ${cycleId}`);
+  try {
+    if (!existsSync(cycle.worktree)) await vm.git(root, ['worktree', 'add', cycle.worktree, cycle.branch]);
+    const merge = await vm.git(cycle.worktree, ['merge', '--no-ff', '-m', `experiment ${cycleId}: merge ${vm.STABLE_BRANCH} ${head.slice(0, 12)}`, head], { allowFail: true });
+    if (merge.code !== 0) {
+      await vm.git(cycle.worktree, ['merge', '--abort'], { allowFail: true });
+      throw new Error(`Merging ${vm.STABLE_BRANCH} into ${cycle.branch} conflicts; resolve manually in ${cycle.worktree} or decline the cycle.\n${merge.stdout || merge.stderr}`);
+    }
+    const baselineSelf = await evaluateSelf({ codeRoot: root, stateDir, reaCommand: rea.command });
+    cycle.previous = [...(cycle.previous ?? []), { base_commit: cycle.base_commit, status: cycle.status, evaluation_summary: cycle.evaluation?.summary ?? null, decided_at: cycle.decided_at ?? null }];
+    Object.assign(cycle, { base_commit: head, base_version: await vm.currentVersion(root), status: 'proposed', baseline_self_analysis: selfSummary(baselineSelf), evaluation: undefined, decided_at: undefined });
+    saveCycle(stateDir, cycle);
+    appendLedger(stateDir, { type: 'cycle-rebased', cycle_id: cycleId, from: cycle.previous.at(-1).base_commit, to: head });
+    return { cycle, changed: true };
+  } finally {
+    release();
+  }
+}
+
 export async function approveCycle({ root, config, cycleId, approver }) {
   assertNotCI();
   const stateDir = config.stateDirAbs;
@@ -233,7 +263,7 @@ export async function approveCycle({ root, config, cycleId, approver }) {
   if (cycle.status !== 'awaiting-approval') throw new Error(`Cycle ${cycleId} is ${cycle.status}; only cycles awaiting approval can be approved.`);
   await vm.assertStable(root);
   if ((await vm.headCommit(root)) !== cycle.base_commit) {
-    throw new SafetyError(`The stable branch moved since ${cycleId} was evaluated; its evidence no longer describes the merge result. Decline it and re-propose.`);
+    throw new SafetyError(`The stable branch moved since ${cycleId} was evaluated; its evidence no longer describes the merge result. Run \`era improve rebase ${cycleId}\` and evaluate it again.`);
   }
   const release = acquireLock(stateDir, `approve ${cycleId}`);
   try {

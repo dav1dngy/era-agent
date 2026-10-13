@@ -74,10 +74,23 @@ test('accepted experiment waits for approval, integrates on approval, and can be
   assert.notEqual(refused.status, 0, 'non-interactive approval needs --yes');
   assert.equal(lab.git('rev-parse', 'HEAD'), base);
 
+  // main moves on: the old evidence no longer describes the merge result.
+  writeFileSync(join(lab.dir, 'NOTES.md'), 'maintainer change\n');
+  lab.git('add', 'NOTES.md');
+  lab.git('commit', '-q', '-m', 'maintainer change');
+  const stale = lab.era(['improve', 'approve', id, '--yes']);
+  assert.notEqual(stale.status, 0);
+  assert.match(stale.stderr, /era improve rebase/);
+  assert.equal(lab.era(['improve', 'rebase', id]).status, 0);
+  assert.equal(lab.cycle(id).status, 'proposed');
+  assert.equal(lab.era(['improve', 'evaluate', id]).status, 0);
+  assert.equal(lab.cycle(id).status, 'awaiting-approval');
+
   const a = lab.era(['improve', 'approve', id, '--yes', '--by', 'Maintainer <m@example.test>']);
   assert.equal(a.status, 0, a.stderr);
   assert.equal(lab.git('describe', '--tags', '--abbrev=0'), 'era-v2');
   assert.ok(existsSync(join(lab.dir, 'tests', 'e2e-added.test.js')));
+  assert.ok(existsSync(join(lab.dir, 'NOTES.md')));
   assert.match(lab.git('log', '-1', '--format=%B'), /Approved-by: Maintainer <m@example.test>/);
   assert.ok(lab.ledger().some((ev) => ev.type === 'cycle-approved' && ev.cycle_id === id && ev.approver === 'Maintainer <m@example.test>'));
 

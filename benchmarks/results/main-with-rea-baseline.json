@@ -1,0 +1,284 @@
+{
+  "engine": "6.4.0",
+  "created_at": "2026-10-13T12:09:57.647Z",
+  "results": [
+    {
+      "label": "era-v3",
+      "code_root": "<era-repo>",
+      "created_at": "2026-10-13T12:07:27.532Z",
+      "repetitions": 3,
+      "cases": [
+        {
+          "id": "js-commonjs-app",
+          "kind": "javascript-app",
+          "repetitions": 3,
+          "succeeded": 3,
+          "error_rate": 0,
+          "deterministic": true,
+          "median_wall_ms": 3555,
+          "median_cpu_s": 4.47,
+          "max_rss_bytes": 408453120,
+          "rea_runs": 1,
+          "precision": 1,
+          "recall": 1,
+          "f1": 1,
+          "per_category": {
+            "endpoint": {
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "entry": {
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "export": {
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "external": {
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "import": {
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "module": {
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            }
+          },
+          "missing": [],
+          "unexpected": [],
+          "errors": []
+        },
+        {
+          "id": "js-esm-app",
+          "kind": "javascript-app",
+          "repetitions": 3,
+          "succeeded": 3,
+          "error_rate": 0,
+          "deterministic": true,
+          "median_wall_ms": 3466,
+          "median_cpu_s": 4.4399999999999995,
+          "max_rss_bytes": 407912448,
+          "rea_runs": 1,
+          "precision": 1,
+          "recall": 0.9333333333333333,
+          "f1": 0.9655172413793104,
+          "per_category": {
+            "endpoint": {
+              "precision": 0,
+              "recall": 0,
+              "f1": 0
+            },
+            "entry": {
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "export": {
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "external": {
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "import": {
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "module": {
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            }
+          },
+          "missing": [
+            "endpoint:wss://events.example.test/stream"
+          ],
+          "unexpected": [],
+          "errors": []
+        },
+        {
+          "id": "native-macho",
+          "kind": "mach-o",
+          "repetitions": 3,
+          "succeeded": 3,
+          "error_rate": 0,
+          "deterministic": true,
+          "median_wall_ms": 19727,
+          "median_cpu_s": 9.64,
+          "max_rss_bytes": 408223744,
+          "rea_runs": 3,
+          "precision": 0.9375,
+          "recall": 1,
+          "f1": 0.967741935483871,
+          "per_category": {
+            "arch": {
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "call": {
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "dependency": {
+              "precision": 0.5,
+              "recall": 1,
+              "f1": 0.6666666666666666
+            },
+            "export": {
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "function": {
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "import": {
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "string": {
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            }
+          },
+          "missing": [],
+          "unexpected": [
+            "dependency:/usr/lib/dyld"
+          ],
+          "errors": []
+        },
+        {
+          "id": "native-macho-runtime",
+          "kind": "mach-o",
+          "repetitions": 3,
+          "succeeded": 3,
+          "error_rate": 0,
+          "deterministic": true,
+          "median_wall_ms": 22339,
+          "median_cpu_s": 12.24,
+          "max_rss_bytes": 408322048,
+          "rea_runs": 4,
+          "precision": 1,
+          "recall": 1,
+          "f1": 1,
+          "per_category": {
+            "exit": {
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "export": {
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "import": {
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            }
+          },
+          "missing": [],
+          "unexpected": [],
+          "errors": []
+        },
+        {
+          "id": "zip-archive",
+          "kind": "archive",
+          "repetitions": 3,
+          "succeeded": 3,
+          "error_rate": 0,
+          "deterministic": true,
+          "median_wall_ms": 2371,
+          "median_cpu_s": 3.27,
+          "max_rss_bytes": 407027712,
+          "rea_runs": 1,
+          "precision": 1,
+          "recall": 1,
+          "f1": 1,
+          "per_category": {
+            "member": {
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            }
+          },
+          "missing": [],
+          "unexpected": [],
+          "errors": []
+        }
+      ],
+      "aggregate": {
+        "accuracy_f1": 0.9866518353726363,
+        "precision": 0.9875,
+        "completeness_recall": 0.9866666666666667,
+        "total_median_wall_ms": 51458,
+        "total_median_cpu_s": 34.06,
+        "max_rss_bytes": 408453120,
+        "error_rate": 0,
+        "reliability": 1,
+        "rea_runs": 10
+      }
+    }
+  ],
+  "rea_baseline": {
+    "created_at": "2026-10-13T12:09:57.647Z",
+    "repetitions": 3,
+    "cases": [
+      {
+        "id": "js-commonjs-app",
+        "repetitions": 3,
+        "median_wall_ms": 1785.871,
+        "failures": 0
+      },
+      {
+        "id": "js-esm-app",
+        "repetitions": 3,
+        "median_wall_ms": 1757.403125,
+        "failures": 0
+      },
+      {
+        "id": "native-macho",
+        "repetitions": 3,
+        "median_wall_ms": 20927.715875,
+        "failures": 0
+      },
+      {
+        "id": "native-macho-runtime",
+        "repetitions": 3,
+        "median_wall_ms": 25014.388625,
+        "failures": 0
+      },
+      {
+        "id": "zip-archive",
+        "repetitions": 3,
+        "median_wall_ms": 713.104542,
+        "failures": 0
+      }
+    ],
+    "aggregate": {
+      "total_median_wall_ms": 50198.483167,
+      "failures": 0
+    }
+  }
+}

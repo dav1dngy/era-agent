@@ -22,8 +22,8 @@ export function loadManifest(datasetsDir) {
 async function runCase(codeRoot, c, env, timeoutMs) {
   const args = [join(codeRoot, 'bin', 'era.mjs'), 'analyze', c.targetPath, '--json'];
   if (c.runtime) args.push('--runtime', ...(c.runtime_args ?? []).flatMap((a) => ['--arg', a]));
-  const r = await runProcess(process.execPath, args, { cwd: codeRoot, env, timeoutMs, measureResources: true });
-  let analysis = null;
+  const r = await runProcess(process.execPath, args, { cwd: codeRoot, env, timeoutMs, measureResources: true, watchdog: true });
+  let analysis;
   try {
     analysis = JSON.parse(r.stdout);
   } catch {
@@ -39,7 +39,7 @@ async function runCase(codeRoot, c, env, timeoutMs) {
     rea_runs: analysis?.runs?.length ?? 0,
     facts,
     score: scoreFacts(facts, c.truth),
-    error: ok ? null : (r.stderr.trim().split('\n').pop() || `exit ${r.exitCode}`),
+    error: ok ? null : [r.timedOut ? 'timed out' : null, r.signal ? `signal ${r.signal}` : null, r.stderr.trim().split('\n').pop() || `exit ${r.exitCode}`].filter(Boolean).join('; '),
   };
 }
 

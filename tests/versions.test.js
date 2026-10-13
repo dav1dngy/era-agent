@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import * as vm from '../src/orchestration/versions.js';
-import { appendLedger, readLedger, pendingCycles, decidedCycles } from '../src/orchestration/ledger.js';
+import { appendLedger, readLedger, pendingCycles, decidedCycles, awaitingApproval } from '../src/orchestration/ledger.js';
 import { initRepo, tempDir } from './helpers.js';
 
 test('experiment worktree, promotion and tagging', async () => {
@@ -62,4 +62,20 @@ test('ledger tracks pending and decided cycles', () => {
   assert.deepEqual(pendingCycles(events).map((e) => e.cycle_id), ['b']);
   assert.equal(decidedCycles(events).length, 1);
   assert.deepEqual(readLedger(join(dir, 'missing')), []);
+});
+
+test('ledger state follows the latest event per cycle (rebase and re-evaluation)', () => {
+  const dir = tempDir();
+  appendLedger(dir, { type: 'cycle-proposed', cycle_id: 'c' });
+  appendLedger(dir, { type: 'cycle-decided', cycle_id: 'c', status: 'awaiting-approval' });
+  assert.deepEqual(awaitingApproval(readLedger(dir)).map((e) => e.cycle_id), ['c']);
+  appendLedger(dir, { type: 'cycle-rebased', cycle_id: 'c' });
+  assert.deepEqual(pendingCycles(readLedger(dir)).map((e) => e.cycle_id), ['c']);
+  assert.equal(awaitingApproval(readLedger(dir)).length, 0);
+  appendLedger(dir, { type: 'cycle-decided', cycle_id: 'c', status: 'awaiting-approval' });
+  appendLedger(dir, { type: 'cycle-approved', cycle_id: 'c' });
+  const events = readLedger(dir);
+  assert.equal(decidedCycles(events).length, 1, 'a re-evaluated cycle counts once');
+  assert.equal(pendingCycles(events).length, 0);
+  assert.equal(awaitingApproval(events).length, 0);
 });

@@ -6,13 +6,20 @@
 // escaped grandchild still holds the output pipes.
 import { spawn } from 'node:child_process';
 import { createWriteStream, existsSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 
 const TIME_BIN = '/usr/bin/time';
 const MAX_CAPTURE_BYTES = 8 * 1024 * 1024;
 const KILL_GRACE_MS = 2000;
 const PIPE_DRAIN_MS = 1000;
 
+const WATCHDOG = fileURLToPath(new URL('./watchdog.mjs', import.meta.url));
+const WATCHDOG_GRACE_MS = 5000;
+
 const active = new Set();
+
+// Children never outlive a normally exiting ERA process.
+process.on('exit', () => terminateAllChildren('SIGKILL'));
 
 function killGroup(child, signal) {
   try {
@@ -64,10 +71,17 @@ export function runProcess(command, args, options = {}) {
     stdoutFile = null,
     measureResources = false,
     input = null,
+    // Enforce the deadline from inside the child's process group as well, so it
+    // holds even if this process dies (see watchdog.mjs).
+    watchdog = false,
   } = options;
   const wrap = measureResources && resourceWrapperAvailable();
-  const file = wrap ? TIME_BIN : command;
-  const argv = wrap ? ['-l', command, ...args] : args;
+  let file = wrap ? TIME_BIN : command;
+  let argv = wrap ? ['-l', command, ...args] : args;
+  if (watchdog && process.platform !== 'win32') {
+    argv = [WATCHDOG, String(timeoutMs + WATCHDOG_GRACE_MS), file, ...argv];
+    file = process.execPath;
+  }
 
   return new Promise((resolvePromise) => {
     const started = process.hrtime.bigint();
@@ -96,6 +110,9 @@ export function runProcess(command, args, options = {}) {
       child.stderr.destroy();
       const durationMs = Number(process.hrtime.bigint() - started) / 1e6;
       const parsed = wrap ? parseTimeOutput(stderr) : { stderr, resources: null };
+      // The watchdog reports a command that could not be started as exit 127.
+      const startFailure = watchdog && result.exitCode === 127 ? /era-watchdog: failed to start [^:]+: (.+)/.exec(parsed.stderr) : null;
+      if (startFailure) Object.assign(result, { exitCode: null, spawnError: startFailure[1].trim() });
       const done = () => resolvePromise({ ...result, durationMs, stdout, stdoutBytes, stderr: parsed.stderr, resources: parsed.resources });
       if (sink) sink.end(done);
       else done();

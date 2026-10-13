@@ -4,17 +4,32 @@
 import { existsSync, readFileSync, mkdirSync } from 'node:fs';
 import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { createRequire } from 'node:module';
 import { runProcess } from '../core/process.js';
 import { newId, sha256File, fileInfo, writeJson, writeText } from '../core/util.js';
 import { nullLogger } from '../core/log.js';
 
 const PACKAGE_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
 
+// The rea-agents dependency may be nested (era-agent/node_modules) or hoisted
+// next to era-agent when ERA is installed into another project.
+export function dependencyReaBin() {
+  try {
+    const pkg = createRequire(import.meta.url).resolve('rea-agents/package.json');
+    const bin = join(dirname(dirname(pkg)), '.bin', 'rea');
+    if (existsSync(bin)) return bin;
+  } catch {
+    // not installed as a dependency
+  }
+  const nested = join(PACKAGE_ROOT, 'node_modules', '.bin', 'rea');
+  return existsSync(nested) ? nested : null;
+}
+
 export function resolveReaCommand(configured, env = process.env) {
   if (configured) return { command: configured, source: 'config' };
   if (env.ERA_REA_BIN) return { command: env.ERA_REA_BIN, source: 'env:ERA_REA_BIN' };
-  const local = join(PACKAGE_ROOT, 'node_modules', '.bin', 'rea');
-  if (existsSync(local)) return { command: local, source: 'local-dependency' };
+  const local = dependencyReaBin();
+  if (local) return { command: local, source: 'local-dependency' };
   return { command: 'rea', source: 'PATH' };
 }
 
@@ -105,6 +120,7 @@ export class ReaClient {
       env: this.env,
       stdoutFile: outputFile,
       measureResources: this.measureResources,
+      watchdog: true,
     });
     this.runCount += 1;
 

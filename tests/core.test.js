@@ -95,3 +95,23 @@ test('terminateAllChildren cancels running process groups', async () => {
   const r = await pending;
   assert.equal(r.signal, 'SIGTERM');
 });
+
+test('watchdog kills the command group when the ERA parent dies', async () => {
+  const dir = tempDir();
+  const pidFile = join(dir, 'pid');
+  // A parent "era" process starts a watchdog-guarded long command, records its pid, then dies abruptly.
+  const parent = `import('${new URL('../src/core/process.js', import.meta.url).href}').then(({ runProcess }) => { runProcess(process.execPath, ['-e', 'require("fs").writeFileSync(${JSON.stringify(pidFile)}, String(process.pid)); setInterval(()=>{}, 1000)'], { timeoutMs: 600000, watchdog: true }); setTimeout(() => process.kill(process.pid, 'SIGKILL'), 1500); });`;
+  await runProcess(process.execPath, ['-e', parent], { timeoutMs: 20_000 });
+  const pid = Number(readFileSync(pidFile, 'utf8'));
+  await new Promise((res) => setTimeout(res, 3500));
+  assert.throws(() => process.kill(pid, 0), /ESRCH/, 'guarded command did not outlive its parent');
+});
+
+test('watchdog enforces the deadline and preserves exit codes', async () => {
+  const ok = await runProcess(process.execPath, ['-e', 'process.exit(7)'], { timeoutMs: 10_000, watchdog: true });
+  assert.equal(ok.exitCode, 7);
+  const out = await runProcess(process.execPath, ['-e', 'console.log("hi")'], { timeoutMs: 10_000, watchdog: true });
+  assert.equal(out.stdout.trim(), 'hi');
+  const slow = await runProcess(process.execPath, ['-e', 'setInterval(()=>{}, 1000)'], { timeoutMs: 500, watchdog: true });
+  assert.equal(slow.timedOut, true);
+});

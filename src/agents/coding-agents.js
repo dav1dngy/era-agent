@@ -57,7 +57,7 @@ export function commandAgent(command) {
       return command ? { available: true, version: null, detail: command } : { available: false, version: null, detail: 'improvement.implementerCommand is not set' };
     },
     async implement(task) {
-      const r = await runProcess('/bin/sh', ['-c', command], { cwd: task.worktree, env: agentEnv(task), timeoutMs: task.timeoutMs });
+      const r = await runProcess('/bin/sh', ['-c', command], { cwd: task.worktree, env: agentEnv(task), timeoutMs: task.timeoutMs, watchdog: true });
       return { ok: r.exitCode === 0 && !r.timedOut, exit_code: r.exitCode, timed_out: r.timedOut, duration_ms: Math.round(r.durationMs), cost_usd: null, cost_reported: false, tokens: null, command, stdout_tail: tail(r.stdout), stderr_tail: tail(r.stderr) };
     },
   };
@@ -86,7 +86,7 @@ export function claudeCodeAgent({ command = 'claude', model = null } = {}) {
     },
     async implement(task) {
       const args = this.argv(task, agentPrompt(task));
-      const r = await runProcess(command, args, { cwd: task.worktree, env: agentEnv(task), timeoutMs: task.timeoutMs });
+      const r = await runProcess(command, args, { cwd: task.worktree, env: agentEnv(task), timeoutMs: task.timeoutMs, watchdog: true });
       const parsed = parseClaudeResult(r.stdout);
       return {
         ok: r.exitCode === 0 && !r.timedOut && !parsed.isError,
@@ -156,7 +156,7 @@ export function codexAgent({ command = null, model = null } = {}) {
       await this.probe();
       const lastMessage = join(mkdtempSync(join(tmpdir(), 'era-codex-')), 'last-message.txt');
       const args = this.argv(task, agentPrompt(task), lastMessage);
-      const r = await runProcess(this.binary, args, { cwd: task.worktree, env: agentEnv(task), timeoutMs: task.timeoutMs });
+      const r = await runProcess(this.binary, args, { cwd: task.worktree, env: agentEnv(task), timeoutMs: task.timeoutMs, watchdog: true });
       const parsed = parseCodexEvents(r.stdout);
       return {
         ok: r.exitCode === 0 && !r.timedOut && !parsed.failed,
