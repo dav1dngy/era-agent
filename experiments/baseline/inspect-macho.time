@@ -1,0 +1,1 @@
+rea inspect-macho "$PWD/$D/native-hello/hello" --format json >  2>   6.17s user 3.95s system 72% cpu 13.904 total

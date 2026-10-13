@@ -1,0 +1,1 @@
+rea function "$PWD/benchmarks/datasets/native-hello/hello" _greet --format  >  1.79s user 2.16s system 23% cpu 16.441 total

@@ -1,0 +1,13 @@
+{
+  "source": "Hand-written from benchmarks/datasets/js-app sources (CommonJS).",
+  "facts": [
+    "module:src/main.js", "module:src/config.js", "module:src/net.js",
+    "entry:src/main.js",
+    "import:src/main.js->src/config.js", "import:src/main.js->src/net.js",
+    "external:https",
+    "export:src/main.js#default", "export:src/main.js#run",
+    "export:src/config.js#default", "export:src/config.js#parseConfig", "export:src/config.js#DEFAULT_ENDPOINT",
+    "export:src/net.js#default", "export:src/net.js#fetchStatus",
+    "endpoint:https://status.example.test/api/v1/health"
+  ]
+}

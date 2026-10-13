@@ -1,0 +1,5 @@
+node_modules/
+.era/
+*.tgz
+.DS_Store
+.env

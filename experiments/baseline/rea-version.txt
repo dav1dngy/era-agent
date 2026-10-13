@@ -1,0 +1,6 @@
+6.4.0
+v24.20.0
+ProductName:		macOS
+ProductVersion:		27.0.1
+BuildVersion:		26A434
+arm64

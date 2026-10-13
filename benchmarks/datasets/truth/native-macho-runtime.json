@@ -1,0 +1,11 @@
+{
+  "source": "Hand-written: running `hello bench` exits 0 (strlen(\"bench\") <= 64); static exports/imports as verified with `nm -gU` and `nm -u`.",
+  "facts": [
+    "exit:0",
+    "export:_main",
+    "export:_greet",
+    "export:__mh_execute_header",
+    "import:_printf",
+    "import:_strlen"
+  ]
+}

@@ -1,0 +1,1 @@
+rea function "$H" main --format json > function-main.json 2>   0.92s user 0.24s system 101% cpu 1.146 total

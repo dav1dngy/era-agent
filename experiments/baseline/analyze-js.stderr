@@ -1,0 +1,17 @@
+{"rea_progress":{"phase":"analyze_javascript_application","completed":0,"total":1,"message":"Inventorying and parsing application artifacts","sequence":1}}
+{"rea_progress":{"phase":"read_javascript_artifacts","completed":0,"total":1,"message":"Reading inventoried JavaScript application sources","sequence":2}}
+{"rea_progress":{"phase":"parse_javascript_sources","completed":0,"total":1,"message":"Parsing and projecting 4 application source files","sequence":3}}
+{"rea_progress":{"phase":"parse_javascript_source","completed":0,"total":1,"message":"Parsing and projecting package.json (1/4)","sequence":4}}
+{"rea_progress":{"phase":"parse_javascript_source","completed":0,"total":1,"message":"Parsing and projecting src/config.js (2/4)","sequence":5}}
+{"rea_progress":{"phase":"parse_javascript_source","completed":0,"total":1,"message":"Parsing and projecting src/main.js (3/4)","sequence":6}}
+{"rea_progress":{"phase":"parse_javascript_source","completed":0,"total":1,"message":"Parsing and projecting src/net.js (4/4)","sequence":7}}
+{"rea_progress":{"phase":"build_javascript_application_graph","completed":0,"total":1,"message":"Constructing application and Electron boundary relationships","sequence":8}}
+{"rea_progress":{"phase":"seal_javascript_application_graph","completed":0,"total":1,"message":"Sealing the validated application graph","sequence":9}}
+{"rea_progress":{"phase":"build_javascript_semantic_graph","completed":0,"total":1,"message":"Binding and validating static semantic relationships","sequence":10}}
+{"rea_progress":{"phase":"seal_javascript_semantic_graph","completed":0,"total":1,"message":"Validating and sealing the semantic graph","sequence":11}}
+{"rea_progress":{"phase":"validate_javascript_application_result","completed":0,"total":1,"message":"Validating result metadata and cross-graph bindings","sequence":12}}
+{"rea_progress":{"phase":"create_javascript_application_evidence","completed":0,"total":1,"message":"Creating and hashing application analysis Evidence","sequence":13}}
+{"rea_progress":{"phase":"seal_javascript_application_result","completed":0,"total":1,"message":"Sealing the complete application analysis result","sequence":14}}
+{"rea_progress":{"phase":"validate_javascript_application_evidence","completed":0,"total":1,"message":"Validating the immutable application Evidence JSON","sequence":15}}
+{"rea_progress":{"phase":"hash_javascript_application_evidence","completed":0,"total":1,"message":"Hashing the complete application analysis Evidence","sequence":16}}
+{"rea_progress":{"phase":"analyze_javascript_application","completed":1,"total":1,"message":"Application graph and Electron boundaries reconstructed","terminal":true,"sequence":17}}

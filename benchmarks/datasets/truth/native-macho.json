@@ -1,0 +1,20 @@
+{
+  "source": "Hand-written from native-hello/hello.c, built with `clang -O1 -o hello hello.c` on macOS arm64; verified with `nm -gU`, `nm -u`, `otool -L` and `otool -tV` (clang inlines checksum() and greet() into main, so main calls printf/strlen directly). checksum() is static and not exported. function/call/string facts require a deep provider (Hopper, Ghidra or IDA).",
+  "facts": [
+    "export:_main",
+    "export:_greet",
+    "export:__mh_execute_header",
+    "import:_printf",
+    "import:_strlen",
+    "dependency:/usr/lib/libSystem.B.dylib",
+    "arch:arm64",
+    "function:_greet",
+    "function:_main",
+    "call:_greet->_printf",
+    "call:_greet->_strlen",
+    "call:_main->_printf",
+    "call:_main->_strlen",
+    "string:Hello, %s! checksum=%u\\n",
+    "string:ERA"
+  ]
+}

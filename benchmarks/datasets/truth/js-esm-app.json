@@ -1,0 +1,13 @@
+{
+  "source": "Hand-written from benchmarks/datasets/esm-app sources (ES modules).",
+  "facts": [
+    "module:index.mjs", "module:lib/client.mjs", "module:lib/format.mjs",
+    "entry:index.mjs",
+    "import:index.mjs->lib/client.mjs", "import:index.mjs->lib/format.mjs",
+    "external:fs/promises", "external:events",
+    "export:index.mjs#main",
+    "export:lib/client.mjs#createClient", "export:lib/client.mjs#RETRY_LIMIT",
+    "export:lib/format.mjs#VERSION", "export:lib/format.mjs#formatReport", "export:lib/format.mjs#default",
+    "endpoint:wss://events.example.test/stream"
+  ]
+}

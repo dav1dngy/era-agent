@@ -1,0 +1,4 @@
+{"rea_progress":{"phase":"prepare","completed":0,"total":null,"message":"elapsed_ms=0 frames=0 samples=0 interactions=0","sequence":1}}
+{"rea_progress":{"phase":"running","completed":0,"total":null,"message":"elapsed_ms=2735 frames=0 samples=0 interactions=0","sequence":2}}
+{"rea_progress":{"phase":"settling","completed":1,"total":null,"message":"elapsed_ms=2889 frames=1 samples=0 interactions=0","sequence":3}}
+{"rea_progress":{"phase":"cleanup","completed":1,"total":null,"message":"elapsed_ms=3256 frames=1 samples=0 interactions=0 disposition=exited owned_process_group=cleaned terminal_renderer=cleaned temporary_root=cleaned","terminal":true,"sequence":4}}

@@ -1,0 +1,4 @@
+{
+  "source": "Hand-written: archive/js-app.zip was created with `zip -qr js-app.zip js-app` from the js-app fixture (without truth.json).",
+  "facts": ["member:js-app/package.json", "member:js-app/src/main.js", "member:js-app/src/config.js", "member:js-app/src/net.js"]
+}

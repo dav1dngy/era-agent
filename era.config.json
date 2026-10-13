@@ -1,0 +1,8 @@
+{
+  "stateDir": ".era",
+  "rea": { "command": null, "timeoutMs": 600000, "measureResources": true },
+  "analysis": { "maxDecompiledFunctions": 8 },
+  "limits": { "maxCycles": 3, "maxReaRunsPerCycle": 12, "commandTimeoutMs": 900000 },
+  "improvement": { "implementerCommand": null, "implementerTimeoutMs": 1800000 },
+  "benchmark": { "repetitions": 3 }
+}

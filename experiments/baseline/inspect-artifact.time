@@ -1,0 +1,1 @@
+rea inspect-artifact "$D/js-app.zip" --format json > inspect-artifact.json 2>  0.91s user 0.20s system 111% cpu 0.989 total

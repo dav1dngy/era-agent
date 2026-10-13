@@ -1,0 +1,34 @@
+{
+  "name": "era-agent",
+  "version": "0.1.0",
+  "description": "ERA is an AI-powered reverse-engineering agent that analyzes software, verifies its findings, and evolves its own implementation through controlled recursive self-improvement.",
+  "type": "module",
+  "bin": {
+    "era": "bin/era.mjs"
+  },
+  "files": [
+    "bin/",
+    "src/",
+    "era.config.json",
+    "README.md",
+    "LICENSE",
+    "NOTICE.md"
+  ],
+  "scripts": {
+    "test": "node --test tests/*.test.js",
+    "check": "node scripts/check.mjs"
+  },
+  "engines": {
+    "node": ">=22.19.0"
+  },
+  "dependencies": {
+    "rea-agents": "6.4.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dav1dngy/era-agent.git"
+  },
+  "keywords": ["reverse-engineering", "agent", "rea", "self-improvement", "mach-o", "javascript"],
+  "author": "dav1dngy",
+  "license": "MIT"
+}

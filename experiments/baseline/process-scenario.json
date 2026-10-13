@@ -1,0 +1,1 @@
+{"executable":"<era-repo>/benchmarks/datasets/native-hello/hello","arguments":["baseline"],"working_directory":"<era-repo>/experiments/baseline","timeout_ms":10000,"idle_timeout_ms":5000,"finalization_ms":500}

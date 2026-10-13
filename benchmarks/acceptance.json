@@ -1,0 +1,12 @@
+{
+  "description": "Predefined acceptance criteria for self-improvement cycles. Frozen in era-v1 before the first cycle; protected path (experiments cannot change it). maxTimeRegressionPct=30 because two identical era-v1 benchmark runs differed by 25.3% in total wall time (Hopper start-up variance); accuracy and memory were identical/within 0.5%.",
+  "requireAllTestsPass": true,
+  "maxAccuracyDrop": 0,
+  "maxErrorRateIncrease": 0,
+  "maxTimeRegressionPct": 30,
+  "maxMemoryRegressionPct": 20,
+  "minImprovement": {
+    "accuracy_f1": 0.01,
+    "startup_pct": 10
+  }
+}

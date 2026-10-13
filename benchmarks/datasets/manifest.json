@@ -1,0 +1,10 @@
+{
+  "description": "ERA benchmark datasets. Every target is an authored fixture; ground truth is hand-written from source, independent of REA output. Protected path: experiments may not modify this directory.",
+  "cases": [
+    { "id": "js-commonjs-app", "kind": "javascript-app", "target": "js-app", "truth": "truth/js-commonjs-app.json" },
+    { "id": "js-esm-app", "kind": "javascript-app", "target": "esm-app", "truth": "truth/js-esm-app.json" },
+    { "id": "native-macho", "kind": "mach-o", "target": "native-hello/hello", "truth": "truth/native-macho.json" },
+    { "id": "native-macho-runtime", "kind": "mach-o", "target": "native-hello/hello", "truth": "truth/native-macho-runtime.json", "runtime": true, "runtime_args": ["bench"] },
+    { "id": "zip-archive", "kind": "archive", "target": "archive/js-app.zip", "truth": "truth/zip-archive.json" }
+  ]
+}

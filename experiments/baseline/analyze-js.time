@@ -1,0 +1,1 @@
+rea analyze-javascript-application "$(cd $D/js-app && pwd)" --format json >    2.08s user 1.68s system 98% cpu 3.815 total

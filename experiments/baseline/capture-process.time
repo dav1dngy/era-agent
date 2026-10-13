@@ -1,0 +1,1 @@
+rea capture-process process-scenario.json --format json > capture-process.jso  1.79s user 2.07s system 96% cpu 4.017 total
