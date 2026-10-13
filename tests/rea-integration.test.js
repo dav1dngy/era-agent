@@ -49,3 +49,11 @@ test('REA self-analysis of this checkout covers every source module', { skip }, 
   assert.ok(self.runs.every((r) => r.status === 'succeeded'), JSON.stringify(self.runs.map((r) => r.errors)));
   assert.ok(self.metrics.startup_ms > 0);
 });
+
+test('era analyze stages a single JavaScript file for REA', { skip }, () => {
+  const r = runEra(['analyze', join(DATASETS, 'esm-app', 'lib', 'format.mjs'), '--json'], { env: { ERA_STATE_DIR: tempDir() } });
+  assert.equal(r.status, 0, r.stderr);
+  const a = JSON.parse(r.stdout);
+  assert.ok(a.target.staged_as);
+  assert.ok(a.facts.includes('export:format.mjs#formatReport'), a.facts.join());
+});

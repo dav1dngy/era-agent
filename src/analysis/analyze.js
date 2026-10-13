@@ -1,7 +1,7 @@
 // Analysis Orchestrator (Analysis Mode): classify a target, choose the REA
 // workflow, execute REA, extract facts and write a report.
-import { mkdirSync } from 'node:fs';
-import { join, resolve } from 'node:path';
+import { copyFileSync, mkdirSync } from 'node:fs';
+import { basename, join, resolve } from 'node:path';
 import { detectTarget } from './detect.js';
 import { extractFacts, groupFacts } from './facts.js';
 import { renderAnalysisReport } from './report.js';
@@ -67,7 +67,14 @@ export async function analyzeTarget(target, { rea, stateDir, runtime = false, ru
   const dir = join(stateDir, 'analyses', analysisId);
   mkdirSync(dir, { recursive: true });
   const scenarioPath = join(dir, 'process-scenario.json');
-  const steps = planWorkflow(detection.kind, path, { runtime, runtimeArgs, scenarioPath });
+  // REA's JavaScript analyzer accepts only a directory or .asar: stage single files.
+  let reaInput = path;
+  if (detection.kind === 'javascript-file') {
+    reaInput = join(dir, 'staged');
+    mkdirSync(reaInput, { recursive: true });
+    copyFileSync(path, join(reaInput, basename(path)));
+  }
+  const steps = planWorkflow(detection.kind, reaInput, { runtime, runtimeArgs, scenarioPath });
 
   const runs = [];
   const evidence = [];
@@ -76,7 +83,7 @@ export async function analyzeTarget(target, { rea, stateDir, runtime = false, ru
     if (step.scenario) {
       writeJson(scenarioPath, { ...step.scenario, working_directory: dir, timeout_ms: runtimeTimeoutMs, idle_timeout_ms: runtimeTimeoutMs, finalization_ms: 500 });
     }
-    const { record, result } = await rea.run(step.subcommand, step.args, { inputPath: path, label: step.label });
+    const { record, result } = await rea.run(step.subcommand, step.args, { inputPath: reaInput, label: step.label });
     runs.push(record);
     if (record.status === 'succeeded' && result) {
       evidence.push(summarizeEvidence(result));
@@ -99,7 +106,7 @@ export async function analyzeTarget(target, { rea, stateDir, runtime = false, ru
   const analysis = {
     analysis_id: analysisId,
     created_at: new Date().toISOString(),
-    target: { path, kind: detection.kind, detection: detection.reason },
+    target: { path, kind: detection.kind, detection: detection.reason, ...(reaInput !== path ? { staged_as: reaInput } : {}) },
     decompilation: detection.kind === 'mach-o' ? (decompile ? 'enabled' : 'skipped (no deep analysis provider available, or --no-decompile)') : 'not applicable',
     engine: runs[0]?.engine ?? null,
     status: runs.length > 0 && runs.every((r) => r.status === 'succeeded') ? 'succeeded' : runs.some((r) => r.status === 'succeeded') ? 'partial' : 'failed',

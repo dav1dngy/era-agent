@@ -1,0 +1,82 @@
+[
+  {
+    "run_id": "rea-20261013T103029-2a22f9",
+    "label": "self-analysis:static-graph-1/4",
+    "status": "succeeded",
+    "evidence_id": "ev_7d0a744f1460e79e884233f0c26431d7a2a62d49bf317506626cf635baf24900",
+    "output_bytes": 23950367,
+    "output_sha256": "930ebac61f7d18e3e79c2c7b50ed3512ba53a13e3cca41afcc1b015d8c9154b4"
+  },
+  {
+    "run_id": "rea-20261013T103037-3b8d0b",
+    "label": "self-analysis:static-graph-2/4",
+    "status": "succeeded",
+    "evidence_id": "ev_dc7d4fa7349624eee7491e79a971f3b06f00b390aedead19667f6afdc6596902",
+    "output_bytes": 23509148,
+    "output_sha256": "aaac13f9f71983b03caf3acc2a4b2f925e78a3b1eebd56e80fbacc5937c2ee34"
+  },
+  {
+    "run_id": "rea-20261013T103045-57bf39",
+    "label": "self-analysis:static-graph-3/4",
+    "status": "succeeded",
+    "evidence_id": "ev_50dc6e0c203eedb6aa330bbb23eddc4e459d0f6d9527baef83f9674fbcb50736",
+    "output_bytes": 24001125,
+    "output_sha256": "29e0c2f2cbde35527739b383744846aead8873387008ffd7ba78c28a35b17bf5"
+  },
+  {
+    "run_id": "rea-20261013T103051-1da19f",
+    "label": "self-analysis:static-graph-4/4",
+    "status": "succeeded",
+    "evidence_id": "ev_aa8fb5f3d1ca36c3f6385222dfd751678224f0dc40724ca9e1b5b7ee5e6c0c8c",
+    "output_bytes": 24342225,
+    "output_sha256": "3ce178264c223b37c61b9b837e36cff683def1dfc50be2167c71ad05faed397d"
+  },
+  {
+    "run_id": "rea-20261013T103057-a61764",
+    "label": "self-analysis:runtime-help",
+    "status": "succeeded",
+    "evidence_id": "ev_892bc9d89764aaee1dcf038b2d43d07c6a42a150b077748d48fdf001dfbfc792",
+    "output_bytes": 70990,
+    "output_sha256": "0a07b0ac8a276e79b5227558d0cfa4813f44dd14d7ab05fb43f78c2f90bf31ae"
+  },
+  {
+    "run_id": "rea-20261013T104238-719329",
+    "label": "self-analysis:static-graph-1/4",
+    "status": "succeeded",
+    "evidence_id": "ev_318759a0f9728ed646a85ef0201f57663c3b54ed9daa41390833a80fdf6aeb9e",
+    "output_bytes": 24471459,
+    "output_sha256": "43dbb1c21d2b8056009cf0c37b849600eee0fb68824a6962e26eb1a1943f99b3"
+  },
+  {
+    "run_id": "rea-20261013T104245-8a043b",
+    "label": "self-analysis:static-graph-2/4",
+    "status": "succeeded",
+    "evidence_id": "ev_2b89299e50b3df23febde1e86c6d20a9866ecda48cabc9eed940d7a273c06515",
+    "output_bytes": 24172783,
+    "output_sha256": "0ca8675839af906d98597eabb8ebaea02d7be713ed3c72fe62d3b57d1bcb948b"
+  },
+  {
+    "run_id": "rea-20261013T104250-04bf78",
+    "label": "self-analysis:static-graph-3/4",
+    "status": "succeeded",
+    "evidence_id": "ev_7f64b9af05a6a9575b0cd32fb8c028a9e1b0bf30d81ab1b8b258f33d4259faca",
+    "output_bytes": 24165517,
+    "output_sha256": "2a5252a2d5d96602a05b1c8c3ea367578d6e44e8febe8f2c128dabae34cddc1b"
+  },
+  {
+    "run_id": "rea-20261013T104256-9ae1f3",
+    "label": "self-analysis:static-graph-4/4",
+    "status": "succeeded",
+    "evidence_id": "ev_26915f6ddd96765575a3565756f8c3a3c59d474fab9cb897806748cc9c193fd9",
+    "output_bytes": 24358175,
+    "output_sha256": "198f874c33234cb182c1be5f3a011c7cee7e0e5ac9ffa8ba708a1ebd4eac2835"
+  },
+  {
+    "run_id": "rea-20261013T104301-6c7270",
+    "label": "self-analysis:runtime-help",
+    "status": "succeeded",
+    "evidence_id": "ev_8cac22f444c5305ccfa5c2a98e0e4e7cadec170e099b1198c98e90e70f8a9594",
+    "output_bytes": 71228,
+    "output_sha256": "a25f911ecb1fdf1f007bff4b7e1dc6e287e5e56bfbafebd66fd7134b3740fc73"
+  }
+]

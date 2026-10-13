@@ -1,0 +1,34 @@
+[
+  {
+    "run_id": "rea-20261013T095937-0407b3",
+    "label": "self-analysis:static-graph",
+    "status": "succeeded",
+    "evidence_id": "ev_ad9398b7a587eca9a8651ad2cedb51c74e9d689b1f4dd36be70c7bcdabeaa550",
+    "output_bytes": 24357593,
+    "output_sha256": "0151a15a05f6874648b3d0828911c32e2f7385e7fa9b4b1797b8d9d8c9f50836"
+  },
+  {
+    "run_id": "rea-20261013T095945-24f835",
+    "label": "self-analysis:runtime-help",
+    "status": "succeeded",
+    "evidence_id": "ev_49c011b48af845ab959d94fdfb82bbb60603f0a4cc504330f23138a0ea5ee918",
+    "output_bytes": 100777,
+    "output_sha256": "503533887aa1056ea055edf6d1d5dafd13a544d5af24fb5c13dc93167ecfcdf3"
+  },
+  {
+    "run_id": "rea-20261013T101051-62b8f0",
+    "label": "self-analysis:static-graph",
+    "status": "succeeded",
+    "evidence_id": "ev_60973c1a05a3c2b4dd1e86a7b6bab0bf98844a8cc4c41f83f595d46232b2deb2",
+    "output_bytes": 24526134,
+    "output_sha256": "7ac65ddcf980264c3a4cc1e3c82356d0bba0407e55bb020b2ce16f79f0800b41"
+  },
+  {
+    "run_id": "rea-20261013T101100-5d9996",
+    "label": "self-analysis:runtime-help",
+    "status": "succeeded",
+    "evidence_id": "ev_1e4ea9c08fe402811093e4d3ab93c6f7f2d9447d2a30ffd6870b35b65002cae8",
+    "output_bytes": 100777,
+    "output_sha256": "cfc16ec84c1f04c670f823786c243a3658e9db774e2a1ed04abaa14d041bf06c"
+  }
+]

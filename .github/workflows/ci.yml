@@ -1,0 +1,67 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    name: Code quality and dependency validation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Syntax check and secret scan
+        run: node scripts/check.mjs
+      - name: Dependency tree is consistent with the lockfile
+        run: npm ls --omit=dev
+      - name: Registry signatures
+        run: npm audit signatures
+      - name: Known vulnerabilities (critical only blocks)
+        run: npm audit --omit=dev --audit-level=critical
+
+  unit-linux:
+    name: Unit tests (Linux, REA integration skipped)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm test
+        env:
+          ERA_SKIP_REA: '1'
+
+  test-macos:
+    name: Tests + REA smoke test (macOS)
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: REA engine status
+        run: node bin/era.mjs status
+      - name: Unit and REA integration tests
+        run: npm test
+      - name: REA smoke test (JavaScript application)
+        run: node bin/era.mjs analyze benchmarks/datasets/js-app --json | node -e "const a=JSON.parse(require('fs').readFileSync(0,'utf8')); if(a.status!=='succeeded'||!a.facts.includes('import:src/main.js->src/net.js')) process.exit(1); console.log(a.runs.map(r=>r.command.slice(1,2)+' '+r.status).join('\n'))"
+      - name: REA smoke test (Mach-O)
+        run: node bin/era.mjs analyze benchmarks/datasets/native-hello/hello --no-decompile --json | node -e "const a=JSON.parse(require('fs').readFileSync(0,'utf8')); if(!a.facts.includes('export:_greet')) process.exit(1); console.log('ok')"
+      - name: Self-improvement is refused in CI
+        run: |
+          if node bin/era.mjs improve propose; then echo "improve must refuse in CI"; exit 1; fi

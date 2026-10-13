@@ -1,0 +1,45 @@
+{
+  "run_id": "rea-20261013T103045-57bf39",
+  "label": "self-analysis:static-graph-3/4",
+  "started_at": "2026-10-13T10:30:45.382Z",
+  "duration_ms": 5872,
+  "command": [
+    "rea",
+    "analyze-javascript-application",
+    "<era-repo>/.era/self-analyses/self-20261013T103029-a610cc/work/passes/pass-3",
+    "--format",
+    "json"
+  ],
+  "command_source": "config",
+  "engine": {
+    "package": "rea-agents",
+    "version": "6.4.0"
+  },
+  "input": {
+    "path": "<era-repo>/.era/self-analyses/self-20261013T103029-a610cc/work/passes/pass-3",
+    "kind": "directory",
+    "bytes": null,
+    "sha256": "6cebbee34359a6bed9d391bffb61141570035def00446a5dcd10ea4f0f6ad14f"
+  },
+  "status": "succeeded",
+  "exit_code": 0,
+  "signal": null,
+  "evidence_id": "ev_50dc6e0c203eedb6aa330bbb23eddc4e459d0f6d9527baef83f9674fbcb50736",
+  "operation": "analyze_javascript_application",
+  "provider": {
+    "id": "rea-javascript-application",
+    "name": "REA JavaScript application analyzer",
+    "version": "1"
+  },
+  "output_file": "<era-repo>/.era/runs/rea-20261013T103045-57bf39/output.json",
+  "output_bytes": 24001125,
+  "progress_events": 50,
+  "warnings": [],
+  "errors": [],
+  "resources": {
+    "real_s": 5.86,
+    "user_s": 6.43,
+    "sys_s": 0.68,
+    "max_rss_bytes": 513818624
+  }
+}

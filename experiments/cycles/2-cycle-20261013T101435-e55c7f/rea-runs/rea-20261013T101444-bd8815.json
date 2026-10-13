@@ -1,0 +1,45 @@
+{
+  "run_id": "rea-20261013T101444-bd8815",
+  "label": "self-analysis:runtime-help",
+  "started_at": "2026-10-13T10:14:44.245Z",
+  "duration_ms": 4769,
+  "command": [
+    "rea",
+    "capture-process",
+    "<era-repo>/.era/self-analyses/self-20261013T101435-2d3119/help-scenario.json",
+    "--format",
+    "json"
+  ],
+  "command_source": "config",
+  "engine": {
+    "package": "rea-agents",
+    "version": "6.4.0"
+  },
+  "input": {
+    "path": "<era-repo>/.era/self-analyses/self-20261013T101435-2d3119/work/artifact/package/bin/era.mjs",
+    "kind": "file",
+    "bytes": 135,
+    "sha256": "e0c335a6ff9614fbfcc717263b95dc98b95b0bd28efe3310ead6a6bcfb27b81f"
+  },
+  "status": "succeeded",
+  "exit_code": 0,
+  "signal": null,
+  "evidence_id": "ev_964f5b4cb8a9da1dbc51cfebdad4427d3a39d9b5a67f49b177e4ef7ce426dde6",
+  "operation": "capture_process_scenario",
+  "provider": {
+    "id": "rea-process",
+    "name": "REA process capture",
+    "version": "3"
+  },
+  "output_file": "<era-repo>/.era/runs/rea-20261013T101444-bd8815/output.json",
+  "output_bytes": 101086,
+  "progress_events": 4,
+  "warnings": [],
+  "errors": [],
+  "resources": {
+    "real_s": 4.76,
+    "user_s": 2.37,
+    "sys_s": 2.39,
+    "max_rss_bytes": 413827072
+  }
+}

@@ -1,0 +1,58 @@
+[
+  {
+    "run_id": "rea-20261013T101435-db61a1",
+    "label": "self-analysis:static-graph",
+    "status": "succeeded",
+    "evidence_id": "ev_10c3a6f81fdfada59b165b45c32d3007713339652b34cb6fd7b6b365f68e2ec2",
+    "output_bytes": 24437663,
+    "output_sha256": "962764f8ef9635339d0ab0194fd8a9b27e2604700b4891fe761dd48a131fee9f"
+  },
+  {
+    "run_id": "rea-20261013T101444-bd8815",
+    "label": "self-analysis:runtime-help",
+    "status": "succeeded",
+    "evidence_id": "ev_964f5b4cb8a9da1dbc51cfebdad4427d3a39d9b5a67f49b177e4ef7ce426dde6",
+    "output_bytes": 101086,
+    "output_sha256": "0361b75a70654dabb2860529fb9b77188b55cbae7a6f110df48cb110baa6de1c"
+  },
+  {
+    "run_id": "rea-20261013T102937-373f42",
+    "label": "self-analysis:static-graph-1/4",
+    "status": "succeeded",
+    "evidence_id": "ev_2be9663ebd314fe980544b3c0debe771f5a73419ef0cea2a6f478e78c8bfea39",
+    "output_bytes": 23950367,
+    "output_sha256": "0999fc2f4ebf255d2920511ee764e3dd6a0e4e0102d2d300fda713dffa277d21"
+  },
+  {
+    "run_id": "rea-20261013T102946-db1846",
+    "label": "self-analysis:static-graph-2/4",
+    "status": "succeeded",
+    "evidence_id": "ev_07237b23aa2d418d6494aa48afe5646a911430864228282d544c41895de6de42",
+    "output_bytes": 23509148,
+    "output_sha256": "5d66d1810ccb9c471f1e052ddaecd7adf5487737a811400ef35ec5631274fa93"
+  },
+  {
+    "run_id": "rea-20261013T102954-882278",
+    "label": "self-analysis:static-graph-3/4",
+    "status": "succeeded",
+    "evidence_id": "ev_0f34117bf6809e572549ae11abe54099291a90cd08ac3d64bd4fad7e9734551c",
+    "output_bytes": 24001125,
+    "output_sha256": "34e970201a46dd535b757368654af0b71899a2605ff45ba937473cde18812eae"
+  },
+  {
+    "run_id": "rea-20261013T103002-96e4cd",
+    "label": "self-analysis:static-graph-4/4",
+    "status": "succeeded",
+    "evidence_id": "ev_e2dd01446c7bc875cdcf23fddc6b88a01839fd605eaf38356970fec25b56b0bf",
+    "output_bytes": 24342225,
+    "output_sha256": "e852d00df1659fb4ba8509b7daf687e783bebe99d9c46b1d827c05a659a8b476"
+  },
+  {
+    "run_id": "rea-20261013T103010-a0ce5e",
+    "label": "self-analysis:runtime-help",
+    "status": "succeeded",
+    "evidence_id": "ev_8635111a2522e23f58d4f0c2c550b6b942fdace1a96d5f6c930a951bc4423890",
+    "output_bytes": 70990,
+    "output_sha256": "15f666821ed3ee9c105e3e8c76a076fe0a8b5ed1a166acdd705f563cdafda0df"
+  }
+]

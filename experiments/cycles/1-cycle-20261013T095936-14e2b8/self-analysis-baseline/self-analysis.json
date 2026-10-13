@@ -1,0 +1,195 @@
+{
+  "self_analysis_id": "self-20261013T095936-cdf446",
+  "created_at": "2026-10-13T09:59:47.871Z",
+  "era_root": "<era-repo>",
+  "artifact": {
+    "tarball_sha256": "bff60ffa0c07e2249483bf67851376a65d54c44506276f5b8fffe9e93b75f953",
+    "packaged_files": 29,
+    "analyzed_dir": "<era-repo>/.era/self-analyses/self-20261013T095936-cdf446/work/artifact/package"
+  },
+  "runs": [
+    {
+      "run_id": "rea-20261013T095937-0407b3",
+      "label": "self-analysis:static-graph",
+      "started_at": "2026-10-13T09:59:37.086Z",
+      "duration_ms": 7367,
+      "command": [
+        "rea",
+        "analyze-javascript-application",
+        "<era-repo>/.era/self-analyses/self-20261013T095936-cdf446/work/artifact/package",
+        "--format",
+        "json"
+      ],
+      "command_source": "config",
+      "engine": {
+        "package": "rea-agents",
+        "version": "6.4.0"
+      },
+      "input": {
+        "path": "<era-repo>/.era/self-analyses/self-20261013T095936-cdf446/work/artifact/package",
+        "kind": "directory",
+        "bytes": null,
+        "sha256": "5d61c0e2bc159fcf77155e885a283c38dc22c0dbfa3e612a3fa4cc6b2282e875"
+      },
+      "status": "succeeded",
+      "exit_code": 0,
+      "signal": null,
+      "evidence_id": "ev_ad9398b7a587eca9a8651ad2cedb51c74e9d689b1f4dd36be70c7bcdabeaa550",
+      "operation": "analyze_javascript_application",
+      "provider": {
+        "id": "rea-javascript-application",
+        "name": "REA JavaScript application analyzer",
+        "version": "1"
+      },
+      "output_file": "<era-repo>/.era/runs/rea-20261013T095937-0407b3/output.json",
+      "output_bytes": 24357593,
+      "progress_events": 56,
+      "warnings": [],
+      "errors": [],
+      "resources": {
+        "real_s": 7.36,
+        "user_s": 6.42,
+        "sys_s": 1.77,
+        "max_rss_bytes": 489472000
+      }
+    },
+    {
+      "run_id": "rea-20261013T095945-24f835",
+      "label": "self-analysis:runtime-help",
+      "started_at": "2026-10-13T09:59:45.436Z",
+      "duration_ms": 2423,
+      "command": [
+        "rea",
+        "capture-process",
+        "<era-repo>/.era/self-analyses/self-20261013T095936-cdf446/help-scenario.json",
+        "--format",
+        "json"
+      ],
+      "command_source": "config",
+      "engine": {
+        "package": "rea-agents",
+        "version": "6.4.0"
+      },
+      "input": {
+        "path": "<era-repo>/.era/self-analyses/self-20261013T095936-cdf446/work/artifact/package/bin/era.mjs",
+        "kind": "file",
+        "bytes": 135,
+        "sha256": "e0c335a6ff9614fbfcc717263b95dc98b95b0bd28efe3310ead6a6bcfb27b81f"
+      },
+      "status": "succeeded",
+      "exit_code": 0,
+      "signal": null,
+      "evidence_id": "ev_49c011b48af845ab959d94fdfb82bbb60603f0a4cc504330f23138a0ea5ee918",
+      "operation": "capture_process_scenario",
+      "provider": {
+        "id": "rea-process",
+        "name": "REA process capture",
+        "version": "3"
+      },
+      "output_file": "<era-repo>/.era/runs/rea-20261013T095945-24f835/output.json",
+      "output_bytes": 100777,
+      "progress_events": 4,
+      "warnings": [],
+      "errors": [],
+      "resources": {
+        "real_s": 2.42,
+        "user_s": 2.33,
+        "sys_s": 0.91,
+        "max_rss_bytes": 423329792
+      }
+    }
+  ],
+  "metrics": {
+    "modules": 33,
+    "parsed_files": 36,
+    "semantic_unknowns": 4582,
+    "startup_ms": 265,
+    "findings": 7
+  },
+  "findings": [
+    {
+      "id": "F-1026e8ec5f",
+      "rule": "incomplete-analysis-coverage",
+      "area": "analysis-accuracy",
+      "priority": 1,
+      "subject": "tests/self-analysis.test.js",
+      "title": "REA analysis of tests/self-analysis.test.js is incomplete (resource_constraint)",
+      "detail": "REA reported resource_constraint for tests/self-analysis.test.js; its relationships are unavailable, so absence-based self-analysis rules are suppressed for this artifact.",
+      "evidence_ids": [
+        "ev_ad9398b7a587eca9a8651ad2cedb51c74e9d689b1f4dd36be70c7bcdabeaa550"
+      ]
+    },
+    {
+      "id": "F-38486245a3",
+      "rule": "incomplete-analysis-coverage",
+      "area": "analysis-accuracy",
+      "priority": 1,
+      "subject": "tests/evaluation.test.js",
+      "title": "REA analysis of tests/evaluation.test.js is incomplete (resource_constraint)",
+      "detail": "REA reported resource_constraint for tests/evaluation.test.js; its relationships are unavailable, so absence-based self-analysis rules are suppressed for this artifact.",
+      "evidence_ids": [
+        "ev_ad9398b7a587eca9a8651ad2cedb51c74e9d689b1f4dd36be70c7bcdabeaa550"
+      ]
+    },
+    {
+      "id": "F-39443e22ae",
+      "rule": "incomplete-analysis-coverage",
+      "area": "analysis-accuracy",
+      "priority": 1,
+      "subject": "tests/rea-client.test.js",
+      "title": "REA analysis of tests/rea-client.test.js is incomplete (resource_constraint)",
+      "detail": "REA reported resource_constraint for tests/rea-client.test.js; its relationships are unavailable, so absence-based self-analysis rules are suppressed for this artifact.",
+      "evidence_ids": [
+        "ev_ad9398b7a587eca9a8651ad2cedb51c74e9d689b1f4dd36be70c7bcdabeaa550"
+      ]
+    },
+    {
+      "id": "F-46215977a2",
+      "rule": "incomplete-analysis-coverage",
+      "area": "analysis-accuracy",
+      "priority": 1,
+      "subject": "tests/safety.test.js",
+      "title": "REA analysis of tests/safety.test.js is incomplete (resource_constraint)",
+      "detail": "REA reported resource_constraint for tests/safety.test.js; its relationships are unavailable, so absence-based self-analysis rules are suppressed for this artifact.",
+      "evidence_ids": [
+        "ev_ad9398b7a587eca9a8651ad2cedb51c74e9d689b1f4dd36be70c7bcdabeaa550"
+      ]
+    },
+    {
+      "id": "F-92f014e1a8",
+      "rule": "incomplete-analysis-coverage",
+      "area": "analysis-accuracy",
+      "priority": 1,
+      "subject": "tests/rea-integration.test.js",
+      "title": "REA analysis of tests/rea-integration.test.js is incomplete (resource_constraint)",
+      "detail": "REA reported resource_constraint for tests/rea-integration.test.js; its relationships are unavailable, so absence-based self-analysis rules are suppressed for this artifact.",
+      "evidence_ids": [
+        "ev_ad9398b7a587eca9a8651ad2cedb51c74e9d689b1f4dd36be70c7bcdabeaa550"
+      ]
+    },
+    {
+      "id": "F-1acab0d81c",
+      "rule": "high-fan-out",
+      "area": "orchestration",
+      "priority": 5,
+      "subject": "src/cli.js",
+      "title": "High local fan-out in src/cli.js (13 modules)",
+      "detail": "src/cli.js statically imports 13 local modules (threshold 8); every invocation loads all of them.",
+      "evidence_ids": [
+        "ev_ad9398b7a587eca9a8651ad2cedb51c74e9d689b1f4dd36be70c7bcdabeaa550"
+      ]
+    },
+    {
+      "id": "F-9658ff6752",
+      "rule": "high-fan-out",
+      "area": "orchestration",
+      "priority": 5,
+      "subject": "src/orchestration/cycle.js",
+      "title": "High local fan-out in src/orchestration/cycle.js (11 modules)",
+      "detail": "src/orchestration/cycle.js statically imports 11 local modules (threshold 8); every invocation loads all of them.",
+      "evidence_ids": [
+        "ev_ad9398b7a587eca9a8651ad2cedb51c74e9d689b1f4dd36be70c7bcdabeaa550"
+      ]
+    }
+  ]
+}
