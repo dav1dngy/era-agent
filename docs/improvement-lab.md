@@ -33,11 +33,12 @@ era improve implement <cycle> --agent claude-code|codex|command     (or edit man
   7. the agent runs with cwd = worktree; its changes are committed on the experiment branch
 
 era improve evaluate <cycle>          (stable checkout; never merges)
-  8. tests: baseline and candidate
-  9. benchmarks: baseline and candidate code, same datasets/evaluator/REA, N repetitions
- 10. REA self-analysis of the candidate (candidate pipeline, stable rules, coverage check)
- 11. decision against benchmarks/acceptance.json (frozen; protected)
- 12. → rejected (main untouched, branch kept) or awaiting-approval
+  8. candidate identity recorded (commit, tree, patch digest); protected-path changes rejected unexecuted
+  9. tests: baseline and candidate, sandboxed under identical conditions
+ 10. benchmarks: supervisor runs REA once per case/repetition; each version extracts facts (sandboxed, no ground truth)
+ 11. supervised REA self-analysis of baseline and candidate (validated plans, stable rules, coverage)
+ 12. decision against benchmarks/acceptance.json: invalid measurements → inconclusive;
+     baseline-passing tests must still pass; → rejected (main untouched, branch kept) or awaiting-approval
      + change.patch and report.md (the reviewable change proposal)
 
 era improve show <cycle>              review
@@ -65,14 +66,27 @@ era rollback <era-vN>                 14. restore any earlier version as a new c
 | Stable-branch protection | no merge without `era improve approve`; approval needs a TTY confirmation or `--yes`, is refused in CI, and requires main to still be at the evaluated base |
 | Audit trail | `.era/ledger.jsonl` (proposals, agent runs with cost, decisions, approvals, interruptions, recoveries, rollbacks) and `.era/logs/*.jsonl` |
 
-## Isolation, honestly
+## Isolation and evidence ownership
 
-A git worktree isolates **code changes**. It is not a security sandbox. Coding
-agents run with your user permissions inside the worktree, limited by their own
-mechanisms (Claude Code `--permission-mode acceptEdits`, Codex
-`-s workspace-write`). Untrusted **analyzed executables** run under the macOS
-sandbox (`era analyze --runtime`): no network, writes only to a scratch
-directory.
+A git worktree isolates **code changes**. It is not a security sandbox.
+
+* **Evaluation:** the stable supervisor runs every REA execution. Candidate
+  code (tests, `era extract`, `era self-analyze --plan`, `era --help`) runs only
+  under a sandbox-exec profile: no network, writes only to the candidate
+  checkout and private temp, no reads of ERA state, ground truth or credential
+  stores, and an environment without secret-looking variables. The baseline
+  runs under identical conditions; tests that need REA, a nested sandbox or the
+  end-to-end Lab are skipped on both sides. Without a sandbox, evaluation
+  refuses unless `--trust-candidate`.
+* **Self-analysis:** the candidate contributes only a plan. The supervisor
+  checks that every file is analyzed exactly once with its committed bytes.
+* **Approval** merges exactly the evaluated commit (commit, tree and patch
+  digest re-checked).
+* **Coding agents** run with your user permissions inside the worktree,
+  limited only by their own mechanisms (Claude Code `acceptEdits`, Codex
+  `-s workspace-write`).
+* **Analyzed executables** run under the runtime sandbox
+  (`era analyze --runtime`).
 
 ## Self-analysis approach and limits
 

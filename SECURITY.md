@@ -23,13 +23,22 @@ OWASP guidance for agentic AI applications, least privilege and defense in depth
 | Network | ERA itself makes no network calls. REA's static analysis is offline. Remote reasoning providers need `reasoning.allowRemote: true` **and** `--allow-remote` per call. Coding agents use their own network access (they are cloud agents) |
 | Secrets | ERA needs no credentials. Logs, and text sent to reasoning providers, are redacted (token, key and private-key patterns; sensitive keys). `node scripts/check.mjs` scans tracked files |
 | Resource consumption | Timeouts on every subprocess. Process-group kill. A watchdog that ends any subprocess that outlives its deadline or its parent. Hard caps: 10 cycles, 50 REA self-analysis runs per cycle, $50 per cycle and $200 total agent spend, one experiment at a time |
+| Improvement Lab candidates | Treated as untrusted. The stable supervisor runs REA and owns the evidence. Candidate tests, extraction, planning and CLI run in a sandbox (no network, no writes outside its checkout/temp, no reads of ERA state, ground truth or credential stores, scrubbed environment). Protected-path changes are rejected before execution. Approval merges only the evaluated commit. No sandbox → refused unless `--trust-candidate` |
 | Sensitive operations | Integration into `main` requires `era improve approve` (TTY confirmation or `--yes`), is refused in CI, and requires main to be at the evaluated base. No force-push. No automatic publishing or deployment |
 | Supply chain | Single runtime dependency (`rea-agents`, pinned) plus lockfile. `npm audit` and `npm audit signatures` in CI. SHA-pinned GitHub Actions with read-only default permissions. CodeQL. CycloneDX SBOM and build provenance in the release-validation workflow |
 
 ## Known limitations
 
-* `sandbox-exec` is deprecated by Apple (still functional on macOS 27). The profile
-  allows reads anywhere the user can read.
+* `sandbox-exec` is deprecated by Apple (still functional on macOS 27). The runtime
+  profile allows reads anywhere the user can read: it is not a confidentiality
+  sandbox. REA itself runs unsandboxed as trusted code.
+* `era rea …` passthrough has none of ERA's protections (sandbox, watchdog,
+  records, redaction).
+* Process groups do not contain deliberately detached descendants or GUI
+  providers launched by REA (Hopper).
+* An independent audit (docs/ERA_INDEPENDENT_AUDIT.md) found 5 high and 9 medium
+  issues. Their remediation (docs/audit-remediation.md) has not yet been
+  re-reviewed independently.
 * Coding agents run with your user permissions inside the worktree, restricted
   only by their own mechanisms (Claude Code `acceptEdits`, Codex
   `workspace-write`). Review every change proposal before approving it.

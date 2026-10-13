@@ -6,7 +6,7 @@ explicit.
 
 | # | Requirement | Status | Evidence |
 |---|---|---|---|
-| 1 | Actual REA execution | ✅ | `experiments/baseline/` (unedited REA output), run records under `experiments/cycles/*/rea-runs/`, `tests/rea-integration.test.js` |
+| 1 | Actual REA execution | ✅ | `experiments/baseline/` (REA output, paths anonymized), run records under `experiments/cycles/*/rea-runs/`, `tests/rea-integration.test.js` |
 | 2 | Normal Analysis Mode | ✅ | `era analyze` on JS directory, single JS file, Mach-O (+ Hopper decompilation), ZIP, sandboxed runtime; integration tests and `examples/sample-analysis-report.md` |
 | 3 | CLI and MCP compatibility | ✅ | `era rea` passthrough yields identical Evidence IDs; real JSON-RPC session (`initialize`, `tools/list`, `tools/call`) and `era rea mcp doctor` in `tests/mcp.test.js`; CLI contract tests in `tests/cli.test.js` |
 | 4 | At least one genuine Improvement Lab experiment | ✅ | 4 real experiments with REA self-analysis (`experiments/cycles/1-4`); experiment 4 under the round-2 rules, awaiting approval |

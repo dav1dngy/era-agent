@@ -81,7 +81,7 @@ npm link             # optional: `era` on PATH
 era status
 ```
 
-Requirements: Node.js `^22.19 || ^24.11 || >=26` (REA's supported range; verified on 24.20), git. Native decompilation needs Hopper, Ghidra
+Requirements: Node.js `^22.19 || ^24.11 || >=26` (REA's supported range; verified on 24.20 only), git. Native decompilation needs Hopper, Ghidra
 12.1.x (`GHIDRA_INSTALL_DIR`) or IDA Pro MCP. ERA needs no API keys. Details and
 troubleshooting: [docs/installation.md](docs/installation.md).
 
@@ -127,6 +127,15 @@ era rollback era-v2                       # restore any version as a new commit
 era agents                                # coding agents, reasoning providers, REA
 ```
 
+**Trust model (since the independent audit).** The stable supervisor runs every
+REA execution used to judge a candidate. Candidate code (its tests, its fact
+extraction, its self-analysis plan, its CLI) runs only inside a macOS sandbox:
+no network, writes only to its own checkout and private temp, no reads of
+ground truth, ERA's state or credential stores, and no secret environment
+variables. Approval merges exactly the evaluated commit. Without a sandbox,
+evaluation refuses unless `--trust-candidate`. See
+[docs/audit-remediation.md](docs/audit-remediation.md).
+
 Controls: iteration, time, REA-run and API-cost limits with hard caps. One
 experiment at a time. Cancellation kills the whole process tree. A watchdog
 ensures no subprocess outlives its deadline or its parent. A protected
@@ -143,7 +152,7 @@ description: [docs/improvement-lab.md](docs/improvement-lab.md).
 | 3 | Retry #1 on era-v2 | F1 0.956 → 0.987, findings 6 → 5 | accepted → era-v3 |
 | 4 | Byte-bounded REA passes with import placeholders (campaign 2) | findings 26 → 7, complete REA coverage | first evaluation passed; **rejected** on re-evaluation (a Hopper-flaky test); retried as #5 |
 
-Cycles 1–3 ran before the approval gate existed and were merged automatically.
+Cycles 2 and 3 ran before the approval gate existed and were merged automatically; cycle 1 was rejected. Cycles 1–5 were evaluated by the pre-audit evaluator: candidate code ran unsandboxed and self-analysis evidence came from the candidate's own pipeline. The independent audit re-checked the recorded raw outputs (49/49 digests match; cycle 5's findings reproduce), but those evaluations predate the supervisor/sandbox model below. Cycle 5's "104 → 107 tests" means the baseline had 1 failing test (REA coverage) that the candidate fixed.
 | 5 | Retry of #4 after the flaky test fix | findings 27 → 9, tests 104 → 107 (0 failed), accuracy unchanged | accepted, **approved by the maintainer → era-v4** |
 
 Every record (cycle JSON, REA run records with output digests, self-analysis
@@ -182,9 +191,10 @@ native cases, but CPU time is flat. Accuracy is deterministic.
 | native-macho-runtime | 25,014 | 22,339 | −2,675 ms (Hopper noise) |
 | zip-archive | 713 | 2,371 | +1,658 ms |
 
-ERA adds a fixed ~1.7 s per analysis. Most of it is the `rea providers` probe
-that `era analyze` runs before every target, even when no decompilation is
-needed. That is an open performance finding. ERA is **not** faster than REA;
+ERA added a fixed ~1.7 s per analysis in this run, mostly the `rea providers`
+probe. Since the audit remediation the probe runs only for Mach-O targets
+(a quick, informal measurement on the ZIP fixture: ~2.37 s → ~1.45 s; the table has not
+been re-measured). ERA is **not** faster than REA;
 the negative native figures are run-to-run Hopper variance.
 
 Methodology: [docs/benchmark-methodology.md](docs/benchmark-methodology.md).
@@ -207,7 +217,7 @@ See [SECURITY.md](SECURITY.md).
 
 ## Limitations
 
-* **Experimental.** Four improvement experiments so far. The real coding agent
+* **Experimental.** Five improvement experiments so far. The real coding agent
   used was Claude Code working interactively (`manual`). The `claude-code` and
   `codex` adapters are tested only against fake CLIs.
 * Native analysis covers Mach-O only. Hopper's public API exposes no complete
@@ -216,7 +226,19 @@ See [SECURITY.md](SECURITY.md).
   self-analysis around it); no retained call-argument string literals; CommonJS
   member exports are reported as `default` (ERA infers member names and marks
   them as inferred).
-* `sandbox-exec` is deprecated by Apple but functional. There is no sandbox on Linux.
+* `sandbox-exec` is deprecated by Apple but functional. It denies network and
+  writes but **allows reads** outside explicitly denied paths. It is not a
+  confidentiality sandbox: analyze hostile binaries on an isolated host.
+  There is no sandbox on Linux, so Lab evaluation fails closed there.
+* `era rea …` passthrough runs REA directly: no ERA run records, sandbox,
+  watchdog or redaction. Process-group containment does not cover deliberately
+  detached descendants or GUI providers such as Hopper.
+* Lab benchmarks evaluate ERA's interpretation of supervisor-run REA Evidence.
+  The candidate cannot read ground truth, but its extraction code produces the
+  facts. Review the patch.
+* Raw REA evidence stays private (`.era/runs/`; 198 MB for cycle 5 alone).
+  Published exports carry its SHA-256 digests, and anonymized files keep the
+  original Evidence IDs.
 * Benchmarks use five small authored fixtures; scores are not representative of
   arbitrary software. No type checking (JSDoc/TypeScript) yet.
 * ERA does not modify, retrain or fine-tune any foundation model.

@@ -4,9 +4,15 @@ Date: 2026-10-13. Stable version: **era-v4** (`b3f6c24`) plus documentation and
 evidence commits on `main`. Host: macOS 27.0.1 arm64, Node 24.20.0, REA
 (`rea-agents`) 6.4.0, Hopper 6.6.0-demo.
 
-**Verdict: not yet releasable.** One blocker remains: the independent code
-review (section 8). Everything else in this report has been verified on this
-host. Nothing has been pushed or published.
+**Update after the independent audit.** The audit
+([ERA_INDEPENDENT_AUDIT.md](ERA_INDEPENDENT_AUDIT.md), revision `5ce907f`) found
+5 high and 9 medium issues and judged the release NOT READY. All P0 and P1
+findings have been remediated or explicitly scoped
+([audit-remediation.md](audit-remediation.md)). Sections 1–7 below describe the
+pre-audit state where not superseded by that document.
+
+**Verdict: not yet releasable.** Remaining blockers are listed in section 8.
+Nothing has been pushed or published.
 
 ## 1. Implemented functionality
 
@@ -124,8 +130,14 @@ records the digest of each raw output kept locally in `.era/runs/`.
 
 | Blocker | Owner |
 |---|---|
-| **Independent code review** of the release candidate (required before release). Not performed: the author of this code cannot review it independently | maintainer / an independent reviewer (for example `/code-review ultra` or a human reviewer) |
+| **Independent re-review** of the corrected trust boundaries (F01–F05) and the exact release commit. The audit remediation was done by the ERA author | maintainer / an independent reviewer |
+| **Supported-platform CI**: the Linux job and the release-validation workflow have not run (no GitHub repository yet). F10/F11 fixes are verified only locally | maintainer, after creating the repository |
 | Maintainer approval to create `dav1dngy/era-agent`, push, and create the v0.1.0 release | maintainer |
+
+Not blockers, but scoped limitations to keep in the release notes: headless
+coding agents verified only against fakes; benchmark facts produced by
+candidate extraction code (no ground-truth access); raw evidence private;
+no confidentiality sandbox; no Linux isolation (fail-closed).
 
 Recommended after publication: confirm the CI workflows pass on GitHub before
 creating the release.

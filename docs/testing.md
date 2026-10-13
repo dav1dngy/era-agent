@@ -33,6 +33,7 @@ as real REA executions.
 | `sandbox.test.js` | sandbox-exec, **real REA** | probe binary: scratch writes allowed, outside writes and network denied, including through `era analyze --runtime` |
 | `rea-integration.test.js` | **real REA** | passthrough equivalence, JS/Mach-O analysis, single files, REA self-analysis coverage |
 | `mcp.test.js` | **real REA MCP server** | JSON-RPC `initialize`, `tools/list`, `tools/call analyze_javascript_application` through `era rea mcp`; `era rea mcp doctor` |
+| `candidate-isolation.test.js` | sandbox-exec, **fake engine** | hostile candidate (outside write, local TCP, protected read, secret env) denied; forged or incomplete self-analysis plans invalid; failed candidate commands not trusted; fail-closed isolation (protected test) |
 | `e2e-lab.test.js` | `fixtures/fake-rea-engine.mjs` (**fake engine**) on a repository copy | Improvement Lab end to end: awaiting-approval → approve → tag → rollback; protected-path rejection; SIGINT interruption; SIGKILL crash + `era improve recover` |
 
 Real-REA tests skip automatically when `rea` cannot be started.

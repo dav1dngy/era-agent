@@ -1,7 +1,7 @@
 # Baseline: original REA execution
 
 Executed on 2026-10-13 on macOS 27.0.1 arm64 with Node v24.20.0 and
-`rea-agents` 6.4.0 (`rea-version.txt`). Every file here is unedited REA output.
+`rea-agents` 6.4.0 (`rea-version.txt`). Every file here is REA output, unedited except that local absolute paths were replaced with placeholders (`<era-repo>`, `<tmp>`, `~`) before publication; Evidence IDs and digests refer to the original bytes.
 
 | Command | Input | Status | Wall time | Output |
 |---|---|---|---|---|

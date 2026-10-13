@@ -25,4 +25,4 @@ era inspect benchmarks/datasets/native-hello/hello
 era rea inspect-macho "$PWD/benchmarks/datasets/native-hello/hello" --format json
 ```
 
-`sample-analysis-report.md` is the unedited report ERA wrote for the native fixture.
+`sample-analysis-report.md` is the report ERA wrote for the native fixture, with local paths anonymized; otherwise unedited.

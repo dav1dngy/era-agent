@@ -5,8 +5,23 @@ checkpoints (annotated git tags); `vX.Y.Z` are releases.
 
 ## v0.1.0 — unreleased
 
-First public release candidate: internal version **era-v3** plus the
-development-round-2 work below. Not yet published.
+First public release candidate: internal version **era-v4** plus the
+independent-audit remediation below. Not yet published.
+
+### Independent audit remediation (docs/audit-remediation.md)
+- F01 approval bound to the evaluated commit/tree/patch; F02 supervisor-owned
+  REA evidence (validated self-analysis plans, supervised benchmarks with
+  `era extract`); F03 sandboxed candidate code with fail-closed isolation;
+  F04 `era explain` never reads paths from imported analyses; F05 validity
+  gates and baseline test inventory.
+- F06 exclusive ownership-token locks, atomic state, journaled integration;
+  F07 cumulative and conservative spend accounting, pre-dispatch REA budget,
+  configured timeouts; F08 redaction at every model/export boundary, 0700
+  state; F09 benchmark provenance and per-repetition samples.
+- F10 Linux-safe test; F11 release `dist/`; F12 source-verified CommonJS
+  inference with per-fact provenance; F13 Node range aligned with REA; F14
+  output quota, backpressure and stream errors; F15 docs.
+- Provider probe only for Mach-O targets.
 
 ### Round 2: ERA Improvement Lab, security and release engineering
 - **Approval gate:** accepted experiments wait in `awaiting-approval`;
