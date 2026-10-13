@@ -6,6 +6,9 @@ import { spawnSync } from 'node:child_process';
 import { join } from 'node:path';
 import { DATASETS, REA_BIN, ROOT, reaAvailable, runEra, tempDir } from './helpers.js';
 import { evaluateSelf } from '../src/evaluation/self-eval.js';
+import { ReaClient } from '../src/rea_integration/rea-client.js';
+import { candidateIsolation } from '../src/safety/candidate-sandbox.js';
+import { sandboxAvailable } from '../src/safety/sandbox.js';
 
 const skip = !reaAvailable() && 'REA engine not available';
 const rea = REA_BIN;
@@ -43,8 +46,11 @@ test('era analyze inspects a Mach-O through REA', { skip }, () => {
   assert.ok(a.facts.includes('export:_greet'));
 });
 
-test('REA self-analysis of this checkout covers every source module', { skip }, async () => {
-  const self = await evaluateSelf({ codeRoot: ROOT, stateDir: tempDir(), reaCommand: REA_BIN });
+test('supervised REA self-analysis of this checkout covers every source module', { skip }, async () => {
+  const stateDir = tempDir();
+  const isolation = sandboxAvailable() ? candidateIsolation() : candidateIsolation({ trust: true });
+  const self = await evaluateSelf({ codeRoot: ROOT, stateDir, rea: new ReaClient({ command: REA_BIN, stateDir }), isolation });
+  assert.equal(self.valid, true, JSON.stringify(self.invalid));
   assert.deepEqual(self.missing_modules, []);
   assert.ok(self.runs.filter((r) => r.operation === 'analyze_javascript_application').length >= 1);
   assert.equal(self.runs.filter((r) => r.operation === 'capture_process_scenario').length, 1);

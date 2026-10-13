@@ -8,8 +8,9 @@ import { existsSync, realpathSync, mkdirSync } from 'node:fs';
 
 export const SANDBOX_EXEC = '/usr/bin/sandbox-exec';
 
-export function sandboxAvailable(platform = process.platform) {
-  return platform === 'darwin' && existsSync(SANDBOX_EXEC);
+// Inside a candidate sandbox, sandbox-exec cannot be nested (sandbox_apply: EPERM).
+export function sandboxAvailable(platform = process.platform, env = process.env) {
+  return platform === 'darwin' && !env.ERA_IN_CANDIDATE_SANDBOX && existsSync(SANDBOX_EXEC);
 }
 
 const quote = (p) => `"${p.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`;

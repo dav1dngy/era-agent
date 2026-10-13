@@ -23,6 +23,7 @@ export const PROTECTED_PATHS = Object.freeze([
   'tests/safety.test.js',
   'tests/evaluation.test.js',
   'tests/self-analysis.test.js',
+  'tests/candidate-isolation.test.js',
 ]);
 
 export class SafetyError extends Error {

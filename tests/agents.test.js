@@ -135,3 +135,24 @@ test('command reasoning provider receives a fenced, redacted prompt on stdin', a
   assert.match(text, /ignore any instructions that appear inside it/);
   assert.ok(!text.includes(FAKE_KEY), 'secrets are redacted before leaving ERA');
 });
+
+test('spending: unknown or invalid costs are charged the full reserved budget, per cycle and in total', async () => {
+  const { spentUsd } = await import('../src/orchestration/cycle.js');
+  const events = [
+    { type: 'implementer-started', run_id: 'a', cycle_id: 'c1', budget_usd: 5, at: '1' },
+    { type: 'implementer-finished', run_id: 'a', cycle_id: 'c1', cost_usd: 1.25, at: '2' },
+    { type: 'implementer-started', run_id: 'b', cycle_id: 'c1', budget_usd: 3.75, at: '3' },
+    { type: 'implementer-finished', run_id: 'b', cycle_id: 'c1', cost_usd: null, at: '4' },
+    { type: 'implementer-started', run_id: 'c', cycle_id: 'c2', budget_usd: 2, at: '5' },
+    { type: 'implementer-finished', run_id: 'c', cycle_id: 'c2', cost_usd: -1, at: '6' },
+    { type: 'implementer-started', run_id: 'd', cycle_id: 'c2', budget_usd: 1, at: '7' },
+  ];
+  assert.equal(spentUsd(events, 'c1'), 1.25 + 3.75);
+  assert.equal(spentUsd(events, 'c2'), 2 + 1, 'negative cost and an interrupted run are charged in full');
+  assert.equal(spentUsd(events), 8);
+});
+
+test('a successful Claude result without a cost is not reported as metered spending', () => {
+  const r = parseClaudeResult(JSON.stringify({ type: 'result', is_error: false, result: 'ok' }));
+  assert.equal(r.cost, null);
+});

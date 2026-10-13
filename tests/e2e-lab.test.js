@@ -10,6 +10,10 @@ import { createHash } from 'node:crypto';
 import { cpSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { FIXTURES, ROOT, tempDir } from './helpers.js';
+import { sandboxAvailable } from '../src/safety/sandbox.js';
+
+// Without a sandbox (Linux CI), evaluating requires declaring the candidate trusted.
+const TRUST = sandboxAvailable() ? [] : ['--trust-candidate'];
 
 const skip = (process.env.ERA_E2E_NESTED || process.env.ERA_SKIP_E2E) && 'nested evaluation or ERA_SKIP_E2E';
 const ENGINE = join(FIXTURES, 'fake-rea-engine.mjs');
@@ -62,7 +66,7 @@ test('accepted experiment waits for approval, integrates on approval, and can be
   // this file does not mistake it for an import.
   const spec = ['..', 'src', 'e2e-untested.js'].join('/');
   writeFileSync(join(wt, 'tests', 'e2e-added.test.js'), `import { test } from 'node:test';\nimport assert from 'node:assert/strict';\nimport { answer } from '${spec}';\n\ntest('answer', () => assert.equal(answer(), 42));\n`);
-  const e = lab.era(['improve', 'evaluate', id]);
+  const e = lab.era(['improve', 'evaluate', id, ...TRUST]);
   assert.equal(e.status, 0, e.stderr);
   const decided = lab.cycle(id);
   assert.equal(decided.status, 'awaiting-approval', decided.evaluation.summary);
@@ -83,7 +87,7 @@ test('accepted experiment waits for approval, integrates on approval, and can be
   assert.match(stale.stderr, /era improve rebase/);
   assert.equal(lab.era(['improve', 'rebase', id]).status, 0);
   assert.equal(lab.cycle(id).status, 'proposed');
-  assert.equal(lab.era(['improve', 'evaluate', id]).status, 0);
+  assert.equal(lab.era(['improve', 'evaluate', id, ...TRUST]).status, 0);
   assert.equal(lab.cycle(id).status, 'awaiting-approval');
 
   const a = lab.era(['improve', 'approve', id, '--yes', '--by', 'Maintainer <m@example.test>']);
@@ -108,7 +112,7 @@ test('a failed experiment is rejected and leaves the stable branch unchanged', {
   // A "command" coding agent that edits a protected evaluator path.
   const impl = lab.era(['improve', 'implement', id, '--agent', 'command', '--implementer', 'echo "// loosen" >> src/safety/policy.js']);
   assert.equal(impl.status, 0, impl.stderr);
-  const e = lab.era(['improve', 'evaluate', id]);
+  const e = lab.era(['improve', 'evaluate', id, ...TRUST]);
   assert.equal(e.status, 0, e.stderr);
   const c = lab.cycle(id);
   assert.equal(c.status, 'rejected');
@@ -127,7 +131,7 @@ test('interrupting an evaluation records no decision and recovery restores state
 
   const run = (signal) =>
     new Promise((resolve) => {
-      const child = spawn(process.execPath, [join(lab.dir, 'bin', 'era.mjs'), 'improve', 'evaluate', id], { cwd: lab.dir, env: { ...lab.env, FAKE_REA_SLEEP_MS: '4000' } });
+      const child = spawn(process.execPath, [join(lab.dir, 'bin', 'era.mjs'), 'improve', 'evaluate', id, ...TRUST], { cwd: lab.dir, env: { ...lab.env, FAKE_REA_SLEEP_MS: '4000' } });
       let stderr = '';
       child.stderr.on('data', (d) => (stderr += d));
       const timer = setTimeout(() => child.kill(signal), 6000);

@@ -4,7 +4,7 @@ import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { buildProposal, rankCandidates, renderInstructions } from '../improvement/planner.js';
 import { runCodingAgent } from '../improvement/modification.js';
-import { runBenchmark } from '../evaluation/benchmark.js';
+import { runBenchmark, runSupervisedBenchmark } from '../evaluation/benchmark.js';
 import { runTests } from '../evaluation/tests.js';
 import { evaluateSelf } from '../evaluation/self-eval.js';
 import { decide, loadAcceptance } from '../evaluation/decision.js';
@@ -13,6 +13,8 @@ import { appendLedger, readLedger, decidedCycles, pendingCycles } from './ledger
 import * as vm from './versions.js';
 import { newId, writeJson, writeText } from '../core/util.js';
 import { createInterruptGuard, InterruptedError } from './interrupt.js';
+import { candidateIsolation, protectedStatePaths } from '../safety/candidate-sandbox.js';
+import { sandboxAvailable } from '../safety/sandbox.js';
 import { renderRunTable } from '../analysis/report.js';
 
 function cycleDir(stateDir, id) {
@@ -31,18 +33,28 @@ function saveCycle(stateDir, cycle) {
 
 // Per-cycle budget for REA analysis runs (self-analyses). Benchmark runs are
 // bounded separately by dataset size x repetitions.
-function reaBudget(limits) {
-  let used = 0;
+function reaBudget(limits, alreadyUsed = 0) {
+  let used = alreadyUsed;
   return {
-    add(self) {
-      used += self.metrics.rea_runs;
-      if (used > limits.maxReaRunsPerCycle) throw new SafetyError(`REA run budget exceeded (${used}/${limits.maxReaRunsPerCycle} per cycle).`);
+    // Reserved before dispatch: a self-analysis that would exceed the budget never starts.
+    reserve(n) {
+      if (used + n > limits.maxReaRunsPerCycle) throw new SafetyError(`REA run budget exceeded: ${used} used + ${n} requested > ${limits.maxReaRunsPerCycle} per cycle.`);
+      used += n;
     },
     used: () => used,
   };
 }
 
-const selfSummary = (s) => ({ id: s.self_analysis_id, metrics: s.metrics, findings: s.findings, missing_modules: s.missing_modules, runs: s.runs, report: s.report });
+// Stable code is trusted; it is still sandboxed when a sandbox exists.
+const stableIsolation = () => (sandboxAvailable() ? candidateIsolation() : { mode: 'trusted', mechanism: 'none', note: 'stable code' });
+
+export function validRepetitions(value) {
+  const n = Number(value);
+  if (!Number.isInteger(n) || n < 1 || n > 20) throw new Error(`benchmark repetitions must be an integer from 1 to 20 (got ${value}).`);
+  return n;
+}
+
+const selfSummary = (s) => ({ id: s.self_analysis_id, commit: s.commit ?? null, valid: s.valid ?? true, invalid: s.invalid ?? null, plan_source: s.plan_source ?? null, metrics: s.metrics, findings: s.findings, missing_modules: s.missing_modules, runs: s.runs, report: s.report });
 
 export async function proposeCycle({ root, config, rea, findingId = null }) {
   assertNotCI();
@@ -62,8 +74,8 @@ export async function proposeCycle({ root, config, rea, findingId = null }) {
     const baseVersion = await vm.currentVersion(root);
     const cycleId = newId('cycle');
 
-    const baselineSelf = await evaluateSelf({ codeRoot: root, stateDir, reaCommand: rea.command });
-    budget.add(baselineSelf);
+    const baselineSelf = await evaluateSelf({ codeRoot: root, commit: baseCommit, stateDir, rea, isolation: stableIsolation(), budget, timeoutMs: limits.commandTimeoutMs });
+    if (!baselineSelf.valid) throw new Error(`Baseline REA self-analysis is invalid: ${baselineSelf.invalid.reason}`);
     const baselineBench = await runBenchmark({ codeRoot: root, datasetsDir: join(root, 'benchmarks', 'datasets'), repetitions: 1, reaCommand: rea.command, label: 'planning' });
 
     const attempted = new Set(decidedCycles(events).map((e) => e.finding_id));
@@ -109,16 +121,31 @@ export async function proposeCycle({ root, config, rea, findingId = null }) {
   }
 }
 
-export function spentUsd(events) {
-  return events.filter((e) => e.type === 'implementer-finished' && typeof e.cost_usd === 'number').reduce((sum, e) => sum + e.cost_usd, 0);
+// Spending recorded in the ledger. A run that started but reported no valid cost
+// (missing, negative or non-finite; interrupted) is charged its full reserved budget.
+export function spentUsd(events, cycleId = null) {
+  const finished = new Map(events.filter((e) => e.type === 'implementer-finished').map((e) => [e.run_id ?? `${e.cycle_id}:${e.at}`, e]));
+  let total = 0;
+  for (const start of events.filter((e) => e.type === 'implementer-started' && (!cycleId || e.cycle_id === cycleId))) {
+    const end = start.run_id ? finished.get(start.run_id) : events.find((e) => e.type === 'implementer-finished' && e.cycle_id === start.cycle_id && e.at >= start.at);
+    const cost = end?.cost_usd;
+    total += typeof cost === 'number' && Number.isFinite(cost) && cost >= 0 ? cost : start.budget_usd ?? 0;
+  }
+  return total;
 }
 
 export async function implementCycle({ config, cycle, agent }) {
+  assertNotCI();
   const stateDir = config.stateDirAbs;
   const limits = effectiveLimits(config.limits, config.improvement);
   const budget = effectiveBudget(config.improvement.budget);
-  const budgetUsd = authorizeAgentRun({ agent, budget, spentUsd: spentUsd(readLedger(stateDir)) });
-  appendLedger(stateDir, { type: 'implementer-started', cycle_id: cycle.cycle_id, agent: agent.id, budget_usd: agent.metered ? budgetUsd : null });
+  const events = readLedger(stateDir);
+  // Caps apply cumulatively: per cycle across repeated runs, and in total.
+  const perCycleLeft = budget.maxCostUsdPerCycle - spentUsd(events, cycle.cycle_id);
+  if (agent.metered && perCycleLeft <= 0) throw new SafetyError(`Per-cycle coding-agent budget exhausted for ${cycle.cycle_id} ($${budget.maxCostUsdPerCycle.toFixed(2)}).`);
+  const budgetUsd = Math.min(authorizeAgentRun({ agent, budget, spentUsd: spentUsd(events) }), perCycleLeft);
+  const runId = newId('agent');
+  appendLedger(stateDir, { type: 'implementer-started', run_id: runId, cycle_id: cycle.cycle_id, agent: agent.id, budget_usd: agent.metered ? budgetUsd : null });
   const result = await runCodingAgent({
     agent,
     task: {
@@ -130,13 +157,13 @@ export async function implementCycle({ config, cycle, agent }) {
       budgetUsd: agent.metered ? budgetUsd : null,
     },
   });
-  appendLedger(stateDir, { type: 'implementer-finished', cycle_id: cycle.cycle_id, agent: agent.id, ok: result.ok, cost_usd: result.cost_usd ?? null, cost_reported: !!result.cost_reported, duration_ms: result.duration_ms ?? null, commit: result.commit ?? null });
+  appendLedger(stateDir, { type: 'implementer-finished', run_id: runId, cycle_id: cycle.cycle_id, agent: agent.id, ok: result.ok, cost_usd: result.cost_usd ?? null, cost_reported: !!result.cost_reported, duration_ms: result.duration_ms ?? null, commit: result.commit ?? null });
   cycle.implementer = result;
   saveCycle(stateDir, cycle);
   return result;
 }
 
-export async function evaluateCycle({ root, config, rea, cycleId, repetitions, guard = null }) {
+export async function evaluateCycle({ root, config, rea, cycleId, repetitions, guard = null, trustCandidate = false }) {
   assertNotCI();
   const stateDir = config.stateDirAbs;
   const limits = effectiveLimits(config.limits, config.improvement);
@@ -144,6 +171,8 @@ export async function evaluateCycle({ root, config, rea, cycleId, repetitions, g
   if (!['proposed', 'inconclusive'].includes(cycle.status)) throw new Error(`Cycle ${cycleId} is already ${cycle.status}.`);
   await vm.assertStable(root);
   if ((await vm.headCommit(root)) !== cycle.base_commit) throw new SafetyError(`The stable branch moved since this cycle was proposed; run \`era improve rebase ${cycleId}\` first.`);
+  // Fails closed (before any state change) when candidate code cannot be isolated.
+  const isolation = candidateIsolation({ trust: trustCandidate });
   const release = acquireLock(stateDir, `evaluate ${cycleId}`);
   const interrupt = guard ?? createInterruptGuard();
   cycle.status = 'evaluating';
@@ -151,13 +180,12 @@ export async function evaluateCycle({ root, config, rea, cycleId, repetitions, g
   saveCycle(stateDir, cycle);
   try {
     const budget = reaBudget(limits);
-    budget.add(cycle.baseline_self_analysis);
     await vm.commitAll(cycle.worktree, `experiment ${cycleId}: uncommitted changes`);
     // The evaluation is bound to this exact candidate commit/tree/patch.
     const candidateRef = await vm.candidateIdentity(root, cycle.base_commit, cycle.branch);
     const ahead = await vm.commitsAhead(root, cycle.base_commit, candidateRef.commit);
     const changed = await vm.changedFiles(root, cycle.base_commit, candidateRef.commit);
-    const reps = repetitions ?? config.benchmark.repetitions;
+    const reps = validRepetitions(repetitions ?? config.benchmark.repetitions);
     const datasetsDir = join(root, 'benchmarks', 'datasets');
     const acceptance = loadAcceptance(root);
     const protectedChanged = protectedChanges(changed);
@@ -175,23 +203,37 @@ export async function evaluateCycle({ root, config, rea, cycleId, repetitions, g
         interrupt.check();
         return value;
       };
-      const baselineTests = await step(() => runTests(root));
-      const candidateTests = await step(() => runTests(cycle.worktree));
-      const baseline = await step(() => runBenchmark({ codeRoot: root, datasetsDir, repetitions: reps, reaCommand: rea.command, label: cycle.base_version ?? 'baseline' }));
-      const candidate = await step(() => runBenchmark({ codeRoot: cycle.worktree, datasetsDir, repetitions: reps, reaCommand: rea.command, label: cycle.branch }));
-      const candidateSelf = await step(() => evaluateSelf({ codeRoot: cycle.worktree, stateDir, reaCommand: rea.command }));
-      budget.add(candidateSelf);
+      const timeoutMs = limits.commandTimeoutMs;
+      const sandboxed = isolation.mode === 'sandbox';
+      // Baseline and candidate suites run under identical conditions.
+      const testOpts = { timeoutMs, ...(sandboxed ? { isolation, denyRead: protectedStatePaths(stateDir) } : {}) };
+      const baselineTests = await step(() => runTests(root, testOpts));
+      const candidateTests = await step(() => runTests(cycle.worktree, testOpts));
+      const provenance = { base_commit: cycle.base_commit, candidate_commit: candidateRef.commit, candidate_tree: candidateRef.tree, rea_version: await rea.version() };
+      let baseline;
+      let candidate;
+      if (sandboxed) {
+        // Supervisor-run REA; each version only extracts facts from the same Evidence.
+        const decompile = !!(await rea.status()).decompiler_available;
+        [baseline, candidate] = await step(() => runSupervisedBenchmark({ datasetsDir, extractors: [{ label: cycle.base_version ?? 'baseline', codeRoot: root }, { label: cycle.branch, codeRoot: cycle.worktree }], repetitions: reps, rea, isolation, decompile, timeoutMs, provenance }));
+      } else {
+        // Trusted mode (declared by the maintainer): versions run their own REA workflows.
+        baseline = await step(() => runBenchmark({ codeRoot: root, datasetsDir, repetitions: reps, reaCommand: rea.command, label: cycle.base_version ?? 'baseline', timeoutMs }));
+        candidate = await step(() => runBenchmark({ codeRoot: cycle.worktree, datasetsDir, repetitions: reps, reaCommand: rea.command, label: cycle.branch, timeoutMs }));
+      }
+      const baselineSelf = await step(() => evaluateSelf({ codeRoot: root, commit: cycle.base_commit, stateDir, rea, isolation: stableIsolation(), budget, timeoutMs }));
+      const candidateSelf = await step(() => evaluateSelf({ codeRoot: cycle.worktree, commit: candidateRef.commit, stateDir, rea, isolation, budget, timeoutMs }));
       const ctx = {
         baseline,
         candidate,
         baselineTests,
         candidateTests,
-        baselineSelf: cycle.baseline_self_analysis,
+        baselineSelf,
         candidateSelf,
         protectedChanged,
         proposal: cycle.proposal,
       };
-      evaluation = { ...decide(ctx, acceptance), baselineTests, candidateTests, baseline, candidate, candidate_self_analysis: selfSummary(candidateSelf) };
+      evaluation = { ...decide(ctx, acceptance), isolation, baselineTests, candidateTests, baseline, candidate, baseline_self_analysis: selfSummary(baselineSelf), candidate_self_analysis: selfSummary(candidateSelf) };
       // The candidate must not have changed while it was being evaluated.
       const after = await vm.candidateIdentity(root, cycle.base_commit, cycle.branch);
       const dirty = await vm.trackedChanges(cycle.worktree);
@@ -259,7 +301,8 @@ export async function rebaseCycle({ root, config, rea, cycleId }) {
       await vm.git(cycle.worktree, ['merge', '--abort'], { allowFail: true });
       throw new Error(`Merging ${vm.STABLE_BRANCH} into ${cycle.branch} conflicts; resolve manually in ${cycle.worktree} or decline the cycle.\n${merge.stdout || merge.stderr}`);
     }
-    const baselineSelf = await evaluateSelf({ codeRoot: root, stateDir, reaCommand: rea.command });
+    const baselineSelf = await evaluateSelf({ codeRoot: root, commit: head, stateDir, rea, isolation: stableIsolation(), timeoutMs: effectiveLimits(config.limits, config.improvement).commandTimeoutMs });
+    if (!baselineSelf.valid) throw new Error(`Baseline REA self-analysis is invalid: ${baselineSelf.invalid.reason}`);
     cycle.previous = [...(cycle.previous ?? []), { base_commit: cycle.base_commit, status: cycle.status, evaluation_summary: cycle.evaluation?.summary ?? null, decided_at: cycle.decided_at ?? null }];
     Object.assign(cycle, { base_commit: head, base_version: await vm.currentVersion(root), status: 'proposed', baseline_self_analysis: selfSummary(baselineSelf), evaluation: undefined, decided_at: undefined });
     saveCycle(stateDir, cycle);

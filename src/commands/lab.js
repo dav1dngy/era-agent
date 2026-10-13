@@ -2,7 +2,7 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { createInterface } from 'node:readline/promises';
-import { selfAnalyze } from '../self_analysis/self-analyze.js';
+import { selfAnalyze, planPasses } from '../self_analysis/self-analyze.js';
 import { proposeCycle, implementCycle, evaluateCycle, abandonCycle, approveCycle, declineCycle, rebaseCycle, recoverState, loadCycle, renderCycleReport } from '../orchestration/cycle.js';
 import * as vm from '../orchestration/versions.js';
 import { createCodingAgent, selectedAgentId, CODING_AGENT_IDS } from '../agents/coding-agents.js';
@@ -39,6 +39,10 @@ async function confirm(question, flags) {
 }
 
 async function selfAnalyzeCmd(ctx, { flags }) {
+  if (flags.plan) {
+    // Contract used by the supervisor: grouping only, no engine, no writes.
+    return print({ passes: planPasses(resolve(String(flags.plan))).map(({ focus, placeholders, bytes }) => ({ focus, placeholders, bytes })) }, true), 0;
+  }
   const root = await requireRepo(ctx.config.cwd);
   const report = await selfAnalyze({ eraRoot: root, rea: ctx.rea, stateDir: ctx.config.stateDirAbs });
   if (flags.json) return print(report, true), 0;
@@ -88,9 +92,9 @@ async function improve(ctx, { positional, flags }) {
       return r.ok ? 0 : 1;
     }
     case 'evaluate': {
-      const cycle = await evaluateCycle({ ...base, cycleId: id, repetitions: flags.repetitions ? Number(flags.repetitions) : undefined });
+      const cycle = await evaluateCycle({ ...base, cycleId: id, repetitions: flags.repetitions ? Number(flags.repetitions) : undefined, trustCandidate: !!flags['trust-candidate'] });
       log.info('cycle.decided', { status: cycle.status, accepted: cycle.evaluation.accepted, summary: cycle.evaluation.summary, guards_failed: (cycle.evaluation.guards ?? []).filter((g) => !g.ok).map((g) => g.name) });
-      const next = cycle.status === 'awaiting-approval' ? `\nAwaiting maintainer approval: review \`era improve show ${id}\`, then \`era improve approve ${id}\` or \`era improve decline ${id}\`.` : '';
+      const next = cycle.status === 'inconclusive' ? `\nInconclusive: fix the measurement problem and run \`era improve evaluate ${id}\` again.` : cycle.status === 'awaiting-approval' ? `\nAwaiting maintainer approval: review \`era improve show ${id}\`, then \`era improve approve ${id}\` or \`era improve decline ${id}\`.` : '';
       print(`${id}: ${cycle.evaluation.summary}${next}\nReport: ${join(stateDir, 'cycles', id, 'report.md')}`);
       return 0;
     }
@@ -171,7 +175,7 @@ async function loop(ctx, base, flags) {
         print('  coding agent failed; cycle abandoned');
         break;
       }
-      const decided = await evaluateCycle({ ...base, cycleId: cycle.cycle_id, guard });
+      const decided = await evaluateCycle({ ...base, cycleId: cycle.cycle_id, guard, trustCandidate: !!flags['trust-candidate'] });
       print(`  ${decided.evaluation.summary}${decided.status === 'awaiting-approval' ? ' (awaiting approval)' : ''}`);
     }
   } finally {

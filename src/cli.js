@@ -27,14 +27,18 @@ Analysis mode (uses the REA engine):
   explain <analysis>            Explain an analysis (ID or analysis.json path)
       --provider none|command|claude-code   (default: reasoning.provider or none)
       --allow-remote            Authorize a remote provider for this call
+  extract --manifest <file>     Compute facts from existing REA Evidence (no engine run)
   rea <rea-args...>             Run any original REA CLI command unchanged
                                 (e.g. era rea doctor, era rea mcp, era rea setup)
 
 ERA Improvement Lab:
   self-analyze                  Pack ERA, analyze it with REA, report findings
+      --plan <dir> --json       Only print the REA pass plan for an artifact directory
   improve propose [--finding ID]  REA self-analysis + one experiment worktree
   improve implement <cycle> [--agent ID]  Run a coding agent in the worktree
-  improve evaluate <cycle>      Test, benchmark and decide (never merges)
+  improve evaluate <cycle>      Test, benchmark and decide (never merges). Candidate code is
+                                sandboxed and REA runs under the stable supervisor; without a
+                                sandbox, evaluation requires --trust-candidate (trusted code only)
   improve show <cycle>          Print the reviewable change proposal
   improve approve <cycle> [--by NAME] [--yes]   Integrate into main and tag
   improve decline <cycle> [--reason TEXT]       Keep main unchanged
@@ -54,7 +58,7 @@ Options: --help, --version
 Environment: ERA_REA_BIN, ERA_STATE_DIR, ERA_LOG_LEVEL (debug|info|warn|error), ERA_LOG=off
 `;
 
-const VALUED = new Set(['cycles', 'repetitions', 'out', 'versions', 'implementer', 'finding', 'agent', 'provider', 'by', 'reason']);
+const VALUED = new Set(['cycles', 'repetitions', 'out', 'versions', 'implementer', 'finding', 'agent', 'provider', 'by', 'reason', 'manifest', 'plan']);
 
 export function parseArgs(argv) {
   const positional = [];
@@ -76,6 +80,7 @@ const COMMANDS = {
   analyze: () => import('./commands/analysis.js'),
   inspect: () => import('./commands/analysis.js'),
   explain: () => import('./commands/analysis.js'),
+  extract: () => import('./commands/analysis.js'),
   'self-analyze': () => import('./commands/lab.js'),
   improve: () => import('./commands/lab.js'),
   agents: () => import('./commands/lab.js'),

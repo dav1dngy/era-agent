@@ -4,7 +4,7 @@ import { join, resolve } from 'node:path';
 import { spawn } from 'node:child_process';
 import { analyzeTarget } from '../analysis/analyze.js';
 import { detectTarget } from '../analysis/detect.js';
-import { groupFacts } from '../analysis/facts.js';
+import { groupFacts, extractFacts } from '../analysis/facts.js';
 import { renderAnalysisReport } from '../analysis/report.js';
 import { createReasoningProvider, assertEgressAllowed, reasoningPrompt } from '../agents/reasoning.js';
 import { assertTargetPath } from '../safety/policy.js';
@@ -100,7 +100,23 @@ export function cmdRea(ctx, argv) {
   });
 }
 
+// Contract used by the Improvement Lab supervisor: compute facts from REA
+// Evidence that the supervisor produced. Runs no engine and writes nothing.
+// Manifest: { target: { path, kind }, evidence_files: [path, ...] }
+async function extract(ctx, { flags }) {
+  if (!flags.manifest) throw new Error('Usage: era extract --manifest <file.json>');
+  const manifest = JSON.parse(readFileSync(String(flags.manifest), 'utf8'));
+  const facts = new Set();
+  for (const file of manifest.evidence_files ?? []) {
+    for (const f of extractFacts(JSON.parse(readFileSync(file, 'utf8')), { sourceRoot: manifest.source_root ?? null })) facts.add(f);
+  }
+  const sorted = [...facts].sort();
+  print({ target: manifest.target, facts: sorted, fact_groups: groupFacts(sorted) }, true);
+  return 0;
+}
+
 export async function run(command, ctx, args) {
+  if (command === 'extract') return extract(ctx, args);
   if (command === 'analyze') return analyze(ctx, args);
   if (command === 'inspect') return inspect(ctx, args);
   if (command === 'explain') return explain(ctx, args);

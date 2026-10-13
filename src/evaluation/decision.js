@@ -56,6 +56,8 @@ export function invalidMeasurements(ctx) {
   }
   if (!(ctx.baselineTests.inventory?.length > 0)) problems.push('baseline test inventory is empty (tests did not run)');
   if (ctx.baselineTests.timed_out || ctx.candidateTests.timed_out) problems.push('a test run timed out');
+  if (ctx.baselineSelf && ctx.baselineSelf.valid === false) problems.push(`baseline self-analysis invalid: ${ctx.baselineSelf.invalid?.reason}`);
+  if (ctx.candidateSelf?.valid === false && ctx.candidateSelf.invalid?.kind !== 'candidate') problems.push(`candidate self-analysis could not be measured: ${ctx.candidateSelf.invalid?.reason}`);
   return problems;
 }
 
@@ -78,6 +80,7 @@ export function decide(ctx, acceptance) {
     { name: `time regression ≤ ${acceptance.maxTimeRegressionPct}%`, ok: pct(b.total_median_wall_ms, c.total_median_wall_ms) <= acceptance.maxTimeRegressionPct, detail: `${b.total_median_wall_ms} -> ${c.total_median_wall_ms} ms` },
     { name: `memory regression ≤ ${acceptance.maxMemoryRegressionPct}%`, ok: pct(b.max_rss_bytes, c.max_rss_bytes) <= acceptance.maxMemoryRegressionPct, detail: `${b.max_rss_bytes} -> ${c.max_rss_bytes} bytes` },
     { name: 'self-analysis findings not increased', ok: candidateSelf.findings.length <= baselineSelf.findings.length, detail: `${baselineSelf.findings.length} -> ${candidateSelf.findings.length}` },
+    { name: 'self-analysis evidence valid (supervisor-run REA)', ok: candidateSelf.valid !== false, detail: candidateSelf.invalid?.reason ?? `plan from ${candidateSelf.plan_source ?? 'unknown'}` },
     { name: 'self-analysis covers every source module', ok: (candidateSelf.missing_modules ?? []).length === 0, detail: (candidateSelf.missing_modules ?? []).join(', ') || 'complete' },
   ];
   const target = evaluateTarget(proposal.target, ctx);

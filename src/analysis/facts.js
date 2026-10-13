@@ -50,7 +50,7 @@ export function inferCommonJsExports(semanticGraph) {
   return [...names];
 }
 
-export function javascriptFacts(evidence) {
+export function javascriptFacts(evidence, _options = {}) {
   const nr = evidence.normalized_result ?? {};
   const graph = nr.graph ?? {};
   const sem = nr.semantic_graph ?? {};
@@ -132,10 +132,10 @@ export function processFacts(evidence) {
   return exit ? [`exit:${exit.code ?? exit.signal ?? exit.reason}`] : [];
 }
 
-export function extractFacts(evidence) {
+export function extractFacts(evidence, options = {}) {
   switch (evidence?.operation) {
     case 'analyze_javascript_application':
-      return javascriptFacts(evidence);
+      return javascriptFacts(evidence, options);
     case 'inspect_macho':
       return machoFacts(evidence);
     case 'inspect_artifact':
