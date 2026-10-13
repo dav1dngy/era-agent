@@ -23,6 +23,24 @@ bin/era.mjs → src/cli.js (parse, context, logging, signals)
                  observability ────────► core/log.js (JSONL, redaction via safety/secrets.js)
 ```
 
+## Project Lab (v0.2.0 development)
+
+```
+src/commands/project.js  (CLI, thin)  ──►  src/project_lab/lab.js  ProjectLab API  (injected: config, rea, log, createAgent)
+                                              ├─ schema.js     validated project definitions; ERA's own tree refused
+                                              ├─ store.js      per-project state: project.json, runs/, work/, ledger.jsonl
+                                              ├─ context.js    checkpointed steps, command runner, agent invocation (budget, ledger)
+                                              ├─ review.js · modify.js · rebuild.js   the three workflows
+                                              ├─ detect.js · evidence.js · runner.js · workspace.js · report.js
+                                              └─ reuses: agents/coding-agents.js, safety/{policy,candidate-sandbox,secrets}.js,
+                                                 orchestration/{interrupt,ledger}.js, analysis/analyze.js, self_analysis passes, rea_integration
+```
+
+Project Lab and the Improvement Lab share infrastructure (agents, sandbox, locks, ledger,
+REA client) but no state, and Project Lab refuses ERA's own tree as a project. The
+interface to a graphical client is the `ProjectLab` class, `--json` output and the JSON/JSONL
+files under `<stateDir>/projects/`. See [project-lab.md](project-lab.md).
+
 ## Components
 
 | # | Component | Module | Responsibility |

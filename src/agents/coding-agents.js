@@ -3,8 +3,13 @@
 // engineering engine (REA) and from reasoning providers (src/agents/reasoning.js).
 //
 // Interface: { id, description, metered, probe(), implement(task) }
-//   task = { worktree, instructionsFile, proposalFile, cycleId, timeoutMs, budgetUsd }
-//   implement() -> { ok, exit_code, timed_out, duration_ms, cost_usd, cost_reported, tokens, command, stdout_tail, stderr_tail }
+//   task = { worktree, instructionsFile, proposalFile, cycleId, timeoutMs, budgetUsd,
+//            prompt?, readOnly?, phase? }
+//     prompt:   complete prompt text (replaces the Improvement Lab prompt built from instructionsFile)
+//     readOnly: the agent must not edit files (Claude `plan` mode, Codex `read-only` sandbox)
+//     phase:    free-form label passed to command agents as ERA_PHASE
+//   implement() -> { ok, exit_code, timed_out, duration_ms, cost_usd, cost_reported, tokens, command,
+//                    stdout_tail, stderr_tail, output }
 import { existsSync, readFileSync, mkdtempSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
@@ -12,12 +17,20 @@ import { runProcess } from '../core/process.js';
 import { redactText } from '../safety/secrets.js';
 
 const tail = (s) => redactText(s.slice(-4000));
+// Complete (bounded, redacted) agent output, for workflows that parse it (Project Lab review).
+const fullOutput = (s) => redactText(String(s).slice(-200_000));
 
 const CODEX_FALLBACKS = ['/Applications/ChatGPT.app/Contents/Resources/codex-cli/bin/codex', '/Applications/Codex.app/Contents/Resources/codex-cli/bin/codex'];
 
 function agentEnv(task) {
-  return { ...process.env, ERA_PROPOSAL_FILE: task.proposalFile, ERA_INSTRUCTIONS_FILE: task.instructionsFile, ERA_WORKTREE: task.worktree, ERA_CYCLE_ID: task.cycleId };
+  const env = { ...process.env, ERA_WORKTREE: task.worktree, ERA_CYCLE_ID: task.cycleId };
+  for (const [key, value] of [['ERA_PROPOSAL_FILE', task.proposalFile], ['ERA_INSTRUCTIONS_FILE', task.instructionsFile], ['ERA_PHASE', task.phase], ['ERA_READ_ONLY', task.readOnly ? '1' : undefined]]) {
+    if (value !== undefined) env[key] = value;
+  }
+  return env;
 }
+
+const promptFor = (task) => task.prompt ?? agentPrompt(task);
 
 async function probeBinary(command, args = ['--version']) {
   const r = await runProcess(command, args, { timeoutMs: 15_000 });
@@ -59,8 +72,11 @@ export function commandAgent(command) {
       return command ? { available: true, version: null, detail: command } : { available: false, version: null, detail: 'improvement.implementerCommand is not set' };
     },
     async implement(task) {
-      const r = await runProcess('/bin/sh', ['-c', command], { cwd: task.worktree, env: agentEnv(task), timeoutMs: task.timeoutMs, watchdog: true });
-      return { ok: r.exitCode === 0 && !r.timedOut, exit_code: r.exitCode, timed_out: r.timedOut, duration_ms: Math.round(r.durationMs), cost_usd: null, cost_reported: false, tokens: null, command, stdout_tail: tail(r.stdout), stderr_tail: tail(r.stderr) };
+      // task.wrapCommand lets a caller confine the command (Project Lab runs it in a sandbox).
+      const env = agentEnv(task);
+      const wrapped = task.wrapCommand ? task.wrapCommand('/bin/sh', ['-c', command], env) : { command: '/bin/sh', args: ['-c', command], env };
+      const r = await runProcess(wrapped.command, wrapped.args, { cwd: task.worktree, env: wrapped.env, timeoutMs: task.timeoutMs, watchdog: true });
+      return { ok: r.exitCode === 0 && !r.timedOut, exit_code: r.exitCode, timed_out: r.timedOut, duration_ms: Math.round(r.durationMs), cost_usd: null, cost_reported: false, tokens: null, command, stdout_tail: tail(r.stdout), stderr_tail: tail(r.stderr), output: fullOutput(r.stdout) };
     },
   };
 }
@@ -81,13 +97,13 @@ export function claudeCodeAgent({ command = 'claude', model = null } = {}) {
     metered: true,
     probe: () => probeBinary(command),
     argv(task, prompt) {
-      const args = ['-p', prompt, '--output-format', 'json', '--permission-mode', 'acceptEdits'];
+      const args = ['-p', prompt, '--output-format', 'json', '--permission-mode', task.readOnly ? 'plan' : 'acceptEdits'];
       if (task.budgetUsd !== null && task.budgetUsd !== undefined) args.push('--max-budget-usd', String(task.budgetUsd));
       if (model) args.push('--model', model);
       return args;
     },
     async implement(task) {
-      const args = this.argv(task, agentPrompt(task));
+      const args = this.argv(task, promptFor(task));
       const r = await runProcess(command, args, { cwd: task.worktree, env: agentEnv(task), timeoutMs: task.timeoutMs, watchdog: true });
       const parsed = parseClaudeResult(r.stdout);
       return {
@@ -101,6 +117,7 @@ export function claudeCodeAgent({ command = 'claude', model = null } = {}) {
         command: [command, ...args.map((a) => (a.length > 80 ? `${a.slice(0, 77)}...` : a))].join(' '),
         stdout_tail: tail(parsed.result ?? r.stdout),
         stderr_tail: tail(r.stderr),
+        output: fullOutput(parsed.result ?? r.stdout),
       };
     },
   };
@@ -149,7 +166,7 @@ export function codexAgent({ command = null, model = null } = {}) {
       return { available: false, version: null, detail: `none of ${candidates.join(', ')} is runnable` };
     },
     argv(task, prompt, lastMessageFile) {
-      const args = ['exec', '-C', task.worktree, '-s', 'workspace-write', '--json', '-o', lastMessageFile];
+      const args = ['exec', '-C', task.worktree, '-s', task.readOnly ? 'read-only' : 'workspace-write', '--json', '-o', lastMessageFile];
       if (model) args.push('-m', model);
       args.push(prompt);
       return args;
@@ -157,7 +174,7 @@ export function codexAgent({ command = null, model = null } = {}) {
     async implement(task) {
       await this.probe();
       const lastMessage = join(mkdtempSync(join(tmpdir(), 'era-codex-')), 'last-message.txt');
-      const args = this.argv(task, agentPrompt(task), lastMessage);
+      const args = this.argv(task, promptFor(task), lastMessage);
       const r = await runProcess(this.binary, args, { cwd: task.worktree, env: agentEnv(task), timeoutMs: task.timeoutMs, watchdog: true });
       const parsed = parseCodexEvents(r.stdout);
       return {
@@ -171,6 +188,7 @@ export function codexAgent({ command = null, model = null } = {}) {
         command: [this.binary, ...args.slice(0, -1), '<prompt>'].join(' '),
         stdout_tail: tail(existsSync(lastMessage) ? readFileSync(lastMessage, 'utf8') : r.stdout),
         stderr_tail: tail(r.stderr),
+        output: fullOutput(existsSync(lastMessage) ? readFileSync(lastMessage, 'utf8') : r.stdout),
       };
     },
   };

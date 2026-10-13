@@ -3,6 +3,36 @@
 All notable changes to ERA. Versions `era-vN` are internal self-improvement
 checkpoints (annotated git tags); `vX.Y.Z` are releases.
 
+## v0.2.0 — unreleased (branch `feature/era-v0.2.0`)
+
+### ERA Project Lab
+- `era project create|list|review|modify|rebuild|status|show|approve|cancel|resume|rollback|delete`:
+  review, modify, repair, extend and reconstruct selected functionality of authorized
+  **external** projects. Isolated, reversible working copies for git and non-git
+  projects; the original is never changed without approval, and ERA's own installation
+  is refused as a project.
+- Review: capability detection, baseline, REA analysis (JavaScript), static checks,
+  optional read-only agent review with validated findings, severity-ordered report.
+- Modify: baseline and reproduction check, evidence-based plan, bounded agent
+  attempts with failure feedback, regression detection (including deleted tests),
+  protected files, reviewable diff, approval bound to the verified diff, rollback.
+- Rebuild: REA evidence, sandboxed behavior capture from the reference, clean-room
+  specification, behavioral acceptance, verbatim-copy check, approval-gated output.
+- Per-project locks, ledger, spending/time/attempt limits; cancellation, interruption
+  recovery and resume; machine-readable `--json` output and a programmatic API for a
+  future ERA Studio.
+- Coding-agent adapters gain a prompt override, a read-only mode (Claude Code `plan`,
+  Codex `read-only`), `ERA_PHASE`/`ERA_READ_ONLY` hints and complete output capture.
+
+### Fixes found by the new tests
+- Sandboxed/agent child processes no longer inherit `NODE_TEST_CONTEXT` (a nested
+  `node --test` silently exited 0 without running tests).
+- Lock acquisition created the lock file empty before writing it, so a competing
+  process could treat it as stale and also acquire; now created atomically with its
+  content, and stale-lock takeover cannot remove a live lock.
+- Relative in-project symlinks were skipped on macOS; trailing `**` globs; run ordering.
+- Honest limits: only mock agents were run through Project Lab so far.
+
 ## v0.1.0 — 2026-10-13
 
 First public release: internal version **era-v4** plus the

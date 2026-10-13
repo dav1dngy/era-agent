@@ -156,3 +156,25 @@ test('a successful Claude result without a cost is not reported as metered spend
   const r = parseClaudeResult(JSON.stringify({ type: 'result', is_error: false, result: 'ok' }));
   assert.equal(r.cost, null);
 });
+
+test('read-only tasks switch Claude Code to plan mode and Codex to its read-only sandbox (Project Lab review)', () => {
+  const claude = claudeCodeAgent({ command: 'claude' });
+  const edit = claude.argv({ budgetUsd: 1 }, 'p');
+  const readOnly = claude.argv({ budgetUsd: 1, readOnly: true }, 'p');
+  assert.equal(edit[edit.indexOf('--permission-mode') + 1], 'acceptEdits');
+  assert.equal(readOnly[readOnly.indexOf('--permission-mode') + 1], 'plan');
+  const codex = codexAgent({ command: 'codex' });
+  const cEdit = codex.argv({ worktree: '/w' }, 'p', '/o');
+  const cRead = codex.argv({ worktree: '/w', readOnly: true }, 'p', '/o');
+  assert.equal(cEdit[cEdit.indexOf('-s') + 1], 'workspace-write');
+  assert.equal(cRead[cRead.indexOf('-s') + 1], 'read-only');
+});
+
+test('an explicit prompt replaces the Improvement Lab prompt and agents receive phase and read-only hints', async () => {
+  const { dir } = initRepo();
+  const out = join(dir, 'env.json');
+  const agent = commandAgent(`node -e "require('fs').writeFileSync('env.json', JSON.stringify({ phase: process.env.ERA_PHASE, ro: process.env.ERA_READ_ONLY ?? null }))"`);
+  const r = await agent.implement({ ...task(dir), prompt: 'custom prompt', phase: 'review', readOnly: true });
+  assert.equal(r.ok, true);
+  assert.deepEqual(JSON.parse(readFileSync(out, 'utf8')), { phase: 'review', ro: '1' });
+});

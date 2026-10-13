@@ -27,7 +27,7 @@ async function approverName(root, flags) {
 
 // Integration into the stable branch needs an explicit human decision: an
 // interactive "yes", or --yes when no terminal is attached.
-async function confirm(question, flags) {
+export async function confirm(question, flags) {
   if (flags.yes) return true;
   if (!process.stdin.isTTY) throw new SafetyError('Approval needs confirmation: run in a terminal or pass --yes (only on behalf of a maintainer who reviewed the change).');
   const rl = createInterface({ input: process.stdin, output: process.stdout });

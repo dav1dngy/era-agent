@@ -11,6 +11,7 @@ import { effectiveLimits, acquireLock } from '../safety/policy.js';
 import { sandboxAvailable } from '../safety/sandbox.js';
 import { writeJson, writeText } from '../core/util.js';
 import { requireRepo } from './lab.js';
+import { ProjectStore } from '../project_lab/store.js';
 
 const print = (value, asJson) => process.stdout.write(asJson ? `${JSON.stringify(value, null, 2)}\n` : `${value}\n`);
 
@@ -68,6 +69,7 @@ async function status(ctx, { flags }) {
     coding_agent: selectedAgentId(ctx.config),
     reasoning_provider: ctx.config.reasoning?.provider ?? 'none',
     runtime_sandbox: sandboxAvailable() ? 'macos-sandbox-exec' : 'unavailable',
+    projects: new ProjectStore(ctx.config.stateDirAbs).list().map((p) => ({ id: p.id, mode: p.mode, status: p.status })),
     log_file: ctx.log.file,
   };
   if (flags.json) return print(s, true), 0;
@@ -78,6 +80,7 @@ REA: ${rea.available ? `rea-agents ${rea.version} via ${rea.source} (${rea.comma
 Native providers: ${providers || 'n/a'}
 Cycles: ${s.cycles.decided}/${s.cycles.limit} decided, ${s.cycles.integrated} integrated, in progress: ${s.cycles.pending.join(', ') || 'none'}, awaiting approval: ${s.cycles.awaiting_approval.join(', ') || 'none'}
 Coding agent: ${s.coding_agent}; reasoning provider: ${s.reasoning_provider}; runtime sandbox: ${s.runtime_sandbox}
+Projects: ${s.projects.length ? s.projects.map((p) => `${p.id} (${p.mode}, ${p.status})`).join(', ') : 'none'}
 Log: ${s.log_file ?? 'disabled'}`);
   return 0;
 }

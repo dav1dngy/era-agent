@@ -30,6 +30,17 @@ export const DEFAULT_CONFIG = Object.freeze({
     implementerTimeoutMs: 1_800_000,
     budget: { maxCostUsdPerCycle: 5, maxCostUsdTotal: 20, allowUnmeteredAgents: false },
   },
+  projectLab: {
+    // Coding agent for Project Lab: manual | command | claude-code | codex. null = "manual".
+    agent: null,
+    // Shell command for the "command" agent (cwd = isolated working copy).
+    agentCommand: null,
+    commandTimeoutMs: 600_000,
+    agentTimeoutMs: 1_800_000,
+    maxAttempts: 2,
+    // Per-project spending caps (USD). Metered agents only; unmetered agents need opt-in.
+    budget: { maxCostUsdPerRun: 5, maxCostUsdTotal: 20, allowUnmeteredAgents: false },
+  },
   agents: {
     'claude-code': { command: 'claude', model: null },
     codex: { command: null, model: null },

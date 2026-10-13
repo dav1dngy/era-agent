@@ -98,3 +98,16 @@ test('recovery refuses while a live process holds the lock (audit F06)', async (
   }
   assert.deepEqual(await recoverState({ root: dir, config }), []);
 });
+
+test('a stale lock is taken over by exactly one of many racing processes (no double ownership)', async () => {
+  const { runProcess } = await import('../src/core/process.js');
+  for (let round = 0; round < 3; round++) {
+    const dir = tempDir();
+    writeFileSync(join(dir, 'improve.lock'), JSON.stringify({ pid: 2 ** 22 + 777, owner: 'dead', token: 'old' }));
+    const url = new URL('../src/safety/policy.js', import.meta.url).href;
+    const done = join(dir, 'tried');
+    const script = `const fs = require('fs'); import('${url}').then(({ acquireLock }) => { let got = false; try { acquireLock(${JSON.stringify(dir)}, 'racer'); got = true; console.log('got'); } catch { console.log('busy'); } fs.appendFileSync(${JSON.stringify(done)}, 'x'); if (got) { const t = setInterval(() => { if (fs.readFileSync(${JSON.stringify(done)}, 'utf8').length >= 6) clearInterval(t); }, 30); } });`;
+    const results = await Promise.all(Array.from({ length: 6 }, () => runProcess(process.execPath, ['-e', script], { timeoutMs: 20_000 })));
+    assert.equal(results.filter((r) => r.stdout.trim() === 'got').length, 1, `round ${round}: ${results.map((r) => r.stdout.trim()).join(',')}`);
+  }
+});

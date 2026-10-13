@@ -45,6 +45,7 @@ Verified on macOS 27 arm64, Node 24.20, REA 6.4.0, Hopper 6.6.0-demo:
 | Every original REA command, MCP server, agent setup | `era rea …`, `era rea mcp`, `era rea setup` | passthrough | ✅ (real MCP session tested) |
 | Improvement Lab: self-analysis, experiments, approval, rebase, rollback, cancel, recover | `era self-analyze`, `era improve …`, `era rollback` | REA self-analysis | ✅ |
 | Coding agents | `era improve implement --agent …` | — | `manual` ✅ real; `claude-code`, `codex`, `command` ✅ adapters tested with fake CLIs, not run against real models |
+| **Project Lab** (v0.2.0, in development): review, modify or rebuild an authorized *external* project in an isolated copy, with human approval and rollback | `era project …` | REA for JavaScript projects and for Rebuild references | ✅ with scripted *mock* agents + the projects' own tests; real Claude Code/Codex not yet run through it |
 | Benchmarks, version comparison, REA overhead | `era benchmark [--versions …] [--rea-baseline]` | via `era analyze` / direct REA | ✅ |
 | Status, history, JSONL logs, static dashboard | `era status`, `era history`, `era dashboard` | `providers` | ✅ |
 
@@ -199,6 +200,30 @@ the negative native figures are run-to-run Hopper variance.
 
 Methodology: [docs/benchmark-methodology.md](docs/benchmark-methodology.md).
 
+## ERA Project Lab (v0.2.0, in development)
+
+Project Lab applies ERA to **external projects you are authorized to work on**. Three modes:
+
+* **Review**: read-only architecture, security and maintainability review with evidence, severity and file:line locations (REA for JavaScript projects, static checks, an optional read-only coding-agent review whose findings are accepted only if they point at real files, lines and quoted code).
+* **Modify**: "fix this bug", "add search", "refactor": ERA establishes a baseline with the project's own tests, plans, lets a configured coding agent change an **isolated copy**, re-runs the tests, detects regressions (including deleted tests), and produces a reviewable diff. You approve before anything touches the original; `rollback` undoes it.
+* **Rebuild**: from an authorized reference (for example a program you wrote or may analyze), ERA gathers REA evidence and observed behavior, writes a specification (no decompiled code is handed to the implementer), has an agent build an independent project, and compares it with the reference behavior.
+
+```bash
+era project create demo --source ~/code/shop --mode modify --task "Fix the cart total" \
+    --test "npm test --silent" --accept-fail "node --test acceptance/cart.test.js" --agent claude-code
+era project modify demo && era project show demo
+era project approve demo        # confirmation, then the verified diff is applied
+era project rollback demo
+```
+
+Per-project state, locks, limits and cost caps; cancellation, interruption and resume;
+a sandbox for the project's own code. Docs: [project-lab.md](docs/project-lab.md),
+[project-configuration.md](docs/project-configuration.md),
+[project-lab-testing.md](docs/project-lab-testing.md). **Limits:** macOS-focused sandbox;
+Project Lab has only been exercised with scripted mock agents (the Claude Code and Codex
+adapters have not run through it); it does not recover source code and does not support
+arbitrary formats.
+
 ## Connect AI agents
 
 ERA keeps three roles separate: REA does the reverse engineering, a **coding
@@ -276,8 +301,10 @@ See [SECURITY.md](SECURITY.md).
 
 ## Roadmap
 
-* **v0.2.0**: ERA Studio (graphical interface), visualized analyses, an
-  interactive experiment dashboard and benchmark comparison, onboarding.
+* **v0.2.0**: Project Lab (in development on `feature/era-v0.2.0`; designed with a
+  stable programmatic API and JSON state so ERA Studio can build on it). ERA Studio
+  (graphical interface), visualized analyses, an interactive experiment dashboard and
+  benchmark comparison, onboarding: not started.
 * **v0.3.0**: multi-agent verification, advanced workflows, team collaboration,
   role-based permissions.
 

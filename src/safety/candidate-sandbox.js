@@ -30,14 +30,16 @@ export function candidateEnv(base, { tmp, extra = {} }) {
   return { ...env, TMPDIR: tmp, npm_config_cache: join(tmp, 'npm-cache'), ERA_IN_CANDIDATE_SANDBOX: '1', ...extra };
 }
 
-export function candidateProfile({ writable = [], denyRead = [] }) {
+// `network: true` is only for trusted tooling that needs it (for example a
+// user-configured coding-agent command); candidate code never gets it.
+export function candidateProfile({ writable = [], denyRead = [], network = false }) {
   const w = writable.map(real);
   const sensitive = SENSITIVE_HOME.map((p) => join(homedir(), p)).filter(existsSync).map((p) => realpathSync(p));
   const r = [...denyRead.filter(existsSync).map((p) => realpathSync(p)), ...sensitive];
   return [
     '(version 1)',
     '(allow default)',
-    '(deny network*)',
+    ...(network ? [] : ['(deny network*)']),
     '(deny file-write*)',
     `(allow file-write* ${[...w.map((d) => `(subpath ${quote(d)})`), '(literal "/dev/null")', '(regex #"^/dev/(tty|ttys)[0-9a-z]*$")'].join(' ')})`,
     ...(r.length ? [`(deny file-read* ${r.map((d) => `(subpath ${quote(d)})`).join(' ')})`] : []),
@@ -58,8 +60,12 @@ export function candidateIsolation({ trust = false } = {}) {
 }
 
 // Returns { command, args, env } for running candidate code under the isolation.
-export function wrapCandidate(isolation, command, args, { writable, denyRead = [], tmp, env = process.env, extraEnv = {} }) {
-  const cleanEnv = candidateEnv(env, { tmp, extra: extraEnv });
+export function wrapCandidate(isolation, command, args, { writable, denyRead = [], tmp, env = process.env, extraEnv = {}, network = false, keepEnv = false }) {
+  // keepEnv: trusted, user-configured tooling that needs its own credentials.
+  const cleanEnv = keepEnv ? { ...env, TMPDIR: tmp, ...extraEnv } : candidateEnv(env, { tmp, extra: extraEnv });
+  // A parent `node --test` run sets NODE_TEST_CONTEXT, which turns a nested `node --test`
+  // into a silent reporter that exits 0 (tests would "pass" without running).
+  delete cleanEnv.NODE_TEST_CONTEXT;
   if (isolation.mode !== 'sandbox') return { command, args, env: cleanEnv };
-  return { command: SANDBOX_EXEC, args: ['-p', candidateProfile({ writable: [...writable, tmp], denyRead }), command, ...args], env: cleanEnv };
+  return { command: SANDBOX_EXEC, args: ['-p', candidateProfile({ writable: [...writable, tmp], denyRead, network }), command, ...args], env: cleanEnv };
 }

@@ -31,7 +31,24 @@ Analysis mode (uses the REA engine):
   rea <rea-args...>             Run any original REA CLI command unchanged
                                 (e.g. era rea doctor, era rea mcp, era rea setup)
 
-ERA Improvement Lab:
+ERA Project Lab (external, authorized projects; the original is never changed without approval):
+  project create <id> --source DIR [--task T] [--mode review|modify|rebuild] [--agent A]
+                [--build CMD]... [--test CMD]... [--accept CMD]... [--accept-fail CMD]...
+                [--agent-command CMD] [--criteria TEXT]... [--protect GLOB]... [--reference PATH --destination DIR
+                --authorization TEXT --run CMD] [--config FILE.json] [--max-cost USD]
+  project list                  Projects and their status
+  project review <id>           Review: architecture, findings, evidence (read-only)
+  project modify <id>           Modify: isolated change, tests, regression check, diff
+  project rebuild <id>          Rebuild: reconstruct selected behavior of a reference
+  project status <id>           State, spend and the next step
+  project show <id> [--run R]   The full report of a run
+  project approve <id> [--yes]  Apply the verified diff / write the destination
+  project resume <id>           Continue an interrupted, failed or manual run
+  project cancel <id>           Cancel and remove the run's working copy
+  project rollback <id>         Undo an approved change
+  (add --json for machine-readable output; --trust-project only for trusted code)
+
+ERA Improvement Lab (ERA improves itself):
   self-analyze                  Pack ERA, analyze it with REA, report findings
       --plan <dir> --json       Only print the REA pass plan for an artifact directory
   improve propose [--finding ID]  REA self-analysis + one experiment worktree
@@ -58,17 +75,19 @@ Options: --help, --version
 Environment: ERA_REA_BIN, ERA_STATE_DIR, ERA_LOG_LEVEL (debug|info|warn|error), ERA_LOG=off
 `;
 
-const VALUED = new Set(['cycles', 'repetitions', 'out', 'versions', 'implementer', 'finding', 'agent', 'provider', 'by', 'reason', 'manifest', 'plan']);
+const VALUED = new Set(['cycles', 'repetitions', 'out', 'versions', 'implementer', 'finding', 'agent', 'provider', 'by', 'reason', 'manifest', 'plan', 'id', 'mode', 'source', 'reference', 'destination', 'task', 'run', 'authorization', 'config', 'max-cost', 'timeout-ms', 'max-attempts', 'agent-command']);
+// Flags that may be given several times (collected into arrays).
+const REPEATABLE = new Set(['arg', 'build', 'test', 'criteria', 'accept', 'accept-fail', 'protect']);
 
 export function parseArgs(argv) {
   const positional = [];
-  const flags = { arg: [] };
+  const flags = { arg: [], build: [], test: [], criteria: [], accept: [], 'accept-fail': [], protect: [] };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a.startsWith('--')) {
       const key = a.slice(2);
       const next = argv[i + 1];
-      if (key === 'arg') flags.arg.push(argv[++i]);
+      if (REPEATABLE.has(key) && next !== undefined) flags[key].push(argv[++i]);
       else if (VALUED.has(key) && next !== undefined) flags[key] = argv[++i];
       else flags[key] = true;
     } else positional.push(a);
@@ -80,6 +99,7 @@ const COMMANDS = {
   analyze: () => import('./commands/analysis.js'),
   inspect: () => import('./commands/analysis.js'),
   explain: () => import('./commands/analysis.js'),
+  project: () => import('./commands/project.js'),
   extract: () => import('./commands/analysis.js'),
   'self-analyze': () => import('./commands/lab.js'),
   improve: () => import('./commands/lab.js'),
