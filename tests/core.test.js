@@ -1,10 +1,10 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { loadConfig, deepMerge, DEFAULT_CONFIG } from '../src/core/config.js';
 import { median, sha256Text } from '../src/core/util.js';
-import { parseTimeOutput, runProcess } from '../src/core/process.js';
+import { parseTimeOutput, runProcess, terminateAllChildren, activeChildCount } from '../src/core/process.js';
 import { tempDir } from './helpers.js';
 
 test('loadConfig returns defaults without a config file', () => {
@@ -60,4 +60,38 @@ test('runProcess reports spawn errors for missing executables', async () => {
   const r = await runProcess('/nonexistent/era-binary', [], { timeoutMs: 1000 });
   assert.equal(r.exitCode, null);
   assert.match(r.spawnError, /ENOENT/);
+});
+
+test('timeouts kill the whole process tree, not only the direct child', async () => {
+  const dir = tempDir();
+  const pidFile = join(dir, 'grandchild.pid');
+  // The direct child spawns a long-lived grandchild that inherits stdout, then waits.
+  const script = `const { spawn } = require('node:child_process'); const g = spawn(process.execPath, ['-e', 'setInterval(()=>{}, 1000)'], { stdio: 'inherit' }); require('node:fs').writeFileSync(${JSON.stringify(pidFile)}, String(g.pid)); setInterval(()=>{}, 1000);`;
+  const started = Date.now();
+  const r = await runProcess(process.execPath, ['-e', script], { timeoutMs: 1000 });
+  assert.equal(r.timedOut, true);
+  assert.ok(Date.now() - started < 8000, 'run settles promptly');
+  const grandchild = Number(readFileSync(pidFile, 'utf8'));
+  await new Promise((res) => setTimeout(res, 300));
+  assert.throws(() => process.kill(grandchild, 0), /ESRCH/, 'grandchild was terminated');
+  assert.equal(activeChildCount(), 0);
+});
+
+test('a run settles when an escaped grandchild keeps the pipes open', async () => {
+  // The grandchild detaches into its own process group and keeps stdout; the direct child exits at once.
+  const script = `const { spawn } = require('node:child_process'); const g = spawn(process.execPath, ['-e', 'setTimeout(()=>{}, 4000)'], { stdio: 'inherit', detached: true }); g.unref(); process.stdout.write(String(g.pid));`;
+  const started = Date.now();
+  const r = await runProcess(process.execPath, ['-e', script], { timeoutMs: 20_000 });
+  assert.equal(r.exitCode, 0);
+  assert.equal(r.timedOut, false);
+  assert.ok(Date.now() - started < 3500, `settled in ${Date.now() - started} ms`);
+  try { process.kill(Number(r.stdout), 'SIGKILL'); } catch { /* already gone */ }
+});
+
+test('terminateAllChildren cancels running process groups', async () => {
+  const pending = runProcess(process.execPath, ['-e', 'setInterval(()=>{}, 1000)'], { timeoutMs: 30_000 });
+  await new Promise((res) => setTimeout(res, 200));
+  assert.equal(terminateAllChildren('SIGTERM'), 1);
+  const r = await pending;
+  assert.equal(r.signal, 'SIGTERM');
 });
