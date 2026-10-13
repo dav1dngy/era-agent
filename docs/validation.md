@@ -22,7 +22,7 @@ explicit.
 ## Not verified or incomplete
 
 * **Real headless coding agents.** `claude-code` and `codex` adapters were tested
-  only against fake CLIs. Real experiments used Claude Code interactively (`manual`).
+  only against fake CLIs. Real experiments used the `manual` mode.
 * **CI workflows** were written and linted locally but have not run on GitHub
   (the repository is not published). Action SHAs were resolved from the GitHub API.
 * **Linux:** unit and fake-engine tests are designed to run there (CI job

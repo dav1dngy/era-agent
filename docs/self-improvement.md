@@ -66,7 +66,7 @@ automatic publication.
 
 ## Initial experiment (3 cycles, 2026-10-13)
 
-The implementer was Claude Code working interactively in the experiment worktree
+Changes were implemented interactively in the experiment worktree
 (manual mode: `era improve propose` → edit/commit → `era improve evaluate`).
 These three cycles ran before the approval gate existed, so accepted cycles
 were merged automatically.

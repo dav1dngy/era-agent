@@ -248,7 +248,7 @@ See [SECURITY.md](SECURITY.md).
 ## Limitations
 
 * **Experimental.** Five improvement experiments so far. The real coding agent
-  used was Claude Code working interactively (`manual`). The `claude-code` and
+  was the `manual` mode (changes made interactively in the experiment worktree). The `claude-code` and
   `codex` adapters are tested only against fake CLIs.
 * Native analysis covers Mach-O only. Hopper's public API exposes no complete
   function bodies, and Hopper occasionally hangs (ERA's watchdog contains it).
