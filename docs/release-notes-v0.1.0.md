@@ -31,7 +31,7 @@ independent open-source project built on the original
 * 5 improvement experiments (2 rejected, 3 integrated; the last one approved by
   the maintainer), with REA run records and digests in `experiments/`.
 * Benchmark accuracy F1 0.956 (era-v1) → 0.987 (era-v4); error rate 0.
-* Tests: 133 (132 pass, 1 platform skip) with real REA, MCP and sandbox tests.
+* Tests: 134 (133 pass, 1 platform skip) with real REA, MCP and sandbox tests.
 * An independent technical audit (docs/ERA_INDEPENDENT_AUDIT.md) and its
   remediation (docs/audit-remediation.md).
 
