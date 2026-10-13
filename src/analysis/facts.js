@@ -1,5 +1,7 @@
 // Converts REA Evidence into normalized, comparable facts ("category:value").
 // Facts drive the human-readable report, self-analysis rules and benchmarks.
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 
 const URL_RE = /^(https?|wss?):\/\/[^\s"'`]+$/;
 
@@ -20,12 +22,41 @@ function moduleOf(nodeInfo) {
 const startOf = (n) => n.evidence?.location?.value?.start;
 const before = (a, b) => a.line < b.line || (a.line === b.line && a.column < b.column);
 
-// CommonJS `module.exports = { a, b }`: REA reports one `default` export binding
-// and no member names. Names are inferred from REA's semantic graph: the
-// program-scope binding reads that directly follow a `module.exports` write, up
-// to the first other node. Limitation: `module.exports = fn` is also read as a
-// named export `fn`, and renamed keys (`{ key: other }`) yield the value's name.
-export function inferCommonJsExports(semanticGraph) {
+// Offset of a REA source location (1-based line, 0-based column).
+function offsetOf(text, { line, column }) {
+  let off = 0;
+  for (let l = 1; l < line; l++) off = text.indexOf('\n', off) + 1;
+  return off + column;
+}
+
+// Property key of an object-literal value read at `offset`, established from
+// the source text: `key: value` -> key, shorthand `{ name` / `, name` -> name.
+// Anything else (for example `module.exports = fn`) is not a named export.
+export function objectKeyAt(text, offset, name) {
+  let i = offset - 1;
+  while (i >= 0 && /\s/.test(text[i])) i--;
+  if (text[i] === '{' || text[i] === ',') return name;
+  if (text[i] !== ':') return null;
+  i--;
+  while (i >= 0 && /\s/.test(text[i])) i--;
+  const m = /([A-Za-z_$][\w$]*|"[^"\n]*"|'[^'\n]*')$/.exec(text.slice(Math.max(0, i - 200), i + 1));
+  return m ? m[1].replace(/^["']|["']$/g, '') : null;
+}
+
+// CommonJS `module.exports = { ... }`: REA reports one `default` export binding
+// and no member names. Member names are INFERRED: REA's semantic graph locates
+// the program-scope binding reads directly after a `module.exports` write, and
+// the analyzed source text at those locations establishes the property key.
+// Without source text nothing is inferred. Renamed keys yield the key, and
+// `module.exports = fn` yields no named export.
+export function inferCommonJsExports(semanticGraph, { sourceRoot = null, readSource = null } = {}) {
+  const read = readSource ?? ((mod) => {
+    try {
+      return sourceRoot ? readFileSync(join(sourceRoot, mod), 'utf8') : null;
+    } catch {
+      return null;
+    }
+  });
   const byModule = new Map();
   for (const n of semanticGraph?.nodes ?? []) {
     const mod = n.identity?.module_path;
@@ -33,6 +64,8 @@ export function inferCommonJsExports(semanticGraph) {
   }
   const names = new Set();
   for (const [mod, nodes] of byModule) {
+    const text = read(mod);
+    if (text === null) continue;
     const programBindings = new Set(nodes.filter((n) => n.kind === 'binding' && /^binding:scope:program:/.test(n.identity.role_key ?? '')).map((n) => n.label));
     nodes.sort((a, b) => (before(startOf(a), startOf(b)) ? -1 : before(startOf(b), startOf(a)) ? 1 : 0));
     const moduleReads = nodes.filter((n) => n.kind === 'expression' && n.label === 'module' && /:read:module$/.test(n.identity.role_key ?? ''));
@@ -43,14 +76,15 @@ export function inferCommonJsExports(semanticGraph) {
         if (before(startOf(n), end)) continue;
         const isBindingRead = n.kind === 'expression' && /:read:/.test(n.identity?.role_key ?? '') && programBindings.has(n.label);
         if (!isBindingRead) break;
-        names.add(`export:${mod}#${n.label}`);
+        const key = objectKeyAt(text, offsetOf(text, startOf(n)), n.label);
+        if (key) names.add(`export:${mod}#${key}`);
       }
     }
   }
   return [...names];
 }
 
-export function javascriptFacts(evidence, _options = {}) {
+export function javascriptFacts(evidence, options = {}) {
   const nr = evidence.normalized_result ?? {};
   const graph = nr.graph ?? {};
   const sem = nr.semantic_graph ?? {};
@@ -78,7 +112,10 @@ export function javascriptFacts(evidence, _options = {}) {
     const v = node.properties?.value;
     if (node.kind === 'literal' && typeof v === 'string' && URL_RE.test(v)) facts.add(`endpoint:${v}`);
   }
-  for (const f of inferCommonJsExports(sem)) facts.add(f);
+  for (const f of inferCommonJsExports(sem, options)) {
+    if (!facts.has(f)) options.provenance?.set(f, 'inferred: CommonJS module.exports object key (REA semantic graph + source text)');
+    facts.add(f);
+  }
   return [...facts].sort();
 }
 

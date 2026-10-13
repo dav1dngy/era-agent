@@ -83,6 +83,7 @@ export async function analyzeTarget(target, { rea, stateDir, runtime = false, ru
   const runs = [];
   const evidence = [];
   const facts = new Set();
+  const provenance = new Map();
   let sandbox = null;
   const execute = async (step) => {
     if (step.scenario) {
@@ -99,7 +100,7 @@ export async function analyzeTarget(target, { rea, stateDir, runtime = false, ru
     runs.push(record);
     if (record.status === 'succeeded' && result) {
       evidence.push(summarizeEvidence(result));
-      for (const f of extractFacts(result)) facts.add(f);
+      for (const f of extractFacts(result, { sourceRoot: reaInput, provenance })) facts.add(f);
     }
     return { record, result };
   };
@@ -126,6 +127,8 @@ export async function analyzeTarget(target, { rea, stateDir, runtime = false, ru
     runs,
     evidence,
     facts: [...facts].sort(),
+    // Facts not directly observed by REA, with how they were inferred.
+    fact_provenance: Object.fromEntries([...provenance].sort()),
     fact_groups: groupFacts([...facts].sort()),
     report_path: join(dir, 'report.md'),
   };

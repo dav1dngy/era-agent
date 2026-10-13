@@ -4,7 +4,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 import { join } from 'node:path';
-import { DATASETS, REA_BIN, ROOT, reaAvailable, runEra, tempDir } from './helpers.js';
+import { DATASETS, FIXTURES, REA_BIN, ROOT, reaAvailable, runEra, tempDir } from './helpers.js';
 import { evaluateSelf } from '../src/evaluation/self-eval.js';
 import { ReaClient } from '../src/rea_integration/rea-client.js';
 import { candidateIsolation } from '../src/safety/candidate-sandbox.js';
@@ -64,4 +64,15 @@ test('era analyze stages a single JavaScript file for REA', { skip }, () => {
   const a = JSON.parse(r.stdout);
   assert.ok(a.target.staged_as);
   assert.ok(a.facts.includes('export:format.mjs#formatReport'), a.facts.join());
+});
+
+test('CommonJS inference reports renamed keys correctly and marks them as inferred (audit F12)', { skip }, () => {
+  const r = runEra(['analyze', join(FIXTURES, 'cjs-exports'), '--json'], { env: { ERA_STATE_DIR: tempDir() } });
+  assert.equal(r.status, 0, r.stderr);
+  const a = JSON.parse(r.stdout);
+  const exports = a.facts.filter((f) => f.startsWith('export:'));
+  for (const f of ['export:index.js#publicName', 'export:index.js#short', 'export:index.js#quoted-key']) assert.ok(exports.includes(f), `${f} in ${exports}`);
+  assert.ok(!exports.includes('export:index.js#internal'), 'value binding names are not export names');
+  assert.ok(!exports.includes('export:fn.js#handler'), 'module.exports = fn has no named export');
+  assert.match(a.fact_provenance['export:index.js#publicName'], /^inferred/);
 });

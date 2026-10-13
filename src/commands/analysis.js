@@ -68,6 +68,7 @@ export function validateAnalysis(a) {
     runs: runs.map((r) => ({ label: String(r.label ?? ''), command: Array.isArray(r.command) ? r.command.map(String).slice(0, 3) : ['rea'], status: String(r.status ?? ''), duration_ms: Number(r.duration_ms) || 0, evidence_id: isStr(r.evidence_id) ? r.evidence_id : null, errors: Array.isArray(r.errors) ? r.errors.map(String) : [] })),
     evidence: evidence.map((e) => ({ operation: String(e.operation ?? ''), provider: String(e.provider ?? ''), coverage: e.coverage ?? null, unknowns: Number.isFinite(e.unknowns) ? e.unknowns : null, limitations: Array.isArray(e.limitations) ? e.limitations.map(String) : [], ...(e.function?.pseudocode ? { function: { name: String(e.function.name), address: String(e.function.address), signature: e.function.signature ? String(e.function.signature) : null, pseudocode: String(e.function.pseudocode) } } : {}) })),
     facts: a.facts,
+    fact_provenance: a.fact_provenance && typeof a.fact_provenance === 'object' ? Object.fromEntries(Object.entries(a.fact_provenance).filter(([k, v]) => isStr(k) && isStr(v))) : {},
     fact_groups: groupFacts(a.facts),
   };
 }
@@ -107,11 +108,12 @@ async function extract(ctx, { flags }) {
   if (!flags.manifest) throw new Error('Usage: era extract --manifest <file.json>');
   const manifest = JSON.parse(readFileSync(String(flags.manifest), 'utf8'));
   const facts = new Set();
+  const provenance = new Map();
   for (const file of manifest.evidence_files ?? []) {
-    for (const f of extractFacts(JSON.parse(readFileSync(file, 'utf8')), { sourceRoot: manifest.source_root ?? null })) facts.add(f);
+    for (const f of extractFacts(JSON.parse(readFileSync(file, 'utf8')), { sourceRoot: manifest.source_root ?? null, provenance })) facts.add(f);
   }
   const sorted = [...facts].sort();
-  print({ target: manifest.target, facts: sorted, fact_groups: groupFacts(sorted) }, true);
+  print({ target: manifest.target, facts: sorted, fact_provenance: Object.fromEntries(provenance), fact_groups: groupFacts(sorted) }, true);
   return 0;
 }
 

@@ -50,7 +50,10 @@ export function renderAnalysisReport(a) {
   const titles = a.target.kind === 'mach-o' ? { ...CATEGORY_TITLES, ...NATIVE_TITLES } : CATEGORY_TITLES;
   for (const [cat, values] of Object.entries(groups)) {
     out.push(`### ${titles[cat] ?? cat} (${values.length})`, '');
-    for (const v of values) out.push(`- \`${v}\``);
+    for (const v of values) {
+      const inferred = a.fact_provenance?.[`${cat}:${v}`];
+      out.push(`- \`${v}\`${inferred ? ` _(${inferred})_` : ''}`);
+    }
     out.push('');
   }
   const functions = a.evidence.filter((e) => e.function?.pseudocode);

@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { detectTarget } from '../src/analysis/detect.js';
-import { extractFacts, groupFacts, inferCommonJsExports } from '../src/analysis/facts.js';
+import { extractFacts, groupFacts, inferCommonJsExports, objectKeyAt } from '../src/analysis/facts.js';
 import { planWorkflow, decompileCandidates } from '../src/analysis/analyze.js';
 import { renderAnalysisReport } from '../src/analysis/report.js';
 import { DATASETS, loadEvidence, tempDir } from './helpers.js';
@@ -44,8 +44,8 @@ test('extractFacts reads real REA JavaScript application Evidence', () => {
   }
 });
 
-test('CommonJS named exports are inferred from the REA semantic graph', () => {
-  const facts = extractFacts(loadEvidence('js-app.analyze.json'));
+test('CommonJS named exports are inferred from the REA semantic graph and source keys', () => {
+  const facts = extractFacts(loadEvidence('js-app.analyze.json'), { sourceRoot: join(DATASETS, 'js-app') });
   for (const f of ['export:src/main.js#run', 'export:src/config.js#parseConfig', 'export:src/config.js#DEFAULT_ENDPOINT', 'export:src/net.js#fetchStatus']) assert.ok(facts.includes(f), f);
   assert.ok(!facts.includes('export:src/main.js#require'), 'globals after the export statement are not exports');
   assert.ok(!facts.some((f) => f.startsWith('export:src/main.js#') && !['export:src/main.js#run', 'export:src/main.js#default'].includes(f)));
@@ -64,7 +64,9 @@ test('inferCommonJsExports ignores writes not made through module', () => {
   assert.deepEqual(inferCommonJsExports(sem), []);
   sem.nodes[1].label = 'module';
   sem.nodes[1].identity.role_key = 'reference:0:read:module';
-  assert.deepEqual(inferCommonJsExports(sem), ['export:m.js#a']);
+  const source = { 'm.js': 'const a = 1;\nmodule.exports = { a };' };
+  assert.deepEqual(inferCommonJsExports(sem, { readSource: (m) => source[m] }), ['export:m.js#a']);
+  assert.deepEqual(inferCommonJsExports(sem), [], 'nothing is inferred without source text');
 });
 
 test('extractFacts reads real REA Mach-O, artifact and process Evidence', () => {
@@ -96,4 +98,12 @@ test('groupFacts and report rendering', () => {
   assert.match(md, /Source modules \(2\)/);
   assert.match(md, /`rea analyze-javascript-application \/x\/app`/);
   assert.match(md, /2 residual unknowns/);
+});
+
+test('objectKeyAt establishes keys from source text', () => {
+  const t = "module.exports = { pub: internal, short, 'q-k': other };\nmodule.exports = fn;";
+  assert.equal(objectKeyAt(t, t.indexOf('internal'), 'internal'), 'pub');
+  assert.equal(objectKeyAt(t, t.indexOf('short'), 'short'), 'short');
+  assert.equal(objectKeyAt(t, t.indexOf('other'), 'other'), 'q-k');
+  assert.equal(objectKeyAt(t, t.lastIndexOf('fn'), 'fn'), null);
 });
