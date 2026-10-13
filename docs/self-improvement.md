@@ -153,7 +153,7 @@ them. `limits.maxCycles` was raised from 3 to 6 and `maxReaRunsPerCycle` from
   test and agent subprocess from inside its own process group and kills the
   group if the parent disappears (commit `f71f7de`).
 * **Re-evaluation:** after `era improve rebase` onto the final release-candidate
-  `main`: EXPERIMENT_4_REEVAL
+  `main`: run as the last step before handover. The result is in `.era/cycles/cycle-20261013T112629-18505d/report.md` (`era improve show cycle-20261013T112629-18505d`); this document is updated when the maintainer decides.
 
 ### Not run in this campaign
 

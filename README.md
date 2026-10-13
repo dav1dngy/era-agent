@@ -141,7 +141,7 @@ description: [docs/improvement-lab.md](docs/improvement-lab.md).
 | 1 | Infer CommonJS export names from REA's semantic graph | F1 0.956 → 0.987, but REA self-analysis findings 7 → 9 | **rejected** (main untouched) |
 | 2 | Split REA self-analysis into size-balanced passes | coverage finding resolved, findings 7 → 6 | accepted → era-v2 |
 | 3 | Retry #1 on era-v2 | F1 0.956 → 0.987, findings 6 → 5 | accepted → era-v3 |
-| 4 | Byte-bounded REA passes with import placeholders (campaign 2) | findings 26 → 7, complete REA coverage | EXPERIMENT_4_STATUS |
+| 4 | Byte-bounded REA passes with import placeholders (campaign 2) | findings 26 → 7, complete REA coverage | awaiting maintainer approval (pending re-evaluation on the final `main`) |
 
 Cycles 1–3 ran before the approval gate existed and were merged automatically.
 Every record (cycle JSON, REA run records with output digests, self-analysis
