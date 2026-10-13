@@ -81,7 +81,7 @@ npm link             # optional: `era` on PATH
 era status
 ```
 
-Requirements: Node.js ≥ 22.19, git. Native decompilation needs Hopper, Ghidra
+Requirements: Node.js `^22.19 || ^24.11 || >=26` (REA's supported range; verified on 24.20), git. Native decompilation needs Hopper, Ghidra
 12.1.x (`GHIDRA_INSTALL_DIR`) or IDA Pro MCP. ERA needs no API keys. Details and
 troubleshooting: [docs/installation.md](docs/installation.md).
 

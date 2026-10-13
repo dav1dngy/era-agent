@@ -5,7 +5,7 @@
 | Requirement | Notes |
 |---|---|
 | macOS (arm64 verified) or Linux | macOS 27 arm64 is the verified host. On Linux, Mach-O inspection, Hopper decompilation and the runtime sandbox are unavailable; JavaScript and archive workflows work |
-| Node.js `>=22.19` (REA needs `^22.19 \|\| ^24.11 \|\| >=26`) | verified with v24.20.0 |
+| Node.js `^22.19 \|\| ^24.11 \|\| >=26` (the range of the pinned REA engine) | verified with v24.20.0 only |
 | npm | to install dependencies |
 | git | required for self-improvement (worktrees, tags) |
 | Optional: Hopper Disassembler, Ghidra 12.1.x, or IDA Pro MCP | only for native decompilation (`era analyze <mach-o>` decompiles exported functions when `rea providers` reports one available) |

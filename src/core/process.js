@@ -10,6 +10,7 @@ import { fileURLToPath } from 'node:url';
 
 const TIME_BIN = '/usr/bin/time';
 const MAX_CAPTURE_BYTES = 8 * 1024 * 1024;
+export const DEFAULT_MAX_OUTPUT_BYTES = 512 * 1024 * 1024;
 const KILL_GRACE_MS = 2000;
 const PIPE_DRAIN_MS = 1000;
 
@@ -74,6 +75,8 @@ export function runProcess(command, args, options = {}) {
     // Enforce the deadline from inside the child's process group as well, so it
     // holds even if this process dies (see watchdog.mjs).
     watchdog = false,
+    // Output written to stdoutFile beyond this many bytes terminates the run.
+    maxOutputBytes = DEFAULT_MAX_OUTPUT_BYTES,
   } = options;
   const wrap = measureResources && resourceWrapperAvailable();
   let file = wrap ? TIME_BIN : command;
@@ -99,7 +102,14 @@ export function runProcess(command, args, options = {}) {
     }
     active.add(child);
     const sink = stdoutFile ? createWriteStream(stdoutFile) : null;
+    let outputError = null;
     let drainTimer = null;
+    const abort = (reason) => {
+      if (outputError) return;
+      outputError = reason;
+      killGroup(child, 'SIGKILL');
+    };
+    sink?.on('error', (err) => abort(`output file error: ${err.message}`));
     const finish = (result) => {
       if (settled) return;
       settled = true;
@@ -113,8 +123,8 @@ export function runProcess(command, args, options = {}) {
       // The watchdog reports a command that could not be started as exit 127.
       const startFailure = watchdog && result.exitCode === 127 ? /era-watchdog: failed to start [^:]+: (.+)/.exec(parsed.stderr) : null;
       if (startFailure) Object.assign(result, { exitCode: null, spawnError: startFailure[1].trim() });
-      const done = () => resolvePromise({ ...result, durationMs, stdout, stdoutBytes, stderr: parsed.stderr, resources: parsed.resources });
-      if (sink) sink.end(done);
+      const done = () => resolvePromise({ ...result, durationMs, stdout, stdoutBytes, stderr: parsed.stderr, resources: parsed.resources, outputError });
+      if (sink && !sink.destroyed && !sink.errored) sink.end(done);
       else done();
     };
     const timer = setTimeout(() => {
@@ -125,8 +135,14 @@ export function runProcess(command, args, options = {}) {
 
     child.stdout.on('data', (chunk) => {
       stdoutBytes += chunk.length;
-      if (sink) sink.write(chunk);
-      else if (stdout.length < MAX_CAPTURE_BYTES) stdout += chunk;
+      if (sink) {
+        if (stdoutBytes > maxOutputBytes) return abort(`output exceeded ${maxOutputBytes} bytes`);
+        // Backpressure: stop reading until the file catches up.
+        if (!sink.write(chunk)) {
+          child.stdout.pause();
+          sink.once('drain', () => child.stdout.resume());
+        }
+      } else if (stdout.length < MAX_CAPTURE_BYTES) stdout += chunk;
     });
     child.stderr.on('data', (chunk) => {
       if (stderr.length < MAX_CAPTURE_BYTES) stderr += chunk;

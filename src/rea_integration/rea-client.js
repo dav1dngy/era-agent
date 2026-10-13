@@ -129,7 +129,7 @@ export class ReaClient {
     let result = null;
     let parseError = null;
     try {
-      result = text.trim() ? JSON.parse(text) : null;
+      result = !proc.outputError && text.trim() ? JSON.parse(text) : null;
     } catch (err) {
       parseError = `REA output is not valid JSON: ${err.message}`;
     }
@@ -137,6 +137,7 @@ export class ReaClient {
     const errors = [];
     if (proc.spawnError) errors.push(`failed to start REA (${this.command}): ${proc.spawnError}`);
     if (proc.timedOut) errors.push(`REA exceeded timeout of ${timeoutMs} ms`);
+    if (proc.outputError) errors.push(`REA output aborted: ${proc.outputError}`);
     if (parseError) errors.push(parseError);
     if (result?.error) errors.push(`${result.code ?? 'error'}: ${result.message ?? result.error}`);
     if (proc.exitCode !== 0 && errors.length === 0) errors.push(`REA exited with code ${proc.exitCode}`);
@@ -152,7 +153,7 @@ export class ReaClient {
       };
     }
 
-    const status = proc.timedOut ? 'timeout' : proc.exitCode === 0 && !parseError && !result?.error ? 'succeeded' : 'failed';
+    const status = proc.timedOut ? 'timeout' : proc.exitCode === 0 && !parseError && !result?.error && !proc.outputError ? 'succeeded' : 'failed';
     const record = {
       run_id: runId,
       label,

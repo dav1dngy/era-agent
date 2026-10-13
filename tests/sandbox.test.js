@@ -3,7 +3,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, realpathSync } from 'node:fs';
 import { join } from 'node:path';
 import { sandboxAvailable, sandboxCommand, sandboxProfile } from '../src/safety/sandbox.js';
 import { FIXTURES, reaAvailable, runEra, tempDir } from './helpers.js';
@@ -19,10 +19,12 @@ function buildProbe() {
 }
 
 test('profile denies network and writes outside the scratch directories', () => {
-  const p = sandboxProfile({ writableDirs: [tempDir()] });
+  const scratch = tempDir();
+  const p = sandboxProfile({ writableDirs: [scratch] });
   assert.match(p, /\(deny network\*\)/);
   assert.match(p, /\(deny file-write\*\)/);
-  assert.match(p, /\(allow file-write\* \(subpath "\/private\//);
+  // Platform-neutral: the canonical (symlink-resolved) scratch path is allowed.
+  assert.ok(p.includes(`(allow file-write* (subpath "${realpathSync(scratch)}")`), p);
 });
 
 test('sandboxed probe can write only to scratch and has no network', { skip: noSandbox || noClang }, () => {

@@ -29,7 +29,7 @@ jobs:
       - run: git config --global user.name ci && git config --global user.email ci@localhost
       - run: npm test
       - name: Package
-        run: npm pack --pack-destination dist
+        run: mkdir -p dist && npm pack --pack-destination dist
       - name: Software Bill of Materials (CycloneDX)
         run: npm sbom --sbom-format cyclonedx --omit dev > dist/era-agent.cdx.json
       - name: Clean-environment installation test

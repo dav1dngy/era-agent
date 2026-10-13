@@ -115,3 +115,15 @@ test('watchdog enforces the deadline and preserves exit codes', async () => {
   const slow = await runProcess(process.execPath, ['-e', 'setInterval(()=>{}, 1000)'], { timeoutMs: 500, watchdog: true });
   assert.equal(slow.timedOut, true);
 });
+
+test('an output flood beyond the quota terminates the run cleanly (audit F14)', async () => {
+  const out = join(tempDir(), 'out.bin');
+  const r = await runProcess(process.execPath, ['-e', 'const b = Buffer.alloc(65536, 97); (function w() { while (process.stdout.write(b)); process.stdout.once("drain", w); })();'], { timeoutMs: 20_000, stdoutFile: out, maxOutputBytes: 1_000_000 });
+  assert.match(r.outputError, /exceeded 1000000 bytes/);
+  assert.equal(r.timedOut, false);
+});
+
+test('a failing output sink is recorded instead of crashing (audit F14)', async () => {
+  const r = await runProcess(process.execPath, ['-e', 'console.log("x".repeat(1000))'], { timeoutMs: 10_000, stdoutFile: join(tempDir(), 'missing-dir', 'out.json') });
+  assert.match(r.outputError, /output file error/);
+});
