@@ -1,7 +1,7 @@
 # ERA improvement cycle cycle-20261013T150739-02fd6c
 
 - Status: **integrated** → era-v4 (approved by David Nguyen (approved in chat))
-- Base: era-v3 (`fa4bbdb856eb`), branch `experiment/cycle-20261013T150739-02fd6c`
+- Base: era-v3 (`fcd2cbd46714`), branch `experiment/cycle-20261013T150739-02fd6c`
 - Finding: F-5dd92e0c8a — REA analysis of src/self_analysis/self-analyze.js is incomplete (resource_constraint) (analysis-accuracy)
 - Hypothesis: REA analysis of src/self_analysis/self-analyze.js is incomplete (resource_constraint)
 - Target: `{"metric":"finding_resolved","finding_id":"F-5dd92e0c8a"}` → finding F-5dd92e0c8a absent in candidate REA self-analysis

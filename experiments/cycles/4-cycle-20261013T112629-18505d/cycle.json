@@ -2,7 +2,7 @@
   "cycle_id": "cycle-20261013T112629-18505d",
   "status": "rejected",
   "created_at": "2026-10-13T11:27:52.504Z",
-  "base_commit": "f02fdfce9684c36fad8f51fedc99ce79b33d14da",
+  "base_commit": "bd6da33b06651037d6f96ca68e3a0ee2877c8adc",
   "base_version": "era-v3",
   "branch": "experiment/cycle-20261013T112629-18505d",
   "worktree": "<era-repo>/.era/worktrees/cycle-20261013T112629-18505d",
@@ -714,7 +714,7 @@
   "evaluation_started_at": "2026-10-13T14:52:28.994Z",
   "previous": [
     {
-      "base_commit": "5004f964b449cb1c21dd4646d2f1e6dc5b381f03",
+      "base_commit": "969b391b876e0dbea75cd1d242465d94db0884eb",
       "status": "awaiting-approval",
       "evaluation_summary": "accepted: all guards pass and target met",
       "decided_at": "2026-10-13T11:47:18.625Z"

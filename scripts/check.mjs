@@ -3,6 +3,7 @@
 import { execFileSync, spawnSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { SECRET_PATTERNS } from '../src/safety/secrets.js';
+import { PERSONAL_PATH } from './anonymize.mjs';
 
 const files = execFileSync('git', ['ls-files'], { encoding: 'utf8' }).split('\n').filter(Boolean);
 let failed = false;
@@ -22,6 +23,10 @@ for (const f of files) {
     text = readFileSync(f, 'utf8');
   } catch {
     continue;
+  }
+  if (PERSONAL_PATH.test(text)) {
+    failed = true;
+    process.stderr.write(`personal absolute path in ${f} (run node scripts/export-experiments.mjs or anonymize it)\n`);
   }
   for (const [name, re] of SECRET_PATTERNS) {
     if (new RegExp(re.source).test(text)) {

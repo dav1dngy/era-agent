@@ -33,11 +33,14 @@ explicit.
 
 ## Pre-publication checks
 
-* Secret scan of the full history: 4 matches, all the synthetic test string
-  synthetic test key (an Anthropic-style prefix followed by the alphabet) (commit `162db37`, removed in
-  `f71f7de`). No real credentials found.
-* Commit author email in every commit: `77665890+dav1dngy@users.noreply.github.com` (the local git
-  configuration). It becomes public on push.
-* Evidence and report files contain absolute local paths (`~/...`).
+Superseded by the history rewrite documented in
+[release-readiness.md](release-readiness.md#5-security-and-privacy-findings):
+
+* Secret scan of the full history: 0 matches (the synthetic test key was
+  neutralized in every commit).
+* Every commit and tag uses the GitHub no-reply address
+  `77665890+dav1dngy@users.noreply.github.com`.
+* No personal absolute paths remain in tracked files or history; `scripts/check.mjs`
+  enforces this.
 * `dav1dngy/era-agent` does not exist on GitHub (HTTP 404); nothing would be overwritten.
 * Nothing has been pushed or published.

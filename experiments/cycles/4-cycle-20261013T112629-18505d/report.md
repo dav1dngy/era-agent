@@ -1,7 +1,7 @@
 # ERA improvement cycle cycle-20261013T112629-18505d
 
 - Status: **rejected**
-- Base: era-v3 (`f02fdfce9684`), branch `experiment/cycle-20261013T112629-18505d`
+- Base: era-v3 (`bd6da33b0665`), branch `experiment/cycle-20261013T112629-18505d`
 - Finding: F-5dd92e0c8a — REA analysis of src/self_analysis/self-analyze.js is incomplete (resource_constraint) (analysis-accuracy)
 - Hypothesis: REA analysis of src/self_analysis/self-analyze.js is incomplete (resource_constraint)
 - Target: `{"metric":"finding_resolved","finding_id":"F-5dd92e0c8a"}` → finding F-5dd92e0c8a absent in candidate REA self-analysis

@@ -2,7 +2,7 @@
   "cycle_id": "cycle-20261013T103029-c10c1f",
   "status": "accepted",
   "created_at": "2026-10-13T10:32:02.524Z",
-  "base_commit": "817ea7a5de4a4e4ba30188a871529816faac24cb",
+  "base_commit": "8e146733da89fc6d69efcd01606cd69e8ab07935",
   "base_version": "era-v2",
   "branch": "experiment/cycle-20261013T103029-c10c1f",
   "worktree": "<era-repo>/.era/worktrees/cycle-20261013T103029-c10c1f",
@@ -378,7 +378,7 @@
   },
   "instructions_file": "<era-repo>/.era/cycles/cycle-20261013T103029-c10c1f/instructions.md",
   "version": "era-v3",
-  "merge_commit": "00d7fccecb113af0f33f7977c3e19d1b53d1b57d",
+  "merge_commit": "f044185b67855a76bae9600a469947b9470d748c",
   "evaluation": {
     "accepted": true,
     "guards": [

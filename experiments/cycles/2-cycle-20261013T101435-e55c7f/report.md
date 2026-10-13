@@ -1,7 +1,7 @@
 # ERA improvement cycle cycle-20261013T101435-e55c7f
 
 - Status: **accepted** → era-v2
-- Base: era-v1 (`3f184f008dd5`), branch `experiment/cycle-20261013T101435-e55c7f`
+- Base: era-v1 (`2522d8e513f7`), branch `experiment/cycle-20261013T101435-e55c7f`
 - Finding: F-1026e8ec5f — REA analysis of tests/self-analysis.test.js is incomplete (resource_constraint) (analysis-accuracy)
 - Hypothesis: REA analysis of tests/self-analysis.test.js is incomplete (resource_constraint)
 - Target: `{"metric":"finding_resolved","finding_id":"F-1026e8ec5f"}` → finding F-1026e8ec5f absent in candidate REA self-analysis

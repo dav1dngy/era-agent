@@ -2,7 +2,7 @@
   "cycle_id": "cycle-20261013T095936-14e2b8",
   "status": "rejected",
   "created_at": "2026-10-13T10:00:46.676Z",
-  "base_commit": "5bca4811608159eceb9d833209bb24ec4fda4bcb",
+  "base_commit": "009469e1b28e83bfde783672f5d290fe8c289eec",
   "base_version": "era-v1",
   "branch": "experiment/cycle-20261013T095936-14e2b8",
   "worktree": "<era-repo>/.era/worktrees/cycle-20261013T095936-14e2b8",

@@ -140,7 +140,7 @@ them. `limits.maxCycles` was raised from 3 to 6 and `maxReaRunsPerCycle` from
   real-REA coverage test on `main` failed intermittently.
 * **Change:** each real file is analyzed in exactly one REA pass of at most
   50 KB. Local imports that cross passes resolve to one-line placeholder files.
-* **First evaluation (base `5004f96`):** accepted on all guards. Findings
+* **First evaluation (base `969b391`):** accepted on all guards. Findings
   26 → 7 under the stable rules, complete coverage, tests 101 → 104 passing,
   benchmark time −10.9%. **However, the benchmark evidence for the native cases
   was invalid in both baseline and candidate** (error rate 0.4, F1 0.593). An
@@ -151,8 +151,8 @@ them. `limits.maxCycles` was raised from 3 to 6 and `maxReaRunsPerCycle` from
   was unaffected, but that evidence should not support an approval.
 * **Fix outside the Lab:** `src/core/watchdog.mjs` now bounds every REA, era,
   test and agent subprocess from inside its own process group and kills the
-  group if the parent disappears (commit `f71f7de`).
-* **Re-evaluation (base `f02fdfc`, after `era improve rebase`): rejected.**
+  group if the parent disappears (commit `1b874d6`).
+* **Re-evaluation (base `bd6da33`, after `era improve rebase`): rejected.**
   Findings 26 → 9, complete coverage, accuracy 0.9867 = 0.9867, error rate 0,
   time +12% (within the 30% guard). One candidate test failed:
   `era analyze inspects a Mach-O through REA`. That test needed Hopper
@@ -165,7 +165,7 @@ them. `limits.maxCycles` was raised from 3 to 6 and `maxReaRunsPerCycle` from
 
 ### Experiment 5: `cycle-20261013T150739-02fd6c` → era-v4
 
-Experiment 4's commit, cherry-picked onto `main` after the test fix and rebased onto `fa4bbdb`. All guards passed: findings 27 → 9, complete REA coverage, tests 104 → 107 passing (0 failed), accuracy 0.9867 unchanged, time +18% (within the 30% guard), memory −0.1%. The maintainer approved it in chat and it was integrated as **era-v4**.
+Experiment 4's commit, cherry-picked onto `main` after the test fix and rebased onto `fcd2cbd`. All guards passed: findings 27 → 9, complete REA coverage, tests 104 → 107 passing (0 failed), accuracy 0.9867 unchanged, time +18% (within the 30% guard), memory −0.1%. The maintainer approved it in chat and it was integrated as **era-v4**.
 
 ### Not run in this campaign
 

@@ -1,6 +1,6 @@
 # Feature-gap analysis and implementation plan (development round 2)
 
-Audit date: 2026-10-13. Baseline: `main` at `f2b7ec5` (era-v3 plus docs/CI).
+Audit date: 2026-10-13. Baseline: `main` at `3f54488` (era-v3 plus docs/CI).
 Upstream: `morluto/rea` default branch `main`; latest release `rea-agents-6.4.0`
 (2026-10-11). This is the version ERA pins.
 

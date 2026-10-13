@@ -2,7 +2,7 @@
   "cycle_id": "cycle-20261013T150739-02fd6c",
   "status": "integrated",
   "created_at": "2026-10-13T15:09:07.718Z",
-  "base_commit": "fa4bbdb856eb58be7b6b5124f56a31f2b6cf3d58",
+  "base_commit": "fcd2cbd467149b034a0eaa17d802e6389f8d15d1",
   "base_version": "era-v3",
   "branch": "experiment/cycle-20261013T150739-02fd6c",
   "worktree": "<era-repo>/.era/worktrees/cycle-20261013T150739-02fd6c",
@@ -725,7 +725,7 @@
   "instructions_file": "<era-repo>/.era/cycles/cycle-20261013T150739-02fd6c/instructions.md",
   "previous": [
     {
-      "base_commit": "4c434ff2533ae5088b0f4fb961dee20f92061546",
+      "base_commit": "b7eafaffbb5d686db43b0cc67acda63e8033c9fa",
       "status": "proposed",
       "evaluation_summary": null,
       "decided_at": null
@@ -1737,7 +1737,7 @@
   },
   "decided_at": "2026-10-13T15:18:25.016Z",
   "version": "era-v4",
-  "merge_commit": "ef31e23e8b37b1376de8ffbae35cc51d29e62e48",
+  "merge_commit": "b3f6c24d90f90d4b0226e2992d53b066a7a4f766",
   "approved_by": "David Nguyen (approved in chat)",
   "approved_at": "2026-10-13T15:19:54.067Z"
 }

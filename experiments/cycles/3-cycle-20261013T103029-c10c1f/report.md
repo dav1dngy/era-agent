@@ -1,7 +1,7 @@
 # ERA improvement cycle cycle-20261013T103029-c10c1f
 
 - Status: **accepted** → era-v3
-- Base: era-v2 (`817ea7a5de4a`), branch `experiment/cycle-20261013T103029-c10c1f`
+- Base: era-v2 (`8e146733da89`), branch `experiment/cycle-20261013T103029-c10c1f`
 - Finding: B-js-commonjs-app — Benchmark case js-commonjs-app scores F1 0.846 (analysis-accuracy)
 - Hypothesis: Improving ERA's interpretation of REA Evidence for js-commonjs-app raises benchmark accuracy. Missing facts: export:src/main.js#run, export:src/config.js#parseConfig, export:src/config.js#DEFAULT_ENDPOINT, export:src/net.js#fetchStatus; unexpected facts: none.
 - Target: `{"metric":"accuracy_f1","min_delta":0.01}` → accuracy F1 0.9559 -> 0.9867 (Δ 0.0308, need ≥ 0.01)
