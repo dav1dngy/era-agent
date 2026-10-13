@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { detectTarget } from '../src/analysis/detect.js';
-import { extractFacts, groupFacts } from '../src/analysis/facts.js';
+import { extractFacts, groupFacts, inferCommonJsExports } from '../src/analysis/facts.js';
 import { planWorkflow, decompileCandidates } from '../src/analysis/analyze.js';
 import { renderAnalysisReport } from '../src/analysis/report.js';
 import { DATASETS, loadEvidence, tempDir } from './helpers.js';
@@ -42,6 +42,29 @@ test('extractFacts reads real REA JavaScript application Evidence', () => {
   for (const f of ['module:src/main.js', 'entry:src/main.js', 'import:src/main.js->src/config.js', 'external:https', 'endpoint:https://status.example.test/api/v1/health']) {
     assert.ok(facts.includes(f), f);
   }
+});
+
+test('CommonJS named exports are inferred from the REA semantic graph', () => {
+  const facts = extractFacts(loadEvidence('js-app.analyze.json'));
+  for (const f of ['export:src/main.js#run', 'export:src/config.js#parseConfig', 'export:src/config.js#DEFAULT_ENDPOINT', 'export:src/net.js#fetchStatus']) assert.ok(facts.includes(f), f);
+  assert.ok(!facts.includes('export:src/main.js#require'), 'globals after the export statement are not exports');
+  assert.ok(!facts.some((f) => f.startsWith('export:src/main.js#') && !['export:src/main.js#run', 'export:src/main.js#default'].includes(f)));
+});
+
+test('inferCommonJsExports ignores writes not made through module', () => {
+  const at = (line, column, endColumn) => ({ location: { value: { start: { line, column }, end: { line, column: endColumn } } } });
+  const sem = {
+    nodes: [
+      { kind: 'binding', label: 'a', identity: { module_path: 'm.js', role_key: 'binding:scope:program:0:9:binding:a' }, evidence: at(1, 6, 7) },
+      { kind: 'expression', label: 'other', identity: { module_path: 'm.js', role_key: 'reference:0:read:other' }, evidence: at(2, 0, 5) },
+      { kind: 'expression', label: 'write:/exports', identity: { module_path: 'm.js', role_key: 'object:write:0:13' }, evidence: at(2, 0, 13) },
+      { kind: 'expression', label: 'a', identity: { module_path: 'm.js', role_key: 'reference:1:read:a' }, evidence: at(2, 18, 19) },
+    ],
+  };
+  assert.deepEqual(inferCommonJsExports(sem), []);
+  sem.nodes[1].label = 'module';
+  sem.nodes[1].identity.role_key = 'reference:0:read:module';
+  assert.deepEqual(inferCommonJsExports(sem), ['export:m.js#a']);
 });
 
 test('extractFacts reads real REA Mach-O, artifact and process Evidence', () => {

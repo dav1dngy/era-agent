@@ -17,6 +17,39 @@ function moduleOf(nodeInfo) {
   return nodeInfo.props.module_path ?? nodeInfo.label?.split(':')[0] ?? null;
 }
 
+const startOf = (n) => n.evidence?.location?.value?.start;
+const before = (a, b) => a.line < b.line || (a.line === b.line && a.column < b.column);
+
+// CommonJS `module.exports = { a, b }`: REA reports one `default` export binding
+// and no member names. Names are inferred from REA's semantic graph: the
+// program-scope binding reads that directly follow a `module.exports` write, up
+// to the first other node. Limitation: `module.exports = fn` is also read as a
+// named export `fn`, and renamed keys (`{ key: other }`) yield the value's name.
+export function inferCommonJsExports(semanticGraph) {
+  const byModule = new Map();
+  for (const n of semanticGraph?.nodes ?? []) {
+    const mod = n.identity?.module_path;
+    if (mod && startOf(n)) (byModule.get(mod) ?? byModule.set(mod, []).get(mod)).push(n);
+  }
+  const names = new Set();
+  for (const [mod, nodes] of byModule) {
+    const programBindings = new Set(nodes.filter((n) => n.kind === 'binding' && /^binding:scope:program:/.test(n.identity.role_key ?? '')).map((n) => n.label));
+    nodes.sort((a, b) => (before(startOf(a), startOf(b)) ? -1 : before(startOf(b), startOf(a)) ? 1 : 0));
+    const moduleReads = nodes.filter((n) => n.kind === 'expression' && n.label === 'module' && /:read:module$/.test(n.identity.role_key ?? ''));
+    const writes = nodes.filter((n) => n.kind === 'expression' && n.label === 'write:/exports' && moduleReads.some((m) => startOf(m).line === startOf(n).line && startOf(m).column === startOf(n).column));
+    for (const w of writes) {
+      const end = w.evidence.location.value.end;
+      for (const n of nodes) {
+        if (before(startOf(n), end)) continue;
+        const isBindingRead = n.kind === 'expression' && /:read:/.test(n.identity?.role_key ?? '') && programBindings.has(n.label);
+        if (!isBindingRead) break;
+        names.add(`export:${mod}#${n.label}`);
+      }
+    }
+  }
+  return [...names];
+}
+
 export function javascriptFacts(evidence) {
   const nr = evidence.normalized_result ?? {};
   const graph = nr.graph ?? {};
@@ -45,6 +78,7 @@ export function javascriptFacts(evidence) {
     const v = node.properties?.value;
     if (node.kind === 'literal' && typeof v === 'string' && URL_RE.test(v)) facts.add(`endpoint:${v}`);
   }
+  for (const f of inferCommonJsExports(sem)) facts.add(f);
   return [...facts].sort();
 }
 
