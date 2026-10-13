@@ -65,7 +65,7 @@ export function loadConfig(cwd = process.cwd(), env = process.env) {
     try {
       fileConfig = JSON.parse(readFileSync(file, 'utf8'));
     } catch (err) {
-      throw new Error(`Invalid era.config.json: ${err.message}`);
+      throw new Error(`Invalid era.config.json: ${err.message}`, { cause: err });
     }
   }
   const config = deepMerge(DEFAULT_CONFIG, fileConfig);

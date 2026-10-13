@@ -38,6 +38,7 @@ ERA Improvement Lab:
   improve show <cycle>          Print the reviewable change proposal
   improve approve <cycle> [--by NAME] [--yes]   Integrate into main and tag
   improve decline <cycle> [--reason TEXT]       Keep main unchanged
+  improve rebase <cycle>        Merge the current main into an experiment for re-evaluation
   improve cancel <cycle>        Abandon a proposed experiment
   improve recover               Repair state after a crash or kill
   improve [--cycles N] [--agent ID]   Bounded propose -> implement -> evaluate loop

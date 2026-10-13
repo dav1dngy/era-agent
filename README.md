@@ -49,7 +49,7 @@ Electron runtime workflows (all available in REA, not wrapped by ERA).
   its own evolution.
 * All REA capabilities stay available unchanged through `era rea <command>`,
   including `era rea mcp` and `era rea doctor`.
-* ERA does not copy or modify REA code. REA is MIT-licensed. See [NOTICE.md](NOTICE.md).
+* ERA does not copy or modify REA code. REA is MIT-licensed. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
 Details: [docs/original-rea-analysis.md](docs/original-rea-analysis.md) ·
 [docs/rea-integration.md](docs/rea-integration.md) ·
@@ -186,4 +186,4 @@ See [CONTRIBUTING.md](CONTRIBUTING.md). Run `npm test` and
 
 ERA is MIT-licensed ([LICENSE](LICENSE)). It integrates and executes
 **Reverse Engineer Anything** by morluto (<https://github.com/morluto/rea>),
-MIT-licensed. The full notice is in [NOTICE.md](NOTICE.md).
+MIT-licensed. The full notice is in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

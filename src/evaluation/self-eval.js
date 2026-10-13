@@ -20,7 +20,7 @@ export function startupMs(capture) {
 export async function evaluateSelf({ codeRoot, stateDir, reaCommand, timeoutMs = 900_000 }) {
   const env = { ...process.env, ERA_STATE_DIR: stateDir };
   if (reaCommand) env.ERA_REA_BIN = reaCommand;
-  const r = await runProcess(process.execPath, [`${codeRoot}/bin/era.mjs`, 'self-analyze', '--json'], { cwd: codeRoot, env, timeoutMs });
+  const r = await runProcess(process.execPath, [`${codeRoot}/bin/era.mjs`, 'self-analyze', '--json'], { cwd: codeRoot, env, timeoutMs, watchdog: true });
   let report;
   try {
     report = JSON.parse(r.stdout);

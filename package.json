@@ -12,11 +12,14 @@
     "era.config.json",
     "README.md",
     "LICENSE",
-    "NOTICE.md"
+    "THIRD_PARTY_NOTICES.md"
   ],
   "scripts": {
     "test": "node --test tests/*.test.js",
-    "check": "node scripts/check.mjs"
+    "lint": "eslint .",
+    "check": "node scripts/check.mjs",
+    "clean-install-test": "bash scripts/clean-install-test.sh",
+    "notices": "node scripts/third-party-notices.mjs"
   },
   "engines": {
     "node": ">=22.19.0"
@@ -28,7 +31,19 @@
     "type": "git",
     "url": "git+https://github.com/dav1dngy/era-agent.git"
   },
-  "keywords": ["reverse-engineering", "agent", "rea", "self-improvement", "mach-o", "javascript"],
+  "keywords": [
+    "reverse-engineering",
+    "agent",
+    "rea",
+    "self-improvement",
+    "mach-o",
+    "javascript"
+  ],
   "author": "dav1dngy",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "eslint": "10.12.0",
+    "globals": "17.13.0"
+  }
 }
