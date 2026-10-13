@@ -1,0 +1,708 @@
+{
+  "self_analysis_id": "self-20261013T150917-a22327",
+  "created_at": "2026-10-13T15:09:58.626Z",
+  "era_root": "<era-repo>",
+  "artifact": {
+    "tarball_sha256": "1b7475a4722bd969235441d3343a0cdef8eef5f0e15d7400ef05542f33f66ada",
+    "packaged_files": 40,
+    "analyzed_dir": "<era-repo>/.era/self-analyses/self-20261013T150917-a22327/work/artifact/package",
+    "passes": [
+      {
+        "dir": "<era-repo>/.era/self-analyses/self-20261013T150917-a22327/work/passes/pass-1",
+        "tests": [
+          "e2e-lab.test.js",
+          "mcp.test.js"
+        ]
+      },
+      {
+        "dir": "<era-repo>/.era/self-analyses/self-20261013T150917-a22327/work/passes/pass-2",
+        "tests": [
+          "agents.test.js",
+          "rea-integration.test.js"
+        ]
+      },
+      {
+        "dir": "<era-repo>/.era/self-analyses/self-20261013T150917-a22327/work/passes/pass-3",
+        "tests": [
+          "safety.test.js",
+          "sandbox.test.js",
+          "self-analysis.test.js"
+        ]
+      },
+      {
+        "dir": "<era-repo>/.era/self-analyses/self-20261013T150917-a22327/work/passes/pass-4",
+        "tests": [
+          "cli.test.js",
+          "core.test.js",
+          "observability.test.js"
+        ]
+      },
+      {
+        "dir": "<era-repo>/.era/self-analyses/self-20261013T150917-a22327/work/passes/pass-5",
+        "tests": [
+          "analysis.test.js",
+          "self-analyze-passes.test.js",
+          "versions.test.js"
+        ]
+      },
+      {
+        "dir": "<era-repo>/.era/self-analyses/self-20261013T150917-a22327/work/passes/pass-6",
+        "tests": [
+          "evaluation.test.js",
+          "orchestration.test.js",
+          "rea-client.test.js"
+        ]
+      }
+    ]
+  },
+  "runs": [
+    {
+      "run_id": "rea-20261013T150918-a3a35f",
+      "label": "self-analysis:static-graph-1/6",
+      "started_at": "2026-10-13T15:09:18.486Z",
+      "duration_ms": 6312,
+      "command": [
+        "<era-repo>/node_modules/.bin/rea",
+        "analyze-javascript-application",
+        "<era-repo>/.era/self-analyses/self-20261013T150917-a22327/work/passes/pass-1",
+        "--format",
+        "json"
+      ],
+      "command_source": "config",
+      "engine": {
+        "package": "rea-agents",
+        "version": "6.4.0"
+      },
+      "input": {
+        "path": "<era-repo>/.era/self-analyses/self-20261013T150917-a22327/work/passes/pass-1",
+        "kind": "directory",
+        "bytes": null,
+        "sha256": "53a9f9f7c96566b12af6bdf862445275d2f74ed89f0d1efa28b270fc67e6032f"
+      },
+      "status": "succeeded",
+      "exit_code": 0,
+      "signal": null,
+      "evidence_id": "ev_fd7c4ccf10d352a2f596384e2421d5dfe2a5d297944e98eeb0232c8a8c265ef2",
+      "operation": "analyze_javascript_application",
+      "provider": {
+        "id": "rea-javascript-application",
+        "name": "REA JavaScript application analyzer",
+        "version": "1"
+      },
+      "output_file": "<era-repo>/.era/runs/rea-20261013T150918-a3a35f/output.json",
+      "output_bytes": 24391412,
+      "progress_events": 62,
+      "warnings": [],
+      "errors": [],
+      "resources": {
+        "real_s": 6.27,
+        "user_s": 6.71,
+        "sys_s": 0.58,
+        "max_rss_bytes": 436387840
+      }
+    },
+    {
+      "run_id": "rea-20261013T150925-c166c6",
+      "label": "self-analysis:static-graph-2/6",
+      "started_at": "2026-10-13T15:09:25.716Z",
+      "duration_ms": 6046,
+      "command": [
+        "<era-repo>/node_modules/.bin/rea",
+        "analyze-javascript-application",
+        "<era-repo>/.era/self-analyses/self-20261013T150917-a22327/work/passes/pass-2",
+        "--format",
+        "json"
+      ],
+      "command_source": "config",
+      "engine": {
+        "package": "rea-agents",
+        "version": "6.4.0"
+      },
+      "input": {
+        "path": "<era-repo>/.era/self-analyses/self-20261013T150917-a22327/work/passes/pass-2",
+        "kind": "directory",
+        "bytes": null,
+        "sha256": "c2f6863105dfd694c6b7dd037032065792852ac714fe9879223a5db295a345e8"
+      },
+      "status": "succeeded",
+      "exit_code": 0,
+      "signal": null,
+      "evidence_id": "ev_39748422d955eb40c820cdda72086bbbb3c2b4bb2b44ad5b2403e061db373c3f",
+      "operation": "analyze_javascript_application",
+      "provider": {
+        "id": "rea-javascript-application",
+        "name": "REA JavaScript application analyzer",
+        "version": "1"
+      },
+      "output_file": "<era-repo>/.era/runs/rea-20261013T150925-c166c6/output.json",
+      "output_bytes": 24518959,
+      "progress_events": 62,
+      "warnings": [],
+      "errors": [],
+      "resources": {
+        "real_s": 6,
+        "user_s": 6.6,
+        "sys_s": 0.58,
+        "max_rss_bytes": 451133440
+      }
+    },
+    {
+      "run_id": "rea-20261013T150931-563be6",
+      "label": "self-analysis:static-graph-3/6",
+      "started_at": "2026-10-13T15:09:31.849Z",
+      "duration_ms": 6054,
+      "command": [
+        "<era-repo>/node_modules/.bin/rea",
+        "analyze-javascript-application",
+        "<era-repo>/.era/self-analyses/self-20261013T150917-a22327/work/passes/pass-3",
+        "--format",
+        "json"
+      ],
+      "command_source": "config",
+      "engine": {
+        "package": "rea-agents",
+        "version": "6.4.0"
+      },
+      "input": {
+        "path": "<era-repo>/.era/self-analyses/self-20261013T150917-a22327/work/passes/pass-3",
+        "kind": "directory",
+        "bytes": null,
+        "sha256": "8e17299a983c92535ac2861a5cca78d2bf8bb39b259bb0692b42db2e8bfb1eb4"
+      },
+      "status": "succeeded",
+      "exit_code": 0,
+      "signal": null,
+      "evidence_id": "ev_f494d603122a1b152ea53aa44d372b774338671ce3fc2e13930cb3393775a0dd",
+      "operation": "analyze_javascript_application",
+      "provider": {
+        "id": "rea-javascript-application",
+        "name": "REA JavaScript application analyzer",
+        "version": "1"
+      },
+      "output_file": "<era-repo>/.era/runs/rea-20261013T150931-563be6/output.json",
+      "output_bytes": 24910809,
+      "progress_events": 63,
+      "warnings": [],
+      "errors": [],
+      "resources": {
+        "real_s": 6.01,
+        "user_s": 6.54,
+        "sys_s": 0.56,
+        "max_rss_bytes": 513802240
+      }
+    },
+    {
+      "run_id": "rea-20261013T150937-083532",
+      "label": "self-analysis:static-graph-4/6",
+      "started_at": "2026-10-13T15:09:37.979Z",
+      "duration_ms": 6037,
+      "command": [
+        "<era-repo>/node_modules/.bin/rea",
+        "analyze-javascript-application",
+        "<era-repo>/.era/self-analyses/self-20261013T150917-a22327/work/passes/pass-4",
+        "--format",
+        "json"
+      ],
+      "command_source": "config",
+      "engine": {
+        "package": "rea-agents",
+        "version": "6.4.0"
+      },
+      "input": {
+        "path": "<era-repo>/.era/self-analyses/self-20261013T150917-a22327/work/passes/pass-4",
+        "kind": "directory",
+        "bytes": null,
+        "sha256": "5166c89e6eb4d394de92438f832a2fd3cdfec44c7f0ce162c60b78544b9b204e"
+      },
+      "status": "succeeded",
+      "exit_code": 0,
+      "signal": null,
+      "evidence_id": "ev_533b50391c67909d546e56dda0d5c49b03942d50d320eb57eee85e70ab6220e8",
+      "operation": "analyze_javascript_application",
+      "provider": {
+        "id": "rea-javascript-application",
+        "name": "REA JavaScript application analyzer",
+        "version": "1"
+      },
+      "output_file": "<era-repo>/.era/runs/rea-20261013T150937-083532/output.json",
+      "output_bytes": 24538666,
+      "progress_events": 63,
+      "warnings": [],
+      "errors": [],
+      "resources": {
+        "real_s": 5.99,
+        "user_s": 6.46,
+        "sys_s": 0.56,
+        "max_rss_bytes": 436535296
+      }
+    },
+    {
+      "run_id": "rea-20261013T150944-cc7fc7",
+      "label": "self-analysis:static-graph-5/6",
+      "started_at": "2026-10-13T15:09:44.080Z",
+      "duration_ms": 6026,
+      "command": [
+        "<era-repo>/node_modules/.bin/rea",
+        "analyze-javascript-application",
+        "<era-repo>/.era/self-analyses/self-20261013T150917-a22327/work/passes/pass-5",
+        "--format",
+        "json"
+      ],
+      "command_source": "config",
+      "engine": {
+        "package": "rea-agents",
+        "version": "6.4.0"
+      },
+      "input": {
+        "path": "<era-repo>/.era/self-analyses/self-20261013T150917-a22327/work/passes/pass-5",
+        "kind": "directory",
+        "bytes": null,
+        "sha256": "288d2a86d5ee5ef04d81e475de2d1d6b55ed4a64a608370c97364aab0eb3f65a"
+      },
+      "status": "succeeded",
+      "exit_code": 0,
+      "signal": null,
+      "evidence_id": "ev_baf7a79879aa4d0032fbd6e6ae7105b6057dff56b98ca3ab7291b28f58b6d60b",
+      "operation": "analyze_javascript_application",
+      "provider": {
+        "id": "rea-javascript-application",
+        "name": "REA JavaScript application analyzer",
+        "version": "1"
+      },
+      "output_file": "<era-repo>/.era/runs/rea-20261013T150944-cc7fc7/output.json",
+      "output_bytes": 24936101,
+      "progress_events": 63,
+      "warnings": [],
+      "errors": [],
+      "resources": {
+        "real_s": 5.98,
+        "user_s": 6.76,
+        "sys_s": 0.54,
+        "max_rss_bytes": 511836160
+      }
+    },
+    {
+      "run_id": "rea-20261013T150950-843f93",
+      "label": "self-analysis:static-graph-6/6",
+      "started_at": "2026-10-13T15:09:50.200Z",
+      "duration_ms": 6227,
+      "command": [
+        "<era-repo>/node_modules/.bin/rea",
+        "analyze-javascript-application",
+        "<era-repo>/.era/self-analyses/self-20261013T150917-a22327/work/passes/pass-6",
+        "--format",
+        "json"
+      ],
+      "command_source": "config",
+      "engine": {
+        "package": "rea-agents",
+        "version": "6.4.0"
+      },
+      "input": {
+        "path": "<era-repo>/.era/self-analyses/self-20261013T150917-a22327/work/passes/pass-6",
+        "kind": "directory",
+        "bytes": null,
+        "sha256": "419752040f68c2f2b6fd75db43a8e6c2de09437b074ff438f44df6248dc31285"
+      },
+      "status": "succeeded",
+      "exit_code": 0,
+      "signal": null,
+      "evidence_id": "ev_a15c1260f13a4a229603bce1d431c2d18ba58c704b0e0fafcdfcb57e8bd60b98",
+      "operation": "analyze_javascript_application",
+      "provider": {
+        "id": "rea-javascript-application",
+        "name": "REA JavaScript application analyzer",
+        "version": "1"
+      },
+      "output_file": "<era-repo>/.era/runs/rea-20261013T150950-843f93/output.json",
+      "output_bytes": 24691048,
+      "progress_events": 63,
+      "warnings": [],
+      "errors": [],
+      "resources": {
+        "real_s": 6.18,
+        "user_s": 6.54,
+        "sys_s": 0.59,
+        "max_rss_bytes": 418381824
+      }
+    },
+    {
+      "run_id": "rea-20261013T150956-58b460",
+      "label": "self-analysis:runtime-help",
+      "started_at": "2026-10-13T15:09:56.492Z",
+      "duration_ms": 2104,
+      "command": [
+        "<era-repo>/node_modules/.bin/rea",
+        "capture-process",
+        "<era-repo>/.era/self-analyses/self-20261013T150917-a22327/help-scenario.json",
+        "--format",
+        "json"
+      ],
+      "command_source": "config",
+      "engine": {
+        "package": "rea-agents",
+        "version": "6.4.0"
+      },
+      "input": {
+        "path": "<era-repo>/.era/self-analyses/self-20261013T150917-a22327/work/artifact/package/bin/era.mjs",
+        "kind": "file",
+        "bytes": 135,
+        "sha256": "e0c335a6ff9614fbfcc717263b95dc98b95b0bd28efe3310ead6a6bcfb27b81f"
+      },
+      "status": "succeeded",
+      "exit_code": 0,
+      "signal": null,
+      "evidence_id": "ev_c83284bae3c2afa968fcda1fdf8efd94451dfa5178886e6bc382dd02a1f78f9b",
+      "operation": "capture_process_scenario",
+      "provider": {
+        "id": "rea-process",
+        "name": "REA process capture",
+        "version": "3"
+      },
+      "output_file": "<era-repo>/.era/runs/rea-20261013T150956-58b460/output.json",
+      "output_bytes": 96534,
+      "progress_events": 4,
+      "warnings": [],
+      "errors": [],
+      "resources": {
+        "real_s": 2.06,
+        "user_s": 1.97,
+        "sys_s": 0.68,
+        "max_rss_bytes": 437485568
+      }
+    }
+  ],
+  "metrics": {
+    "modules": 43,
+    "passes": 6,
+    "semantic_unknowns": 3581,
+    "startup_ms": 211,
+    "findings": 27
+  },
+  "findings": [
+    {
+      "id": "F-089b18a478",
+      "rule": "incomplete-analysis-coverage",
+      "area": "analysis-accuracy",
+      "priority": 1,
+      "subject": "src/reporting/table.js",
+      "title": "REA analysis of src/reporting/table.js is incomplete (resource_constraint)",
+      "detail": "REA reported resource_constraint for src/reporting/table.js; its relationships are unavailable, so absence-based self-analysis rules are suppressed for this artifact.",
+      "evidence_ids": [
+        "ev_fd7c4ccf10d352a2f596384e2421d5dfe2a5d297944e98eeb0232c8a8c265ef2,ev_39748422d955eb40c820cdda72086bbbb3c2b4bb2b44ad5b2403e061db373c3f,ev_f494d603122a1b152ea53aa44d372b774338671ce3fc2e13930cb3393775a0dd,ev_533b50391c67909d546e56dda0d5c49b03942d50d320eb57eee85e70ab6220e8,ev_baf7a79879aa4d0032fbd6e6ae7105b6057dff56b98ca3ab7291b28f58b6d60b,ev_a15c1260f13a4a229603bce1d431c2d18ba58c704b0e0fafcdfcb57e8bd60b98"
+      ]
+    },
+    {
+      "id": "F-20e04cb569",
+      "rule": "incomplete-analysis-coverage",
+      "area": "analysis-accuracy",
+      "priority": 1,
+      "subject": "tests/self-analyze-passes.test.js",
+      "title": "REA analysis of tests/self-analyze-passes.test.js is incomplete (resource_constraint)",
+      "detail": "REA reported resource_constraint for tests/self-analyze-passes.test.js; its relationships are unavailable, so absence-based self-analysis rules are suppressed for this artifact.",
+      "evidence_ids": [
+        "ev_fd7c4ccf10d352a2f596384e2421d5dfe2a5d297944e98eeb0232c8a8c265ef2,ev_39748422d955eb40c820cdda72086bbbb3c2b4bb2b44ad5b2403e061db373c3f,ev_f494d603122a1b152ea53aa44d372b774338671ce3fc2e13930cb3393775a0dd,ev_533b50391c67909d546e56dda0d5c49b03942d50d320eb57eee85e70ab6220e8,ev_baf7a79879aa4d0032fbd6e6ae7105b6057dff56b98ca3ab7291b28f58b6d60b,ev_a15c1260f13a4a229603bce1d431c2d18ba58c704b0e0fafcdfcb57e8bd60b98"
+      ]
+    },
+    {
+      "id": "F-31965c9749",
+      "rule": "incomplete-analysis-coverage",
+      "area": "analysis-accuracy",
+      "priority": 1,
+      "subject": "src/self_analysis/rules.js",
+      "title": "REA analysis of src/self_analysis/rules.js is incomplete (resource_constraint)",
+      "detail": "REA reported resource_constraint for src/self_analysis/rules.js; its relationships are unavailable, so absence-based self-analysis rules are suppressed for this artifact.",
+      "evidence_ids": [
+        "ev_fd7c4ccf10d352a2f596384e2421d5dfe2a5d297944e98eeb0232c8a8c265ef2,ev_39748422d955eb40c820cdda72086bbbb3c2b4bb2b44ad5b2403e061db373c3f,ev_f494d603122a1b152ea53aa44d372b774338671ce3fc2e13930cb3393775a0dd,ev_533b50391c67909d546e56dda0d5c49b03942d50d320eb57eee85e70ab6220e8,ev_baf7a79879aa4d0032fbd6e6ae7105b6057dff56b98ca3ab7291b28f58b6d60b,ev_a15c1260f13a4a229603bce1d431c2d18ba58c704b0e0fafcdfcb57e8bd60b98"
+      ]
+    },
+    {
+      "id": "F-333e1a8039",
+      "rule": "incomplete-analysis-coverage",
+      "area": "analysis-accuracy",
+      "priority": 1,
+      "subject": "src/orchestration/versions.js",
+      "title": "REA analysis of src/orchestration/versions.js is incomplete (resource_constraint)",
+      "detail": "REA reported resource_constraint for src/orchestration/versions.js; its relationships are unavailable, so absence-based self-analysis rules are suppressed for this artifact.",
+      "evidence_ids": [
+        "ev_fd7c4ccf10d352a2f596384e2421d5dfe2a5d297944e98eeb0232c8a8c265ef2,ev_39748422d955eb40c820cdda72086bbbb3c2b4bb2b44ad5b2403e061db373c3f,ev_f494d603122a1b152ea53aa44d372b774338671ce3fc2e13930cb3393775a0dd,ev_533b50391c67909d546e56dda0d5c49b03942d50d320eb57eee85e70ab6220e8,ev_baf7a79879aa4d0032fbd6e6ae7105b6057dff56b98ca3ab7291b28f58b6d60b,ev_a15c1260f13a4a229603bce1d431c2d18ba58c704b0e0fafcdfcb57e8bd60b98"
+      ]
+    },
+    {
+      "id": "F-361d8f6dee",
+      "rule": "incomplete-analysis-coverage",
+      "area": "analysis-accuracy",
+      "priority": 1,
+      "subject": "src/rea_integration/rea-client.js",
+      "title": "REA analysis of src/rea_integration/rea-client.js is incomplete (resource_constraint)",
+      "detail": "REA reported resource_constraint for src/rea_integration/rea-client.js; its relationships are unavailable, so absence-based self-analysis rules are suppressed for this artifact.",
+      "evidence_ids": [
+        "ev_fd7c4ccf10d352a2f596384e2421d5dfe2a5d297944e98eeb0232c8a8c265ef2,ev_39748422d955eb40c820cdda72086bbbb3c2b4bb2b44ad5b2403e061db373c3f,ev_f494d603122a1b152ea53aa44d372b774338671ce3fc2e13930cb3393775a0dd,ev_533b50391c67909d546e56dda0d5c49b03942d50d320eb57eee85e70ab6220e8,ev_baf7a79879aa4d0032fbd6e6ae7105b6057dff56b98ca3ab7291b28f58b6d60b,ev_a15c1260f13a4a229603bce1d431c2d18ba58c704b0e0fafcdfcb57e8bd60b98"
+      ]
+    },
+    {
+      "id": "F-38486245a3",
+      "rule": "incomplete-analysis-coverage",
+      "area": "analysis-accuracy",
+      "priority": 1,
+      "subject": "tests/evaluation.test.js",
+      "title": "REA analysis of tests/evaluation.test.js is incomplete (resource_constraint)",
+      "detail": "REA reported resource_constraint for tests/evaluation.test.js; its relationships are unavailable, so absence-based self-analysis rules are suppressed for this artifact.",
+      "evidence_ids": [
+        "ev_fd7c4ccf10d352a2f596384e2421d5dfe2a5d297944e98eeb0232c8a8c265ef2,ev_39748422d955eb40c820cdda72086bbbb3c2b4bb2b44ad5b2403e061db373c3f,ev_f494d603122a1b152ea53aa44d372b774338671ce3fc2e13930cb3393775a0dd,ev_533b50391c67909d546e56dda0d5c49b03942d50d320eb57eee85e70ab6220e8,ev_baf7a79879aa4d0032fbd6e6ae7105b6057dff56b98ca3ab7291b28f58b6d60b,ev_a15c1260f13a4a229603bce1d431c2d18ba58c704b0e0fafcdfcb57e8bd60b98"
+      ]
+    },
+    {
+      "id": "F-3c6cdb09ec",
+      "rule": "incomplete-analysis-coverage",
+      "area": "analysis-accuracy",
+      "priority": 1,
+      "subject": "src/safety/policy.js",
+      "title": "REA analysis of src/safety/policy.js is incomplete (resource_constraint)",
+      "detail": "REA reported resource_constraint for src/safety/policy.js; its relationships are unavailable, so absence-based self-analysis rules are suppressed for this artifact.",
+      "evidence_ids": [
+        "ev_fd7c4ccf10d352a2f596384e2421d5dfe2a5d297944e98eeb0232c8a8c265ef2,ev_39748422d955eb40c820cdda72086bbbb3c2b4bb2b44ad5b2403e061db373c3f,ev_f494d603122a1b152ea53aa44d372b774338671ce3fc2e13930cb3393775a0dd,ev_533b50391c67909d546e56dda0d5c49b03942d50d320eb57eee85e70ab6220e8,ev_baf7a79879aa4d0032fbd6e6ae7105b6057dff56b98ca3ab7291b28f58b6d60b,ev_a15c1260f13a4a229603bce1d431c2d18ba58c704b0e0fafcdfcb57e8bd60b98"
+      ]
+    },
+    {
+      "id": "F-4203a18d7e",
+      "rule": "incomplete-analysis-coverage",
+      "area": "analysis-accuracy",
+      "priority": 1,
+      "subject": "tests/e2e-lab.test.js",
+      "title": "REA analysis of tests/e2e-lab.test.js is incomplete (resource_constraint)",
+      "detail": "REA reported resource_constraint for tests/e2e-lab.test.js; its relationships are unavailable, so absence-based self-analysis rules are suppressed for this artifact.",
+      "evidence_ids": [
+        "ev_fd7c4ccf10d352a2f596384e2421d5dfe2a5d297944e98eeb0232c8a8c265ef2,ev_39748422d955eb40c820cdda72086bbbb3c2b4bb2b44ad5b2403e061db373c3f,ev_f494d603122a1b152ea53aa44d372b774338671ce3fc2e13930cb3393775a0dd,ev_533b50391c67909d546e56dda0d5c49b03942d50d320eb57eee85e70ab6220e8,ev_baf7a79879aa4d0032fbd6e6ae7105b6057dff56b98ca3ab7291b28f58b6d60b,ev_a15c1260f13a4a229603bce1d431c2d18ba58c704b0e0fafcdfcb57e8bd60b98"
+      ]
+    },
+    {
+      "id": "F-43b880d6f4",
+      "rule": "incomplete-analysis-coverage",
+      "area": "analysis-accuracy",
+      "priority": 1,
+      "subject": "src/reporting/dashboard.js",
+      "title": "REA analysis of src/reporting/dashboard.js is incomplete (resource_constraint)",
+      "detail": "REA reported resource_constraint for src/reporting/dashboard.js; its relationships are unavailable, so absence-based self-analysis rules are suppressed for this artifact.",
+      "evidence_ids": [
+        "ev_fd7c4ccf10d352a2f596384e2421d5dfe2a5d297944e98eeb0232c8a8c265ef2,ev_39748422d955eb40c820cdda72086bbbb3c2b4bb2b44ad5b2403e061db373c3f,ev_f494d603122a1b152ea53aa44d372b774338671ce3fc2e13930cb3393775a0dd,ev_533b50391c67909d546e56dda0d5c49b03942d50d320eb57eee85e70ab6220e8,ev_baf7a79879aa4d0032fbd6e6ae7105b6057dff56b98ca3ab7291b28f58b6d60b,ev_a15c1260f13a4a229603bce1d431c2d18ba58c704b0e0fafcdfcb57e8bd60b98"
+      ]
+    },
+    {
+      "id": "F-46215977a2",
+      "rule": "incomplete-analysis-coverage",
+      "area": "analysis-accuracy",
+      "priority": 1,
+      "subject": "tests/safety.test.js",
+      "title": "REA analysis of tests/safety.test.js is incomplete (resource_constraint)",
+      "detail": "REA reported resource_constraint for tests/safety.test.js; its relationships are unavailable, so absence-based self-analysis rules are suppressed for this artifact.",
+      "evidence_ids": [
+        "ev_fd7c4ccf10d352a2f596384e2421d5dfe2a5d297944e98eeb0232c8a8c265ef2,ev_39748422d955eb40c820cdda72086bbbb3c2b4bb2b44ad5b2403e061db373c3f,ev_f494d603122a1b152ea53aa44d372b774338671ce3fc2e13930cb3393775a0dd,ev_533b50391c67909d546e56dda0d5c49b03942d50d320eb57eee85e70ab6220e8,ev_baf7a79879aa4d0032fbd6e6ae7105b6057dff56b98ca3ab7291b28f58b6d60b,ev_a15c1260f13a4a229603bce1d431c2d18ba58c704b0e0fafcdfcb57e8bd60b98"
+      ]
+    },
+    {
+      "id": "F-541a478e02",
+      "rule": "incomplete-analysis-coverage",
+      "area": "analysis-accuracy",
+      "priority": 1,
+      "subject": "src/safety/sandbox.js",
+      "title": "REA analysis of src/safety/sandbox.js is incomplete (resource_constraint)",
+      "detail": "REA reported resource_constraint for src/safety/sandbox.js; its relationships are unavailable, so absence-based self-analysis rules are suppressed for this artifact.",
+      "evidence_ids": [
+        "ev_fd7c4ccf10d352a2f596384e2421d5dfe2a5d297944e98eeb0232c8a8c265ef2,ev_39748422d955eb40c820cdda72086bbbb3c2b4bb2b44ad5b2403e061db373c3f,ev_f494d603122a1b152ea53aa44d372b774338671ce3fc2e13930cb3393775a0dd,ev_533b50391c67909d546e56dda0d5c49b03942d50d320eb57eee85e70ab6220e8,ev_baf7a79879aa4d0032fbd6e6ae7105b6057dff56b98ca3ab7291b28f58b6d60b,ev_a15c1260f13a4a229603bce1d431c2d18ba58c704b0e0fafcdfcb57e8bd60b98"
+      ]
+    },
+    {
+      "id": "F-5dd92e0c8a",
+      "rule": "incomplete-analysis-coverage",
+      "area": "analysis-accuracy",
+      "priority": 1,
+      "subject": "src/self_analysis/self-analyze.js",
+      "title": "REA analysis of src/self_analysis/self-analyze.js is incomplete (resource_constraint)",
+      "detail": "REA reported resource_constraint for src/self_analysis/self-analyze.js; its relationships are unavailable, so absence-based self-analysis rules are suppressed for this artifact.",
+      "evidence_ids": [
+        "ev_fd7c4ccf10d352a2f596384e2421d5dfe2a5d297944e98eeb0232c8a8c265ef2,ev_39748422d955eb40c820cdda72086bbbb3c2b4bb2b44ad5b2403e061db373c3f,ev_f494d603122a1b152ea53aa44d372b774338671ce3fc2e13930cb3393775a0dd,ev_533b50391c67909d546e56dda0d5c49b03942d50d320eb57eee85e70ab6220e8,ev_baf7a79879aa4d0032fbd6e6ae7105b6057dff56b98ca3ab7291b28f58b6d60b,ev_a15c1260f13a4a229603bce1d431c2d18ba58c704b0e0fafcdfcb57e8bd60b98"
+      ]
+    },
+    {
+      "id": "F-60d8c2e082",
+      "rule": "incomplete-analysis-coverage",
+      "area": "analysis-accuracy",
+      "priority": 1,
+      "subject": "tests/fixtures/fake-codex.mjs",
+      "title": "REA analysis of tests/fixtures/fake-codex.mjs is incomplete (resource_constraint)",
+      "detail": "REA reported resource_constraint for tests/fixtures/fake-codex.mjs; its relationships are unavailable, so absence-based self-analysis rules are suppressed for this artifact.",
+      "evidence_ids": [
+        "ev_fd7c4ccf10d352a2f596384e2421d5dfe2a5d297944e98eeb0232c8a8c265ef2,ev_39748422d955eb40c820cdda72086bbbb3c2b4bb2b44ad5b2403e061db373c3f,ev_f494d603122a1b152ea53aa44d372b774338671ce3fc2e13930cb3393775a0dd,ev_533b50391c67909d546e56dda0d5c49b03942d50d320eb57eee85e70ab6220e8,ev_baf7a79879aa4d0032fbd6e6ae7105b6057dff56b98ca3ab7291b28f58b6d60b,ev_a15c1260f13a4a229603bce1d431c2d18ba58c704b0e0fafcdfcb57e8bd60b98"
+      ]
+    },
+    {
+      "id": "F-6253ddf2b5",
+      "rule": "incomplete-analysis-coverage",
+      "area": "analysis-accuracy",
+      "priority": 1,
+      "subject": "tests/fixtures/fake-rea.mjs",
+      "title": "REA analysis of tests/fixtures/fake-rea.mjs is incomplete (resource_constraint)",
+      "detail": "REA reported resource_constraint for tests/fixtures/fake-rea.mjs; its relationships are unavailable, so absence-based self-analysis rules are suppressed for this artifact.",
+      "evidence_ids": [
+        "ev_fd7c4ccf10d352a2f596384e2421d5dfe2a5d297944e98eeb0232c8a8c265ef2,ev_39748422d955eb40c820cdda72086bbbb3c2b4bb2b44ad5b2403e061db373c3f,ev_f494d603122a1b152ea53aa44d372b774338671ce3fc2e13930cb3393775a0dd,ev_533b50391c67909d546e56dda0d5c49b03942d50d320eb57eee85e70ab6220e8,ev_baf7a79879aa4d0032fbd6e6ae7105b6057dff56b98ca3ab7291b28f58b6d60b,ev_a15c1260f13a4a229603bce1d431c2d18ba58c704b0e0fafcdfcb57e8bd60b98"
+      ]
+    },
+    {
+      "id": "F-70b18255b4",
+      "rule": "incomplete-analysis-coverage",
+      "area": "analysis-accuracy",
+      "priority": 1,
+      "subject": "tests/orchestration.test.js",
+      "title": "REA analysis of tests/orchestration.test.js is incomplete (resource_constraint)",
+      "detail": "REA reported resource_constraint for tests/orchestration.test.js; its relationships are unavailable, so absence-based self-analysis rules are suppressed for this artifact.",
+      "evidence_ids": [
+        "ev_fd7c4ccf10d352a2f596384e2421d5dfe2a5d297944e98eeb0232c8a8c265ef2,ev_39748422d955eb40c820cdda72086bbbb3c2b4bb2b44ad5b2403e061db373c3f,ev_f494d603122a1b152ea53aa44d372b774338671ce3fc2e13930cb3393775a0dd,ev_533b50391c67909d546e56dda0d5c49b03942d50d320eb57eee85e70ab6220e8,ev_baf7a79879aa4d0032fbd6e6ae7105b6057dff56b98ca3ab7291b28f58b6d60b,ev_a15c1260f13a4a229603bce1d431c2d18ba58c704b0e0fafcdfcb57e8bd60b98"
+      ]
+    },
+    {
+      "id": "F-7d6ca995fe",
+      "rule": "incomplete-analysis-coverage",
+      "area": "analysis-accuracy",
+      "priority": 1,
+      "subject": "tests/analysis.test.js",
+      "title": "REA analysis of tests/analysis.test.js is incomplete (resource_constraint)",
+      "detail": "REA reported resource_constraint for tests/analysis.test.js; its relationships are unavailable, so absence-based self-analysis rules are suppressed for this artifact.",
+      "evidence_ids": [
+        "ev_fd7c4ccf10d352a2f596384e2421d5dfe2a5d297944e98eeb0232c8a8c265ef2,ev_39748422d955eb40c820cdda72086bbbb3c2b4bb2b44ad5b2403e061db373c3f,ev_f494d603122a1b152ea53aa44d372b774338671ce3fc2e13930cb3393775a0dd,ev_533b50391c67909d546e56dda0d5c49b03942d50d320eb57eee85e70ab6220e8,ev_baf7a79879aa4d0032fbd6e6ae7105b6057dff56b98ca3ab7291b28f58b6d60b,ev_a15c1260f13a4a229603bce1d431c2d18ba58c704b0e0fafcdfcb57e8bd60b98"
+      ]
+    },
+    {
+      "id": "F-7edf4652d9",
+      "rule": "incomplete-analysis-coverage",
+      "area": "analysis-accuracy",
+      "priority": 1,
+      "subject": "src/safety/secrets.js",
+      "title": "REA analysis of src/safety/secrets.js is incomplete (resource_constraint)",
+      "detail": "REA reported resource_constraint for src/safety/secrets.js; its relationships are unavailable, so absence-based self-analysis rules are suppressed for this artifact.",
+      "evidence_ids": [
+        "ev_fd7c4ccf10d352a2f596384e2421d5dfe2a5d297944e98eeb0232c8a8c265ef2,ev_39748422d955eb40c820cdda72086bbbb3c2b4bb2b44ad5b2403e061db373c3f,ev_f494d603122a1b152ea53aa44d372b774338671ce3fc2e13930cb3393775a0dd,ev_533b50391c67909d546e56dda0d5c49b03942d50d320eb57eee85e70ab6220e8,ev_baf7a79879aa4d0032fbd6e6ae7105b6057dff56b98ca3ab7291b28f58b6d60b,ev_a15c1260f13a4a229603bce1d431c2d18ba58c704b0e0fafcdfcb57e8bd60b98"
+      ]
+    },
+    {
+      "id": "F-856e89c830",
+      "rule": "incomplete-analysis-coverage",
+      "area": "analysis-accuracy",
+      "priority": 1,
+      "subject": "tests/cli.test.js",
+      "title": "REA analysis of tests/cli.test.js is incomplete (resource_constraint)",
+      "detail": "REA reported resource_constraint for tests/cli.test.js; its relationships are unavailable, so absence-based self-analysis rules are suppressed for this artifact.",
+      "evidence_ids": [
+        "ev_fd7c4ccf10d352a2f596384e2421d5dfe2a5d297944e98eeb0232c8a8c265ef2,ev_39748422d955eb40c820cdda72086bbbb3c2b4bb2b44ad5b2403e061db373c3f,ev_f494d603122a1b152ea53aa44d372b774338671ce3fc2e13930cb3393775a0dd,ev_533b50391c67909d546e56dda0d5c49b03942d50d320eb57eee85e70ab6220e8,ev_baf7a79879aa4d0032fbd6e6ae7105b6057dff56b98ca3ab7291b28f58b6d60b,ev_a15c1260f13a4a229603bce1d431c2d18ba58c704b0e0fafcdfcb57e8bd60b98"
+      ]
+    },
+    {
+      "id": "F-96439c2af2",
+      "rule": "incomplete-analysis-coverage",
+      "area": "analysis-accuracy",
+      "priority": 1,
+      "subject": "tests/fixtures/fake-rea-engine.mjs",
+      "title": "REA analysis of tests/fixtures/fake-rea-engine.mjs is incomplete (resource_constraint)",
+      "detail": "REA reported resource_constraint for tests/fixtures/fake-rea-engine.mjs; its relationships are unavailable, so absence-based self-analysis rules are suppressed for this artifact.",
+      "evidence_ids": [
+        "ev_fd7c4ccf10d352a2f596384e2421d5dfe2a5d297944e98eeb0232c8a8c265ef2,ev_39748422d955eb40c820cdda72086bbbb3c2b4bb2b44ad5b2403e061db373c3f,ev_f494d603122a1b152ea53aa44d372b774338671ce3fc2e13930cb3393775a0dd,ev_533b50391c67909d546e56dda0d5c49b03942d50d320eb57eee85e70ab6220e8,ev_baf7a79879aa4d0032fbd6e6ae7105b6057dff56b98ca3ab7291b28f58b6d60b,ev_a15c1260f13a4a229603bce1d431c2d18ba58c704b0e0fafcdfcb57e8bd60b98"
+      ]
+    },
+    {
+      "id": "F-9af5b1dd8a",
+      "rule": "incomplete-analysis-coverage",
+      "area": "analysis-accuracy",
+      "priority": 1,
+      "subject": "tests/helpers.js",
+      "title": "REA analysis of tests/helpers.js is incomplete (resource_constraint)",
+      "detail": "REA reported resource_constraint for tests/helpers.js; its relationships are unavailable, so absence-based self-analysis rules are suppressed for this artifact.",
+      "evidence_ids": [
+        "ev_fd7c4ccf10d352a2f596384e2421d5dfe2a5d297944e98eeb0232c8a8c265ef2,ev_39748422d955eb40c820cdda72086bbbb3c2b4bb2b44ad5b2403e061db373c3f,ev_f494d603122a1b152ea53aa44d372b774338671ce3fc2e13930cb3393775a0dd,ev_533b50391c67909d546e56dda0d5c49b03942d50d320eb57eee85e70ab6220e8,ev_baf7a79879aa4d0032fbd6e6ae7105b6057dff56b98ca3ab7291b28f58b6d60b,ev_a15c1260f13a4a229603bce1d431c2d18ba58c704b0e0fafcdfcb57e8bd60b98"
+      ]
+    },
+    {
+      "id": "F-cc8d64f3f8",
+      "rule": "incomplete-analysis-coverage",
+      "area": "analysis-accuracy",
+      "priority": 1,
+      "subject": "tests/core.test.js",
+      "title": "REA analysis of tests/core.test.js is incomplete (resource_constraint)",
+      "detail": "REA reported resource_constraint for tests/core.test.js; its relationships are unavailable, so absence-based self-analysis rules are suppressed for this artifact.",
+      "evidence_ids": [
+        "ev_fd7c4ccf10d352a2f596384e2421d5dfe2a5d297944e98eeb0232c8a8c265ef2,ev_39748422d955eb40c820cdda72086bbbb3c2b4bb2b44ad5b2403e061db373c3f,ev_f494d603122a1b152ea53aa44d372b774338671ce3fc2e13930cb3393775a0dd,ev_533b50391c67909d546e56dda0d5c49b03942d50d320eb57eee85e70ab6220e8,ev_baf7a79879aa4d0032fbd6e6ae7105b6057dff56b98ca3ab7291b28f58b6d60b,ev_a15c1260f13a4a229603bce1d431c2d18ba58c704b0e0fafcdfcb57e8bd60b98"
+      ]
+    },
+    {
+      "id": "F-da26357866",
+      "rule": "incomplete-analysis-coverage",
+      "area": "analysis-accuracy",
+      "priority": 1,
+      "subject": "tests/agents.test.js",
+      "title": "REA analysis of tests/agents.test.js is incomplete (resource_constraint)",
+      "detail": "REA reported resource_constraint for tests/agents.test.js; its relationships are unavailable, so absence-based self-analysis rules are suppressed for this artifact.",
+      "evidence_ids": [
+        "ev_fd7c4ccf10d352a2f596384e2421d5dfe2a5d297944e98eeb0232c8a8c265ef2,ev_39748422d955eb40c820cdda72086bbbb3c2b4bb2b44ad5b2403e061db373c3f,ev_f494d603122a1b152ea53aa44d372b774338671ce3fc2e13930cb3393775a0dd,ev_533b50391c67909d546e56dda0d5c49b03942d50d320eb57eee85e70ab6220e8,ev_baf7a79879aa4d0032fbd6e6ae7105b6057dff56b98ca3ab7291b28f58b6d60b,ev_a15c1260f13a4a229603bce1d431c2d18ba58c704b0e0fafcdfcb57e8bd60b98"
+      ]
+    },
+    {
+      "id": "F-dbc4ff8e2d",
+      "rule": "incomplete-analysis-coverage",
+      "area": "analysis-accuracy",
+      "priority": 1,
+      "subject": "tests/sandbox.test.js",
+      "title": "REA analysis of tests/sandbox.test.js is incomplete (resource_constraint)",
+      "detail": "REA reported resource_constraint for tests/sandbox.test.js; its relationships are unavailable, so absence-based self-analysis rules are suppressed for this artifact.",
+      "evidence_ids": [
+        "ev_fd7c4ccf10d352a2f596384e2421d5dfe2a5d297944e98eeb0232c8a8c265ef2,ev_39748422d955eb40c820cdda72086bbbb3c2b4bb2b44ad5b2403e061db373c3f,ev_f494d603122a1b152ea53aa44d372b774338671ce3fc2e13930cb3393775a0dd,ev_533b50391c67909d546e56dda0d5c49b03942d50d320eb57eee85e70ab6220e8,ev_baf7a79879aa4d0032fbd6e6ae7105b6057dff56b98ca3ab7291b28f58b6d60b,ev_a15c1260f13a4a229603bce1d431c2d18ba58c704b0e0fafcdfcb57e8bd60b98"
+      ]
+    },
+    {
+      "id": "F-f47cb76ab7",
+      "rule": "incomplete-analysis-coverage",
+      "area": "analysis-accuracy",
+      "priority": 1,
+      "subject": "tests/fixtures/fake-claude.mjs",
+      "title": "REA analysis of tests/fixtures/fake-claude.mjs is incomplete (resource_constraint)",
+      "detail": "REA reported resource_constraint for tests/fixtures/fake-claude.mjs; its relationships are unavailable, so absence-based self-analysis rules are suppressed for this artifact.",
+      "evidence_ids": [
+        "ev_fd7c4ccf10d352a2f596384e2421d5dfe2a5d297944e98eeb0232c8a8c265ef2,ev_39748422d955eb40c820cdda72086bbbb3c2b4bb2b44ad5b2403e061db373c3f,ev_f494d603122a1b152ea53aa44d372b774338671ce3fc2e13930cb3393775a0dd,ev_533b50391c67909d546e56dda0d5c49b03942d50d320eb57eee85e70ab6220e8,ev_baf7a79879aa4d0032fbd6e6ae7105b6057dff56b98ca3ab7291b28f58b6d60b,ev_a15c1260f13a4a229603bce1d431c2d18ba58c704b0e0fafcdfcb57e8bd60b98"
+      ]
+    },
+    {
+      "id": "F-79b85988d7",
+      "rule": "high-fan-out",
+      "area": "orchestration",
+      "priority": 5,
+      "subject": "src/commands/info.js",
+      "title": "High local fan-out in src/commands/info.js (10 modules)",
+      "detail": "src/commands/info.js statically imports 10 local modules (threshold 8); every invocation loads all of them.",
+      "evidence_ids": [
+        "ev_fd7c4ccf10d352a2f596384e2421d5dfe2a5d297944e98eeb0232c8a8c265ef2,ev_39748422d955eb40c820cdda72086bbbb3c2b4bb2b44ad5b2403e061db373c3f,ev_f494d603122a1b152ea53aa44d372b774338671ce3fc2e13930cb3393775a0dd,ev_533b50391c67909d546e56dda0d5c49b03942d50d320eb57eee85e70ab6220e8,ev_baf7a79879aa4d0032fbd6e6ae7105b6057dff56b98ca3ab7291b28f58b6d60b,ev_a15c1260f13a4a229603bce1d431c2d18ba58c704b0e0fafcdfcb57e8bd60b98"
+      ]
+    },
+    {
+      "id": "F-9658ff6752",
+      "rule": "high-fan-out",
+      "area": "orchestration",
+      "priority": 5,
+      "subject": "src/orchestration/cycle.js",
+      "title": "High local fan-out in src/orchestration/cycle.js (12 modules)",
+      "detail": "src/orchestration/cycle.js statically imports 12 local modules (threshold 8); every invocation loads all of them.",
+      "evidence_ids": [
+        "ev_fd7c4ccf10d352a2f596384e2421d5dfe2a5d297944e98eeb0232c8a8c265ef2,ev_39748422d955eb40c820cdda72086bbbb3c2b4bb2b44ad5b2403e061db373c3f,ev_f494d603122a1b152ea53aa44d372b774338671ce3fc2e13930cb3393775a0dd,ev_533b50391c67909d546e56dda0d5c49b03942d50d320eb57eee85e70ab6220e8,ev_baf7a79879aa4d0032fbd6e6ae7105b6057dff56b98ca3ab7291b28f58b6d60b,ev_a15c1260f13a4a229603bce1d431c2d18ba58c704b0e0fafcdfcb57e8bd60b98"
+      ]
+    },
+    {
+      "id": "F-bc9c0440fd",
+      "rule": "spawn-without-error-listener",
+      "area": "error-handling",
+      "priority": 7,
+      "subject": "tests/mcp.test.js",
+      "title": "Child process spawned without an 'error' listener in tests/mcp.test.js",
+      "detail": "REA shows tests/mcp.test.js imports a child_process launcher but registers no 'error' event listener; spawn failures (ENOENT, EACCES) would surface as unhandled errors.",
+      "evidence_ids": [
+        "ev_fd7c4ccf10d352a2f596384e2421d5dfe2a5d297944e98eeb0232c8a8c265ef2,ev_39748422d955eb40c820cdda72086bbbb3c2b4bb2b44ad5b2403e061db373c3f,ev_f494d603122a1b152ea53aa44d372b774338671ce3fc2e13930cb3393775a0dd,ev_533b50391c67909d546e56dda0d5c49b03942d50d320eb57eee85e70ab6220e8,ev_baf7a79879aa4d0032fbd6e6ae7105b6057dff56b98ca3ab7291b28f58b6d60b,ev_a15c1260f13a4a229603bce1d431c2d18ba58c704b0e0fafcdfcb57e8bd60b98"
+      ]
+    }
+  ]
+}

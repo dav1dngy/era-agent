@@ -12,7 +12,7 @@ explicit.
 | 4 | At least one genuine Improvement Lab experiment | ✅ | 4 real experiments with REA self-analysis (`experiments/cycles/1-4`); experiment 4 under the round-2 rules, awaiting approval |
 | 5 | Rollback after a failed experiment | ✅ | cycle 1 (real REA) rejected, `main` unchanged, branch kept; rollback era-v3 → era-v2 → era-v3 verified on a clone; fake-engine e2e: rejection, approve → rollback |
 | 6 | Stable-version protection | ✅ | no merge without `era improve approve`; stale-base approval refused; CI refusal; protected evaluator paths (e2e protected-path rejection) |
-| 7 | Critical automated tests | ⚠️ partial | 106 tests: 104 pass, 1 platform skip, **1 failing on `main`** (REA self-analysis coverage, fixed by experiment 4 pending approval). Candidate branch: 104/104 pass, 1 skip |
+| 7 | Critical automated tests | ✅ | era-v4 (experiment 5 integrated): 107 passed, 0 failed in its evaluation; the REA coverage test that previously failed on `main` passes |
 | 8 | Authentic benchmark evidence | ✅ | `benchmarks/results/*.json` (quiet host, 3 repetitions); ground truth hand-written and checked with nm/otool/strings |
 | 9 | Security controls | ✅ for implemented controls | sandbox probe denied network and outside writes under real REA capture (`tests/sandbox.test.js`); redaction, egress authorization, budgets, locks, watchdog tests. No independent security assessment |
 | 10 | Clean-environment installation | ✅ | `scripts/clean-install-test.sh` passed: packed tarball → empty project → npm install → `era status` / `era analyze`, REA resolved from the installed dependency |
@@ -25,9 +25,6 @@ explicit.
   only against fake CLIs. Real experiments used Claude Code interactively (`manual`).
 * **CI workflows** were written and linted locally but have not run on GitHub
   (the repository is not published). Action SHAs were resolved from the GitHub API.
-* **Experiment 4 re-evaluation:** its first evaluation had invalid native
-  benchmark evidence (orphaned Hopper session, since fixed). It needs
-  `era improve rebase` + `evaluate` on the final `main` before approval.
 * **Linux:** unit and fake-engine tests are designed to run there (CI job
   `unit-linux`) but were not executed on Linux in this round.
 * **Type checking** is not implemented.
@@ -37,7 +34,7 @@ explicit.
 ## Pre-publication checks
 
 * Secret scan of the full history: 4 matches, all the synthetic test string
-  `sk-ant-SYNTHETIC_TEST_KEY` (commit `162db37`, removed in
+  synthetic test key (an Anthropic-style prefix followed by the alphabet) (commit `162db37`, removed in
   `f71f7de`). No real credentials found.
 * Commit author email in every commit: `77665890+dav1dngy@users.noreply.github.com` (the local git
   configuration). It becomes public on push.

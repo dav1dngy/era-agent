@@ -144,7 +144,8 @@ description: [docs/improvement-lab.md](docs/improvement-lab.md).
 | 4 | Byte-bounded REA passes with import placeholders (campaign 2) | findings 26 → 7, complete REA coverage | first evaluation passed; **rejected** on re-evaluation (a Hopper-flaky test); retried as #5 |
 
 Cycles 1–3 ran before the approval gate existed and were merged automatically.
-Experiment #5 (`cycle-20261013T150739-02fd6c`) retries #4's change after the flaky test was fixed; its result is in `era improve show`.
+| 5 | Retry of #4 after the flaky test fix | findings 27 → 9, tests 104 → 107 (0 failed), accuracy unchanged | accepted, **approved by the maintainer → era-v4** |
+
 Every record (cycle JSON, REA run records with output digests, self-analysis
 reports, ledger) is in [`experiments/`](experiments/). The narrative is in
 [docs/self-improvement.md](docs/self-improvement.md).

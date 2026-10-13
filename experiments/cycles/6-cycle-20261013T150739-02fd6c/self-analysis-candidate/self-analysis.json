@@ -1,0 +1,620 @@
+{
+  "self_analysis_id": "self-20261013T151801-8a1d2a",
+  "created_at": "2026-10-13T15:18:24.730Z",
+  "era_root": "<era-repo>/.era/worktrees/cycle-20261013T150739-02fd6c",
+  "artifact": {
+    "tarball_sha256": "b2f204b2856dbff05c1e893c771841926dbb26f44ddf2294f8f734626954c96b",
+    "packaged_files": 40,
+    "analyzed_dir": "<era-repo>/.era/self-analyses/self-20261013T151801-8a1d2a/work/artifact/package",
+    "passes": [
+      {
+        "dir": "<era-repo>/.era/self-analyses/self-20261013T151801-8a1d2a/work/passes/pass-1",
+        "focus": [
+          "bin/era.mjs",
+          "src/agents/coding-agents.js",
+          "src/agents/reasoning.js",
+          "src/analysis/analyze.js",
+          "src/analysis/detect.js",
+          "src/analysis/facts.js",
+          "src/analysis/report.js",
+          "src/cli.js",
+          "src/commands/analysis.js"
+        ],
+        "placeholders": [
+          "src/commands/info.js",
+          "src/commands/lab.js",
+          "src/core/config.js",
+          "src/core/log.js",
+          "src/core/process.js",
+          "src/core/util.js",
+          "src/rea_integration/rea-client.js",
+          "src/safety/policy.js",
+          "src/safety/sandbox.js",
+          "src/safety/secrets.js"
+        ],
+        "bytes": 45232
+      },
+      {
+        "dir": "<era-repo>/.era/self-analyses/self-20261013T151801-8a1d2a/work/passes/pass-2",
+        "focus": [
+          "src/commands/info.js",
+          "src/commands/lab.js",
+          "src/core/config.js",
+          "src/core/log.js",
+          "src/core/process.js",
+          "src/core/util.js",
+          "src/core/watchdog.mjs",
+          "src/evaluation/benchmark.js",
+          "src/evaluation/decision.js",
+          "src/evaluation/score.js",
+          "src/evaluation/self-eval.js",
+          "src/evaluation/tests.js"
+        ],
+        "placeholders": [
+          "src/agents/coding-agents.js",
+          "src/agents/reasoning.js",
+          "src/analysis/analyze.js",
+          "src/orchestration/cycle.js",
+          "src/orchestration/interrupt.js",
+          "src/orchestration/ledger.js",
+          "src/orchestration/versions.js",
+          "src/reporting/dashboard.js",
+          "src/reporting/table.js",
+          "src/safety/policy.js",
+          "src/safety/sandbox.js",
+          "src/safety/secrets.js",
+          "src/self_analysis/rules.js",
+          "src/self_analysis/self-analyze.js"
+        ],
+        "bytes": 49870
+      },
+      {
+        "dir": "<era-repo>/.era/self-analyses/self-20261013T151801-8a1d2a/work/passes/pass-3",
+        "focus": [
+          "src/improvement/modification.js",
+          "src/improvement/planner.js",
+          "src/orchestration/cycle.js",
+          "src/orchestration/interrupt.js",
+          "src/orchestration/ledger.js",
+          "src/orchestration/versions.js",
+          "src/rea_integration/rea-client.js",
+          "src/reporting/dashboard.js",
+          "src/reporting/table.js"
+        ],
+        "placeholders": [
+          "src/agents/coding-agents.js",
+          "src/analysis/report.js",
+          "src/core/log.js",
+          "src/core/process.js",
+          "src/core/util.js",
+          "src/evaluation/benchmark.js",
+          "src/evaluation/decision.js",
+          "src/evaluation/self-eval.js",
+          "src/evaluation/tests.js",
+          "src/safety/policy.js",
+          "src/self_analysis/rules.js"
+        ],
+        "bytes": 45759
+      },
+      {
+        "dir": "<era-repo>/.era/self-analyses/self-20261013T151801-8a1d2a/work/passes/pass-4",
+        "focus": [
+          "src/safety/policy.js",
+          "src/safety/sandbox.js",
+          "src/safety/secrets.js",
+          "src/self_analysis/rules.js",
+          "src/self_analysis/self-analyze.js",
+          "tests/agents.test.js",
+          "tests/analysis.test.js",
+          "tests/cli.test.js"
+        ],
+        "placeholders": [
+          "src/agents/coding-agents.js",
+          "src/agents/reasoning.js",
+          "src/analysis/analyze.js",
+          "src/analysis/detect.js",
+          "src/analysis/facts.js",
+          "src/analysis/report.js",
+          "src/cli.js",
+          "src/core/process.js",
+          "src/core/util.js",
+          "src/improvement/modification.js",
+          "tests/helpers.js"
+        ],
+        "bytes": 43686
+      },
+      {
+        "dir": "<era-repo>/.era/self-analyses/self-20261013T151801-8a1d2a/work/passes/pass-5",
+        "focus": [
+          "tests/core.test.js",
+          "tests/e2e-lab.test.js",
+          "tests/evaluation.test.js",
+          "tests/fixtures/fake-claude.mjs",
+          "tests/fixtures/fake-codex.mjs",
+          "tests/fixtures/fake-rea-engine.mjs",
+          "tests/fixtures/fake-rea.mjs",
+          "tests/helpers.js",
+          "tests/mcp.test.js",
+          "tests/observability.test.js",
+          "tests/orchestration.test.js",
+          "tests/rea-client.test.js",
+          "tests/rea-integration.test.js",
+          "tests/safety.test.js"
+        ],
+        "placeholders": [
+          "src/core/config.js",
+          "src/core/log.js",
+          "src/core/process.js",
+          "src/core/util.js",
+          "src/evaluation/benchmark.js",
+          "src/evaluation/decision.js",
+          "src/evaluation/score.js",
+          "src/evaluation/self-eval.js",
+          "src/evaluation/tests.js",
+          "src/improvement/modification.js",
+          "src/orchestration/cycle.js",
+          "src/orchestration/interrupt.js",
+          "src/rea_integration/rea-client.js",
+          "src/reporting/dashboard.js",
+          "src/reporting/table.js",
+          "src/safety/policy.js",
+          "src/safety/secrets.js"
+        ],
+        "bytes": 48996
+      },
+      {
+        "dir": "<era-repo>/.era/self-analyses/self-20261013T151801-8a1d2a/work/passes/pass-6",
+        "focus": [
+          "tests/sandbox.test.js",
+          "tests/self-analysis.test.js",
+          "tests/self-analyze-passes.test.js",
+          "tests/versions.test.js"
+        ],
+        "placeholders": [
+          "src/improvement/planner.js",
+          "src/orchestration/ledger.js",
+          "src/orchestration/versions.js",
+          "src/safety/sandbox.js",
+          "src/self_analysis/rules.js",
+          "src/self_analysis/self-analyze.js",
+          "tests/helpers.js"
+        ],
+        "bytes": 16962
+      }
+    ]
+  },
+  "runs": [
+    {
+      "run_id": "rea-20261013T151801-6739e7",
+      "label": "self-analysis:static-graph-1/6",
+      "started_at": "2026-10-13T15:18:01.564Z",
+      "duration_ms": 3596,
+      "command": [
+        "<era-repo>/node_modules/.bin/rea",
+        "analyze-javascript-application",
+        "<era-repo>/.era/self-analyses/self-20261013T151801-8a1d2a/work/passes/pass-1",
+        "--format",
+        "json"
+      ],
+      "command_source": "config",
+      "engine": {
+        "package": "rea-agents",
+        "version": "6.4.0"
+      },
+      "input": {
+        "path": "<era-repo>/.era/self-analyses/self-20261013T151801-8a1d2a/work/passes/pass-1",
+        "kind": "directory",
+        "bytes": null,
+        "sha256": "d59093a9891e271558133a9965d257a912199c9d559eeeae85345c99b092187f"
+      },
+      "status": "succeeded",
+      "exit_code": 0,
+      "signal": null,
+      "evidence_id": "ev_b3e429518b204c1c16ea6cd25f84aed6fd813688eda799755d54854126393d6f",
+      "operation": "analyze_javascript_application",
+      "provider": {
+        "id": "rea-javascript-application",
+        "name": "REA JavaScript application analyzer",
+        "version": "1"
+      },
+      "output_file": "<era-repo>/.era/runs/rea-20261013T151801-6739e7/output.json",
+      "output_bytes": 7569535,
+      "progress_events": 33,
+      "warnings": [],
+      "errors": [],
+      "resources": {
+        "real_s": 3.55,
+        "user_s": 3.43,
+        "sys_s": 0.51,
+        "max_rss_bytes": 375947264
+      }
+    },
+    {
+      "run_id": "rea-20261013T151805-facff0",
+      "label": "self-analysis:static-graph-2/6",
+      "started_at": "2026-10-13T15:18:05.856Z",
+      "duration_ms": 3697,
+      "command": [
+        "<era-repo>/node_modules/.bin/rea",
+        "analyze-javascript-application",
+        "<era-repo>/.era/self-analyses/self-20261013T151801-8a1d2a/work/passes/pass-2",
+        "--format",
+        "json"
+      ],
+      "command_source": "config",
+      "engine": {
+        "package": "rea-agents",
+        "version": "6.4.0"
+      },
+      "input": {
+        "path": "<era-repo>/.era/self-analyses/self-20261013T151801-8a1d2a/work/passes/pass-2",
+        "kind": "directory",
+        "bytes": null,
+        "sha256": "8952ce87a7be2531592f31f00185df72469bcf64735e864fe1f9b80ce87ee3d7"
+      },
+      "status": "succeeded",
+      "exit_code": 0,
+      "signal": null,
+      "evidence_id": "ev_c1ef7f620ebf11e5b6e09af92f39911d8f81d5479ab5cb9f0894207147280c08",
+      "operation": "analyze_javascript_application",
+      "provider": {
+        "id": "rea-javascript-application",
+        "name": "REA JavaScript application analyzer",
+        "version": "1"
+      },
+      "output_file": "<era-repo>/.era/runs/rea-20261013T151805-facff0/output.json",
+      "output_bytes": 10296050,
+      "progress_events": 40,
+      "warnings": [],
+      "errors": [],
+      "resources": {
+        "real_s": 3.65,
+        "user_s": 3.75,
+        "sys_s": 0.5,
+        "max_rss_bytes": 388300800
+      }
+    },
+    {
+      "run_id": "rea-20261013T151809-a45e38",
+      "label": "self-analysis:static-graph-3/6",
+      "started_at": "2026-10-13T15:18:09.588Z",
+      "duration_ms": 3344,
+      "command": [
+        "<era-repo>/node_modules/.bin/rea",
+        "analyze-javascript-application",
+        "<era-repo>/.era/self-analyses/self-20261013T151801-8a1d2a/work/passes/pass-3",
+        "--format",
+        "json"
+      ],
+      "command_source": "config",
+      "engine": {
+        "package": "rea-agents",
+        "version": "6.4.0"
+      },
+      "input": {
+        "path": "<era-repo>/.era/self-analyses/self-20261013T151801-8a1d2a/work/passes/pass-3",
+        "kind": "directory",
+        "bytes": null,
+        "sha256": "979cda3f2c8867f3c0a911c854571b9c360ddf4ac068fd9d011e3b40e0d9a1cf"
+      },
+      "status": "succeeded",
+      "exit_code": 0,
+      "signal": null,
+      "evidence_id": "ev_2010b81175bb57ee77744fbe4dc04fb76a5c151706ab0bb4e1bee0804f1f4be2",
+      "operation": "analyze_javascript_application",
+      "provider": {
+        "id": "rea-javascript-application",
+        "name": "REA JavaScript application analyzer",
+        "version": "1"
+      },
+      "output_file": "<era-repo>/.era/runs/rea-20261013T151809-a45e38/output.json",
+      "output_bytes": 9136151,
+      "progress_events": 34,
+      "warnings": [],
+      "errors": [],
+      "resources": {
+        "real_s": 3.3,
+        "user_s": 3.68,
+        "sys_s": 0.48,
+        "max_rss_bytes": 410648576
+      }
+    },
+    {
+      "run_id": "rea-20261013T151812-eef7e4",
+      "label": "self-analysis:static-graph-4/6",
+      "started_at": "2026-10-13T15:18:12.958Z",
+      "duration_ms": 3260,
+      "command": [
+        "<era-repo>/node_modules/.bin/rea",
+        "analyze-javascript-application",
+        "<era-repo>/.era/self-analyses/self-20261013T151801-8a1d2a/work/passes/pass-4",
+        "--format",
+        "json"
+      ],
+      "command_source": "config",
+      "engine": {
+        "package": "rea-agents",
+        "version": "6.4.0"
+      },
+      "input": {
+        "path": "<era-repo>/.era/self-analyses/self-20261013T151801-8a1d2a/work/passes/pass-4",
+        "kind": "directory",
+        "bytes": null,
+        "sha256": "390f2d4b221ce1657f8ad04b1eaf437807c487f970d76d8afae1b67ed264d4ed"
+      },
+      "status": "succeeded",
+      "exit_code": 0,
+      "signal": null,
+      "evidence_id": "ev_405a6d0d372f1c7a12048e5c53629dccf962f21241b3e3faca2e93f948dded6c",
+      "operation": "analyze_javascript_application",
+      "provider": {
+        "id": "rea-javascript-application",
+        "name": "REA JavaScript application analyzer",
+        "version": "1"
+      },
+      "output_file": "<era-repo>/.era/runs/rea-20261013T151812-eef7e4/output.json",
+      "output_bytes": 8691542,
+      "progress_events": 33,
+      "warnings": [],
+      "errors": [],
+      "resources": {
+        "real_s": 3.22,
+        "user_s": 3.43,
+        "sys_s": 0.43,
+        "max_rss_bytes": 365953024
+      }
+    },
+    {
+      "run_id": "rea-20261013T151816-0c6df7",
+      "label": "self-analysis:static-graph-5/6",
+      "started_at": "2026-10-13T15:18:16.243Z",
+      "duration_ms": 3786,
+      "command": [
+        "<era-repo>/node_modules/.bin/rea",
+        "analyze-javascript-application",
+        "<era-repo>/.era/self-analyses/self-20261013T151801-8a1d2a/work/passes/pass-5",
+        "--format",
+        "json"
+      ],
+      "command_source": "config",
+      "engine": {
+        "package": "rea-agents",
+        "version": "6.4.0"
+      },
+      "input": {
+        "path": "<era-repo>/.era/self-analyses/self-20261013T151801-8a1d2a/work/passes/pass-5",
+        "kind": "directory",
+        "bytes": null,
+        "sha256": "9b243716316deca177b00acb4603fe00730cb3dcf78c67ea5d18844dadfc757f"
+      },
+      "status": "succeeded",
+      "exit_code": 0,
+      "signal": null,
+      "evidence_id": "ev_2f55ddb0a7a78dec9058d9be95d7258f2579c013874e768adde6ce05438f0621",
+      "operation": "analyze_javascript_application",
+      "provider": {
+        "id": "rea-javascript-application",
+        "name": "REA JavaScript application analyzer",
+        "version": "1"
+      },
+      "output_file": "<era-repo>/.era/runs/rea-20261013T151816-0c6df7/output.json",
+      "output_bytes": 10481364,
+      "progress_events": 45,
+      "warnings": [],
+      "errors": [],
+      "resources": {
+        "real_s": 3.75,
+        "user_s": 4.01,
+        "sys_s": 0.5,
+        "max_rss_bytes": 434372608
+      }
+    },
+    {
+      "run_id": "rea-20261013T151820-3f37e6",
+      "label": "self-analysis:static-graph-6/6",
+      "started_at": "2026-10-13T15:18:20.058Z",
+      "duration_ms": 2523,
+      "command": [
+        "<era-repo>/node_modules/.bin/rea",
+        "analyze-javascript-application",
+        "<era-repo>/.era/self-analyses/self-20261013T151801-8a1d2a/work/passes/pass-6",
+        "--format",
+        "json"
+      ],
+      "command_source": "config",
+      "engine": {
+        "package": "rea-agents",
+        "version": "6.4.0"
+      },
+      "input": {
+        "path": "<era-repo>/.era/self-analyses/self-20261013T151801-8a1d2a/work/passes/pass-6",
+        "kind": "directory",
+        "bytes": null,
+        "sha256": "4776aecb9970fb67b7855ca58f6e47aeb94bb4df59fd0dffcdec5af172b46339"
+      },
+      "status": "succeeded",
+      "exit_code": 0,
+      "signal": null,
+      "evidence_id": "ev_75ba1b3cf1c19bd2cb371b8f71a41cd921ae52f3fef7f0af70f35b2eed16ceb2",
+      "operation": "analyze_javascript_application",
+      "provider": {
+        "id": "rea-javascript-application",
+        "name": "REA JavaScript application analyzer",
+        "version": "1"
+      },
+      "output_file": "<era-repo>/.era/runs/rea-20261013T151820-3f37e6/output.json",
+      "output_bytes": 3991986,
+      "progress_events": 25,
+      "warnings": [],
+      "errors": [],
+      "resources": {
+        "real_s": 2.48,
+        "user_s": 2.63,
+        "sys_s": 0.4,
+        "max_rss_bytes": 365330432
+      }
+    },
+    {
+      "run_id": "rea-20261013T151822-24627b",
+      "label": "self-analysis:runtime-help",
+      "started_at": "2026-10-13T15:18:22.593Z",
+      "duration_ms": 2121,
+      "command": [
+        "<era-repo>/node_modules/.bin/rea",
+        "capture-process",
+        "<era-repo>/.era/self-analyses/self-20261013T151801-8a1d2a/help-scenario.json",
+        "--format",
+        "json"
+      ],
+      "command_source": "config",
+      "engine": {
+        "package": "rea-agents",
+        "version": "6.4.0"
+      },
+      "input": {
+        "path": "<era-repo>/.era/self-analyses/self-20261013T151801-8a1d2a/work/artifact/package/bin/era.mjs",
+        "kind": "file",
+        "bytes": 135,
+        "sha256": "e0c335a6ff9614fbfcc717263b95dc98b95b0bd28efe3310ead6a6bcfb27b81f"
+      },
+      "status": "succeeded",
+      "exit_code": 0,
+      "signal": null,
+      "evidence_id": "ev_4db603c82874ce725722be157ed69fde209f32a3fed378042d759aa445b9ef71",
+      "operation": "capture_process_scenario",
+      "provider": {
+        "id": "rea-process",
+        "name": "REA process capture",
+        "version": "3"
+      },
+      "output_file": "<era-repo>/.era/runs/rea-20261013T151822-24627b/output.json",
+      "output_bytes": 96534,
+      "progress_events": 4,
+      "warnings": [],
+      "errors": [],
+      "resources": {
+        "real_s": 2.08,
+        "user_s": 1.98,
+        "sys_s": 0.71,
+        "max_rss_bytes": 433373184
+      }
+    }
+  ],
+  "metrics": {
+    "modules": 56,
+    "passes": 6,
+    "semantic_unknowns": 5917,
+    "startup_ms": 213,
+    "findings": 9
+  },
+  "findings": [
+    {
+      "id": "F-79b85988d7",
+      "rule": "high-fan-out",
+      "area": "orchestration",
+      "priority": 5,
+      "subject": "src/commands/info.js",
+      "title": "High local fan-out in src/commands/info.js (10 modules)",
+      "detail": "src/commands/info.js statically imports 10 local modules (threshold 8); every invocation loads all of them.",
+      "evidence_ids": [
+        "ev_b3e429518b204c1c16ea6cd25f84aed6fd813688eda799755d54854126393d6f,ev_c1ef7f620ebf11e5b6e09af92f39911d8f81d5479ab5cb9f0894207147280c08,ev_2010b81175bb57ee77744fbe4dc04fb76a5c151706ab0bb4e1bee0804f1f4be2,ev_405a6d0d372f1c7a12048e5c53629dccf962f21241b3e3faca2e93f948dded6c,ev_2f55ddb0a7a78dec9058d9be95d7258f2579c013874e768adde6ce05438f0621,ev_75ba1b3cf1c19bd2cb371b8f71a41cd921ae52f3fef7f0af70f35b2eed16ceb2"
+      ]
+    },
+    {
+      "id": "F-9658ff6752",
+      "rule": "high-fan-out",
+      "area": "orchestration",
+      "priority": 5,
+      "subject": "src/orchestration/cycle.js",
+      "title": "High local fan-out in src/orchestration/cycle.js (12 modules)",
+      "detail": "src/orchestration/cycle.js statically imports 12 local modules (threshold 8); every invocation loads all of them.",
+      "evidence_ids": [
+        "ev_b3e429518b204c1c16ea6cd25f84aed6fd813688eda799755d54854126393d6f,ev_c1ef7f620ebf11e5b6e09af92f39911d8f81d5479ab5cb9f0894207147280c08,ev_2010b81175bb57ee77744fbe4dc04fb76a5c151706ab0bb4e1bee0804f1f4be2,ev_405a6d0d372f1c7a12048e5c53629dccf962f21241b3e3faca2e93f948dded6c,ev_2f55ddb0a7a78dec9058d9be95d7258f2579c013874e768adde6ce05438f0621,ev_75ba1b3cf1c19bd2cb371b8f71a41cd921ae52f3fef7f0af70f35b2eed16ceb2"
+      ]
+    },
+    {
+      "id": "F-58e0ea7c53",
+      "rule": "unreachable-module",
+      "area": "code-quality",
+      "priority": 6,
+      "subject": "src/core/watchdog.mjs",
+      "title": "Module not reachable from the CLI entrypoint: src/core/watchdog.mjs",
+      "detail": "No static import path from bin/ reaches src/core/watchdog.mjs in REA's application graph; it is dead code or loaded dynamically.",
+      "evidence_ids": [
+        "ev_b3e429518b204c1c16ea6cd25f84aed6fd813688eda799755d54854126393d6f,ev_c1ef7f620ebf11e5b6e09af92f39911d8f81d5479ab5cb9f0894207147280c08,ev_2010b81175bb57ee77744fbe4dc04fb76a5c151706ab0bb4e1bee0804f1f4be2,ev_405a6d0d372f1c7a12048e5c53629dccf962f21241b3e3faca2e93f948dded6c,ev_2f55ddb0a7a78dec9058d9be95d7258f2579c013874e768adde6ce05438f0621,ev_75ba1b3cf1c19bd2cb371b8f71a41cd921ae52f3fef7f0af70f35b2eed16ceb2"
+      ]
+    },
+    {
+      "id": "F-2c7f7ed193",
+      "rule": "spawn-without-error-listener",
+      "area": "error-handling",
+      "priority": 7,
+      "subject": "tests/e2e-lab.test.js",
+      "title": "Child process spawned without an 'error' listener in tests/e2e-lab.test.js",
+      "detail": "REA shows tests/e2e-lab.test.js imports a child_process launcher but registers no 'error' event listener; spawn failures (ENOENT, EACCES) would surface as unhandled errors.",
+      "evidence_ids": [
+        "ev_b3e429518b204c1c16ea6cd25f84aed6fd813688eda799755d54854126393d6f,ev_c1ef7f620ebf11e5b6e09af92f39911d8f81d5479ab5cb9f0894207147280c08,ev_2010b81175bb57ee77744fbe4dc04fb76a5c151706ab0bb4e1bee0804f1f4be2,ev_405a6d0d372f1c7a12048e5c53629dccf962f21241b3e3faca2e93f948dded6c,ev_2f55ddb0a7a78dec9058d9be95d7258f2579c013874e768adde6ce05438f0621,ev_75ba1b3cf1c19bd2cb371b8f71a41cd921ae52f3fef7f0af70f35b2eed16ceb2"
+      ]
+    },
+    {
+      "id": "F-bc9c0440fd",
+      "rule": "spawn-without-error-listener",
+      "area": "error-handling",
+      "priority": 7,
+      "subject": "tests/mcp.test.js",
+      "title": "Child process spawned without an 'error' listener in tests/mcp.test.js",
+      "detail": "REA shows tests/mcp.test.js imports a child_process launcher but registers no 'error' event listener; spawn failures (ENOENT, EACCES) would surface as unhandled errors.",
+      "evidence_ids": [
+        "ev_b3e429518b204c1c16ea6cd25f84aed6fd813688eda799755d54854126393d6f,ev_c1ef7f620ebf11e5b6e09af92f39911d8f81d5479ab5cb9f0894207147280c08,ev_2010b81175bb57ee77744fbe4dc04fb76a5c151706ab0bb4e1bee0804f1f4be2,ev_405a6d0d372f1c7a12048e5c53629dccf962f21241b3e3faca2e93f948dded6c,ev_2f55ddb0a7a78dec9058d9be95d7258f2579c013874e768adde6ce05438f0621,ev_75ba1b3cf1c19bd2cb371b8f71a41cd921ae52f3fef7f0af70f35b2eed16ceb2"
+      ]
+    },
+    {
+      "id": "F-2fe456ef5b",
+      "rule": "untested-module",
+      "area": "test-coverage",
+      "priority": 10,
+      "subject": "src/commands/lab.js",
+      "title": "No test module imports src/commands/lab.js",
+      "detail": "REA's import graph shows no edge from tests/ to src/commands/lab.js.",
+      "evidence_ids": [
+        "ev_b3e429518b204c1c16ea6cd25f84aed6fd813688eda799755d54854126393d6f,ev_c1ef7f620ebf11e5b6e09af92f39911d8f81d5479ab5cb9f0894207147280c08,ev_2010b81175bb57ee77744fbe4dc04fb76a5c151706ab0bb4e1bee0804f1f4be2,ev_405a6d0d372f1c7a12048e5c53629dccf962f21241b3e3faca2e93f948dded6c,ev_2f55ddb0a7a78dec9058d9be95d7258f2579c013874e768adde6ce05438f0621,ev_75ba1b3cf1c19bd2cb371b8f71a41cd921ae52f3fef7f0af70f35b2eed16ceb2"
+      ]
+    },
+    {
+      "id": "F-5907d881ba",
+      "rule": "untested-module",
+      "area": "test-coverage",
+      "priority": 10,
+      "subject": "src/commands/info.js",
+      "title": "No test module imports src/commands/info.js",
+      "detail": "REA's import graph shows no edge from tests/ to src/commands/info.js.",
+      "evidence_ids": [
+        "ev_b3e429518b204c1c16ea6cd25f84aed6fd813688eda799755d54854126393d6f,ev_c1ef7f620ebf11e5b6e09af92f39911d8f81d5479ab5cb9f0894207147280c08,ev_2010b81175bb57ee77744fbe4dc04fb76a5c151706ab0bb4e1bee0804f1f4be2,ev_405a6d0d372f1c7a12048e5c53629dccf962f21241b3e3faca2e93f948dded6c,ev_2f55ddb0a7a78dec9058d9be95d7258f2579c013874e768adde6ce05438f0621,ev_75ba1b3cf1c19bd2cb371b8f71a41cd921ae52f3fef7f0af70f35b2eed16ceb2"
+      ]
+    },
+    {
+      "id": "F-8e844c0b5b",
+      "rule": "untested-module",
+      "area": "test-coverage",
+      "priority": 10,
+      "subject": "src/core/watchdog.mjs",
+      "title": "No test module imports src/core/watchdog.mjs",
+      "detail": "REA's import graph shows no edge from tests/ to src/core/watchdog.mjs.",
+      "evidence_ids": [
+        "ev_b3e429518b204c1c16ea6cd25f84aed6fd813688eda799755d54854126393d6f,ev_c1ef7f620ebf11e5b6e09af92f39911d8f81d5479ab5cb9f0894207147280c08,ev_2010b81175bb57ee77744fbe4dc04fb76a5c151706ab0bb4e1bee0804f1f4be2,ev_405a6d0d372f1c7a12048e5c53629dccf962f21241b3e3faca2e93f948dded6c,ev_2f55ddb0a7a78dec9058d9be95d7258f2579c013874e768adde6ce05438f0621,ev_75ba1b3cf1c19bd2cb371b8f71a41cd921ae52f3fef7f0af70f35b2eed16ceb2"
+      ]
+    },
+    {
+      "id": "F-e2748c026a",
+      "rule": "untested-module",
+      "area": "test-coverage",
+      "priority": 10,
+      "subject": "src/commands/analysis.js",
+      "title": "No test module imports src/commands/analysis.js",
+      "detail": "REA's import graph shows no edge from tests/ to src/commands/analysis.js.",
+      "evidence_ids": [
+        "ev_b3e429518b204c1c16ea6cd25f84aed6fd813688eda799755d54854126393d6f,ev_c1ef7f620ebf11e5b6e09af92f39911d8f81d5479ab5cb9f0894207147280c08,ev_2010b81175bb57ee77744fbe4dc04fb76a5c151706ab0bb4e1bee0804f1f4be2,ev_405a6d0d372f1c7a12048e5c53629dccf962f21241b3e3faca2e93f948dded6c,ev_2f55ddb0a7a78dec9058d9be95d7258f2579c013874e768adde6ce05438f0621,ev_75ba1b3cf1c19bd2cb371b8f71a41cd921ae52f3fef7f0af70f35b2eed16ceb2"
+      ]
+    }
+  ]
+}

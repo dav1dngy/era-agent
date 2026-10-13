@@ -1,8 +1,8 @@
 {
   "cycle_id": "cycle-20261013T112629-18505d",
-  "status": "awaiting-approval",
+  "status": "rejected",
   "created_at": "2026-10-13T11:27:52.504Z",
-  "base_commit": "5004f964b449cb1c21dd4646d2f1e6dc5b381f03",
+  "base_commit": "f02fdfce9684c36fad8f51fedc99ce79b33d14da",
   "base_version": "era-v3",
   "branch": "experiment/cycle-20261013T112629-18505d",
   "worktree": "<era-repo>/.era/worktrees/cycle-20261013T112629-18505d",
@@ -55,11 +55,11 @@
     }
   ],
   "baseline_self_analysis": {
-    "id": "self-20261013T112629-261b01",
+    "id": "self-20261013T145141-666c54",
     "metrics": {
       "modules": 42,
-      "expected_modules": 34,
-      "startup_ms": 272,
+      "expected_modules": 35,
+      "startup_ms": 235,
       "findings": 26,
       "rea_runs": 7
     },
@@ -73,7 +73,19 @@
         "title": "REA analysis of src/reporting/table.js is incomplete (resource_constraint)",
         "detail": "REA reported resource_constraint for src/reporting/table.js; its relationships are unavailable, so absence-based self-analysis rules are suppressed for this artifact.",
         "evidence_ids": [
-          "ev_23a222980dd911ee96ef7f03cdcff8414ede26394e2062dc06ee943137375851,ev_f9b8cf9f9bea85e702c2dc7b179a2853edc74234c96dac6acaec83fa1e73a620,ev_52ec93e3a8e96e8ecfe4d26f6f7bcecf82bb605cf3d21834bb96e55693340fe5,ev_85a8e187d787081051cf5f683590d84fd058738195459a59a54cd5d9ea53d36e,ev_fe1ee303f20520193ea90a339bc5fd5c2a79a1161e3dde5c046d2f94a9208788,ev_baac17163bec6ef9e50e4495aca4a8a61474db92de1244ad77f87310ba9f8a88"
+          "ev_3d33cb4610929361da456a225dc37b1de263c58db01e0384ddb0383d0a4da094,ev_dfd8a63ff3a43e9de3df28b38b71ec92d79b843de3c0cecafea73dc483b251b3,ev_fdd420d525fc102d89db452be50d4abe1cd4efc851b5f1e22a14fddcce63033e,ev_a2787e33e9586ef2a1e045eabc6d6ce1928683ced9a83b3c5b693800bab51749,ev_8438b12af7763208f9f130c261c06e2f39f6395c3acef9732838a77020c28a6a,ev_21b7e1a13bf2050243a7e63ec7db1d5f01c8720f43e8b199e2e1bdf3d0fd991a"
+        ]
+      },
+      {
+        "id": "F-20e04cb569",
+        "rule": "incomplete-analysis-coverage",
+        "area": "analysis-accuracy",
+        "priority": 1,
+        "subject": "tests/self-analyze-passes.test.js",
+        "title": "REA analysis of tests/self-analyze-passes.test.js is incomplete (resource_constraint)",
+        "detail": "REA reported resource_constraint for tests/self-analyze-passes.test.js; its relationships are unavailable, so absence-based self-analysis rules are suppressed for this artifact.",
+        "evidence_ids": [
+          "ev_3d33cb4610929361da456a225dc37b1de263c58db01e0384ddb0383d0a4da094,ev_dfd8a63ff3a43e9de3df28b38b71ec92d79b843de3c0cecafea73dc483b251b3,ev_fdd420d525fc102d89db452be50d4abe1cd4efc851b5f1e22a14fddcce63033e,ev_a2787e33e9586ef2a1e045eabc6d6ce1928683ced9a83b3c5b693800bab51749,ev_8438b12af7763208f9f130c261c06e2f39f6395c3acef9732838a77020c28a6a,ev_21b7e1a13bf2050243a7e63ec7db1d5f01c8720f43e8b199e2e1bdf3d0fd991a"
         ]
       },
       {
@@ -85,7 +97,19 @@
         "title": "REA analysis of src/self_analysis/rules.js is incomplete (resource_constraint)",
         "detail": "REA reported resource_constraint for src/self_analysis/rules.js; its relationships are unavailable, so absence-based self-analysis rules are suppressed for this artifact.",
         "evidence_ids": [
-          "ev_23a222980dd911ee96ef7f03cdcff8414ede26394e2062dc06ee943137375851,ev_f9b8cf9f9bea85e702c2dc7b179a2853edc74234c96dac6acaec83fa1e73a620,ev_52ec93e3a8e96e8ecfe4d26f6f7bcecf82bb605cf3d21834bb96e55693340fe5,ev_85a8e187d787081051cf5f683590d84fd058738195459a59a54cd5d9ea53d36e,ev_fe1ee303f20520193ea90a339bc5fd5c2a79a1161e3dde5c046d2f94a9208788,ev_baac17163bec6ef9e50e4495aca4a8a61474db92de1244ad77f87310ba9f8a88"
+          "ev_3d33cb4610929361da456a225dc37b1de263c58db01e0384ddb0383d0a4da094,ev_dfd8a63ff3a43e9de3df28b38b71ec92d79b843de3c0cecafea73dc483b251b3,ev_fdd420d525fc102d89db452be50d4abe1cd4efc851b5f1e22a14fddcce63033e,ev_a2787e33e9586ef2a1e045eabc6d6ce1928683ced9a83b3c5b693800bab51749,ev_8438b12af7763208f9f130c261c06e2f39f6395c3acef9732838a77020c28a6a,ev_21b7e1a13bf2050243a7e63ec7db1d5f01c8720f43e8b199e2e1bdf3d0fd991a"
+        ]
+      },
+      {
+        "id": "F-333e1a8039",
+        "rule": "incomplete-analysis-coverage",
+        "area": "analysis-accuracy",
+        "priority": 1,
+        "subject": "src/orchestration/versions.js",
+        "title": "REA analysis of src/orchestration/versions.js is incomplete (resource_constraint)",
+        "detail": "REA reported resource_constraint for src/orchestration/versions.js; its relationships are unavailable, so absence-based self-analysis rules are suppressed for this artifact.",
+        "evidence_ids": [
+          "ev_3d33cb4610929361da456a225dc37b1de263c58db01e0384ddb0383d0a4da094,ev_dfd8a63ff3a43e9de3df28b38b71ec92d79b843de3c0cecafea73dc483b251b3,ev_fdd420d525fc102d89db452be50d4abe1cd4efc851b5f1e22a14fddcce63033e,ev_a2787e33e9586ef2a1e045eabc6d6ce1928683ced9a83b3c5b693800bab51749,ev_8438b12af7763208f9f130c261c06e2f39f6395c3acef9732838a77020c28a6a,ev_21b7e1a13bf2050243a7e63ec7db1d5f01c8720f43e8b199e2e1bdf3d0fd991a"
         ]
       },
       {
@@ -97,7 +121,7 @@
         "title": "REA analysis of src/rea_integration/rea-client.js is incomplete (resource_constraint)",
         "detail": "REA reported resource_constraint for src/rea_integration/rea-client.js; its relationships are unavailable, so absence-based self-analysis rules are suppressed for this artifact.",
         "evidence_ids": [
-          "ev_23a222980dd911ee96ef7f03cdcff8414ede26394e2062dc06ee943137375851,ev_f9b8cf9f9bea85e702c2dc7b179a2853edc74234c96dac6acaec83fa1e73a620,ev_52ec93e3a8e96e8ecfe4d26f6f7bcecf82bb605cf3d21834bb96e55693340fe5,ev_85a8e187d787081051cf5f683590d84fd058738195459a59a54cd5d9ea53d36e,ev_fe1ee303f20520193ea90a339bc5fd5c2a79a1161e3dde5c046d2f94a9208788,ev_baac17163bec6ef9e50e4495aca4a8a61474db92de1244ad77f87310ba9f8a88"
+          "ev_3d33cb4610929361da456a225dc37b1de263c58db01e0384ddb0383d0a4da094,ev_dfd8a63ff3a43e9de3df28b38b71ec92d79b843de3c0cecafea73dc483b251b3,ev_fdd420d525fc102d89db452be50d4abe1cd4efc851b5f1e22a14fddcce63033e,ev_a2787e33e9586ef2a1e045eabc6d6ce1928683ced9a83b3c5b693800bab51749,ev_8438b12af7763208f9f130c261c06e2f39f6395c3acef9732838a77020c28a6a,ev_21b7e1a13bf2050243a7e63ec7db1d5f01c8720f43e8b199e2e1bdf3d0fd991a"
         ]
       },
       {
@@ -109,19 +133,7 @@
         "title": "REA analysis of tests/evaluation.test.js is incomplete (resource_constraint)",
         "detail": "REA reported resource_constraint for tests/evaluation.test.js; its relationships are unavailable, so absence-based self-analysis rules are suppressed for this artifact.",
         "evidence_ids": [
-          "ev_23a222980dd911ee96ef7f03cdcff8414ede26394e2062dc06ee943137375851,ev_f9b8cf9f9bea85e702c2dc7b179a2853edc74234c96dac6acaec83fa1e73a620,ev_52ec93e3a8e96e8ecfe4d26f6f7bcecf82bb605cf3d21834bb96e55693340fe5,ev_85a8e187d787081051cf5f683590d84fd058738195459a59a54cd5d9ea53d36e,ev_fe1ee303f20520193ea90a339bc5fd5c2a79a1161e3dde5c046d2f94a9208788,ev_baac17163bec6ef9e50e4495aca4a8a61474db92de1244ad77f87310ba9f8a88"
-        ]
-      },
-      {
-        "id": "F-39443e22ae",
-        "rule": "incomplete-analysis-coverage",
-        "area": "analysis-accuracy",
-        "priority": 1,
-        "subject": "tests/rea-client.test.js",
-        "title": "REA analysis of tests/rea-client.test.js is incomplete (resource_constraint)",
-        "detail": "REA reported resource_constraint for tests/rea-client.test.js; its relationships are unavailable, so absence-based self-analysis rules are suppressed for this artifact.",
-        "evidence_ids": [
-          "ev_23a222980dd911ee96ef7f03cdcff8414ede26394e2062dc06ee943137375851,ev_f9b8cf9f9bea85e702c2dc7b179a2853edc74234c96dac6acaec83fa1e73a620,ev_52ec93e3a8e96e8ecfe4d26f6f7bcecf82bb605cf3d21834bb96e55693340fe5,ev_85a8e187d787081051cf5f683590d84fd058738195459a59a54cd5d9ea53d36e,ev_fe1ee303f20520193ea90a339bc5fd5c2a79a1161e3dde5c046d2f94a9208788,ev_baac17163bec6ef9e50e4495aca4a8a61474db92de1244ad77f87310ba9f8a88"
+          "ev_3d33cb4610929361da456a225dc37b1de263c58db01e0384ddb0383d0a4da094,ev_dfd8a63ff3a43e9de3df28b38b71ec92d79b843de3c0cecafea73dc483b251b3,ev_fdd420d525fc102d89db452be50d4abe1cd4efc851b5f1e22a14fddcce63033e,ev_a2787e33e9586ef2a1e045eabc6d6ce1928683ced9a83b3c5b693800bab51749,ev_8438b12af7763208f9f130c261c06e2f39f6395c3acef9732838a77020c28a6a,ev_21b7e1a13bf2050243a7e63ec7db1d5f01c8720f43e8b199e2e1bdf3d0fd991a"
         ]
       },
       {
@@ -133,7 +145,7 @@
         "title": "REA analysis of src/safety/policy.js is incomplete (resource_constraint)",
         "detail": "REA reported resource_constraint for src/safety/policy.js; its relationships are unavailable, so absence-based self-analysis rules are suppressed for this artifact.",
         "evidence_ids": [
-          "ev_23a222980dd911ee96ef7f03cdcff8414ede26394e2062dc06ee943137375851,ev_f9b8cf9f9bea85e702c2dc7b179a2853edc74234c96dac6acaec83fa1e73a620,ev_52ec93e3a8e96e8ecfe4d26f6f7bcecf82bb605cf3d21834bb96e55693340fe5,ev_85a8e187d787081051cf5f683590d84fd058738195459a59a54cd5d9ea53d36e,ev_fe1ee303f20520193ea90a339bc5fd5c2a79a1161e3dde5c046d2f94a9208788,ev_baac17163bec6ef9e50e4495aca4a8a61474db92de1244ad77f87310ba9f8a88"
+          "ev_3d33cb4610929361da456a225dc37b1de263c58db01e0384ddb0383d0a4da094,ev_dfd8a63ff3a43e9de3df28b38b71ec92d79b843de3c0cecafea73dc483b251b3,ev_fdd420d525fc102d89db452be50d4abe1cd4efc851b5f1e22a14fddcce63033e,ev_a2787e33e9586ef2a1e045eabc6d6ce1928683ced9a83b3c5b693800bab51749,ev_8438b12af7763208f9f130c261c06e2f39f6395c3acef9732838a77020c28a6a,ev_21b7e1a13bf2050243a7e63ec7db1d5f01c8720f43e8b199e2e1bdf3d0fd991a"
         ]
       },
       {
@@ -145,7 +157,7 @@
         "title": "REA analysis of tests/e2e-lab.test.js is incomplete (resource_constraint)",
         "detail": "REA reported resource_constraint for tests/e2e-lab.test.js; its relationships are unavailable, so absence-based self-analysis rules are suppressed for this artifact.",
         "evidence_ids": [
-          "ev_23a222980dd911ee96ef7f03cdcff8414ede26394e2062dc06ee943137375851,ev_f9b8cf9f9bea85e702c2dc7b179a2853edc74234c96dac6acaec83fa1e73a620,ev_52ec93e3a8e96e8ecfe4d26f6f7bcecf82bb605cf3d21834bb96e55693340fe5,ev_85a8e187d787081051cf5f683590d84fd058738195459a59a54cd5d9ea53d36e,ev_fe1ee303f20520193ea90a339bc5fd5c2a79a1161e3dde5c046d2f94a9208788,ev_baac17163bec6ef9e50e4495aca4a8a61474db92de1244ad77f87310ba9f8a88"
+          "ev_3d33cb4610929361da456a225dc37b1de263c58db01e0384ddb0383d0a4da094,ev_dfd8a63ff3a43e9de3df28b38b71ec92d79b843de3c0cecafea73dc483b251b3,ev_fdd420d525fc102d89db452be50d4abe1cd4efc851b5f1e22a14fddcce63033e,ev_a2787e33e9586ef2a1e045eabc6d6ce1928683ced9a83b3c5b693800bab51749,ev_8438b12af7763208f9f130c261c06e2f39f6395c3acef9732838a77020c28a6a,ev_21b7e1a13bf2050243a7e63ec7db1d5f01c8720f43e8b199e2e1bdf3d0fd991a"
         ]
       },
       {
@@ -157,7 +169,7 @@
         "title": "REA analysis of src/reporting/dashboard.js is incomplete (resource_constraint)",
         "detail": "REA reported resource_constraint for src/reporting/dashboard.js; its relationships are unavailable, so absence-based self-analysis rules are suppressed for this artifact.",
         "evidence_ids": [
-          "ev_23a222980dd911ee96ef7f03cdcff8414ede26394e2062dc06ee943137375851,ev_f9b8cf9f9bea85e702c2dc7b179a2853edc74234c96dac6acaec83fa1e73a620,ev_52ec93e3a8e96e8ecfe4d26f6f7bcecf82bb605cf3d21834bb96e55693340fe5,ev_85a8e187d787081051cf5f683590d84fd058738195459a59a54cd5d9ea53d36e,ev_fe1ee303f20520193ea90a339bc5fd5c2a79a1161e3dde5c046d2f94a9208788,ev_baac17163bec6ef9e50e4495aca4a8a61474db92de1244ad77f87310ba9f8a88"
+          "ev_3d33cb4610929361da456a225dc37b1de263c58db01e0384ddb0383d0a4da094,ev_dfd8a63ff3a43e9de3df28b38b71ec92d79b843de3c0cecafea73dc483b251b3,ev_fdd420d525fc102d89db452be50d4abe1cd4efc851b5f1e22a14fddcce63033e,ev_a2787e33e9586ef2a1e045eabc6d6ce1928683ced9a83b3c5b693800bab51749,ev_8438b12af7763208f9f130c261c06e2f39f6395c3acef9732838a77020c28a6a,ev_21b7e1a13bf2050243a7e63ec7db1d5f01c8720f43e8b199e2e1bdf3d0fd991a"
         ]
       },
       {
@@ -169,7 +181,7 @@
         "title": "REA analysis of tests/safety.test.js is incomplete (resource_constraint)",
         "detail": "REA reported resource_constraint for tests/safety.test.js; its relationships are unavailable, so absence-based self-analysis rules are suppressed for this artifact.",
         "evidence_ids": [
-          "ev_23a222980dd911ee96ef7f03cdcff8414ede26394e2062dc06ee943137375851,ev_f9b8cf9f9bea85e702c2dc7b179a2853edc74234c96dac6acaec83fa1e73a620,ev_52ec93e3a8e96e8ecfe4d26f6f7bcecf82bb605cf3d21834bb96e55693340fe5,ev_85a8e187d787081051cf5f683590d84fd058738195459a59a54cd5d9ea53d36e,ev_fe1ee303f20520193ea90a339bc5fd5c2a79a1161e3dde5c046d2f94a9208788,ev_baac17163bec6ef9e50e4495aca4a8a61474db92de1244ad77f87310ba9f8a88"
+          "ev_3d33cb4610929361da456a225dc37b1de263c58db01e0384ddb0383d0a4da094,ev_dfd8a63ff3a43e9de3df28b38b71ec92d79b843de3c0cecafea73dc483b251b3,ev_fdd420d525fc102d89db452be50d4abe1cd4efc851b5f1e22a14fddcce63033e,ev_a2787e33e9586ef2a1e045eabc6d6ce1928683ced9a83b3c5b693800bab51749,ev_8438b12af7763208f9f130c261c06e2f39f6395c3acef9732838a77020c28a6a,ev_21b7e1a13bf2050243a7e63ec7db1d5f01c8720f43e8b199e2e1bdf3d0fd991a"
         ]
       },
       {
@@ -181,7 +193,7 @@
         "title": "REA analysis of src/safety/sandbox.js is incomplete (resource_constraint)",
         "detail": "REA reported resource_constraint for src/safety/sandbox.js; its relationships are unavailable, so absence-based self-analysis rules are suppressed for this artifact.",
         "evidence_ids": [
-          "ev_23a222980dd911ee96ef7f03cdcff8414ede26394e2062dc06ee943137375851,ev_f9b8cf9f9bea85e702c2dc7b179a2853edc74234c96dac6acaec83fa1e73a620,ev_52ec93e3a8e96e8ecfe4d26f6f7bcecf82bb605cf3d21834bb96e55693340fe5,ev_85a8e187d787081051cf5f683590d84fd058738195459a59a54cd5d9ea53d36e,ev_fe1ee303f20520193ea90a339bc5fd5c2a79a1161e3dde5c046d2f94a9208788,ev_baac17163bec6ef9e50e4495aca4a8a61474db92de1244ad77f87310ba9f8a88"
+          "ev_3d33cb4610929361da456a225dc37b1de263c58db01e0384ddb0383d0a4da094,ev_dfd8a63ff3a43e9de3df28b38b71ec92d79b843de3c0cecafea73dc483b251b3,ev_fdd420d525fc102d89db452be50d4abe1cd4efc851b5f1e22a14fddcce63033e,ev_a2787e33e9586ef2a1e045eabc6d6ce1928683ced9a83b3c5b693800bab51749,ev_8438b12af7763208f9f130c261c06e2f39f6395c3acef9732838a77020c28a6a,ev_21b7e1a13bf2050243a7e63ec7db1d5f01c8720f43e8b199e2e1bdf3d0fd991a"
         ]
       },
       {
@@ -193,7 +205,7 @@
         "title": "REA analysis of src/self_analysis/self-analyze.js is incomplete (resource_constraint)",
         "detail": "REA reported resource_constraint for src/self_analysis/self-analyze.js; its relationships are unavailable, so absence-based self-analysis rules are suppressed for this artifact.",
         "evidence_ids": [
-          "ev_23a222980dd911ee96ef7f03cdcff8414ede26394e2062dc06ee943137375851,ev_f9b8cf9f9bea85e702c2dc7b179a2853edc74234c96dac6acaec83fa1e73a620,ev_52ec93e3a8e96e8ecfe4d26f6f7bcecf82bb605cf3d21834bb96e55693340fe5,ev_85a8e187d787081051cf5f683590d84fd058738195459a59a54cd5d9ea53d36e,ev_fe1ee303f20520193ea90a339bc5fd5c2a79a1161e3dde5c046d2f94a9208788,ev_baac17163bec6ef9e50e4495aca4a8a61474db92de1244ad77f87310ba9f8a88"
+          "ev_3d33cb4610929361da456a225dc37b1de263c58db01e0384ddb0383d0a4da094,ev_dfd8a63ff3a43e9de3df28b38b71ec92d79b843de3c0cecafea73dc483b251b3,ev_fdd420d525fc102d89db452be50d4abe1cd4efc851b5f1e22a14fddcce63033e,ev_a2787e33e9586ef2a1e045eabc6d6ce1928683ced9a83b3c5b693800bab51749,ev_8438b12af7763208f9f130c261c06e2f39f6395c3acef9732838a77020c28a6a,ev_21b7e1a13bf2050243a7e63ec7db1d5f01c8720f43e8b199e2e1bdf3d0fd991a"
         ]
       },
       {
@@ -205,7 +217,7 @@
         "title": "REA analysis of tests/fixtures/fake-codex.mjs is incomplete (resource_constraint)",
         "detail": "REA reported resource_constraint for tests/fixtures/fake-codex.mjs; its relationships are unavailable, so absence-based self-analysis rules are suppressed for this artifact.",
         "evidence_ids": [
-          "ev_23a222980dd911ee96ef7f03cdcff8414ede26394e2062dc06ee943137375851,ev_f9b8cf9f9bea85e702c2dc7b179a2853edc74234c96dac6acaec83fa1e73a620,ev_52ec93e3a8e96e8ecfe4d26f6f7bcecf82bb605cf3d21834bb96e55693340fe5,ev_85a8e187d787081051cf5f683590d84fd058738195459a59a54cd5d9ea53d36e,ev_fe1ee303f20520193ea90a339bc5fd5c2a79a1161e3dde5c046d2f94a9208788,ev_baac17163bec6ef9e50e4495aca4a8a61474db92de1244ad77f87310ba9f8a88"
+          "ev_3d33cb4610929361da456a225dc37b1de263c58db01e0384ddb0383d0a4da094,ev_dfd8a63ff3a43e9de3df28b38b71ec92d79b843de3c0cecafea73dc483b251b3,ev_fdd420d525fc102d89db452be50d4abe1cd4efc851b5f1e22a14fddcce63033e,ev_a2787e33e9586ef2a1e045eabc6d6ce1928683ced9a83b3c5b693800bab51749,ev_8438b12af7763208f9f130c261c06e2f39f6395c3acef9732838a77020c28a6a,ev_21b7e1a13bf2050243a7e63ec7db1d5f01c8720f43e8b199e2e1bdf3d0fd991a"
         ]
       },
       {
@@ -217,31 +229,7 @@
         "title": "REA analysis of tests/fixtures/fake-rea.mjs is incomplete (resource_constraint)",
         "detail": "REA reported resource_constraint for tests/fixtures/fake-rea.mjs; its relationships are unavailable, so absence-based self-analysis rules are suppressed for this artifact.",
         "evidence_ids": [
-          "ev_23a222980dd911ee96ef7f03cdcff8414ede26394e2062dc06ee943137375851,ev_f9b8cf9f9bea85e702c2dc7b179a2853edc74234c96dac6acaec83fa1e73a620,ev_52ec93e3a8e96e8ecfe4d26f6f7bcecf82bb605cf3d21834bb96e55693340fe5,ev_85a8e187d787081051cf5f683590d84fd058738195459a59a54cd5d9ea53d36e,ev_fe1ee303f20520193ea90a339bc5fd5c2a79a1161e3dde5c046d2f94a9208788,ev_baac17163bec6ef9e50e4495aca4a8a61474db92de1244ad77f87310ba9f8a88"
-        ]
-      },
-      {
-        "id": "F-70b18255b4",
-        "rule": "incomplete-analysis-coverage",
-        "area": "analysis-accuracy",
-        "priority": 1,
-        "subject": "tests/orchestration.test.js",
-        "title": "REA analysis of tests/orchestration.test.js is incomplete (resource_constraint)",
-        "detail": "REA reported resource_constraint for tests/orchestration.test.js; its relationships are unavailable, so absence-based self-analysis rules are suppressed for this artifact.",
-        "evidence_ids": [
-          "ev_23a222980dd911ee96ef7f03cdcff8414ede26394e2062dc06ee943137375851,ev_f9b8cf9f9bea85e702c2dc7b179a2853edc74234c96dac6acaec83fa1e73a620,ev_52ec93e3a8e96e8ecfe4d26f6f7bcecf82bb605cf3d21834bb96e55693340fe5,ev_85a8e187d787081051cf5f683590d84fd058738195459a59a54cd5d9ea53d36e,ev_fe1ee303f20520193ea90a339bc5fd5c2a79a1161e3dde5c046d2f94a9208788,ev_baac17163bec6ef9e50e4495aca4a8a61474db92de1244ad77f87310ba9f8a88"
-        ]
-      },
-      {
-        "id": "F-7805106064",
-        "rule": "incomplete-analysis-coverage",
-        "area": "analysis-accuracy",
-        "priority": 1,
-        "subject": "tests/observability.test.js",
-        "title": "REA analysis of tests/observability.test.js is incomplete (resource_constraint)",
-        "detail": "REA reported resource_constraint for tests/observability.test.js; its relationships are unavailable, so absence-based self-analysis rules are suppressed for this artifact.",
-        "evidence_ids": [
-          "ev_23a222980dd911ee96ef7f03cdcff8414ede26394e2062dc06ee943137375851,ev_f9b8cf9f9bea85e702c2dc7b179a2853edc74234c96dac6acaec83fa1e73a620,ev_52ec93e3a8e96e8ecfe4d26f6f7bcecf82bb605cf3d21834bb96e55693340fe5,ev_85a8e187d787081051cf5f683590d84fd058738195459a59a54cd5d9ea53d36e,ev_fe1ee303f20520193ea90a339bc5fd5c2a79a1161e3dde5c046d2f94a9208788,ev_baac17163bec6ef9e50e4495aca4a8a61474db92de1244ad77f87310ba9f8a88"
+          "ev_3d33cb4610929361da456a225dc37b1de263c58db01e0384ddb0383d0a4da094,ev_dfd8a63ff3a43e9de3df28b38b71ec92d79b843de3c0cecafea73dc483b251b3,ev_fdd420d525fc102d89db452be50d4abe1cd4efc851b5f1e22a14fddcce63033e,ev_a2787e33e9586ef2a1e045eabc6d6ce1928683ced9a83b3c5b693800bab51749,ev_8438b12af7763208f9f130c261c06e2f39f6395c3acef9732838a77020c28a6a,ev_21b7e1a13bf2050243a7e63ec7db1d5f01c8720f43e8b199e2e1bdf3d0fd991a"
         ]
       },
       {
@@ -253,7 +241,7 @@
         "title": "REA analysis of tests/analysis.test.js is incomplete (resource_constraint)",
         "detail": "REA reported resource_constraint for tests/analysis.test.js; its relationships are unavailable, so absence-based self-analysis rules are suppressed for this artifact.",
         "evidence_ids": [
-          "ev_23a222980dd911ee96ef7f03cdcff8414ede26394e2062dc06ee943137375851,ev_f9b8cf9f9bea85e702c2dc7b179a2853edc74234c96dac6acaec83fa1e73a620,ev_52ec93e3a8e96e8ecfe4d26f6f7bcecf82bb605cf3d21834bb96e55693340fe5,ev_85a8e187d787081051cf5f683590d84fd058738195459a59a54cd5d9ea53d36e,ev_fe1ee303f20520193ea90a339bc5fd5c2a79a1161e3dde5c046d2f94a9208788,ev_baac17163bec6ef9e50e4495aca4a8a61474db92de1244ad77f87310ba9f8a88"
+          "ev_3d33cb4610929361da456a225dc37b1de263c58db01e0384ddb0383d0a4da094,ev_dfd8a63ff3a43e9de3df28b38b71ec92d79b843de3c0cecafea73dc483b251b3,ev_fdd420d525fc102d89db452be50d4abe1cd4efc851b5f1e22a14fddcce63033e,ev_a2787e33e9586ef2a1e045eabc6d6ce1928683ced9a83b3c5b693800bab51749,ev_8438b12af7763208f9f130c261c06e2f39f6395c3acef9732838a77020c28a6a,ev_21b7e1a13bf2050243a7e63ec7db1d5f01c8720f43e8b199e2e1bdf3d0fd991a"
         ]
       },
       {
@@ -265,7 +253,7 @@
         "title": "REA analysis of src/safety/secrets.js is incomplete (resource_constraint)",
         "detail": "REA reported resource_constraint for src/safety/secrets.js; its relationships are unavailable, so absence-based self-analysis rules are suppressed for this artifact.",
         "evidence_ids": [
-          "ev_23a222980dd911ee96ef7f03cdcff8414ede26394e2062dc06ee943137375851,ev_f9b8cf9f9bea85e702c2dc7b179a2853edc74234c96dac6acaec83fa1e73a620,ev_52ec93e3a8e96e8ecfe4d26f6f7bcecf82bb605cf3d21834bb96e55693340fe5,ev_85a8e187d787081051cf5f683590d84fd058738195459a59a54cd5d9ea53d36e,ev_fe1ee303f20520193ea90a339bc5fd5c2a79a1161e3dde5c046d2f94a9208788,ev_baac17163bec6ef9e50e4495aca4a8a61474db92de1244ad77f87310ba9f8a88"
+          "ev_3d33cb4610929361da456a225dc37b1de263c58db01e0384ddb0383d0a4da094,ev_dfd8a63ff3a43e9de3df28b38b71ec92d79b843de3c0cecafea73dc483b251b3,ev_fdd420d525fc102d89db452be50d4abe1cd4efc851b5f1e22a14fddcce63033e,ev_a2787e33e9586ef2a1e045eabc6d6ce1928683ced9a83b3c5b693800bab51749,ev_8438b12af7763208f9f130c261c06e2f39f6395c3acef9732838a77020c28a6a,ev_21b7e1a13bf2050243a7e63ec7db1d5f01c8720f43e8b199e2e1bdf3d0fd991a"
         ]
       },
       {
@@ -277,7 +265,7 @@
         "title": "REA analysis of tests/cli.test.js is incomplete (resource_constraint)",
         "detail": "REA reported resource_constraint for tests/cli.test.js; its relationships are unavailable, so absence-based self-analysis rules are suppressed for this artifact.",
         "evidence_ids": [
-          "ev_23a222980dd911ee96ef7f03cdcff8414ede26394e2062dc06ee943137375851,ev_f9b8cf9f9bea85e702c2dc7b179a2853edc74234c96dac6acaec83fa1e73a620,ev_52ec93e3a8e96e8ecfe4d26f6f7bcecf82bb605cf3d21834bb96e55693340fe5,ev_85a8e187d787081051cf5f683590d84fd058738195459a59a54cd5d9ea53d36e,ev_fe1ee303f20520193ea90a339bc5fd5c2a79a1161e3dde5c046d2f94a9208788,ev_baac17163bec6ef9e50e4495aca4a8a61474db92de1244ad77f87310ba9f8a88"
+          "ev_3d33cb4610929361da456a225dc37b1de263c58db01e0384ddb0383d0a4da094,ev_dfd8a63ff3a43e9de3df28b38b71ec92d79b843de3c0cecafea73dc483b251b3,ev_fdd420d525fc102d89db452be50d4abe1cd4efc851b5f1e22a14fddcce63033e,ev_a2787e33e9586ef2a1e045eabc6d6ce1928683ced9a83b3c5b693800bab51749,ev_8438b12af7763208f9f130c261c06e2f39f6395c3acef9732838a77020c28a6a,ev_21b7e1a13bf2050243a7e63ec7db1d5f01c8720f43e8b199e2e1bdf3d0fd991a"
         ]
       },
       {
@@ -289,7 +277,7 @@
         "title": "REA analysis of tests/fixtures/fake-rea-engine.mjs is incomplete (resource_constraint)",
         "detail": "REA reported resource_constraint for tests/fixtures/fake-rea-engine.mjs; its relationships are unavailable, so absence-based self-analysis rules are suppressed for this artifact.",
         "evidence_ids": [
-          "ev_23a222980dd911ee96ef7f03cdcff8414ede26394e2062dc06ee943137375851,ev_f9b8cf9f9bea85e702c2dc7b179a2853edc74234c96dac6acaec83fa1e73a620,ev_52ec93e3a8e96e8ecfe4d26f6f7bcecf82bb605cf3d21834bb96e55693340fe5,ev_85a8e187d787081051cf5f683590d84fd058738195459a59a54cd5d9ea53d36e,ev_fe1ee303f20520193ea90a339bc5fd5c2a79a1161e3dde5c046d2f94a9208788,ev_baac17163bec6ef9e50e4495aca4a8a61474db92de1244ad77f87310ba9f8a88"
+          "ev_3d33cb4610929361da456a225dc37b1de263c58db01e0384ddb0383d0a4da094,ev_dfd8a63ff3a43e9de3df28b38b71ec92d79b843de3c0cecafea73dc483b251b3,ev_fdd420d525fc102d89db452be50d4abe1cd4efc851b5f1e22a14fddcce63033e,ev_a2787e33e9586ef2a1e045eabc6d6ce1928683ced9a83b3c5b693800bab51749,ev_8438b12af7763208f9f130c261c06e2f39f6395c3acef9732838a77020c28a6a,ev_21b7e1a13bf2050243a7e63ec7db1d5f01c8720f43e8b199e2e1bdf3d0fd991a"
         ]
       },
       {
@@ -301,7 +289,7 @@
         "title": "REA analysis of tests/helpers.js is incomplete (resource_constraint)",
         "detail": "REA reported resource_constraint for tests/helpers.js; its relationships are unavailable, so absence-based self-analysis rules are suppressed for this artifact.",
         "evidence_ids": [
-          "ev_23a222980dd911ee96ef7f03cdcff8414ede26394e2062dc06ee943137375851,ev_f9b8cf9f9bea85e702c2dc7b179a2853edc74234c96dac6acaec83fa1e73a620,ev_52ec93e3a8e96e8ecfe4d26f6f7bcecf82bb605cf3d21834bb96e55693340fe5,ev_85a8e187d787081051cf5f683590d84fd058738195459a59a54cd5d9ea53d36e,ev_fe1ee303f20520193ea90a339bc5fd5c2a79a1161e3dde5c046d2f94a9208788,ev_baac17163bec6ef9e50e4495aca4a8a61474db92de1244ad77f87310ba9f8a88"
+          "ev_3d33cb4610929361da456a225dc37b1de263c58db01e0384ddb0383d0a4da094,ev_dfd8a63ff3a43e9de3df28b38b71ec92d79b843de3c0cecafea73dc483b251b3,ev_fdd420d525fc102d89db452be50d4abe1cd4efc851b5f1e22a14fddcce63033e,ev_a2787e33e9586ef2a1e045eabc6d6ce1928683ced9a83b3c5b693800bab51749,ev_8438b12af7763208f9f130c261c06e2f39f6395c3acef9732838a77020c28a6a,ev_21b7e1a13bf2050243a7e63ec7db1d5f01c8720f43e8b199e2e1bdf3d0fd991a"
         ]
       },
       {
@@ -313,7 +301,19 @@
         "title": "REA analysis of tests/core.test.js is incomplete (resource_constraint)",
         "detail": "REA reported resource_constraint for tests/core.test.js; its relationships are unavailable, so absence-based self-analysis rules are suppressed for this artifact.",
         "evidence_ids": [
-          "ev_23a222980dd911ee96ef7f03cdcff8414ede26394e2062dc06ee943137375851,ev_f9b8cf9f9bea85e702c2dc7b179a2853edc74234c96dac6acaec83fa1e73a620,ev_52ec93e3a8e96e8ecfe4d26f6f7bcecf82bb605cf3d21834bb96e55693340fe5,ev_85a8e187d787081051cf5f683590d84fd058738195459a59a54cd5d9ea53d36e,ev_fe1ee303f20520193ea90a339bc5fd5c2a79a1161e3dde5c046d2f94a9208788,ev_baac17163bec6ef9e50e4495aca4a8a61474db92de1244ad77f87310ba9f8a88"
+          "ev_3d33cb4610929361da456a225dc37b1de263c58db01e0384ddb0383d0a4da094,ev_dfd8a63ff3a43e9de3df28b38b71ec92d79b843de3c0cecafea73dc483b251b3,ev_fdd420d525fc102d89db452be50d4abe1cd4efc851b5f1e22a14fddcce63033e,ev_a2787e33e9586ef2a1e045eabc6d6ce1928683ced9a83b3c5b693800bab51749,ev_8438b12af7763208f9f130c261c06e2f39f6395c3acef9732838a77020c28a6a,ev_21b7e1a13bf2050243a7e63ec7db1d5f01c8720f43e8b199e2e1bdf3d0fd991a"
+        ]
+      },
+      {
+        "id": "F-d9da3c5ebc",
+        "rule": "incomplete-analysis-coverage",
+        "area": "analysis-accuracy",
+        "priority": 1,
+        "subject": "tests/mcp.test.js",
+        "title": "REA analysis of tests/mcp.test.js is incomplete (resource_constraint)",
+        "detail": "REA reported resource_constraint for tests/mcp.test.js; its relationships are unavailable, so absence-based self-analysis rules are suppressed for this artifact.",
+        "evidence_ids": [
+          "ev_3d33cb4610929361da456a225dc37b1de263c58db01e0384ddb0383d0a4da094,ev_dfd8a63ff3a43e9de3df28b38b71ec92d79b843de3c0cecafea73dc483b251b3,ev_fdd420d525fc102d89db452be50d4abe1cd4efc851b5f1e22a14fddcce63033e,ev_a2787e33e9586ef2a1e045eabc6d6ce1928683ced9a83b3c5b693800bab51749,ev_8438b12af7763208f9f130c261c06e2f39f6395c3acef9732838a77020c28a6a,ev_21b7e1a13bf2050243a7e63ec7db1d5f01c8720f43e8b199e2e1bdf3d0fd991a"
         ]
       },
       {
@@ -325,7 +325,19 @@
         "title": "REA analysis of tests/agents.test.js is incomplete (resource_constraint)",
         "detail": "REA reported resource_constraint for tests/agents.test.js; its relationships are unavailable, so absence-based self-analysis rules are suppressed for this artifact.",
         "evidence_ids": [
-          "ev_23a222980dd911ee96ef7f03cdcff8414ede26394e2062dc06ee943137375851,ev_f9b8cf9f9bea85e702c2dc7b179a2853edc74234c96dac6acaec83fa1e73a620,ev_52ec93e3a8e96e8ecfe4d26f6f7bcecf82bb605cf3d21834bb96e55693340fe5,ev_85a8e187d787081051cf5f683590d84fd058738195459a59a54cd5d9ea53d36e,ev_fe1ee303f20520193ea90a339bc5fd5c2a79a1161e3dde5c046d2f94a9208788,ev_baac17163bec6ef9e50e4495aca4a8a61474db92de1244ad77f87310ba9f8a88"
+          "ev_3d33cb4610929361da456a225dc37b1de263c58db01e0384ddb0383d0a4da094,ev_dfd8a63ff3a43e9de3df28b38b71ec92d79b843de3c0cecafea73dc483b251b3,ev_fdd420d525fc102d89db452be50d4abe1cd4efc851b5f1e22a14fddcce63033e,ev_a2787e33e9586ef2a1e045eabc6d6ce1928683ced9a83b3c5b693800bab51749,ev_8438b12af7763208f9f130c261c06e2f39f6395c3acef9732838a77020c28a6a,ev_21b7e1a13bf2050243a7e63ec7db1d5f01c8720f43e8b199e2e1bdf3d0fd991a"
+        ]
+      },
+      {
+        "id": "F-dbc4ff8e2d",
+        "rule": "incomplete-analysis-coverage",
+        "area": "analysis-accuracy",
+        "priority": 1,
+        "subject": "tests/sandbox.test.js",
+        "title": "REA analysis of tests/sandbox.test.js is incomplete (resource_constraint)",
+        "detail": "REA reported resource_constraint for tests/sandbox.test.js; its relationships are unavailable, so absence-based self-analysis rules are suppressed for this artifact.",
+        "evidence_ids": [
+          "ev_3d33cb4610929361da456a225dc37b1de263c58db01e0384ddb0383d0a4da094,ev_dfd8a63ff3a43e9de3df28b38b71ec92d79b843de3c0cecafea73dc483b251b3,ev_fdd420d525fc102d89db452be50d4abe1cd4efc851b5f1e22a14fddcce63033e,ev_a2787e33e9586ef2a1e045eabc6d6ce1928683ced9a83b3c5b693800bab51749,ev_8438b12af7763208f9f130c261c06e2f39f6395c3acef9732838a77020c28a6a,ev_21b7e1a13bf2050243a7e63ec7db1d5f01c8720f43e8b199e2e1bdf3d0fd991a"
         ]
       },
       {
@@ -337,7 +349,7 @@
         "title": "REA analysis of tests/fixtures/fake-claude.mjs is incomplete (resource_constraint)",
         "detail": "REA reported resource_constraint for tests/fixtures/fake-claude.mjs; its relationships are unavailable, so absence-based self-analysis rules are suppressed for this artifact.",
         "evidence_ids": [
-          "ev_23a222980dd911ee96ef7f03cdcff8414ede26394e2062dc06ee943137375851,ev_f9b8cf9f9bea85e702c2dc7b179a2853edc74234c96dac6acaec83fa1e73a620,ev_52ec93e3a8e96e8ecfe4d26f6f7bcecf82bb605cf3d21834bb96e55693340fe5,ev_85a8e187d787081051cf5f683590d84fd058738195459a59a54cd5d9ea53d36e,ev_fe1ee303f20520193ea90a339bc5fd5c2a79a1161e3dde5c046d2f94a9208788,ev_baac17163bec6ef9e50e4495aca4a8a61474db92de1244ad77f87310ba9f8a88"
+          "ev_3d33cb4610929361da456a225dc37b1de263c58db01e0384ddb0383d0a4da094,ev_dfd8a63ff3a43e9de3df28b38b71ec92d79b843de3c0cecafea73dc483b251b3,ev_fdd420d525fc102d89db452be50d4abe1cd4efc851b5f1e22a14fddcce63033e,ev_a2787e33e9586ef2a1e045eabc6d6ce1928683ced9a83b3c5b693800bab51749,ev_8438b12af7763208f9f130c261c06e2f39f6395c3acef9732838a77020c28a6a,ev_21b7e1a13bf2050243a7e63ec7db1d5f01c8720f43e8b199e2e1bdf3d0fd991a"
         ]
       },
       {
@@ -349,7 +361,7 @@
         "title": "High local fan-out in src/commands/info.js (10 modules)",
         "detail": "src/commands/info.js statically imports 10 local modules (threshold 8); every invocation loads all of them.",
         "evidence_ids": [
-          "ev_23a222980dd911ee96ef7f03cdcff8414ede26394e2062dc06ee943137375851,ev_f9b8cf9f9bea85e702c2dc7b179a2853edc74234c96dac6acaec83fa1e73a620,ev_52ec93e3a8e96e8ecfe4d26f6f7bcecf82bb605cf3d21834bb96e55693340fe5,ev_85a8e187d787081051cf5f683590d84fd058738195459a59a54cd5d9ea53d36e,ev_fe1ee303f20520193ea90a339bc5fd5c2a79a1161e3dde5c046d2f94a9208788,ev_baac17163bec6ef9e50e4495aca4a8a61474db92de1244ad77f87310ba9f8a88"
+          "ev_3d33cb4610929361da456a225dc37b1de263c58db01e0384ddb0383d0a4da094,ev_dfd8a63ff3a43e9de3df28b38b71ec92d79b843de3c0cecafea73dc483b251b3,ev_fdd420d525fc102d89db452be50d4abe1cd4efc851b5f1e22a14fddcce63033e,ev_a2787e33e9586ef2a1e045eabc6d6ce1928683ced9a83b3c5b693800bab51749,ev_8438b12af7763208f9f130c261c06e2f39f6395c3acef9732838a77020c28a6a,ev_21b7e1a13bf2050243a7e63ec7db1d5f01c8720f43e8b199e2e1bdf3d0fd991a"
         ]
       },
       {
@@ -361,19 +373,7 @@
         "title": "High local fan-out in src/orchestration/cycle.js (12 modules)",
         "detail": "src/orchestration/cycle.js statically imports 12 local modules (threshold 8); every invocation loads all of them.",
         "evidence_ids": [
-          "ev_23a222980dd911ee96ef7f03cdcff8414ede26394e2062dc06ee943137375851,ev_f9b8cf9f9bea85e702c2dc7b179a2853edc74234c96dac6acaec83fa1e73a620,ev_52ec93e3a8e96e8ecfe4d26f6f7bcecf82bb605cf3d21834bb96e55693340fe5,ev_85a8e187d787081051cf5f683590d84fd058738195459a59a54cd5d9ea53d36e,ev_fe1ee303f20520193ea90a339bc5fd5c2a79a1161e3dde5c046d2f94a9208788,ev_baac17163bec6ef9e50e4495aca4a8a61474db92de1244ad77f87310ba9f8a88"
-        ]
-      },
-      {
-        "id": "F-bc9c0440fd",
-        "rule": "spawn-without-error-listener",
-        "area": "error-handling",
-        "priority": 7,
-        "subject": "tests/mcp.test.js",
-        "title": "Child process spawned without an 'error' listener in tests/mcp.test.js",
-        "detail": "REA shows tests/mcp.test.js imports a child_process launcher but registers no 'error' event listener; spawn failures (ENOENT, EACCES) would surface as unhandled errors.",
-        "evidence_ids": [
-          "ev_23a222980dd911ee96ef7f03cdcff8414ede26394e2062dc06ee943137375851,ev_f9b8cf9f9bea85e702c2dc7b179a2853edc74234c96dac6acaec83fa1e73a620,ev_52ec93e3a8e96e8ecfe4d26f6f7bcecf82bb605cf3d21834bb96e55693340fe5,ev_85a8e187d787081051cf5f683590d84fd058738195459a59a54cd5d9ea53d36e,ev_fe1ee303f20520193ea90a339bc5fd5c2a79a1161e3dde5c046d2f94a9208788,ev_baac17163bec6ef9e50e4495aca4a8a61474db92de1244ad77f87310ba9f8a88"
+          "ev_3d33cb4610929361da456a225dc37b1de263c58db01e0384ddb0383d0a4da094,ev_dfd8a63ff3a43e9de3df28b38b71ec92d79b843de3c0cecafea73dc483b251b3,ev_fdd420d525fc102d89db452be50d4abe1cd4efc851b5f1e22a14fddcce63033e,ev_a2787e33e9586ef2a1e045eabc6d6ce1928683ced9a83b3c5b693800bab51749,ev_8438b12af7763208f9f130c261c06e2f39f6395c3acef9732838a77020c28a6a,ev_21b7e1a13bf2050243a7e63ec7db1d5f01c8720f43e8b199e2e1bdf3d0fd991a"
         ]
       }
     ],
@@ -382,14 +382,14 @@
     ],
     "runs": [
       {
-        "run_id": "rea-20261013T112629-6b4b36",
+        "run_id": "rea-20261013T145142-a8ee05",
         "label": "self-analysis:static-graph-1/6",
-        "started_at": "2026-10-13T11:26:29.863Z",
-        "duration_ms": 6923,
+        "started_at": "2026-10-13T14:51:42.293Z",
+        "duration_ms": 7856,
         "command": [
-          "rea",
+          "<era-repo>/node_modules/.bin/rea",
           "analyze-javascript-application",
-          "<era-repo>/.era/self-analyses/self-20261013T112629-261b01/work/passes/pass-1",
+          "<era-repo>/.era/self-analyses/self-20261013T145141-666c54/work/passes/pass-1",
           "--format",
           "json"
         ],
@@ -399,42 +399,42 @@
           "version": "6.4.0"
         },
         "input": {
-          "path": "<era-repo>/.era/self-analyses/self-20261013T112629-261b01/work/passes/pass-1",
+          "path": "<era-repo>/.era/self-analyses/self-20261013T145141-666c54/work/passes/pass-1",
           "kind": "directory",
           "bytes": null,
-          "sha256": "88c31b72e04a9196c984ca1206d1ab2a4eabbe3e99beeafe2c619760de01a401"
+          "sha256": "380749d6b61ea5d00189e4f12d5dd2197b1589cbe8ffb34ad31b7600c6d015df"
         },
         "status": "succeeded",
         "exit_code": 0,
         "signal": null,
-        "evidence_id": "ev_23a222980dd911ee96ef7f03cdcff8414ede26394e2062dc06ee943137375851",
+        "evidence_id": "ev_3d33cb4610929361da456a225dc37b1de263c58db01e0384ddb0383d0a4da094",
         "operation": "analyze_javascript_application",
         "provider": {
           "id": "rea-javascript-application",
           "name": "REA JavaScript application analyzer",
           "version": "1"
         },
-        "output_file": "<era-repo>/.era/runs/rea-20261013T112629-6b4b36/output.json",
-        "output_bytes": 24691438,
-        "progress_events": 61,
+        "output_file": "<era-repo>/.era/runs/rea-20261013T145142-a8ee05/output.json",
+        "output_bytes": 24424725,
+        "progress_events": 62,
         "warnings": [],
         "errors": [],
         "resources": {
-          "real_s": 6.92,
-          "user_s": 6.92,
-          "sys_s": 0.69,
-          "max_rss_bytes": 513490944
+          "real_s": 7.82,
+          "user_s": 6.67,
+          "sys_s": 1.8,
+          "max_rss_bytes": 429113344
         }
       },
       {
-        "run_id": "rea-20261013T112637-06a6aa",
+        "run_id": "rea-20261013T145151-d6f8c0",
         "label": "self-analysis:static-graph-2/6",
-        "started_at": "2026-10-13T11:26:37.768Z",
-        "duration_ms": 6239,
+        "started_at": "2026-10-13T14:51:51.128Z",
+        "duration_ms": 5827,
         "command": [
-          "rea",
+          "<era-repo>/node_modules/.bin/rea",
           "analyze-javascript-application",
-          "<era-repo>/.era/self-analyses/self-20261013T112629-261b01/work/passes/pass-2",
+          "<era-repo>/.era/self-analyses/self-20261013T145141-666c54/work/passes/pass-2",
           "--format",
           "json"
         ],
@@ -444,87 +444,87 @@
           "version": "6.4.0"
         },
         "input": {
-          "path": "<era-repo>/.era/self-analyses/self-20261013T112629-261b01/work/passes/pass-2",
+          "path": "<era-repo>/.era/self-analyses/self-20261013T145141-666c54/work/passes/pass-2",
           "kind": "directory",
           "bytes": null,
-          "sha256": "f0ee9d77f5060bc111d647731ec0dc15330ef1127635181b6b66bc1a32bc26cb"
+          "sha256": "a5b015e29b498d3ecbfcdefe51e08dfec6275ab9fccf71c9201236d6d6c3367a"
         },
         "status": "succeeded",
         "exit_code": 0,
         "signal": null,
-        "evidence_id": "ev_f9b8cf9f9bea85e702c2dc7b179a2853edc74234c96dac6acaec83fa1e73a620",
+        "evidence_id": "ev_dfd8a63ff3a43e9de3df28b38b71ec92d79b843de3c0cecafea73dc483b251b3",
         "operation": "analyze_javascript_application",
         "provider": {
           "id": "rea-javascript-application",
           "name": "REA JavaScript application analyzer",
           "version": "1"
         },
-        "output_file": "<era-repo>/.era/runs/rea-20261013T112637-06a6aa/output.json",
-        "output_bytes": 24510470,
-        "progress_events": 61,
-        "warnings": [],
-        "errors": [],
-        "resources": {
-          "real_s": 6.23,
-          "user_s": 6.53,
-          "sys_s": 0.59,
-          "max_rss_bytes": 505741312
-        }
-      },
-      {
-        "run_id": "rea-20261013T112644-4b8897",
-        "label": "self-analysis:static-graph-3/6",
-        "started_at": "2026-10-13T11:26:44.090Z",
-        "duration_ms": 6000,
-        "command": [
-          "rea",
-          "analyze-javascript-application",
-          "<era-repo>/.era/self-analyses/self-20261013T112629-261b01/work/passes/pass-3",
-          "--format",
-          "json"
-        ],
-        "command_source": "config",
-        "engine": {
-          "package": "rea-agents",
-          "version": "6.4.0"
-        },
-        "input": {
-          "path": "<era-repo>/.era/self-analyses/self-20261013T112629-261b01/work/passes/pass-3",
-          "kind": "directory",
-          "bytes": null,
-          "sha256": "12d817d966d71cc4542e04290533c4fc68fb391dba154a1c4b4f6a20cfdf5cfd"
-        },
-        "status": "succeeded",
-        "exit_code": 0,
-        "signal": null,
-        "evidence_id": "ev_52ec93e3a8e96e8ecfe4d26f6f7bcecf82bb605cf3d21834bb96e55693340fe5",
-        "operation": "analyze_javascript_application",
-        "provider": {
-          "id": "rea-javascript-application",
-          "name": "REA JavaScript application analyzer",
-          "version": "1"
-        },
-        "output_file": "<era-repo>/.era/runs/rea-20261013T112644-4b8897/output.json",
-        "output_bytes": 25008107,
+        "output_file": "<era-repo>/.era/runs/rea-20261013T145151-d6f8c0/output.json",
+        "output_bytes": 24523776,
         "progress_events": 62,
         "warnings": [],
         "errors": [],
         "resources": {
-          "real_s": 5.99,
-          "user_s": 6.72,
+          "real_s": 5.79,
+          "user_s": 6.28,
           "sys_s": 0.57,
-          "max_rss_bytes": 509493248
+          "max_rss_bytes": 458932224
         }
       },
       {
-        "run_id": "rea-20261013T112650-9765f9",
+        "run_id": "rea-20261013T145157-36b9a0",
+        "label": "self-analysis:static-graph-3/6",
+        "started_at": "2026-10-13T14:51:57.043Z",
+        "duration_ms": 6082,
+        "command": [
+          "<era-repo>/node_modules/.bin/rea",
+          "analyze-javascript-application",
+          "<era-repo>/.era/self-analyses/self-20261013T145141-666c54/work/passes/pass-3",
+          "--format",
+          "json"
+        ],
+        "command_source": "config",
+        "engine": {
+          "package": "rea-agents",
+          "version": "6.4.0"
+        },
+        "input": {
+          "path": "<era-repo>/.era/self-analyses/self-20261013T145141-666c54/work/passes/pass-3",
+          "kind": "directory",
+          "bytes": null,
+          "sha256": "800638c44f8579c17eac0fe87b7d9ec18bb40b719450bf44ef66651a81056c76"
+        },
+        "status": "succeeded",
+        "exit_code": 0,
+        "signal": null,
+        "evidence_id": "ev_fdd420d525fc102d89db452be50d4abe1cd4efc851b5f1e22a14fddcce63033e",
+        "operation": "analyze_javascript_application",
+        "provider": {
+          "id": "rea-javascript-application",
+          "name": "REA JavaScript application analyzer",
+          "version": "1"
+        },
+        "output_file": "<era-repo>/.era/runs/rea-20261013T145157-36b9a0/output.json",
+        "output_bytes": 24996756,
+        "progress_events": 63,
+        "warnings": [],
+        "errors": [],
+        "resources": {
+          "real_s": 6.04,
+          "user_s": 6.88,
+          "sys_s": 0.6,
+          "max_rss_bytes": 513605632
+        }
+      },
+      {
+        "run_id": "rea-20261013T145203-22cb23",
         "label": "self-analysis:static-graph-4/6",
-        "started_at": "2026-10-13T11:26:50.155Z",
-        "duration_ms": 5892,
+        "started_at": "2026-10-13T14:52:03.204Z",
+        "duration_ms": 5999,
         "command": [
-          "rea",
+          "<era-repo>/node_modules/.bin/rea",
           "analyze-javascript-application",
-          "<era-repo>/.era/self-analyses/self-20261013T112629-261b01/work/passes/pass-4",
+          "<era-repo>/.era/self-analyses/self-20261013T145141-666c54/work/passes/pass-4",
           "--format",
           "json"
         ],
@@ -534,132 +534,42 @@
           "version": "6.4.0"
         },
         "input": {
-          "path": "<era-repo>/.era/self-analyses/self-20261013T112629-261b01/work/passes/pass-4",
+          "path": "<era-repo>/.era/self-analyses/self-20261013T145141-666c54/work/passes/pass-4",
           "kind": "directory",
           "bytes": null,
-          "sha256": "74e3796c414eccc3c70d4f9882711c4e35c3f9eb964112148330e2b26aebbf83"
+          "sha256": "6d30a5cc67d25981fc086e974bc1fcadb0093ec1986d1740d8c5ea276f5610e2"
         },
         "status": "succeeded",
         "exit_code": 0,
         "signal": null,
-        "evidence_id": "ev_85a8e187d787081051cf5f683590d84fd058738195459a59a54cd5d9ea53d36e",
+        "evidence_id": "ev_a2787e33e9586ef2a1e045eabc6d6ce1928683ced9a83b3c5b693800bab51749",
         "operation": "analyze_javascript_application",
         "provider": {
           "id": "rea-javascript-application",
           "name": "REA JavaScript application analyzer",
           "version": "1"
         },
-        "output_file": "<era-repo>/.era/runs/rea-20261013T112650-9765f9/output.json",
-        "output_bytes": 24360210,
-        "progress_events": 62,
-        "warnings": [],
-        "errors": [],
-        "resources": {
-          "real_s": 5.88,
-          "user_s": 6.54,
-          "sys_s": 0.59,
-          "max_rss_bytes": 467730432
-        }
-      },
-      {
-        "run_id": "rea-20261013T112656-5980f4",
-        "label": "self-analysis:static-graph-5/6",
-        "started_at": "2026-10-13T11:26:56.133Z",
-        "duration_ms": 6007,
-        "command": [
-          "rea",
-          "analyze-javascript-application",
-          "<era-repo>/.era/self-analyses/self-20261013T112629-261b01/work/passes/pass-5",
-          "--format",
-          "json"
-        ],
-        "command_source": "config",
-        "engine": {
-          "package": "rea-agents",
-          "version": "6.4.0"
-        },
-        "input": {
-          "path": "<era-repo>/.era/self-analyses/self-20261013T112629-261b01/work/passes/pass-5",
-          "kind": "directory",
-          "bytes": null,
-          "sha256": "b2d4c95e474df8507a56c0616bf9e459d9bf774529661a39914b08eaaa0bea33"
-        },
-        "status": "succeeded",
-        "exit_code": 0,
-        "signal": null,
-        "evidence_id": "ev_fe1ee303f20520193ea90a339bc5fd5c2a79a1161e3dde5c046d2f94a9208788",
-        "operation": "analyze_javascript_application",
-        "provider": {
-          "id": "rea-javascript-application",
-          "name": "REA JavaScript application analyzer",
-          "version": "1"
-        },
-        "output_file": "<era-repo>/.era/runs/rea-20261013T112656-5980f4/output.json",
-        "output_bytes": 24557654,
-        "progress_events": 62,
-        "warnings": [],
-        "errors": [],
-        "resources": {
-          "real_s": 5.99,
-          "user_s": 6.51,
-          "sys_s": 0.58,
-          "max_rss_bytes": 468090880
-        }
-      },
-      {
-        "run_id": "rea-20261013T112702-f08bb1",
-        "label": "self-analysis:static-graph-6/6",
-        "started_at": "2026-10-13T11:27:02.213Z",
-        "duration_ms": 5960,
-        "command": [
-          "rea",
-          "analyze-javascript-application",
-          "<era-repo>/.era/self-analyses/self-20261013T112629-261b01/work/passes/pass-6",
-          "--format",
-          "json"
-        ],
-        "command_source": "config",
-        "engine": {
-          "package": "rea-agents",
-          "version": "6.4.0"
-        },
-        "input": {
-          "path": "<era-repo>/.era/self-analyses/self-20261013T112629-261b01/work/passes/pass-6",
-          "kind": "directory",
-          "bytes": null,
-          "sha256": "109dd13269ac0372ddf5344fddc7f80d6a3487c09fefdfac04287afc7def9eac"
-        },
-        "status": "succeeded",
-        "exit_code": 0,
-        "signal": null,
-        "evidence_id": "ev_baac17163bec6ef9e50e4495aca4a8a61474db92de1244ad77f87310ba9f8a88",
-        "operation": "analyze_javascript_application",
-        "provider": {
-          "id": "rea-javascript-application",
-          "name": "REA JavaScript application analyzer",
-          "version": "1"
-        },
-        "output_file": "<era-repo>/.era/runs/rea-20261013T112702-f08bb1/output.json",
-        "output_bytes": 24435215,
-        "progress_events": 62,
+        "output_file": "<era-repo>/.era/runs/rea-20261013T145203-22cb23/output.json",
+        "output_bytes": 24365755,
+        "progress_events": 63,
         "warnings": [],
         "errors": [],
         "resources": {
           "real_s": 5.95,
-          "user_s": 6.6,
-          "sys_s": 0.55,
-          "max_rss_bytes": 506920960
+          "user_s": 6.41,
+          "sys_s": 0.58,
+          "max_rss_bytes": 444514304
         }
       },
       {
-        "run_id": "rea-20261013T112708-51d546",
-        "label": "self-analysis:runtime-help",
-        "started_at": "2026-10-13T11:27:08.272Z",
-        "duration_ms": 2297,
+        "run_id": "rea-20261013T145209-866a10",
+        "label": "self-analysis:static-graph-5/6",
+        "started_at": "2026-10-13T14:52:09.274Z",
+        "duration_ms": 6204,
         "command": [
-          "rea",
-          "capture-process",
-          "<era-repo>/.era/self-analyses/self-20261013T112629-261b01/help-scenario.json",
+          "<era-repo>/node_modules/.bin/rea",
+          "analyze-javascript-application",
+          "<era-repo>/.era/self-analyses/self-20261013T145141-666c54/work/passes/pass-5",
           "--format",
           "json"
         ],
@@ -669,7 +579,97 @@
           "version": "6.4.0"
         },
         "input": {
-          "path": "<era-repo>/.era/self-analyses/self-20261013T112629-261b01/work/artifact/package/bin/era.mjs",
+          "path": "<era-repo>/.era/self-analyses/self-20261013T145141-666c54/work/passes/pass-5",
+          "kind": "directory",
+          "bytes": null,
+          "sha256": "b2b4bc56973c6619c090ab1ddaac660e067aa70644f9bebb6d1ceae53b828a75"
+        },
+        "status": "succeeded",
+        "exit_code": 0,
+        "signal": null,
+        "evidence_id": "ev_8438b12af7763208f9f130c261c06e2f39f6395c3acef9732838a77020c28a6a",
+        "operation": "analyze_javascript_application",
+        "provider": {
+          "id": "rea-javascript-application",
+          "name": "REA JavaScript application analyzer",
+          "version": "1"
+        },
+        "output_file": "<era-repo>/.era/runs/rea-20261013T145209-866a10/output.json",
+        "output_bytes": 24842306,
+        "progress_events": 63,
+        "warnings": [],
+        "errors": [],
+        "resources": {
+          "real_s": 6.16,
+          "user_s": 6.76,
+          "sys_s": 0.58,
+          "max_rss_bytes": 420986880
+        }
+      },
+      {
+        "run_id": "rea-20261013T145215-48b76d",
+        "label": "self-analysis:static-graph-6/6",
+        "started_at": "2026-10-13T14:52:15.574Z",
+        "duration_ms": 5904,
+        "command": [
+          "<era-repo>/node_modules/.bin/rea",
+          "analyze-javascript-application",
+          "<era-repo>/.era/self-analyses/self-20261013T145141-666c54/work/passes/pass-6",
+          "--format",
+          "json"
+        ],
+        "command_source": "config",
+        "engine": {
+          "package": "rea-agents",
+          "version": "6.4.0"
+        },
+        "input": {
+          "path": "<era-repo>/.era/self-analyses/self-20261013T145141-666c54/work/passes/pass-6",
+          "kind": "directory",
+          "bytes": null,
+          "sha256": "ea361ed8467d2ac9be9facc73cde0ded0780a650832de773429e714edbd73cc6"
+        },
+        "status": "succeeded",
+        "exit_code": 0,
+        "signal": null,
+        "evidence_id": "ev_21b7e1a13bf2050243a7e63ec7db1d5f01c8720f43e8b199e2e1bdf3d0fd991a",
+        "operation": "analyze_javascript_application",
+        "provider": {
+          "id": "rea-javascript-application",
+          "name": "REA JavaScript application analyzer",
+          "version": "1"
+        },
+        "output_file": "<era-repo>/.era/runs/rea-20261013T145215-48b76d/output.json",
+        "output_bytes": 24568036,
+        "progress_events": 63,
+        "warnings": [],
+        "errors": [],
+        "resources": {
+          "real_s": 5.85,
+          "user_s": 6.29,
+          "sys_s": 0.58,
+          "max_rss_bytes": 472580096
+        }
+      },
+      {
+        "run_id": "rea-20261013T145221-3353cf",
+        "label": "self-analysis:runtime-help",
+        "started_at": "2026-10-13T14:52:21.548Z",
+        "duration_ms": 2173,
+        "command": [
+          "<era-repo>/node_modules/.bin/rea",
+          "capture-process",
+          "<era-repo>/.era/self-analyses/self-20261013T145141-666c54/help-scenario.json",
+          "--format",
+          "json"
+        ],
+        "command_source": "config",
+        "engine": {
+          "package": "rea-agents",
+          "version": "6.4.0"
+        },
+        "input": {
+          "path": "<era-repo>/.era/self-analyses/self-20261013T145141-666c54/work/artifact/package/bin/era.mjs",
           "kind": "file",
           "bytes": 135,
           "sha256": "e0c335a6ff9614fbfcc717263b95dc98b95b0bd28efe3310ead6a6bcfb27b81f"
@@ -677,27 +677,27 @@
         "status": "succeeded",
         "exit_code": 0,
         "signal": null,
-        "evidence_id": "ev_88fb4f7b761df88f8c9cc18c2f3ef1355bde4646407f3aa534031faf11037191",
+        "evidence_id": "ev_6d1203edf64d7ba8bc832bc04b381451c3df95e267dbec52635a9728940443b9",
         "operation": "capture_process_scenario",
         "provider": {
           "id": "rea-process",
           "name": "REA process capture",
           "version": "3"
         },
-        "output_file": "<era-repo>/.era/runs/rea-20261013T112708-51d546/output.json",
-        "output_bytes": 94689,
+        "output_file": "<era-repo>/.era/runs/rea-20261013T145221-3353cf/output.json",
+        "output_bytes": 96534,
         "progress_events": 4,
         "warnings": [],
         "errors": [],
         "resources": {
-          "real_s": 2.28,
-          "user_s": 2.2,
-          "sys_s": 0.9,
-          "max_rss_bytes": 434094080
+          "real_s": 2.13,
+          "user_s": 1.96,
+          "sys_s": 0.76,
+          "max_rss_bytes": 424509440
         }
       }
     ],
-    "report": "<era-repo>/.era/self-analyses/self-20261013T112629-261b01/report.md"
+    "report": "<era-repo>/.era/self-analyses/self-20261013T145141-666c54/report.md"
   },
   "planning_benchmark": {
     "accuracy_f1": 0.9866518353726363,
@@ -711,9 +711,17 @@
     "rea_runs": 10
   },
   "instructions_file": "<era-repo>/.era/cycles/cycle-20261013T112629-18505d/instructions.md",
-  "evaluation_started_at": "2026-10-13T11:32:10.771Z",
+  "evaluation_started_at": "2026-10-13T14:52:28.994Z",
+  "previous": [
+    {
+      "base_commit": "5004f964b449cb1c21dd4646d2f1e6dc5b381f03",
+      "status": "awaiting-approval",
+      "evaluation_summary": "accepted: all guards pass and target met",
+      "decided_at": "2026-10-13T11:47:18.625Z"
+    }
+  ],
   "evaluation": {
-    "accepted": true,
+    "accepted": false,
     "guards": [
       {
         "name": "protected paths unchanged",
@@ -722,38 +730,38 @@
       },
       {
         "name": "all tests pass",
-        "ok": true,
-        "detail": "104 passed, 0 failed"
+        "ok": false,
+        "detail": "106 passed, 1 failed"
       },
       {
         "name": "no accuracy regression",
         "ok": true,
-        "detail": "0.5931 -> 0.5931"
+        "detail": "0.9867 -> 0.9867"
       },
       {
         "name": "no error-rate increase",
         "ok": true,
-        "detail": "0.4 -> 0.4"
+        "detail": "0 -> 0"
       },
       {
         "name": "no reliability regression",
         "ok": true,
-        "detail": "0.6 -> 0.6"
+        "detail": "1 -> 1"
       },
       {
         "name": "time regression ≤ 30%",
         "ok": true,
-        "detail": "23109 -> 20583 ms"
+        "detail": "33983 -> 38048 ms"
       },
       {
         "name": "memory regression ≤ 20%",
         "ok": true,
-        "detail": "409239552 -> 410042368 bytes"
+        "detail": "408731648 -> 409976832 bytes"
       },
       {
         "name": "self-analysis findings not increased",
         "ok": true,
-        "detail": "26 -> 7"
+        "detail": "26 -> 9"
       },
       {
         "name": "self-analysis covers every source module",
@@ -765,39 +773,41 @@
       "met": true,
       "observed": "finding F-5dd92e0c8a absent in candidate REA self-analysis"
     },
-    "summary": "accepted: all guards pass and target met",
+    "summary": "rejected: all tests pass",
     "baselineTests": {
       "ok": false,
       "exit_code": 1,
       "timed_out": false,
-      "tests": 103,
-      "passed": 101,
+      "tests": 106,
+      "passed": 104,
       "failed": 1,
       "skipped": 1,
       "cancelled": 0,
-      "duration_ms": 93441.424625,
+      "duration_ms": 91993.978125,
       "failures": [
         "REA self-analysis of this checkout covers every source module"
       ],
-      "wall_ms": 93480
+      "wall_ms": 92064
     },
     "candidateTests": {
-      "ok": true,
-      "exit_code": 0,
+      "ok": false,
+      "exit_code": 1,
       "timed_out": false,
-      "tests": 105,
-      "passed": 104,
-      "failed": 0,
+      "tests": 108,
+      "passed": 106,
+      "failed": 1,
       "skipped": 1,
       "cancelled": 0,
-      "duration_ms": 68364.310375,
-      "failures": [],
-      "wall_ms": 68401
+      "duration_ms": 345158.602875,
+      "failures": [
+        "era analyze inspects a Mach-O through REA"
+      ],
+      "wall_ms": 345226
     },
     "baseline": {
       "label": "era-v3",
       "code_root": "<era-repo>",
-      "created_at": "2026-10-13T11:45:53.659Z",
+      "created_at": "2026-10-13T15:01:28.677Z",
       "repetitions": 3,
       "cases": [
         {
@@ -807,9 +817,9 @@
           "succeeded": 3,
           "error_rate": 0,
           "deterministic": true,
-          "median_wall_ms": 3453,
-          "median_cpu_s": 4.58,
-          "max_rss_bytes": 409239552,
+          "median_wall_ms": 3336,
+          "median_cpu_s": 4.33,
+          "max_rss_bytes": 406716416,
           "rea_runs": 1,
           "precision": 1,
           "recall": 1,
@@ -857,9 +867,9 @@
           "succeeded": 3,
           "error_rate": 0,
           "deterministic": true,
-          "median_wall_ms": 3479,
-          "median_cpu_s": 4.59,
-          "max_rss_bytes": 407830528,
+          "median_wall_ms": 3330,
+          "median_cpu_s": 4.29,
+          "max_rss_bytes": 408731648,
           "rea_runs": 1,
           "precision": 1,
           "recall": 0.9333333333333333,
@@ -906,70 +916,93 @@
           "id": "native-macho",
           "kind": "mach-o",
           "repetitions": 3,
-          "succeeded": 0,
-          "error_rate": 1,
-          "deterministic": false,
-          "median_wall_ms": 7131,
-          "median_cpu_s": 7.279999999999999,
-          "max_rss_bytes": 408141824,
+          "succeeded": 3,
+          "error_rate": 0,
+          "deterministic": true,
+          "median_wall_ms": 10916,
+          "median_cpu_s": 9.12,
+          "max_rss_bytes": 408567808,
           "rea_runs": 3,
-          "precision": 0,
-          "recall": 0,
-          "f1": 0,
-          "per_category": {},
-          "missing": [
-            "export:_main",
-            "export:_greet",
-            "export:__mh_execute_header",
-            "import:_printf",
-            "import:_strlen",
-            "dependency:/usr/lib/libSystem.B.dylib",
-            "arch:arm64",
-            "function:_greet",
-            "function:_main",
-            "call:_greet->_printf",
-            "call:_greet->_strlen",
-            "call:_main->_printf",
-            "call:_main->_strlen",
-            "string:Hello, %s! checksum=%u\\n",
-            "string:ERA"
+          "precision": 0.9375,
+          "recall": 1,
+          "f1": 0.967741935483871,
+          "per_category": {
+            "arch": {
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "call": {
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "dependency": {
+              "precision": 0.5,
+              "recall": 1,
+              "f1": 0.6666666666666666
+            },
+            "export": {
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "function": {
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "import": {
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "string": {
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            }
+          },
+          "missing": [],
+          "unexpected": [
+            "dependency:/usr/lib/dyld"
           ],
-          "unexpected": [],
-          "errors": [
-            "exit null",
-            "exit 1",
-            "exit 1"
-          ]
+          "errors": []
         },
         {
           "id": "native-macho-runtime",
           "kind": "mach-o",
           "repetitions": 3,
-          "succeeded": 0,
-          "error_rate": 1,
-          "deterministic": false,
-          "median_wall_ms": 6794,
-          "median_cpu_s": 8.86,
-          "max_rss_bytes": 407502848,
+          "succeeded": 3,
+          "error_rate": 0,
+          "deterministic": true,
+          "median_wall_ms": 14052,
+          "median_cpu_s": 11.29,
+          "max_rss_bytes": 407797760,
           "rea_runs": 4,
-          "precision": 0,
-          "recall": 0,
-          "f1": 0,
-          "per_category": {},
-          "missing": [
-            "exit:0",
-            "export:_main",
-            "export:_greet",
-            "export:__mh_execute_header",
-            "import:_printf",
-            "import:_strlen"
-          ],
+          "precision": 1,
+          "recall": 1,
+          "f1": 1,
+          "per_category": {
+            "exit": {
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "export": {
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "import": {
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            }
+          },
+          "missing": [],
           "unexpected": [],
-          "errors": [
-            "exit 1",
-            "exit 1",
-            "exit 1"
-          ]
+          "errors": []
         },
         {
           "id": "zip-archive",
@@ -978,9 +1011,9 @@
           "succeeded": 3,
           "error_rate": 0,
           "deterministic": true,
-          "median_wall_ms": 2252,
-          "median_cpu_s": 3.23,
-          "max_rss_bytes": 408895488,
+          "median_wall_ms": 2349,
+          "median_cpu_s": 3.2399999999999998,
+          "max_rss_bytes": 408551424,
           "rea_runs": 1,
           "precision": 1,
           "recall": 1,
@@ -998,21 +1031,21 @@
         }
       ],
       "aggregate": {
-        "accuracy_f1": 0.5931034482758621,
-        "precision": 0.6,
-        "completeness_recall": 0.5866666666666667,
-        "total_median_wall_ms": 23109,
-        "total_median_cpu_s": 28.54,
-        "max_rss_bytes": 409239552,
-        "error_rate": 0.4,
-        "reliability": 0.6,
+        "accuracy_f1": 0.9866518353726363,
+        "precision": 0.9875,
+        "completeness_recall": 0.9866666666666667,
+        "total_median_wall_ms": 33983,
+        "total_median_cpu_s": 32.27,
+        "max_rss_bytes": 408731648,
+        "error_rate": 0,
+        "reliability": 1,
         "rea_runs": 10
       }
     },
     "candidate": {
       "label": "experiment/cycle-20261013T112629-18505d",
       "code_root": "<era-repo>/.era/worktrees/cycle-20261013T112629-18505d",
-      "created_at": "2026-10-13T11:46:55.529Z",
+      "created_at": "2026-10-13T15:03:23.381Z",
       "repetitions": 3,
       "cases": [
         {
@@ -1022,9 +1055,9 @@
           "succeeded": 3,
           "error_rate": 0,
           "deterministic": true,
-          "median_wall_ms": 3351,
-          "median_cpu_s": 4.46,
-          "max_rss_bytes": 408485888,
+          "median_wall_ms": 3376,
+          "median_cpu_s": 4.4,
+          "max_rss_bytes": 408944640,
           "rea_runs": 1,
           "precision": 1,
           "recall": 1,
@@ -1072,9 +1105,9 @@
           "succeeded": 3,
           "error_rate": 0,
           "deterministic": true,
-          "median_wall_ms": 3284,
+          "median_wall_ms": 3375,
           "median_cpu_s": 4.36,
-          "max_rss_bytes": 409026560,
+          "max_rss_bytes": 408387584,
           "rea_runs": 1,
           "precision": 1,
           "recall": 0.9333333333333333,
@@ -1121,70 +1154,93 @@
           "id": "native-macho",
           "kind": "mach-o",
           "repetitions": 3,
-          "succeeded": 0,
-          "error_rate": 1,
-          "deterministic": false,
-          "median_wall_ms": 4884,
-          "median_cpu_s": 6.58,
-          "max_rss_bytes": 407420928,
+          "succeeded": 3,
+          "error_rate": 0,
+          "deterministic": true,
+          "median_wall_ms": 13040,
+          "median_cpu_s": 8.85,
+          "max_rss_bytes": 409976832,
           "rea_runs": 3,
-          "precision": 0,
-          "recall": 0,
-          "f1": 0,
-          "per_category": {},
-          "missing": [
-            "export:_main",
-            "export:_greet",
-            "export:__mh_execute_header",
-            "import:_printf",
-            "import:_strlen",
-            "dependency:/usr/lib/libSystem.B.dylib",
-            "arch:arm64",
-            "function:_greet",
-            "function:_main",
-            "call:_greet->_printf",
-            "call:_greet->_strlen",
-            "call:_main->_printf",
-            "call:_main->_strlen",
-            "string:Hello, %s! checksum=%u\\n",
-            "string:ERA"
+          "precision": 0.9375,
+          "recall": 1,
+          "f1": 0.967741935483871,
+          "per_category": {
+            "arch": {
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "call": {
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "dependency": {
+              "precision": 0.5,
+              "recall": 1,
+              "f1": 0.6666666666666666
+            },
+            "export": {
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "function": {
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "import": {
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "string": {
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            }
+          },
+          "missing": [],
+          "unexpected": [
+            "dependency:/usr/lib/dyld"
           ],
-          "unexpected": [],
-          "errors": [
-            "exit 1",
-            "exit 1",
-            "exit 1"
-          ]
+          "errors": []
         },
         {
           "id": "native-macho-runtime",
           "kind": "mach-o",
           "repetitions": 3,
-          "succeeded": 0,
-          "error_rate": 1,
-          "deterministic": false,
-          "median_wall_ms": 6812,
-          "median_cpu_s": 8.879999999999999,
-          "max_rss_bytes": 410042368,
+          "succeeded": 3,
+          "error_rate": 0,
+          "deterministic": true,
+          "median_wall_ms": 15917,
+          "median_cpu_s": 11.32,
+          "max_rss_bytes": 406896640,
           "rea_runs": 4,
-          "precision": 0,
-          "recall": 0,
-          "f1": 0,
-          "per_category": {},
-          "missing": [
-            "exit:0",
-            "export:_main",
-            "export:_greet",
-            "export:__mh_execute_header",
-            "import:_printf",
-            "import:_strlen"
-          ],
+          "precision": 1,
+          "recall": 1,
+          "f1": 1,
+          "per_category": {
+            "exit": {
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "export": {
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "import": {
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            }
+          },
+          "missing": [],
           "unexpected": [],
-          "errors": [
-            "exit 1",
-            "exit 1",
-            "exit 1"
-          ]
+          "errors": []
         },
         {
           "id": "zip-archive",
@@ -1193,9 +1249,9 @@
           "succeeded": 3,
           "error_rate": 0,
           "deterministic": true,
-          "median_wall_ms": 2252,
+          "median_wall_ms": 2340,
           "median_cpu_s": 3.2399999999999998,
-          "max_rss_bytes": 408223744,
+          "max_rss_bytes": 407371776,
           "rea_runs": 1,
           "precision": 1,
           "recall": 1,
@@ -1213,24 +1269,24 @@
         }
       ],
       "aggregate": {
-        "accuracy_f1": 0.5931034482758621,
-        "precision": 0.6,
-        "completeness_recall": 0.5866666666666667,
-        "total_median_wall_ms": 20583,
-        "total_median_cpu_s": 27.52,
-        "max_rss_bytes": 410042368,
-        "error_rate": 0.4,
-        "reliability": 0.6,
+        "accuracy_f1": 0.9866518353726363,
+        "precision": 0.9875,
+        "completeness_recall": 0.9866666666666667,
+        "total_median_wall_ms": 38048,
+        "total_median_cpu_s": 32.17,
+        "max_rss_bytes": 409976832,
+        "error_rate": 0,
+        "reliability": 1,
         "rea_runs": 10
       }
     },
     "candidate_self_analysis": {
-      "id": "self-20261013T114655-530455",
+      "id": "self-20261013T150323-e9d1ed",
       "metrics": {
-        "modules": 55,
-        "expected_modules": 34,
-        "startup_ms": 210,
-        "findings": 7,
+        "modules": 56,
+        "expected_modules": 35,
+        "startup_ms": 212,
+        "findings": 9,
         "rea_runs": 7
       },
       "findings": [
@@ -1243,7 +1299,7 @@
           "title": "High local fan-out in src/commands/info.js (10 modules)",
           "detail": "src/commands/info.js statically imports 10 local modules (threshold 8); every invocation loads all of them.",
           "evidence_ids": [
-            "ev_9a3d3186908e491a7364d2881a068fc53a2825201c999be0247a0383e31129fa,ev_80d052252081d91d5a30b4e49739de3850e751319b92629d6f202acba3ae5a3d,ev_2197ae334b0fde22fe39957720590e57739736e5c58b59531f25a5bb4ef69a38,ev_dd3b6f1dfdfcf28cb55d6c9b9000ca20ea1b76486f9113009d723e360a0e9bd6,ev_5f76793c7f9ccda31c653ead6e34cd4e52c4530a295ed7a7f8357faf07651e96,ev_f0cc7e6eaff6322198ad992cb9551204326c48bbf72854e0b7c63ef5108cb857"
+            "ev_ae6326975d921193364f2f51183604df9c20e0ff2fe930ccd3656c8feebbc70c,ev_b302ad130be40c7656fb084309887d9a9ee89008f35e8c223d1417dd0a780e33,ev_08c8cad5cd28114df52cb45a28b5ddd1647969b61c0efa0ba86235fad2133895,ev_c3f1a75490476e19162c5bd4b6430859102f040c7e4d09f69fd71479c7cd7a22,ev_a245f1a7cafab674d309cd088b359e3bdd42df27f8a5bd9fca086844199e08f9,ev_5b54f8a3cc327d413c6c997f401f525012bae35028adb198aa07902b752f5b84"
           ]
         },
         {
@@ -1255,7 +1311,19 @@
           "title": "High local fan-out in src/orchestration/cycle.js (12 modules)",
           "detail": "src/orchestration/cycle.js statically imports 12 local modules (threshold 8); every invocation loads all of them.",
           "evidence_ids": [
-            "ev_9a3d3186908e491a7364d2881a068fc53a2825201c999be0247a0383e31129fa,ev_80d052252081d91d5a30b4e49739de3850e751319b92629d6f202acba3ae5a3d,ev_2197ae334b0fde22fe39957720590e57739736e5c58b59531f25a5bb4ef69a38,ev_dd3b6f1dfdfcf28cb55d6c9b9000ca20ea1b76486f9113009d723e360a0e9bd6,ev_5f76793c7f9ccda31c653ead6e34cd4e52c4530a295ed7a7f8357faf07651e96,ev_f0cc7e6eaff6322198ad992cb9551204326c48bbf72854e0b7c63ef5108cb857"
+            "ev_ae6326975d921193364f2f51183604df9c20e0ff2fe930ccd3656c8feebbc70c,ev_b302ad130be40c7656fb084309887d9a9ee89008f35e8c223d1417dd0a780e33,ev_08c8cad5cd28114df52cb45a28b5ddd1647969b61c0efa0ba86235fad2133895,ev_c3f1a75490476e19162c5bd4b6430859102f040c7e4d09f69fd71479c7cd7a22,ev_a245f1a7cafab674d309cd088b359e3bdd42df27f8a5bd9fca086844199e08f9,ev_5b54f8a3cc327d413c6c997f401f525012bae35028adb198aa07902b752f5b84"
+          ]
+        },
+        {
+          "id": "F-58e0ea7c53",
+          "rule": "unreachable-module",
+          "area": "code-quality",
+          "priority": 6,
+          "subject": "src/core/watchdog.mjs",
+          "title": "Module not reachable from the CLI entrypoint: src/core/watchdog.mjs",
+          "detail": "No static import path from bin/ reaches src/core/watchdog.mjs in REA's application graph; it is dead code or loaded dynamically.",
+          "evidence_ids": [
+            "ev_ae6326975d921193364f2f51183604df9c20e0ff2fe930ccd3656c8feebbc70c,ev_b302ad130be40c7656fb084309887d9a9ee89008f35e8c223d1417dd0a780e33,ev_08c8cad5cd28114df52cb45a28b5ddd1647969b61c0efa0ba86235fad2133895,ev_c3f1a75490476e19162c5bd4b6430859102f040c7e4d09f69fd71479c7cd7a22,ev_a245f1a7cafab674d309cd088b359e3bdd42df27f8a5bd9fca086844199e08f9,ev_5b54f8a3cc327d413c6c997f401f525012bae35028adb198aa07902b752f5b84"
           ]
         },
         {
@@ -1267,7 +1335,7 @@
           "title": "Child process spawned without an 'error' listener in tests/e2e-lab.test.js",
           "detail": "REA shows tests/e2e-lab.test.js imports a child_process launcher but registers no 'error' event listener; spawn failures (ENOENT, EACCES) would surface as unhandled errors.",
           "evidence_ids": [
-            "ev_9a3d3186908e491a7364d2881a068fc53a2825201c999be0247a0383e31129fa,ev_80d052252081d91d5a30b4e49739de3850e751319b92629d6f202acba3ae5a3d,ev_2197ae334b0fde22fe39957720590e57739736e5c58b59531f25a5bb4ef69a38,ev_dd3b6f1dfdfcf28cb55d6c9b9000ca20ea1b76486f9113009d723e360a0e9bd6,ev_5f76793c7f9ccda31c653ead6e34cd4e52c4530a295ed7a7f8357faf07651e96,ev_f0cc7e6eaff6322198ad992cb9551204326c48bbf72854e0b7c63ef5108cb857"
+            "ev_ae6326975d921193364f2f51183604df9c20e0ff2fe930ccd3656c8feebbc70c,ev_b302ad130be40c7656fb084309887d9a9ee89008f35e8c223d1417dd0a780e33,ev_08c8cad5cd28114df52cb45a28b5ddd1647969b61c0efa0ba86235fad2133895,ev_c3f1a75490476e19162c5bd4b6430859102f040c7e4d09f69fd71479c7cd7a22,ev_a245f1a7cafab674d309cd088b359e3bdd42df27f8a5bd9fca086844199e08f9,ev_5b54f8a3cc327d413c6c997f401f525012bae35028adb198aa07902b752f5b84"
           ]
         },
         {
@@ -1279,7 +1347,7 @@
           "title": "Child process spawned without an 'error' listener in tests/mcp.test.js",
           "detail": "REA shows tests/mcp.test.js imports a child_process launcher but registers no 'error' event listener; spawn failures (ENOENT, EACCES) would surface as unhandled errors.",
           "evidence_ids": [
-            "ev_9a3d3186908e491a7364d2881a068fc53a2825201c999be0247a0383e31129fa,ev_80d052252081d91d5a30b4e49739de3850e751319b92629d6f202acba3ae5a3d,ev_2197ae334b0fde22fe39957720590e57739736e5c58b59531f25a5bb4ef69a38,ev_dd3b6f1dfdfcf28cb55d6c9b9000ca20ea1b76486f9113009d723e360a0e9bd6,ev_5f76793c7f9ccda31c653ead6e34cd4e52c4530a295ed7a7f8357faf07651e96,ev_f0cc7e6eaff6322198ad992cb9551204326c48bbf72854e0b7c63ef5108cb857"
+            "ev_ae6326975d921193364f2f51183604df9c20e0ff2fe930ccd3656c8feebbc70c,ev_b302ad130be40c7656fb084309887d9a9ee89008f35e8c223d1417dd0a780e33,ev_08c8cad5cd28114df52cb45a28b5ddd1647969b61c0efa0ba86235fad2133895,ev_c3f1a75490476e19162c5bd4b6430859102f040c7e4d09f69fd71479c7cd7a22,ev_a245f1a7cafab674d309cd088b359e3bdd42df27f8a5bd9fca086844199e08f9,ev_5b54f8a3cc327d413c6c997f401f525012bae35028adb198aa07902b752f5b84"
           ]
         },
         {
@@ -1291,7 +1359,7 @@
           "title": "No test module imports src/commands/lab.js",
           "detail": "REA's import graph shows no edge from tests/ to src/commands/lab.js.",
           "evidence_ids": [
-            "ev_9a3d3186908e491a7364d2881a068fc53a2825201c999be0247a0383e31129fa,ev_80d052252081d91d5a30b4e49739de3850e751319b92629d6f202acba3ae5a3d,ev_2197ae334b0fde22fe39957720590e57739736e5c58b59531f25a5bb4ef69a38,ev_dd3b6f1dfdfcf28cb55d6c9b9000ca20ea1b76486f9113009d723e360a0e9bd6,ev_5f76793c7f9ccda31c653ead6e34cd4e52c4530a295ed7a7f8357faf07651e96,ev_f0cc7e6eaff6322198ad992cb9551204326c48bbf72854e0b7c63ef5108cb857"
+            "ev_ae6326975d921193364f2f51183604df9c20e0ff2fe930ccd3656c8feebbc70c,ev_b302ad130be40c7656fb084309887d9a9ee89008f35e8c223d1417dd0a780e33,ev_08c8cad5cd28114df52cb45a28b5ddd1647969b61c0efa0ba86235fad2133895,ev_c3f1a75490476e19162c5bd4b6430859102f040c7e4d09f69fd71479c7cd7a22,ev_a245f1a7cafab674d309cd088b359e3bdd42df27f8a5bd9fca086844199e08f9,ev_5b54f8a3cc327d413c6c997f401f525012bae35028adb198aa07902b752f5b84"
           ]
         },
         {
@@ -1303,7 +1371,19 @@
           "title": "No test module imports src/commands/info.js",
           "detail": "REA's import graph shows no edge from tests/ to src/commands/info.js.",
           "evidence_ids": [
-            "ev_9a3d3186908e491a7364d2881a068fc53a2825201c999be0247a0383e31129fa,ev_80d052252081d91d5a30b4e49739de3850e751319b92629d6f202acba3ae5a3d,ev_2197ae334b0fde22fe39957720590e57739736e5c58b59531f25a5bb4ef69a38,ev_dd3b6f1dfdfcf28cb55d6c9b9000ca20ea1b76486f9113009d723e360a0e9bd6,ev_5f76793c7f9ccda31c653ead6e34cd4e52c4530a295ed7a7f8357faf07651e96,ev_f0cc7e6eaff6322198ad992cb9551204326c48bbf72854e0b7c63ef5108cb857"
+            "ev_ae6326975d921193364f2f51183604df9c20e0ff2fe930ccd3656c8feebbc70c,ev_b302ad130be40c7656fb084309887d9a9ee89008f35e8c223d1417dd0a780e33,ev_08c8cad5cd28114df52cb45a28b5ddd1647969b61c0efa0ba86235fad2133895,ev_c3f1a75490476e19162c5bd4b6430859102f040c7e4d09f69fd71479c7cd7a22,ev_a245f1a7cafab674d309cd088b359e3bdd42df27f8a5bd9fca086844199e08f9,ev_5b54f8a3cc327d413c6c997f401f525012bae35028adb198aa07902b752f5b84"
+          ]
+        },
+        {
+          "id": "F-8e844c0b5b",
+          "rule": "untested-module",
+          "area": "test-coverage",
+          "priority": 10,
+          "subject": "src/core/watchdog.mjs",
+          "title": "No test module imports src/core/watchdog.mjs",
+          "detail": "REA's import graph shows no edge from tests/ to src/core/watchdog.mjs.",
+          "evidence_ids": [
+            "ev_ae6326975d921193364f2f51183604df9c20e0ff2fe930ccd3656c8feebbc70c,ev_b302ad130be40c7656fb084309887d9a9ee89008f35e8c223d1417dd0a780e33,ev_08c8cad5cd28114df52cb45a28b5ddd1647969b61c0efa0ba86235fad2133895,ev_c3f1a75490476e19162c5bd4b6430859102f040c7e4d09f69fd71479c7cd7a22,ev_a245f1a7cafab674d309cd088b359e3bdd42df27f8a5bd9fca086844199e08f9,ev_5b54f8a3cc327d413c6c997f401f525012bae35028adb198aa07902b752f5b84"
           ]
         },
         {
@@ -1315,21 +1395,21 @@
           "title": "No test module imports src/commands/analysis.js",
           "detail": "REA's import graph shows no edge from tests/ to src/commands/analysis.js.",
           "evidence_ids": [
-            "ev_9a3d3186908e491a7364d2881a068fc53a2825201c999be0247a0383e31129fa,ev_80d052252081d91d5a30b4e49739de3850e751319b92629d6f202acba3ae5a3d,ev_2197ae334b0fde22fe39957720590e57739736e5c58b59531f25a5bb4ef69a38,ev_dd3b6f1dfdfcf28cb55d6c9b9000ca20ea1b76486f9113009d723e360a0e9bd6,ev_5f76793c7f9ccda31c653ead6e34cd4e52c4530a295ed7a7f8357faf07651e96,ev_f0cc7e6eaff6322198ad992cb9551204326c48bbf72854e0b7c63ef5108cb857"
+            "ev_ae6326975d921193364f2f51183604df9c20e0ff2fe930ccd3656c8feebbc70c,ev_b302ad130be40c7656fb084309887d9a9ee89008f35e8c223d1417dd0a780e33,ev_08c8cad5cd28114df52cb45a28b5ddd1647969b61c0efa0ba86235fad2133895,ev_c3f1a75490476e19162c5bd4b6430859102f040c7e4d09f69fd71479c7cd7a22,ev_a245f1a7cafab674d309cd088b359e3bdd42df27f8a5bd9fca086844199e08f9,ev_5b54f8a3cc327d413c6c997f401f525012bae35028adb198aa07902b752f5b84"
           ]
         }
       ],
       "missing_modules": [],
       "runs": [
         {
-          "run_id": "rea-20261013T114656-4bb8de",
+          "run_id": "rea-20261013T150323-cf69e2",
           "label": "self-analysis:static-graph-1/6",
-          "started_at": "2026-10-13T11:46:56.070Z",
-          "duration_ms": 3223,
+          "started_at": "2026-10-13T15:03:23.951Z",
+          "duration_ms": 3280,
           "command": [
-            "rea",
+            "<era-repo>/node_modules/.bin/rea",
             "analyze-javascript-application",
-            "<era-repo>/.era/self-analyses/self-20261013T114655-530455/work/passes/pass-1",
+            "<era-repo>/.era/self-analyses/self-20261013T150323-e9d1ed/work/passes/pass-1",
             "--format",
             "json"
           ],
@@ -1339,42 +1419,42 @@
             "version": "6.4.0"
           },
           "input": {
-            "path": "<era-repo>/.era/self-analyses/self-20261013T114655-530455/work/passes/pass-1",
+            "path": "<era-repo>/.era/self-analyses/self-20261013T150323-e9d1ed/work/passes/pass-1",
             "kind": "directory",
             "bytes": null,
-            "sha256": "44e226a8edd8dce7ebc96865f2944bd0b7bcdcf3a940d9573ab58eb2e9a208c2"
+            "sha256": "d59093a9891e271558133a9965d257a912199c9d559eeeae85345c99b092187f"
           },
           "status": "succeeded",
           "exit_code": 0,
           "signal": null,
-          "evidence_id": "ev_9a3d3186908e491a7364d2881a068fc53a2825201c999be0247a0383e31129fa",
+          "evidence_id": "ev_ae6326975d921193364f2f51183604df9c20e0ff2fe930ccd3656c8feebbc70c",
           "operation": "analyze_javascript_application",
           "provider": {
             "id": "rea-javascript-application",
             "name": "REA JavaScript application analyzer",
             "version": "1"
           },
-          "output_file": "<era-repo>/.era/runs/rea-20261013T114656-4bb8de/output.json",
-          "output_bytes": 7569450,
+          "output_file": "<era-repo>/.era/runs/rea-20261013T150323-cf69e2/output.json",
+          "output_bytes": 7569535,
           "progress_events": 33,
           "warnings": [],
           "errors": [],
           "resources": {
-            "real_s": 3.22,
-            "user_s": 3.52,
-            "sys_s": 0.47,
-            "max_rss_bytes": 417873920
+            "real_s": 3.24,
+            "user_s": 3.35,
+            "sys_s": 0.48,
+            "max_rss_bytes": 373112832
           }
         },
         {
-          "run_id": "rea-20261013T114700-d1173d",
+          "run_id": "rea-20261013T150327-d7d727",
           "label": "self-analysis:static-graph-2/6",
-          "started_at": "2026-10-13T11:47:00.018Z",
-          "duration_ms": 3572,
+          "started_at": "2026-10-13T15:03:27.920Z",
+          "duration_ms": 3627,
           "command": [
-            "rea",
+            "<era-repo>/node_modules/.bin/rea",
             "analyze-javascript-application",
-            "<era-repo>/.era/self-analyses/self-20261013T114655-530455/work/passes/pass-2",
+            "<era-repo>/.era/self-analyses/self-20261013T150323-e9d1ed/work/passes/pass-2",
             "--format",
             "json"
           ],
@@ -1384,42 +1464,42 @@
             "version": "6.4.0"
           },
           "input": {
-            "path": "<era-repo>/.era/self-analyses/self-20261013T114655-530455/work/passes/pass-2",
+            "path": "<era-repo>/.era/self-analyses/self-20261013T150323-e9d1ed/work/passes/pass-2",
             "kind": "directory",
             "bytes": null,
-            "sha256": "f1e66be4450b17088d48f627e662550abada1f247edaabc066aba48a01cd8d2f"
+            "sha256": "8952ce87a7be2531592f31f00185df72469bcf64735e864fe1f9b80ce87ee3d7"
           },
           "status": "succeeded",
           "exit_code": 0,
           "signal": null,
-          "evidence_id": "ev_80d052252081d91d5a30b4e49739de3850e751319b92629d6f202acba3ae5a3d",
+          "evidence_id": "ev_b302ad130be40c7656fb084309887d9a9ee89008f35e8c223d1417dd0a780e33",
           "operation": "analyze_javascript_application",
           "provider": {
             "id": "rea-javascript-application",
             "name": "REA JavaScript application analyzer",
             "version": "1"
           },
-          "output_file": "<era-repo>/.era/runs/rea-20261013T114700-d1173d/output.json",
-          "output_bytes": 9859736,
+          "output_file": "<era-repo>/.era/runs/rea-20261013T150327-d7d727/output.json",
+          "output_bytes": 10296050,
           "progress_events": 40,
           "warnings": [],
           "errors": [],
           "resources": {
-            "real_s": 3.56,
-            "user_s": 3.88,
+            "real_s": 3.59,
+            "user_s": 3.89,
             "sys_s": 0.47,
-            "max_rss_bytes": 424165376
+            "max_rss_bytes": 432504832
           }
         },
         {
-          "run_id": "rea-20261013T114703-24c769",
+          "run_id": "rea-20261013T150331-2f1c2f",
           "label": "self-analysis:static-graph-3/6",
-          "started_at": "2026-10-13T11:47:03.624Z",
-          "duration_ms": 3364,
+          "started_at": "2026-10-13T15:03:31.580Z",
+          "duration_ms": 3324,
           "command": [
-            "rea",
+            "<era-repo>/node_modules/.bin/rea",
             "analyze-javascript-application",
-            "<era-repo>/.era/self-analyses/self-20261013T114655-530455/work/passes/pass-3",
+            "<era-repo>/.era/self-analyses/self-20261013T150323-e9d1ed/work/passes/pass-3",
             "--format",
             "json"
           ],
@@ -1429,42 +1509,42 @@
             "version": "6.4.0"
           },
           "input": {
-            "path": "<era-repo>/.era/self-analyses/self-20261013T114655-530455/work/passes/pass-3",
+            "path": "<era-repo>/.era/self-analyses/self-20261013T150323-e9d1ed/work/passes/pass-3",
             "kind": "directory",
             "bytes": null,
-            "sha256": "06dbe68ae540ae33029c4875089f90f36af45c2244109bb813e7581a431b5182"
+            "sha256": "979cda3f2c8867f3c0a911c854571b9c360ddf4ac068fd9d011e3b40e0d9a1cf"
           },
           "status": "succeeded",
           "exit_code": 0,
           "signal": null,
-          "evidence_id": "ev_2197ae334b0fde22fe39957720590e57739736e5c58b59531f25a5bb4ef69a38",
+          "evidence_id": "ev_08c8cad5cd28114df52cb45a28b5ddd1647969b61c0efa0ba86235fad2133895",
           "operation": "analyze_javascript_application",
           "provider": {
             "id": "rea-javascript-application",
             "name": "REA JavaScript application analyzer",
             "version": "1"
           },
-          "output_file": "<era-repo>/.era/runs/rea-20261013T114703-24c769/output.json",
-          "output_bytes": 9714698,
+          "output_file": "<era-repo>/.era/runs/rea-20261013T150331-2f1c2f/output.json",
+          "output_bytes": 9136151,
           "progress_events": 34,
           "warnings": [],
           "errors": [],
           "resources": {
-            "real_s": 3.36,
-            "user_s": 3.77,
+            "real_s": 3.28,
+            "user_s": 3.47,
             "sys_s": 0.45,
-            "max_rss_bytes": 424263680
+            "max_rss_bytes": 419037184
           }
         },
         {
-          "run_id": "rea-20261013T114707-12d93c",
+          "run_id": "rea-20261013T150334-b2df8e",
           "label": "self-analysis:static-graph-4/6",
-          "started_at": "2026-10-13T11:47:07.014Z",
-          "duration_ms": 3224,
+          "started_at": "2026-10-13T15:03:34.930Z",
+          "duration_ms": 3295,
           "command": [
-            "rea",
+            "<era-repo>/node_modules/.bin/rea",
             "analyze-javascript-application",
-            "<era-repo>/.era/self-analyses/self-20261013T114655-530455/work/passes/pass-4",
+            "<era-repo>/.era/self-analyses/self-20261013T150323-e9d1ed/work/passes/pass-4",
             "--format",
             "json"
           ],
@@ -1474,42 +1554,42 @@
             "version": "6.4.0"
           },
           "input": {
-            "path": "<era-repo>/.era/self-analyses/self-20261013T114655-530455/work/passes/pass-4",
+            "path": "<era-repo>/.era/self-analyses/self-20261013T150323-e9d1ed/work/passes/pass-4",
             "kind": "directory",
             "bytes": null,
-            "sha256": "5f559ccad3060a947cd8e69abeed7e6966c0d7ff70cd8ce8602d859a25b4fac3"
+            "sha256": "390f2d4b221ce1657f8ad04b1eaf437807c487f970d76d8afae1b67ed264d4ed"
           },
           "status": "succeeded",
           "exit_code": 0,
           "signal": null,
-          "evidence_id": "ev_dd3b6f1dfdfcf28cb55d6c9b9000ca20ea1b76486f9113009d723e360a0e9bd6",
+          "evidence_id": "ev_c3f1a75490476e19162c5bd4b6430859102f040c7e4d09f69fd71479c7cd7a22",
           "operation": "analyze_javascript_application",
           "provider": {
             "id": "rea-javascript-application",
             "name": "REA JavaScript application analyzer",
             "version": "1"
           },
-          "output_file": "<era-repo>/.era/runs/rea-20261013T114707-12d93c/output.json",
-          "output_bytes": 8493155,
-          "progress_events": 34,
+          "output_file": "<era-repo>/.era/runs/rea-20261013T150334-b2df8e/output.json",
+          "output_bytes": 8691542,
+          "progress_events": 33,
           "warnings": [],
           "errors": [],
           "resources": {
-            "real_s": 3.22,
+            "real_s": 3.25,
             "user_s": 3.66,
-            "sys_s": 0.44,
-            "max_rss_bytes": 416972800
+            "sys_s": 0.43,
+            "max_rss_bytes": 429457408
           }
         },
         {
-          "run_id": "rea-20261013T114710-382de2",
+          "run_id": "rea-20261013T150338-11b937",
           "label": "self-analysis:static-graph-5/6",
-          "started_at": "2026-10-13T11:47:10.261Z",
-          "duration_ms": 3733,
+          "started_at": "2026-10-13T15:03:38.248Z",
+          "duration_ms": 3804,
           "command": [
-            "rea",
+            "<era-repo>/node_modules/.bin/rea",
             "analyze-javascript-application",
-            "<era-repo>/.era/self-analyses/self-20261013T114655-530455/work/passes/pass-5",
+            "<era-repo>/.era/self-analyses/self-20261013T150323-e9d1ed/work/passes/pass-5",
             "--format",
             "json"
           ],
@@ -1519,42 +1599,42 @@
             "version": "6.4.0"
           },
           "input": {
-            "path": "<era-repo>/.era/self-analyses/self-20261013T114655-530455/work/passes/pass-5",
+            "path": "<era-repo>/.era/self-analyses/self-20261013T150323-e9d1ed/work/passes/pass-5",
             "kind": "directory",
             "bytes": null,
-            "sha256": "611691c0f6474dbf42b352385559f2696a65ad5ecaf2411f12272cdd465fc72c"
+            "sha256": "6c287c05a0e47fb2a462bd073d688547a7640c92fb8209928e027f9a1787d7d0"
           },
           "status": "succeeded",
           "exit_code": 0,
           "signal": null,
-          "evidence_id": "ev_5f76793c7f9ccda31c653ead6e34cd4e52c4530a295ed7a7f8357faf07651e96",
+          "evidence_id": "ev_a245f1a7cafab674d309cd088b359e3bdd42df27f8a5bd9fca086844199e08f9",
           "operation": "analyze_javascript_application",
           "provider": {
             "id": "rea-javascript-application",
             "name": "REA JavaScript application analyzer",
             "version": "1"
           },
-          "output_file": "<era-repo>/.era/runs/rea-20261013T114710-382de2/output.json",
-          "output_bytes": 9784703,
-          "progress_events": 46,
+          "output_file": "<era-repo>/.era/runs/rea-20261013T150338-11b937/output.json",
+          "output_bytes": 10481362,
+          "progress_events": 45,
           "warnings": [],
           "errors": [],
           "resources": {
-            "real_s": 3.73,
-            "user_s": 3.88,
+            "real_s": 3.76,
+            "user_s": 3.83,
             "sys_s": 0.48,
-            "max_rss_bytes": 431603712
+            "max_rss_bytes": 433176576
           }
         },
         {
-          "run_id": "rea-20261013T114714-5e87e2",
+          "run_id": "rea-20261013T150342-044e4b",
           "label": "self-analysis:static-graph-6/6",
-          "started_at": "2026-10-13T11:47:14.027Z",
-          "duration_ms": 2291,
+          "started_at": "2026-10-13T15:03:42.081Z",
+          "duration_ms": 2509,
           "command": [
-            "rea",
+            "<era-repo>/node_modules/.bin/rea",
             "analyze-javascript-application",
-            "<era-repo>/.era/self-analyses/self-20261013T114655-530455/work/passes/pass-6",
+            "<era-repo>/.era/self-analyses/self-20261013T150323-e9d1ed/work/passes/pass-6",
             "--format",
             "json"
           ],
@@ -1564,42 +1644,42 @@
             "version": "6.4.0"
           },
           "input": {
-            "path": "<era-repo>/.era/self-analyses/self-20261013T114655-530455/work/passes/pass-6",
+            "path": "<era-repo>/.era/self-analyses/self-20261013T150323-e9d1ed/work/passes/pass-6",
             "kind": "directory",
             "bytes": null,
-            "sha256": "94eebe4771b805451c50a259705918a66411b97086bdf6898f345738f2848a1e"
+            "sha256": "4776aecb9970fb67b7855ca58f6e47aeb94bb4df59fd0dffcdec5af172b46339"
           },
           "status": "succeeded",
           "exit_code": 0,
           "signal": null,
-          "evidence_id": "ev_f0cc7e6eaff6322198ad992cb9551204326c48bbf72854e0b7c63ef5108cb857",
+          "evidence_id": "ev_5b54f8a3cc327d413c6c997f401f525012bae35028adb198aa07902b752f5b84",
           "operation": "analyze_javascript_application",
           "provider": {
             "id": "rea-javascript-application",
             "name": "REA JavaScript application analyzer",
             "version": "1"
           },
-          "output_file": "<era-repo>/.era/runs/rea-20261013T114714-5e87e2/output.json",
-          "output_bytes": 3107469,
-          "progress_events": 23,
+          "output_file": "<era-repo>/.era/runs/rea-20261013T150342-044e4b/output.json",
+          "output_bytes": 3991986,
+          "progress_events": 25,
           "warnings": [],
           "errors": [],
           "resources": {
-            "real_s": 2.28,
-            "user_s": 2.65,
-            "sys_s": 0.38,
-            "max_rss_bytes": 389660672
+            "real_s": 2.47,
+            "user_s": 2.77,
+            "sys_s": 0.39,
+            "max_rss_bytes": 394493952
           }
         },
         {
-          "run_id": "rea-20261013T114716-f57099",
+          "run_id": "rea-20261013T150344-29b948",
           "label": "self-analysis:runtime-help",
-          "started_at": "2026-10-13T11:47:16.328Z",
-          "duration_ms": 2024,
+          "started_at": "2026-10-13T15:03:44.602Z",
+          "duration_ms": 2078,
           "command": [
-            "rea",
+            "<era-repo>/node_modules/.bin/rea",
             "capture-process",
-            "<era-repo>/.era/self-analyses/self-20261013T114655-530455/help-scenario.json",
+            "<era-repo>/.era/self-analyses/self-20261013T150323-e9d1ed/help-scenario.json",
             "--format",
             "json"
           ],
@@ -1609,7 +1689,7 @@
             "version": "6.4.0"
           },
           "input": {
-            "path": "<era-repo>/.era/self-analyses/self-20261013T114655-530455/work/artifact/package/bin/era.mjs",
+            "path": "<era-repo>/.era/self-analyses/self-20261013T150323-e9d1ed/work/artifact/package/bin/era.mjs",
             "kind": "file",
             "bytes": 135,
             "sha256": "e0c335a6ff9614fbfcc717263b95dc98b95b0bd28efe3310ead6a6bcfb27b81f"
@@ -1617,27 +1697,27 @@
           "status": "succeeded",
           "exit_code": 0,
           "signal": null,
-          "evidence_id": "ev_7bf04d3902d9fc28e17b70a95d3e24a4e5ba261f21b38ef45864002054a61da3",
+          "evidence_id": "ev_8dffce2776107fa6b508a8747acaa0e1d6dc768e016f6c58276005384626fa58",
           "operation": "capture_process_scenario",
           "provider": {
             "id": "rea-process",
             "name": "REA process capture",
             "version": "3"
           },
-          "output_file": "<era-repo>/.era/runs/rea-20261013T114716-f57099/output.json",
-          "output_bytes": 94689,
+          "output_file": "<era-repo>/.era/runs/rea-20261013T150344-29b948/output.json",
+          "output_bytes": 96534,
           "progress_events": 4,
           "warnings": [],
           "errors": [],
           "resources": {
-            "real_s": 2.02,
-            "user_s": 1.98,
+            "real_s": 2.04,
+            "user_s": 1.97,
             "sys_s": 0.68,
-            "max_rss_bytes": 439074816
+            "max_rss_bytes": 437010432
           }
         }
       ],
-      "report": "<era-repo>/.era/self-analyses/self-20261013T114655-530455/report.md"
+      "report": "<era-repo>/.era/self-analyses/self-20261013T150323-e9d1ed/report.md"
     },
     "changed_files": [
       "src/self_analysis/self-analyze.js",
@@ -1645,5 +1725,5 @@
     ],
     "diffstat": "src/self_analysis/self-analyze.js | 122 +++++++++++++++++++++++++++-----------\n tests/self-analyze-passes.test.js |  83 +++++++++++++++++---------\n 2 files changed, 141 insertions(+), 64 deletions(-)"
   },
-  "decided_at": "2026-10-13T11:47:18.625Z"
+  "decided_at": "2026-10-13T15:03:46.977Z"
 }

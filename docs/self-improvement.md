@@ -163,6 +163,10 @@ them. `limits.maxCycles` was raised from 3 to 6 and `maxReaRunsPerCycle` from
   decompilation stays covered by recorded Hopper Evidence. The same change is
   retried as experiment 5.
 
+### Experiment 5: `cycle-20261013T150739-02fd6c` → era-v4
+
+Experiment 4's commit, cherry-picked onto `main` after the test fix and rebased onto `fa4bbdb`. All guards passed: findings 27 → 9, complete REA coverage, tests 104 → 107 passing (0 failed), accuracy 0.9867 unchanged, time +18% (within the 30% guard), memory −0.1%. The maintainer approved it in chat and it was integrated as **era-v4**.
+
 ### Not run in this campaign
 
 Experiments 5 and 6 are allowed by the limits but were not started. They need a
