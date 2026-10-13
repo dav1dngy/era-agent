@@ -1,12 +1,14 @@
 // Benchmark Engine (protected path). Runs `era analyze` from the checkout under
 // test as a subprocess, under identical conditions, and scores its facts with
 // the evaluator's own scoring code and ground truth.
-import { readFileSync, mkdtempSync, rmSync } from 'node:fs';
+import { readFileSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { tmpdir } from 'node:os';
 import { runProcess } from '../core/process.js';
 import { median } from '../core/util.js';
 import { scoreFacts } from './score.js';
+import { planWorkflow, decompileCandidates } from '../analysis/analyze.js';
+import { sandboxCommand, sandboxAvailable } from '../safety/sandbox.js';
 
 export function loadManifest(datasetsDir) {
   const manifest = JSON.parse(readFileSync(join(datasetsDir, 'manifest.json'), 'utf8'));
@@ -97,4 +99,45 @@ export async function runBenchmark({ codeRoot, datasetsDir, repetitions = 3, rea
       rea_runs: results.reduce((s, r) => s + r.rea_runs, 0),
     },
   };
+}
+
+// Executes, per case, the same REA command sequence ERA issues (including the
+// runtime sandbox wrapper and per-function decompilation), directly and without
+// ERA, to measure ERA's orchestration overhead under identical conditions.
+export async function runReaBaseline({ datasetsDir, repetitions = 3, reaCommand = 'rea', decompile = false, maxDecompiledFunctions = 8, timeoutMs = 600_000 }) {
+  const cases = loadManifest(datasetsDir);
+  const work = mkdtempSync(join(tmpdir(), 'era-rea-baseline-'));
+  const results = [];
+  try {
+    for (const c of cases) {
+      const walls = [];
+      let failures = 0;
+      for (let i = 0; i < repetitions; i++) {
+        const dir = mkdtempSync(join(work, `${c.id}-`));
+        const scenarioPath = join(dir, 'scenario.json');
+        const steps = planWorkflow(c.kind, c.targetPath, { runtime: !!c.runtime, runtimeArgs: c.runtime_args ?? [], scenarioPath });
+        const started = process.hrtime.bigint();
+        for (const step of steps) {
+          if (step.scenario) {
+            const scratch = join(dir, 'scratch');
+            const wrapped = sandboxAvailable() ? sandboxCommand(step.scenario.executable, step.scenario.arguments, { writableDirs: [scratch] }) : step.scenario;
+            writeFileSync(scenarioPath, JSON.stringify({ executable: wrapped.executable, arguments: wrapped.arguments, working_directory: scratch, filesystem_observation_paths: [scratch], timeout_ms: 30000, idle_timeout_ms: 30000, finalization_ms: 500 }));
+          }
+          const r = await runProcess(reaCommand, [step.subcommand, ...step.args, '--format', 'json'], { timeoutMs });
+          if (r.exitCode !== 0) failures++;
+          if (decompile && step.subcommand === 'inspect-macho' && r.exitCode === 0) {
+            for (const sym of decompileCandidates(JSON.parse(r.stdout), maxDecompiledFunctions)) {
+              const f = await runProcess(reaCommand, ['function', c.targetPath, sym, '--snapshot', join(dir, 'provider.snapshot'), '--format', 'json'], { timeoutMs });
+              if (f.exitCode !== 0) failures++;
+            }
+          }
+        }
+        walls.push(Number(process.hrtime.bigint() - started) / 1e6);
+      }
+      results.push({ id: c.id, repetitions, median_wall_ms: median(walls), failures });
+    }
+  } finally {
+    rmSync(work, { recursive: true, force: true });
+  }
+  return { created_at: new Date().toISOString(), repetitions, cases: results, aggregate: { total_median_wall_ms: results.reduce((s, r) => s + r.median_wall_ms, 0), failures: results.reduce((s, r) => s + r.failures, 0) } };
 }

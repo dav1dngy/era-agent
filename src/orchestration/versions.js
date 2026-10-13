@@ -97,6 +97,10 @@ export async function diffStat(cwd, base, branch) {
   return (await git(cwd, ['diff', '--stat', `${base}...${branch}`])).stdout;
 }
 
+export async function diffPatch(cwd, base, branch) {
+  return (await git(cwd, ['diff', `${base}...${branch}`])).stdout + '\n';
+}
+
 export async function promote(cwd, branch, message) {
   await assertStable(cwd);
   await git(cwd, ['merge', '--no-ff', '-m', message, branch]);

@@ -24,3 +24,15 @@ export function renderBenchmarkTable(results, engineVersion) {
   }
   return out.join('\n');
 }
+
+// ERA orchestration overhead relative to executing the same REA commands directly.
+export function renderOverheadTable(eraResult, reaBaseline) {
+  const lines = ['ERA vs direct REA execution (same REA commands, median wall ms)', '', 'Case                   REA direct   ERA analyze   Overhead'];
+  for (const c of reaBaseline.cases) {
+    const e = eraResult.cases.find((x) => x.id === c.id);
+    if (!e) continue;
+    const over = e.median_wall_ms - c.median_wall_ms;
+    lines.push(`${c.id.padEnd(22)} ${String(Math.round(c.median_wall_ms)).padStart(10)}   ${String(Math.round(e.median_wall_ms)).padStart(11)}   ${over >= 0 ? '+' : ''}${Math.round(over)} ms (${((over / c.median_wall_ms) * 100).toFixed(1)}%)`);
+  }
+  return lines.join('\n');
+}

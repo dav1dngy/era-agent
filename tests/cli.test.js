@@ -45,3 +45,28 @@ test('era rea passes arguments through to the REA CLI', () => {
   assert.equal(r.status, 0);
   assert.equal(r.stdout.trim(), '9.9.9-fake');
 });
+
+test('help documents the Improvement Lab approval workflow and providers', () => {
+  const help = runEra(['--help']).stdout;
+  for (const s of ['improve approve', 'improve decline', 'improve recover', 'improve implement', 'explain', 'agents', '--rea-baseline', '--unsandboxed', 'ERA_LOG_LEVEL']) assert.ok(help.includes(s), s);
+});
+
+test('explain refuses remote providers without authorization and reports unknown analyses', () => {
+  const dir = tempDir();
+  const missing = runEra(['explain', 'nope'], { cwd: dir, env: { ERA_REA_BIN: FAKE_REA } });
+  assert.equal(missing.status, 1);
+  assert.match(missing.stderr, /No analysis found/);
+  const analysis = join(dir, 'analysis.json');
+  writeFileSync(analysis, JSON.stringify({ analysis_id: 'a', target: { path: '/x', kind: 'javascript-app' }, status: 'succeeded', runs: [], evidence: [], facts: [], fact_groups: {}, report_path: '/nonexistent' }));
+  const remote = runEra(['explain', analysis, '--provider', 'claude-code'], { cwd: dir, env: { ERA_REA_BIN: FAKE_REA } });
+  assert.equal(remote.status, 1);
+  assert.match(remote.stderr, /safety: .*--allow-remote/);
+  const local = runEra(['explain', analysis], { cwd: dir, env: { ERA_REA_BIN: FAKE_REA } });
+  assert.equal(local.status, 0, local.stderr);
+  assert.match(local.stdout, /Explanation \(local, deterministic\)/);
+});
+
+test('runtime capture without a sandbox needs --unsandboxed', { skip: process.platform === 'darwin' && 'macOS has a sandbox' }, () => {
+  const r = runEra(['analyze', join(process.cwd(), 'benchmarks', 'datasets', 'native-hello', 'hello'), '--runtime'], { env: { ERA_REA_BIN: FAKE_REA } });
+  assert.match(r.stderr, /no sandbox is available/);
+});

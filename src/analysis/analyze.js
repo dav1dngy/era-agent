@@ -5,7 +5,8 @@ import { basename, join, resolve } from 'node:path';
 import { detectTarget } from './detect.js';
 import { extractFacts, groupFacts } from './facts.js';
 import { renderAnalysisReport } from './report.js';
-import { assertTargetPath } from '../safety/policy.js';
+import { assertTargetPath, SafetyError } from '../safety/policy.js';
+import { sandboxAvailable, sandboxCommand } from '../safety/sandbox.js';
 import { newId, writeJson, writeText } from '../core/util.js';
 
 export function planWorkflow(kind, path, { runtime = false, runtimeArgs = [], scenarioPath = null } = {}) {
@@ -51,7 +52,7 @@ function summarizeEvidence(evidence) {
   };
 }
 
-export async function analyzeTarget(target, { rea, stateDir, runtime = false, runtimeArgs = [], runtimeTimeoutMs = 30_000, decompile = false, maxDecompiledFunctions = 8 }) {
+export async function analyzeTarget(target, { rea, stateDir, runtime = false, runtimeArgs = [], runtimeTimeoutMs = 30_000, decompile = false, maxDecompiledFunctions = 8, unsandboxed = false }) {
   const path = resolve(target);
   assertTargetPath(path);
   const detection = detectTarget(path);
@@ -62,6 +63,9 @@ export async function analyzeTarget(target, { rea, stateDir, runtime = false, ru
   }
   if (runtime && detection.kind !== 'mach-o') {
     throw new Error('--runtime is only supported for native Mach-O executables in this release.');
+  }
+  if (runtime && !unsandboxed && !sandboxAvailable()) {
+    throw new SafetyError('Runtime capture executes the target, and no sandbox is available on this platform. Re-run with --unsandboxed only for trusted binaries.');
   }
   const analysisId = newId('analysis');
   const dir = join(stateDir, 'analyses', analysisId);
@@ -79,9 +83,17 @@ export async function analyzeTarget(target, { rea, stateDir, runtime = false, ru
   const runs = [];
   const evidence = [];
   const facts = new Set();
+  let sandbox = null;
   const execute = async (step) => {
     if (step.scenario) {
-      writeJson(scenarioPath, { ...step.scenario, working_directory: dir, timeout_ms: runtimeTimeoutMs, idle_timeout_ms: runtimeTimeoutMs, finalization_ms: 500 });
+      // The target runs in a scratch directory; under the sandbox it can write
+      // only there, and it has no network access.
+      const scratch = join(dir, 'runtime-scratch');
+      mkdirSync(scratch, { recursive: true });
+      let { executable, arguments: args } = step.scenario;
+      if (!unsandboxed) ({ executable, arguments: args } = sandboxCommand(executable, args, { writableDirs: [scratch] }));
+      sandbox = unsandboxed ? { mechanism: 'none', reason: '--unsandboxed' } : { mechanism: 'macos-sandbox-exec', network: 'denied', writable: [scratch] };
+      writeJson(scenarioPath, { executable, arguments: args, working_directory: scratch, filesystem_observation_paths: [scratch], timeout_ms: runtimeTimeoutMs, idle_timeout_ms: runtimeTimeoutMs, finalization_ms: 500 });
     }
     const { record, result } = await rea.run(step.subcommand, step.args, { inputPath: reaInput, label: step.label });
     runs.push(record);
@@ -107,6 +119,7 @@ export async function analyzeTarget(target, { rea, stateDir, runtime = false, ru
     analysis_id: analysisId,
     created_at: new Date().toISOString(),
     target: { path, kind: detection.kind, detection: detection.reason, ...(reaInput !== path ? { staged_as: reaInput } : {}) },
+    ...(sandbox ? { runtime_sandbox: sandbox } : {}),
     decompilation: detection.kind === 'mach-o' ? (decompile ? 'enabled' : 'skipped (no deep analysis provider available, or --no-decompile)') : 'not applicable',
     engine: runs[0]?.engine ?? null,
     status: runs.length > 0 && runs.every((r) => r.status === 'succeeded') ? 'succeeded' : runs.some((r) => r.status === 'succeeded') ? 'partial' : 'failed',

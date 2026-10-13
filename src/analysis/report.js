@@ -34,7 +34,9 @@ export function renderAnalysisReport(a) {
   out.push(`- Analysis ID: \`${a.analysis_id}\``);
   out.push(`- Target: \`${a.target.path}\` (${a.target.kind}; ${a.target.detection})`);
   out.push(`- Engine: rea-agents ${a.engine?.version ?? 'unknown'}`);
-  out.push(`- Status: **${a.status}**`, '');
+  out.push(`- Status: **${a.status}**`);
+  if (a.runtime_sandbox) out.push(`- Runtime capture sandbox: ${a.runtime_sandbox.mechanism}${a.runtime_sandbox.network ? ` (network ${a.runtime_sandbox.network}, writes limited to the analysis scratch directory)` : ` (${a.runtime_sandbox.reason})`}`);
+  out.push('');
   out.push('## REA executions', '', renderRunTable(a.runs), '');
   const failed = a.runs.filter((r) => r.status !== 'succeeded');
   if (failed.length) {

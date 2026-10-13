@@ -1,17 +1,18 @@
 // Recursive Improvement Controller: propose -> implement -> evaluate -> decide,
 // bounded by the Safety Controller and recorded in the ledger.
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { buildProposal, rankCandidates, renderInstructions } from '../improvement/planner.js';
-import { runImplementer } from '../improvement/modification.js';
+import { runCodingAgent } from '../improvement/modification.js';
 import { runBenchmark } from '../evaluation/benchmark.js';
 import { runTests } from '../evaluation/tests.js';
 import { evaluateSelf } from '../evaluation/self-eval.js';
 import { decide, loadAcceptance } from '../evaluation/decision.js';
-import { PROTECTED_PATHS, protectedChanges, assertCycleAllowed, assertNotCI, acquireLock, effectiveLimits, SafetyError } from '../safety/policy.js';
+import { PROTECTED_PATHS, protectedChanges, assertCycleAllowed, assertNotCI, acquireLock, clearStaleLock, effectiveLimits, effectiveBudget, authorizeAgentRun, SafetyError } from '../safety/policy.js';
 import { appendLedger, readLedger, decidedCycles, pendingCycles } from './ledger.js';
 import * as vm from './versions.js';
 import { newId, writeJson, writeText } from '../core/util.js';
+import { createInterruptGuard, InterruptedError } from './interrupt.js';
 import { renderRunTable } from '../analysis/report.js';
 
 function cycleDir(stateDir, id) {
@@ -107,24 +108,34 @@ export async function proposeCycle({ root, config, rea, findingId = null }) {
   }
 }
 
-export async function implementCycle({ config, cycle }) {
-  const command = config.improvement.implementerCommand;
-  if (!command) return null;
+export function spentUsd(events) {
+  return events.filter((e) => e.type === 'implementer-finished' && typeof e.cost_usd === 'number').reduce((sum, e) => sum + e.cost_usd, 0);
+}
+
+export async function implementCycle({ config, cycle, agent }) {
+  const stateDir = config.stateDirAbs;
   const limits = effectiveLimits(config.limits, config.improvement);
-  const result = await runImplementer({
-    command,
-    worktree: cycle.worktree,
-    proposalFile: join(cycleDir(config.stateDirAbs, cycle.cycle_id), 'cycle.json'),
-    instructionsFile: cycle.instructions_file,
-    timeoutMs: limits.implementerTimeoutMs,
-    cycleId: cycle.cycle_id,
+  const budget = effectiveBudget(config.improvement.budget);
+  const budgetUsd = authorizeAgentRun({ agent, budget, spentUsd: spentUsd(readLedger(stateDir)) });
+  appendLedger(stateDir, { type: 'implementer-started', cycle_id: cycle.cycle_id, agent: agent.id, budget_usd: agent.metered ? budgetUsd : null });
+  const result = await runCodingAgent({
+    agent,
+    task: {
+      worktree: cycle.worktree,
+      proposalFile: join(cycleDir(stateDir, cycle.cycle_id), 'cycle.json'),
+      instructionsFile: cycle.instructions_file,
+      timeoutMs: limits.implementerTimeoutMs,
+      cycleId: cycle.cycle_id,
+      budgetUsd: agent.metered ? budgetUsd : null,
+    },
   });
+  appendLedger(stateDir, { type: 'implementer-finished', cycle_id: cycle.cycle_id, agent: agent.id, ok: result.ok, cost_usd: result.cost_usd ?? null, cost_reported: !!result.cost_reported, duration_ms: result.duration_ms ?? null, commit: result.commit ?? null });
   cycle.implementer = result;
-  saveCycle(config.stateDirAbs, cycle);
+  saveCycle(stateDir, cycle);
   return result;
 }
 
-export async function evaluateCycle({ root, config, rea, cycleId, repetitions }) {
+export async function evaluateCycle({ root, config, rea, cycleId, repetitions, guard = null }) {
   assertNotCI();
   const stateDir = config.stateDirAbs;
   const limits = effectiveLimits(config.limits, config.improvement);
@@ -133,6 +144,10 @@ export async function evaluateCycle({ root, config, rea, cycleId, repetitions })
   await vm.assertStable(root);
   if ((await vm.headCommit(root)) !== cycle.base_commit) throw new SafetyError('The stable branch moved since this cycle was proposed; abandon and re-propose.');
   const release = acquireLock(stateDir, `evaluate ${cycleId}`);
+  const interrupt = guard ?? createInterruptGuard();
+  cycle.status = 'evaluating';
+  cycle.evaluation_started_at = new Date().toISOString();
+  saveCycle(stateDir, cycle);
   try {
     const budget = reaBudget(limits);
     budget.add(cycle.baseline_self_analysis);
@@ -147,11 +162,17 @@ export async function evaluateCycle({ root, config, rea, cycleId, repetitions })
     if (ahead === 0 || changed.length === 0) {
       evaluation = { accepted: false, summary: 'rejected: experiment branch has no changes', guards: [], target: { met: false, observed: 'no changes' } };
     } else {
-      const baselineTests = await runTests(root);
-      const candidateTests = await runTests(cycle.worktree);
-      const baseline = await runBenchmark({ codeRoot: root, datasetsDir, repetitions: reps, reaCommand: rea.command, label: cycle.base_version ?? 'baseline' });
-      const candidate = await runBenchmark({ codeRoot: cycle.worktree, datasetsDir, repetitions: reps, reaCommand: rea.command, label: cycle.branch });
-      const candidateSelf = await evaluateSelf({ codeRoot: cycle.worktree, stateDir, reaCommand: rea.command });
+      const step = async (fn) => {
+        interrupt.check();
+        const value = await fn();
+        interrupt.check();
+        return value;
+      };
+      const baselineTests = await step(() => runTests(root));
+      const candidateTests = await step(() => runTests(cycle.worktree));
+      const baseline = await step(() => runBenchmark({ codeRoot: root, datasetsDir, repetitions: reps, reaCommand: rea.command, label: cycle.base_version ?? 'baseline' }));
+      const candidate = await step(() => runBenchmark({ codeRoot: cycle.worktree, datasetsDir, repetitions: reps, reaCommand: rea.command, label: cycle.branch }));
+      const candidateSelf = await step(() => evaluateSelf({ codeRoot: cycle.worktree, stateDir, reaCommand: rea.command }));
       budget.add(candidateSelf);
       const ctx = {
         baseline,
@@ -165,37 +186,76 @@ export async function evaluateCycle({ root, config, rea, cycleId, repetitions })
       };
       evaluation = { ...decide(ctx, acceptance), baselineTests, candidateTests, baseline, candidate, candidate_self_analysis: selfSummary(candidateSelf) };
     }
+    interrupt.check();
     evaluation.changed_files = changed;
     evaluation.diffstat = changed.length ? await vm.diffStat(root, cycle.base_commit, cycle.branch) : '';
 
-    if (evaluation.accepted) {
-      const tag = await vm.nextVersionTag(root);
-      const merge = await vm.promote(root, cycle.branch, `era: accept ${cycleId} (${cycle.proposal.finding.id}) as ${tag}`);
-      await vm.tagVersion(root, tag, `${tag}: ${cycle.proposal.hypothesis.slice(0, 200)}`);
-      cycle.status = 'accepted';
-      cycle.version = tag;
-      cycle.merge_commit = merge;
-    } else {
-      cycle.status = 'rejected';
-    }
+    // Accepted experiments are never merged here: they wait for a maintainer's
+    // explicit `era improve approve`. The stable branch is untouched either way.
+    cycle.status = evaluation.accepted ? 'awaiting-approval' : 'rejected';
     await vm.removeWorktree(root, cycle.worktree);
     cycle.evaluation = evaluation;
     cycle.decided_at = new Date().toISOString();
+    const dir = cycleDir(stateDir, cycleId);
+    if (changed.length) writeText(join(dir, 'change.patch'), await vm.diffPatch(root, cycle.base_commit, cycle.branch));
     saveCycle(stateDir, cycle);
-    writeText(join(cycleDir(stateDir, cycleId), 'report.md'), renderCycleReport(cycle));
+    writeText(join(dir, 'report.md'), renderCycleReport(cycle));
     appendLedger(stateDir, {
       type: 'cycle-decided',
       cycle_id: cycleId,
       finding_id: cycle.proposal.finding.id,
       accepted: evaluation.accepted,
-      version: cycle.version ?? null,
+      status: cycle.status,
       summary: evaluation.summary,
       branch: cycle.branch,
     });
     return cycle;
+  } catch (err) {
+    // Interrupted or failed evaluations record no decision; the cycle can be re-evaluated.
+    const current = loadCycle(stateDir, cycleId);
+    if (current.status === 'evaluating') {
+      current.status = 'proposed';
+      saveCycle(stateDir, current);
+    }
+    appendLedger(stateDir, err instanceof InterruptedError ? { type: 'cycle-interrupted', cycle_id: cycleId, signal: err.signal } : { type: 'cycle-evaluation-failed', cycle_id: cycleId, error: err.message });
+    throw err;
+  } finally {
+    if (!guard) interrupt.dispose();
+    release();
+  }
+}
+
+export async function approveCycle({ root, config, cycleId, approver }) {
+  assertNotCI();
+  const stateDir = config.stateDirAbs;
+  const cycle = loadCycle(stateDir, cycleId);
+  if (cycle.status !== 'awaiting-approval') throw new Error(`Cycle ${cycleId} is ${cycle.status}; only cycles awaiting approval can be approved.`);
+  await vm.assertStable(root);
+  if ((await vm.headCommit(root)) !== cycle.base_commit) {
+    throw new SafetyError(`The stable branch moved since ${cycleId} was evaluated; its evidence no longer describes the merge result. Decline it and re-propose.`);
+  }
+  const release = acquireLock(stateDir, `approve ${cycleId}`);
+  try {
+    const tag = await vm.nextVersionTag(root);
+    const merge = await vm.promote(root, cycle.branch, `era: integrate ${cycleId} (${cycle.proposal.finding.id}) as ${tag}\n\nApproved-by: ${approver}`);
+    await vm.tagVersion(root, tag, `${tag}: ${cycle.proposal.hypothesis.slice(0, 200)}`);
+    Object.assign(cycle, { status: 'integrated', version: tag, merge_commit: merge, approved_by: approver, approved_at: new Date().toISOString() });
+    saveCycle(stateDir, cycle);
+    writeText(join(cycleDir(stateDir, cycleId), 'report.md'), renderCycleReport(cycle));
+    appendLedger(stateDir, { type: 'cycle-approved', cycle_id: cycleId, approver, version: tag, merge_commit: merge });
+    return cycle;
   } finally {
     release();
   }
+}
+
+export async function declineCycle({ config, cycleId, approver, reason = 'declined by maintainer' }) {
+  const cycle = loadCycle(config.stateDirAbs, cycleId);
+  if (cycle.status !== 'awaiting-approval') throw new Error(`Cycle ${cycleId} is ${cycle.status}; only cycles awaiting approval can be declined.`);
+  Object.assign(cycle, { status: 'declined', declined_by: approver, decline_reason: reason });
+  saveCycle(config.stateDirAbs, cycle);
+  appendLedger(config.stateDirAbs, { type: 'cycle-declined', cycle_id: cycleId, approver, reason });
+  return cycle;
 }
 
 export async function abandonCycle({ root, config, cycleId, reason = 'abandoned by user' }) {
@@ -209,12 +269,49 @@ export async function abandonCycle({ root, config, cycleId, reason = 'abandoned 
   return cycle;
 }
 
+// Restores a consistent state after a crash or kill -9: stale locks, cycles
+// stuck in "evaluating", missing experiment worktrees and leftover benchmark
+// worktrees.
+export async function recoverState({ root, config }) {
+  const stateDir = config.stateDirAbs;
+  const actions = [];
+  if (clearStaleLock(stateDir)) actions.push('removed stale improvement lock');
+  await vm.git(root, ['worktree', 'prune'], { allowFail: true });
+  const cyclesDir = join(stateDir, 'cycles');
+  for (const id of existsSync(cyclesDir) ? readdirSync(cyclesDir) : []) {
+    let cycle;
+    try {
+      cycle = loadCycle(stateDir, id);
+    } catch {
+      continue;
+    }
+    if (cycle.status === 'evaluating') {
+      cycle.status = 'proposed';
+      saveCycle(stateDir, cycle);
+      appendLedger(stateDir, { type: 'cycle-recovered', cycle_id: id, from: 'evaluating' });
+      actions.push(`${id}: evaluating -> proposed`);
+    }
+    if (cycle.status === 'proposed' && !existsSync(cycle.worktree)) {
+      await vm.git(root, ['worktree', 'add', cycle.worktree, cycle.branch]);
+      actions.push(`${id}: recreated worktree from ${cycle.branch}`);
+    }
+  }
+  const benchDir = join(stateDir, 'bench-worktrees');
+  for (const d of existsSync(benchDir) ? readdirSync(benchDir) : []) {
+    await vm.removeWorktree(root, join(benchDir, d));
+    actions.push(`removed leftover benchmark worktree ${d}`);
+  }
+  if (actions.length) appendLedger(stateDir, { type: 'state-recovered', actions });
+  return actions;
+}
+
 const fmt = (v, digits = 4) => (typeof v === 'number' ? (Number.isInteger(v) ? String(v) : v.toFixed(digits)) : String(v ?? '—'));
 
 export function renderCycleReport(cycle) {
   const e = cycle.evaluation ?? {};
   const out = [`# ERA improvement cycle ${cycle.cycle_id}`, ''];
-  out.push(`- Status: **${cycle.status}**${cycle.version ? ` → ${cycle.version}` : ''}`);
+  out.push(`- Status: **${cycle.status}**${cycle.version ? ` → ${cycle.version}` : ''}${cycle.approved_by ? ` (approved by ${cycle.approved_by})` : ''}`);
+  if (cycle.status === 'awaiting-approval') out.push(`- Review: \`git diff ${cycle.base_commit.slice(0, 12)}...${cycle.branch}\` or \`change.patch\`; then \`era improve approve ${cycle.cycle_id}\` or \`era improve decline ${cycle.cycle_id}\``);
   out.push(`- Base: ${cycle.base_version ?? 'untagged'} (\`${cycle.base_commit.slice(0, 12)}\`), branch \`${cycle.branch}\``);
   out.push(`- Finding: ${cycle.proposal.finding.id} — ${cycle.proposal.finding.title} (${cycle.proposal.area})`);
   out.push(`- Hypothesis: ${cycle.proposal.hypothesis}`);

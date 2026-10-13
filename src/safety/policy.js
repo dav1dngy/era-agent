@@ -10,6 +10,8 @@ export const HARD_LIMITS = Object.freeze({
   commandTimeoutMs: 3_600_000,
   implementerTimeoutMs: 7_200_000,
   maxParallel: 1,
+  maxCostUsdPerCycle: 50,
+  maxCostUsdTotal: 200,
 });
 
 export const PROTECTED_PATHS = Object.freeze([
@@ -46,6 +48,29 @@ export function effectiveLimits(limits = {}, improvement = {}) {
   };
 }
 
+// API spending limits for coding agents. Configuration can only tighten them.
+export function effectiveBudget(budget = {}) {
+  const clamp = (value, max, fallback) => {
+    const n = Number(value ?? fallback);
+    return Number.isFinite(n) && n >= 0 ? Math.min(n, max) : fallback;
+  };
+  return {
+    maxCostUsdPerCycle: clamp(budget.maxCostUsdPerCycle, HARD_LIMITS.maxCostUsdPerCycle, 5),
+    maxCostUsdTotal: clamp(budget.maxCostUsdTotal, HARD_LIMITS.maxCostUsdTotal, 20),
+    allowUnmeteredAgents: budget.allowUnmeteredAgents === true,
+  };
+}
+
+// Returns the dollar budget for one agent run, or throws when spending is not allowed.
+export function authorizeAgentRun({ agent, budget, spentUsd }) {
+  const remaining = budget.maxCostUsdTotal - spentUsd;
+  if (remaining <= 0) throw new SafetyError(`Coding-agent budget exhausted ($${spentUsd.toFixed(2)} of $${budget.maxCostUsdTotal.toFixed(2)} spent).`);
+  if (!agent.metered && !budget.allowUnmeteredAgents) {
+    throw new SafetyError(`Coding agent "${agent.id}" cannot report its API cost; set improvement.budget.allowUnmeteredAgents to true to run it without cost enforcement.`);
+  }
+  return Math.min(budget.maxCostUsdPerCycle, remaining);
+}
+
 export function assertCycleAllowed(completedCycles, limits) {
   if (completedCycles >= limits.maxCycles) {
     throw new SafetyError(`Cycle limit reached (${completedCycles}/${limits.maxCycles}). Raise limits.maxCycles in era.config.json (hard cap ${HARD_LIMITS.maxCycles}).`);
@@ -69,17 +94,30 @@ export function assertTargetPath(path) {
   if (!st.isFile() && !st.isDirectory()) throw new SafetyError(`Target must be a regular file or directory: ${path}`);
 }
 
+function readLock(lockFile) {
+  try {
+    return JSON.parse(readFileSync(lockFile, 'utf8'));
+  } catch {
+    return null;
+  }
+}
+
+// Removes a lock whose holder process no longer exists. Returns true if removed.
+export function clearStaleLock(stateDir) {
+  const lockFile = join(stateDir, 'improve.lock');
+  if (!existsSync(lockFile)) return false;
+  const holder = readLock(lockFile);
+  if (holder && isAlive(holder.pid)) return false;
+  unlinkSync(lockFile);
+  return true;
+}
+
 // Single-writer lock for self-improvement. Stale locks (dead pid) are replaced.
 export function acquireLock(stateDir, owner) {
   mkdirSync(stateDir, { recursive: true });
   const lockFile = join(stateDir, 'improve.lock');
   if (existsSync(lockFile)) {
-    let holder = null;
-    try {
-      holder = JSON.parse(readFileSync(lockFile, 'utf8'));
-    } catch {
-      holder = null;
-    }
+    const holder = readLock(lockFile);
     if (holder && isAlive(holder.pid)) {
       throw new SafetyError(`Another improvement run holds the lock (pid ${holder.pid}, ${holder.owner}).`);
     }

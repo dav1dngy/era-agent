@@ -63,3 +63,19 @@ test('dashboard renders local state without a server', async () => {
   assert.match(html, /Finding &lt;b&gt;/);
   assert.match(html, /era-v1/);
 });
+
+test('interrupt guard terminates child process groups and raises InterruptedError', async () => {
+  const { EventEmitter } = await import('node:events');
+  const { createInterruptGuard, InterruptedError } = await import('../src/orchestration/interrupt.js');
+  const { runProcess } = await import('../src/core/process.js');
+  const proc = new EventEmitter();
+  const guard = createInterruptGuard(proc);
+  const pending = runProcess(process.execPath, ['-e', 'setInterval(()=>{}, 1000)'], { timeoutMs: 30_000 });
+  await new Promise((r) => setTimeout(r, 200));
+  assert.doesNotThrow(() => guard.check());
+  proc.emit('SIGINT', 'SIGINT');
+  assert.equal((await pending).signal, 'SIGTERM');
+  assert.throws(() => guard.check(), InterruptedError);
+  guard.dispose();
+  assert.equal(proc.listenerCount('SIGINT'), 0);
+});

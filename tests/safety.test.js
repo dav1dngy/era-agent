@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { HARD_LIMITS, effectiveLimits, assertCycleAllowed, assertNotCI, protectedChanges, assertTargetPath, acquireLock, SafetyError } from '../src/safety/policy.js';
+import { HARD_LIMITS, effectiveLimits, assertCycleAllowed, assertNotCI, protectedChanges, assertTargetPath, acquireLock, clearStaleLock, SafetyError } from '../src/safety/policy.js';
 import { tempDir } from './helpers.js';
 
 test('configured limits cannot exceed hard limits', () => {
@@ -60,4 +60,14 @@ test('stale locks from dead processes are replaced', () => {
   writeFileSync(join(dir, 'improve.lock'), JSON.stringify({ pid: 2 ** 22 + 12345, owner: 'ghost' }));
   const release = acquireLock(dir, 'fresh');
   release();
+});
+
+test('clearStaleLock removes only locks held by dead processes', () => {
+  const dir = tempDir();
+  assert.equal(clearStaleLock(dir), false);
+  const release = acquireLock(dir, 'live');
+  assert.equal(clearStaleLock(dir), false, 'live holder keeps the lock');
+  release();
+  writeFileSync(join(dir, 'improve.lock'), JSON.stringify({ pid: 2 ** 22 + 54321, owner: 'dead' }));
+  assert.equal(clearStaleLock(dir), true);
 });

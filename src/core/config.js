@@ -22,10 +22,24 @@ export const DEFAULT_CONFIG = Object.freeze({
     commandTimeoutMs: 900_000,
   },
   improvement: {
-    // Shell command run inside the experiment worktree to implement a proposal.
-    // null = manual mode: ERA prepares the worktree and waits for `era improve evaluate`.
+    // Coding agent: manual | command | claude-code | codex. null = "command" when
+    // implementerCommand is set, otherwise "manual".
+    agent: null,
+    // Shell command for the "command" agent (cwd = experiment worktree).
     implementerCommand: null,
     implementerTimeoutMs: 1_800_000,
+    budget: { maxCostUsdPerCycle: 5, maxCostUsdTotal: 20, allowUnmeteredAgents: false },
+  },
+  agents: {
+    'claude-code': { command: 'claude', model: null },
+    codex: { command: null, model: null },
+  },
+  reasoning: {
+    // none (local, deterministic) | command | claude-code
+    provider: 'none',
+    // Remote providers additionally need --allow-remote on each call.
+    allowRemote: false,
+    command: { run: null, remote: true },
   },
   benchmark: {
     repetitions: 3,

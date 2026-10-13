@@ -6,6 +6,7 @@ import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { runProcess } from '../core/process.js';
 import { newId, sha256File, fileInfo, writeJson, writeText } from '../core/util.js';
+import { nullLogger } from '../core/log.js';
 
 const PACKAGE_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
 
@@ -37,7 +38,7 @@ function splitStderr(stderr) {
 }
 
 export class ReaClient {
-  constructor({ command = null, timeoutMs = 600_000, measureResources = true, stateDir, env = process.env } = {}) {
+  constructor({ command = null, timeoutMs = 600_000, measureResources = true, stateDir, env = process.env, log = nullLogger } = {}) {
     const resolved = resolveReaCommand(command, env);
     this.command = resolved.command;
     this.commandSource = resolved.source;
@@ -45,12 +46,13 @@ export class ReaClient {
     this.measureResources = measureResources;
     this.stateDir = stateDir;
     this.env = env;
+    this.log = log;
     this._version = undefined;
     this.runCount = 0;
   }
 
-  static fromConfig(config) {
-    return new ReaClient({ ...config.rea, stateDir: config.stateDirAbs });
+  static fromConfig(config, log = nullLogger) {
+    return new ReaClient({ ...config.rea, stateDir: config.stateDirAbs, log });
   }
 
   async version() {
@@ -160,6 +162,22 @@ export class ReaClient {
       writeJson(join(runDir, 'record.json'), record);
       writeText(join(runDir, 'stderr.log'), proc.stderr);
     }
+    this.log.log(status === 'succeeded' ? 'info' : 'warn', 'rea.run', {
+      run_id: runId,
+      label,
+      rea_command: subcommand,
+      rea_version: engineVersion,
+      operation: record.operation,
+      provider: record.provider?.id ?? null,
+      status,
+      exit_code: proc.exitCode,
+      duration_ms: record.duration_ms,
+      evidence_id: record.evidence_id,
+      input_sha256: input?.sha256 ?? null,
+      errors,
+      warnings: warnings.length,
+      max_rss_bytes: proc.resources?.max_rss_bytes ?? null,
+    });
     return { record, result };
   }
 }
