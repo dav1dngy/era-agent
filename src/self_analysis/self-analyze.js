@@ -1,19 +1,24 @@
 // Self-Analysis Engine: prepares ERA's own shipped artifact (npm pack output
 // plus its test suite), runs REA against it, and derives findings.
 //
-// REA's JavaScript analyzer has a fixed per-run result budget; analyzing the
-// whole package and test suite in one pass leaves later test files with
-// `resource_constraint` (incomplete) coverage. The test suite is therefore split
-// into groups: every pass contains the full packaged source (so test imports
-// resolve) plus the shared test support files and one group of test files.
-import { cpSync, existsSync, mkdirSync, readdirSync, statSync } from 'node:fs';
-import { join } from 'node:path';
+// REA's JavaScript analyzer has a fixed per-run result budget (~993 MB of
+// expanded relationships). ERA's packaged source alone now exceeds it, which
+// leaves files with `resource_constraint` (incomplete) coverage. The artifact
+// is therefore split into passes of at most PASS_BYTE_BUDGET bytes of real
+// ("focus") files. Each real file is analyzed in exactly one pass. Local files
+// that a pass's focus files import, but that belong to other passes, are staged
+// as one-line placeholders, so REA can resolve every import edge without
+// spending budget on them. The placeholders contain no code; all facts about a
+// file come from the pass in which it is a focus file.
+import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
+import { dirname, join, normalize, relative } from 'node:path';
 import { runProcess } from '../core/process.js';
 import { newId, sha256File, writeJson, writeText } from '../core/util.js';
 import { runRules, graphView } from './rules.js';
 import { renderRunTable } from '../analysis/report.js';
 
-export const TEST_FILES_PER_PASS = 3;
+export const PASS_BYTE_BUDGET = 50_000;
+export const PLACEHOLDER = '// ERA self-analysis placeholder: this file is analyzed in another REA pass.\n';
 
 export async function prepareSelfArtifact(eraRoot, workDir) {
   mkdirSync(workDir, { recursive: true });
@@ -29,35 +34,82 @@ export async function prepareSelfArtifact(eraRoot, workDir) {
   return { tarball, tarball_sha256: await sha256File(tarball), packaged_files: files.length, packageDir };
 }
 
-// Size-balanced groups (largest file into the lightest group), since REA's
-// budget is consumed roughly in proportion to source size.
-export function testGroups(testsDir, perPass = TEST_FILES_PER_PASS) {
-  if (!existsSync(testsDir)) return { support: [], groups: [] };
-  const entries = readdirSync(testsDir).sort();
-  const tests = entries.filter((f) => f.endsWith('.test.js'));
-  const support = entries.filter((f) => !f.endsWith('.test.js'));
-  const count = Math.ceil(tests.length / perPass);
-  const groups = Array.from({ length: count }, () => ({ bytes: 0, files: [] }));
-  const bySize = tests.map((f) => ({ f, bytes: statSync(join(testsDir, f)).size })).sort((a, b) => b.bytes - a.bytes || a.f.localeCompare(b.f));
-  for (const t of bySize) {
-    const g = groups.filter((x) => x.files.length < perPass).sort((a, b) => a.bytes - b.bytes)[0];
-    g.files.push(t.f);
-    g.bytes += t.bytes;
+const JS_FILE = /\.(m|c)?js$/;
+
+function listJs(root, dir = root, acc = []) {
+  if (!existsSync(dir)) return acc;
+  for (const e of readdirSync(dir).sort()) {
+    const p = join(dir, e);
+    if (e === 'node_modules' || e.startsWith('.')) continue;
+    if (statSync(p).isDirectory()) listJs(root, p, acc);
+    else if (JS_FILE.test(e)) acc.push(relative(root, p));
   }
-  return { support, groups: groups.map((g) => g.files.sort()) };
+  return acc;
 }
 
-// One staged directory per REA pass: packaged ERA + test support + a test group.
-export function stagePasses(packageDir, eraRoot, workDir, perPass = TEST_FILES_PER_PASS) {
-  const testsDir = join(eraRoot, 'tests');
-  const { support, groups } = testGroups(testsDir, perPass);
-  if (groups.length === 0) return [{ dir: packageDir, tests: [] }];
-  return groups.map((group, i) => {
-    const dir = join(workDir, `pass-${i + 1}`);
-    cpSync(packageDir, dir, { recursive: true });
-    for (const f of [...support, ...group]) cpSync(join(testsDir, f), join(dir, 'tests', f), { recursive: true });
-    return { dir, tests: group };
-  });
+// Relative import specifiers (static, dynamic, re-export, require) used only to
+// decide which placeholders a pass needs; REA performs the actual analysis.
+const SPECIFIER = /(?:\bfrom\s*|\bimport\s*\(\s*|\brequire\s*\(\s*|\bimport\s+)['"](\.{1,2}\/[^'"]+)['"]/g;
+
+export function directLocalImports(root, file) {
+  const text = readFileSync(join(root, file), 'utf8');
+  const out = new Set();
+  for (const [, spec] of text.matchAll(SPECIFIER)) {
+    const target = normalize(join(dirname(file), spec));
+    if (!target.startsWith('..') && existsSync(join(root, target)) && statSync(join(root, target)).isFile()) out.add(target);
+  }
+  return [...out].sort();
+}
+
+// The analysis universe: the packed artifact (bin, src, package.json) plus
+// ERA's tests. Fixture data files are not JavaScript and are not needed.
+export function stageUniverse(packageDir, eraRoot, dest) {
+  cpSync(packageDir, dest, { recursive: true });
+  const tests = join(eraRoot, 'tests');
+  for (const f of listJs(tests)) {
+    mkdirSync(dirname(join(dest, 'tests', f)), { recursive: true });
+    cpSync(join(tests, f), join(dest, 'tests', f));
+  }
+  return dest;
+}
+
+export function planPasses(universe, byteBudget = PASS_BYTE_BUDGET) {
+  const files = listJs(universe);
+  const passes = [];
+  let current = null;
+  for (const f of files) {
+    const bytes = statSync(join(universe, f)).size;
+    if (!current || (current.bytes + bytes > byteBudget && current.focus.length > 0)) {
+      current = { focus: [], bytes: 0 };
+      passes.push(current);
+    }
+    current.focus.push(f);
+    current.bytes += bytes;
+  }
+  for (const p of passes) {
+    const focus = new Set(p.focus);
+    p.placeholders = [...new Set(p.focus.flatMap((f) => directLocalImports(universe, f)))].filter((t) => !focus.has(t)).sort();
+  }
+  return passes;
+}
+
+export function stagePass(universe, dest, pass) {
+  mkdirSync(dest, { recursive: true });
+  if (existsSync(join(universe, 'package.json'))) cpSync(join(universe, 'package.json'), join(dest, 'package.json'));
+  for (const f of pass.focus) {
+    mkdirSync(dirname(join(dest, f)), { recursive: true });
+    cpSync(join(universe, f), join(dest, f));
+  }
+  for (const f of pass.placeholders) {
+    mkdirSync(dirname(join(dest, f)), { recursive: true });
+    writeFileSync(join(dest, f), PLACEHOLDER);
+  }
+  return dest;
+}
+
+export function stagePasses(packageDir, eraRoot, workDir, byteBudget = PASS_BYTE_BUDGET) {
+  const universe = stageUniverse(packageDir, eraRoot, join(workDir, 'universe'));
+  return planPasses(universe, byteBudget).map((pass, i) => ({ ...pass, dir: stagePass(universe, join(workDir, `pass-${i + 1}`), pass) }));
 }
 
 export async function selfAnalyze({ eraRoot, rea, stateDir, label = 'self-analysis' }) {
@@ -96,7 +148,7 @@ export async function selfAnalyze({ eraRoot, rea, stateDir, label = 'self-analys
     self_analysis_id: id,
     created_at: new Date().toISOString(),
     era_root: eraRoot,
-    artifact: { tarball_sha256: artifact.tarball_sha256, packaged_files: artifact.packaged_files, analyzed_dir: artifact.packageDir, passes: passes.map((p) => ({ dir: p.dir, tests: p.tests })) },
+    artifact: { tarball_sha256: artifact.tarball_sha256, packaged_files: artifact.packaged_files, analyzed_dir: artifact.packageDir, passes: passes.map((p) => ({ dir: p.dir, focus: p.focus, placeholders: p.placeholders, bytes: p.bytes })) },
     runs: [...jsRuns.map((r) => r.record), runtimeRun.record],
     metrics: {
       modules: graphView(evidence).modules.length,
