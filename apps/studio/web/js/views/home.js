@@ -3,6 +3,7 @@ import { ApiError, get, post } from '../api.js';
 import { Badge, Btn, Callout, baseName, when } from '../ui.js';
 import { navigate, openModal, set, state, toast, useStore } from '../store.js';
 import { TASK_EXAMPLES } from '../model.js';
+import { Icon } from '../icons.js';
 
 const MODES = ['ANALYZE', 'REVIEW', 'MODIFY', 'REBUILD', 'IMPROVE'];
 const TEAMS = [['auto', 'Recommended'], ['claude-only', 'Claude Only'], ['codex-only', 'Codex Only'], ['claude+codex', 'Claude + Codex'], ['custom', 'Custom']];
@@ -81,13 +82,34 @@ export function Home() {
 
   const allConsented = plan && plan.remote_providers.every((id) => consent[id]);
   const recent = s.tasks.slice(0, 4);
+  const recentProjects = [...s.projects].sort((a, b) => new Date(b.latest_run?.updated_at ?? b.updated_at ?? b.created_at ?? 0) - new Date(a.latest_run?.updated_at ?? a.updated_at ?? a.created_at ?? 0)).slice(0, 2);
+  const runningJobs = Object.values(s.jobs).filter((j) => j.status === 'running').length;
+  const awaitingApproval = s.projects.filter((p) => p.status === 'awaiting-approval').length;
+  const openProject = (id) => { set({ currentProject: id }); navigate(['projects', id]); };
+  const focusTask = () => document.querySelector('[aria-label="Describe your task"]')?.focus();
+  const modeIcons = { ANALYZE: 'analysis', REVIEW: 'shield', MODIFY: 'code', REBUILD: 'lab', IMPROVE: 'improvement' };
 
-  return html`<div class="home">
-    <div><h1>What would you like to build, analyze, or improve?</h1><div class="tagline" style="margin-top:6px">Reverse. Analyze. Build. Verify. Evolve.</div></div>
-    <div class="composer">
-      <textarea aria-label="Describe your task" placeholder="Describe what you want ERA to do…" value=${text} onInput=${(e) => setText(e.target.value)} onKeyDown=${(e) => { if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') doPlan(); }}></textarea>
+  return html`<div class="home dashboard">
+    <header class="dashboard-welcome">
+      <div><p class="dashboard-eyebrow">YOUR WORKSPACE</p><h1>Pick up where you left off.</h1><p class="dashboard-subtitle">Analyze, build and review. All in one workspace.</p></div>
+      <${Btn} kind="primary" onClick=${focusTask}><${Icon} name="plus" size=${16} /> New task<//>
+    </header>
+    <div class="dashboard-layout">
+    <div class="dashboard-main">
+      <section class="dashboard-projects" aria-label="Recent projects">
+        <div class="dashboard-section-head"><h2>Recent projects <span>${s.projects.length}</span></h2><button class="dashboard-text-link" onClick=${() => navigate('projects')}>View all <${Icon} name="arrowRight" size=${14} /></button></div>
+        ${recentProjects.length ? html`<div class="dashboard-project-grid">${recentProjects.map((p) => html`<button class="dashboard-project-card" onClick=${() => openProject(p.id)}>
+          <span class="dashboard-project-top"><span class="dashboard-project-icon"><${Icon} name="folder" size=${20} /></span><${Icon} name="arrowUpRight" size=${17} /></span>
+          <strong class="truncate">${p.id}</strong><span class="dashboard-project-path truncate">${baseName(p.source ?? p.reference) || 'Project workspace'}</span>
+          <span class="dashboard-project-meta"><span>${p.mode}</span><${Badge} status=${p.active_job ? 'running' : p.status} /></span>
+        </button>`)}</div>` : html`<div class="dashboard-empty-project"><span class="dashboard-project-icon"><${Icon} name="folder" size=${21} /></span><div><h3>A home for your next project</h3><p>Start with a folder, or bring an existing repository.</p></div><button class="dashboard-text-link" onClick=${() => navigate('projects')}>Add project <${Icon} name="plus" size=${15} /></button></div>`}
+      </section>
+      <section class="dashboard-task" aria-label="New task">
+        <div class="dashboard-section-head"><h2>What are we working on?</h2><span class="dashboard-section-hint">Plan first. Build with confidence.</span></div>
+    <div class="composer home-composer">
+      <textarea class="home-task-input" aria-label="Describe your task" placeholder="Describe your idea, a problem to solve, or code to explore…" value=${text} onInput=${(e) => setText(e.target.value)} onKeyDown=${(e) => { if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') doPlan(); }}></textarea>
       <div class="chips" role="group" aria-label="Task type">
-        ${MODES.map((m) => html`<button class="chip" aria-pressed=${mode === m} onClick=${() => setMode(mode === m ? null : m)} title=${mode === m ? 'Click to let ERA detect the type' : `Force ${m}`}>${m}</button>`)}
+        ${MODES.map((m) => html`<button class="chip" aria-label=${m} aria-pressed=${mode === m} onClick=${() => setMode(mode === m ? null : m)} title=${mode === m ? 'Click to let ERA detect the type' : `Force ${m}`}>${m[0] + m.slice(1).toLowerCase()}</button>`)}
         <span class="faint" style="align-self:center;font-size:var(--fs-xs)">${mode ? 'type chosen by you' : text ? 'ERA detects the type from your text; the plan shows it' : ''}</span>
       </div>
       <div class="composer-bar">
@@ -123,12 +145,29 @@ export function Home() {
         <div class="row"><${Btn} kind="primary" disabled=${busy || plan.blockers.length > 0 || !allConsented} onClick=${doStart}>${busy ? 'Starting…' : 'Start task'}<//><${Btn} onClick=${() => setPlan(null)}>Edit<//>${plan.blockers.length === 0 && !allConsented ? html`<span class="muted">Tick the authorization above to start.</span>` : null}</div>
       </div></section>` : null}
 
-    ${!plan && !text ? html`<div class="examples" aria-label="Examples">${TASK_EXAMPLES.map((ex) => html`<button class="example" onClick=${() => { setText(ex.text); setMode(null); }}><b>${ex.mode}</b>${ex.text}</button>`)}</div>` : null}
-
-    ${recent.length ? html`<section><h4 style="margin-bottom:var(--space-2)">Recent tasks</h4><div class="col" style="gap:var(--space-2)">${recent.map((t) => html`<div class="panel" style="padding:var(--space-3);cursor:pointer" onClick=${() => navigate(t.mode === 'ANALYZE' ? ['analysis'] : t.mode === 'IMPROVE' ? ['improvement'] : ['projects', t.project_id])}>
-      <div class="row"><b>${t.mode}</b><span class="truncate muted grow">${t.text}</span><${Badge} status=${t.status === 'running' ? 'running' : t.status === 'complete' ? 'complete' : t.status} /><span class="faint">${when(t.created_at)}</span></div>
-      <div class="row" style="margin-top:6px">${t.stages.map((st) => html`<${Badge} status=${st.status} label=${`${st.label}`} />`)}</div></div>`)}</div></section>` : null}
-    ${advanced ? null : html`<p class="faint" style="text-align:center;font-size:var(--fs-xs)">Simple mode. Switch to Advanced (top right) for the full workbench, terminal and evidence views.</p>`}
+    ${!plan && !text ? html`<div class="dashboard-examples" aria-label="Examples"><span class="dashboard-example-label">A place to start</span><div>${TASK_EXAMPLES.map((ex) => html`<button class="dashboard-example" aria-label=${`${ex.mode} ${ex.text}`} title=${ex.text} onClick=${() => { setText(ex.text); setMode(null); focusTask(); }}><${Icon} name=${modeIcons[ex.mode] ?? 'code'} size=${15} /><span>${ex.mode[0] + ex.mode.slice(1).toLowerCase()}</span><${Icon} name="arrowUpRight" size=${13} /></button>`)}</div></div>` : null}
+      </section>
+      <div class="dashboard-note"><${Icon} name="shield" size=${14} /><span>Your workspace, your control. Task changes need your approval before they are applied.</span></div>
+    </div>
+    <aside class="dashboard-aside" aria-label="Workspace overview">
+      <section class="dashboard-overview">
+        <div class="dashboard-aside-head"><span class="dashboard-eyebrow">WORKSPACE OVERVIEW</span><${Icon} name="activity" size=${17} /></div>
+        <div class="dashboard-summary"><div><strong>${s.projects.length}</strong><span>Projects</span></div><div><strong>${runningJobs}</strong><span>Running</span></div><div><strong>${awaitingApproval}</strong><span>To review</span></div></div>
+        <div class="dashboard-system-row"><span>Control plane</span><${Badge} status=${s.conn} /></div>
+        <div class="dashboard-system-row"><span>REA engine</span><${Badge} status=${s.overview?.rea?.available ? 'ready' : s.overview ? 'unavailable' : 'connecting'} /></div>
+        <button class="dashboard-overview-link" onClick=${() => navigate('tools')}>Manage tools <${Icon} name="arrowUpRight" size=${14} /></button>
+      </section>
+      <section class="dashboard-agents">
+        <div class="dashboard-section-head"><h2>Your agents</h2><button class="dashboard-icon-link" aria-label="Manage agents" onClick=${() => navigate('agents')}><${Icon} name="arrowUpRight" size=${16} /></button></div>
+        ${providers.length ? html`<div class="dashboard-provider-list">${providers.map((p) => html`<button class="dashboard-provider" onClick=${() => navigate('agents')}><span class="dashboard-provider-symbol"><${Icon} name="terminal" size=${16} /></span><span class="grow truncate">${p.name ?? p.id}</span><${Badge} status=${p.state} /></button>`)}</div>` : html`<p class="dashboard-quiet-text">Connect your coding agents in the Agent Command Center.</p>`}
+      </section>
+      <section class="dashboard-activity" aria-label="Recent tasks">
+        <div class="dashboard-section-head"><h2>Recent activity</h2><${Icon} name="clock" size=${16} /></div>
+        ${recent.length ? html`<div class="dashboard-activity-list">${recent.map((t) => html`<button class="dashboard-activity-item" onClick=${() => navigate(t.mode === 'ANALYZE' ? ['analysis'] : t.mode === 'IMPROVE' ? ['improvement'] : ['projects', t.project_id])}><span class="dashboard-activity-icon"><${Icon} name=${modeIcons[t.mode] ?? 'activity'} size=${16} /></span><span class="dashboard-activity-copy"><strong>${t.mode[0] + t.mode.slice(1).toLowerCase()}</strong><span class="truncate">${t.text}</span><span class="dashboard-activity-meta"><${Badge} status=${t.status} /><span>${when(t.created_at)}</span></span></span></button>`)}</div>` : html`<div class="dashboard-quiet-activity"><span class="dashboard-activity-icon"><${Icon} name="clock" size=${18} /></span><p>A fresh start.<br/><span>Your tasks will appear here.</span></p></div>`}
+      </section>
+      <div class="dashboard-mode-note"><${Icon} name="command" size=${15} /><p>${advanced ? 'Advanced mode' : 'Simple mode'}<span>${advanced ? 'Your full workbench is ready.' : 'Switch to Advanced for the full workbench.'}</span></p></div>
+    </aside>
+    </div>
   </div>`;
 }
 export { openModal };

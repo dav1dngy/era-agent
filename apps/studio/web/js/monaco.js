@@ -24,7 +24,7 @@ export function loadMonaco() {
 }
 
 function defineThemes(m) {
-  m.editor.defineTheme('era-dark', { base: 'vs-dark', inherit: true, rules: [], colors: { 'editor.background': '#0f1012', 'editorGutter.background': '#0f1012', 'editor.lineHighlightBackground': '#1a1c20', 'editorLineNumber.foreground': '#4b5059', 'diffEditor.insertedTextBackground': '#52b78826', 'diffEditor.removedTextBackground': '#dc6b6626' } });
+  m.editor.defineTheme('era-dark', { base: 'vs-dark', inherit: true, rules: [], colors: { 'editor.background': '#101010', 'editorGutter.background': '#101010', 'editor.lineHighlightBackground': '#1d1d1d', 'editorLineNumber.foreground': '#737373', 'diffEditor.insertedTextBackground': '#52b78826', 'diffEditor.removedTextBackground': '#dc6b6626' } });
   m.editor.defineTheme('era-light', { base: 'vs', inherit: true, rules: [], colors: { 'editor.background': '#ffffff', 'editor.lineHighlightBackground': '#f4f5f7' } });
 }
 

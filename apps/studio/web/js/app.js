@@ -1,6 +1,7 @@
 import { html, useEffect, useMemo, useRef, useState } from './html.js';
 import { get } from './api.js';
 import { Badge, Modal } from './ui.js';
+import { Icon, EraMark } from './icons.js';
 import { closeModal, navigate, set, state, useStore } from './store.js';
 import { applySettings, saveSettings } from './main.js';
 import { Views } from './views/index.js';
@@ -8,14 +9,14 @@ import { BottomPanel } from './views/bottom.js';
 import { ContextPanel } from './views/context.js';
 
 const NAV = [
-  { id: 'home', label: 'New Task', icon: '+', adv: false },
-  { id: 'projects', label: 'Projects', icon: '▤', adv: false },
-  { id: 'analysis', label: 'Analysis', icon: '◎', adv: true },
-  { id: 'lab', label: 'Project Lab', icon: '⚗', adv: true },
-  { id: 'improvement', label: 'Improvement Lab', icon: '↻', adv: true },
-  { id: 'agents', label: 'Agent Command Center', icon: '◈', adv: false },
-  { id: 'tools', label: 'Tools', icon: '⚙', adv: true },
-  { id: 'settings', label: 'Settings', icon: '☰', adv: false },
+  { id: 'home', label: 'New Task', icon: 'home', adv: false },
+  { id: 'projects', label: 'Projects', icon: 'projects', adv: false },
+  { id: 'analysis', label: 'Analysis', icon: 'analysis', adv: true },
+  { id: 'lab', label: 'Project Lab', icon: 'lab', adv: true },
+  { id: 'improvement', label: 'Improvement Lab', icon: 'improvement', adv: true },
+  { id: 'agents', label: 'Agent Command Center', icon: 'agents', adv: false },
+  { id: 'tools', label: 'Tools', icon: 'tools', adv: true },
+  { id: 'settings', label: 'Settings', icon: 'settings', adv: false },
 ];
 
 function Sidebar() {
@@ -23,11 +24,18 @@ function Sidebar() {
   const advanced = s.settings?.mode === 'advanced';
   const current = s.route.path[0];
   const pending = s.projects.filter((p) => p.status === 'awaiting-approval').length;
+  const navItem = (n) => html`<button class="nav-item" aria-label=${n.label} aria-current=${current === n.id || (n.id === 'projects' && current === 'workbench') ? 'page' : undefined} onClick=${() => navigate(n.id)} title=${n.label}>
+    <span class="ico"><${Icon} name=${n.icon} /></span><span class="label">${n.label}</span>
+    ${n.id === 'projects' && pending ? html`<span class="nav-count" title="Awaiting your approval">${pending}</span>` : null}</button>`;
   return html`<nav class="sidebar" aria-label="Main">
-    ${NAV.filter((n) => advanced || !n.adv).map((n) => html`<button class="nav-item" aria-current=${current === n.id || (n.id === 'projects' && current === 'workbench') ? 'page' : undefined} onClick=${() => navigate(n.id)} title=${n.label}>
-      <span class="ico" aria-hidden="true">${n.icon}</span><span class="label">${n.label}</span>
-      ${n.id === 'projects' && pending ? html`<span class="badge warn plain right" style="margin-left:auto" title="Awaiting your approval">${pending}</span>` : null}</button>`)}
-    <div class="sidebar-foot"><button class="nav-item" onClick=${() => set({ palette: true })} title="Command palette"><span class="ico" aria-hidden="true">⌘</span><span class="label">Commands <kbd>⌘K</kbd></span></button></div>
+    <button class="sidebar-brand" onClick=${() => navigate('home')} aria-label="ERA Studio home" title="ERA Studio"><${EraMark} /><span class="label">ERA <span class="muted">Studio</span></span></button>
+    <span class="nav-section">WORKSPACE</span>
+    <div class="nav-group">${NAV.filter((n) => n.id !== 'settings' && (advanced || !n.adv)).map(navItem)}</div>
+    <div class="sidebar-foot">
+      <button class="nav-item" onClick=${() => set({ palette: true })} aria-label="Command palette" title="Command palette · ⌘K"><span class="ico"><${Icon} name="command" /></span><span class="label">Commands <kbd>⌘K</kbd></span></button>
+      ${navItem(NAV.find((n) => n.id === 'settings'))}
+      <div class="sidebar-local" title="Local workspace"><span class="local-monogram">E</span><span class="label"><b>Local workspace</b><small>ERA Studio</small></span></div>
+    </div>
   </nav>`;
 }
 
@@ -35,22 +43,24 @@ function Topbar() {
   const s = useStore();
   const mode = s.settings?.mode ?? 'simple';
   const project = s.projects.find((p) => p.id === s.currentProject);
+  const title = s.route.path[0] === 'workbench' ? 'Workbench' : NAV.find((n) => n.id === s.route.path[0])?.label ?? 'Workspace';
   const toggleMode = (m) => saveSettings({ mode: m }).catch(() => {});
   return html`<header class="topbar">
-    <button class="btn ghost icon" aria-label="Toggle sidebar" onClick=${() => set({ sidebarCollapsed: !state.sidebarCollapsed })}>☰</button>
-    <div class="brand">ERA <small>Studio</small></div>
-    <select aria-label="Current project" value=${s.currentProject ?? ''} onChange=${(e) => { set({ currentProject: e.target.value || null }); if (e.target.value) navigate(['projects', e.target.value]); }} style="max-width:240px">
-      <option value="">${s.projects.length ? 'No project selected' : 'No projects yet'}</option>
-      ${s.projects.map((p) => html`<option value=${p.id}>${p.id} · ${p.mode}</option>`)}
-    </select>
-    ${project ? html`<${Badge} status=${project.status} />` : null}
-    <div class="right row">
-      <span class="muted" title=${`Event stream: ${s.conn}`}><${Badge} status=${s.conn === 'live' ? 'live' : s.conn === 'offline' ? 'offline' : 'connecting'} /></span>
+    <button class="btn ghost icon" aria-label="Toggle sidebar" aria-expanded=${!s.sidebarCollapsed} title="Toggle sidebar · ⌘B" onClick=${() => set({ sidebarCollapsed: !state.sidebarCollapsed })}><${Icon} name="sidebar" /></button>
+    <div class="topbar-breadcrumb"><span class="brand">ERA Studio</span><span class="faint">/</span><span class="topbar-title">${title}</span></div>
+    <button class="topbar-search" aria-label="Search commands and projects" onClick=${() => set({ palette: true })}><${Icon} name="search" size=${15} /><span>Search anything</span><kbd>⌘K</kbd></button>
+    <div class="right row topbar-actions">
+      <select class="project-switcher" aria-label="Current project" value=${s.currentProject ?? ''} onChange=${(e) => { set({ currentProject: e.target.value || null }); if (e.target.value) navigate(['projects', e.target.value]); }}>
+        <option value="">${s.projects.length ? 'Select project' : 'No projects yet'}</option>
+        ${s.projects.map((p) => html`<option value=${p.id}>${p.id} · ${p.mode}</option>`)}
+      </select>
+      ${project ? html`<span class="topbar-project-status"><${Badge} status=${project.status} /></span>` : null}
+      <span class=${`connection-dot ${s.conn === 'live' ? 'live' : ''}`} role="status" aria-label=${`Event stream: ${s.conn}`} title=${`Event stream: ${s.conn}`}></span>
       <div class="seg" role="group" aria-label="Presentation mode">
         <button aria-pressed=${mode === 'simple'} onClick=${() => toggleMode('simple')}>Simple</button>
         <button aria-pressed=${mode === 'advanced'} onClick=${() => toggleMode('advanced')}>Advanced</button>
       </div>
-      <button class="btn ghost icon" aria-label="Switch theme" title="Switch theme" onClick=${() => saveSettings({ appearance: { theme: document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark' } })}>◐</button>
+      <button class="btn ghost icon" aria-label="Switch theme" title="Switch theme" onClick=${() => saveSettings({ appearance: { theme: document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark' } })}><${Icon} name="theme" /></button>
     </div>
   </header>`;
 }
@@ -118,8 +128,8 @@ export function App() {
 
   const View = Views[s.route.path[0]] ?? Views.home;
   const showBottom = advanced && s.bottomOpen;
-  const showContext = advanced && s.contextOpen && !['settings', 'workbench', 'agents', 'tools'].includes(s.route.path[0]);
-  return html`<div class="shell">
+  const showContext = advanced && s.contextOpen && !['home', 'settings', 'workbench', 'agents', 'tools'].includes(s.route.path[0]);
+  return html`<div class="shell" data-view=${s.route.path[0]}>
     <${Topbar} />
     <div class=${`frame ${s.sidebarCollapsed ? 'collapsed' : ''}`}>
       <${Sidebar} />

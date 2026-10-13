@@ -6,6 +6,15 @@ Development branch: `feature/era-v0.2.0`. Nothing is merged or published.
 
 ## Measured checkpoint results
 
+UI refresh follow-up (2026-10-14): **14/14 Electron scenario groups passed**, including
+live project cards/search, expanded navigation, command search and 1024×768 layout
+checks, alongside the original workflow scenarios. Dark/light, projects, editor,
+diff and narrow-window screenshots were visually inspected. **4/4 UI model/IPC tests**,
+ESLint and tracked-file checks passed. The macOS arm64 package was rebuilt and its
+isolated launch/shutdown smoke check passed. Coding agents remained simulated during
+tests; authentication and billing configuration were not changed. The full-suite
+numbers below describe the preceding backend checkpoint, not a new full-suite run.
+
 - Full regression suite: **251 tests, 250 passed, 0 failed, 1 skipped** (162.8 s).
   The skipped test exercises a missing-sandbox path; macOS has the required sandbox.
 - Final focused control-plane, UI model/IPC and multi-agent rerun: **58/58 passed**

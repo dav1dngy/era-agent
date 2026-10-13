@@ -6,6 +6,9 @@ checkpoints (annotated git tags); `vX.Y.Z` are releases.
 ## v0.2.0 — unreleased (branch `feature/era-v0.2.0`)
 
 ### ERA Studio
+- Graphite UI refresh: floating icon navigation, original line icons, a task dashboard
+  with real activity/provider state, searchable project cards and matching editor panels.
+  Dark/light and narrow-window layouts retain the existing workflow and permission controls.
 - Local Electron desktop and browser workspaces with Simple/Advanced modes,
   original dark/light design, Monaco editing and side-by-side diffs, xterm terminal,
   project/task management, Git clone/status/diffs, history and settings.

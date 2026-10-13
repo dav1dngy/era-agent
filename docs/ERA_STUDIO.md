@@ -75,6 +75,13 @@ project context; the setting persists. Startup can reopen the last project in th
 browser profile. Precision Dark, Executive Light, system theme, accent, font size,
 editor font and density are configurable.
 
+The graphite interface uses a narrow, expandable icon sidebar, recent project cards,
+workspace/provider status and a task composer. The Projects library has text search
+and Running / To review filters. Search in the header opens the command palette.
+Layout direction was informed by the user's [IDE design reference by Soumajit Das](https://dribbble.com/shots/27778747-Cloud-based-IDE-with-Edu-platform-integrated);
+ERA uses original icons/styles and actual project state, without copying its assets
+or adding unsupported education/account statistics.
+
 The workbench uses Monaco for files and side-by-side diffs, with tabs, search, Git
 status/diffs/history and AI actions on selected text. Explain/Review/Find bugs use a
 read-only snapshot and provider consent. Refactor/Implement create an isolated Modify
@@ -126,6 +133,13 @@ Gatekeeper globally. No public release, push or merge is performed by these comm
 - Provider unavailable/not signed in: use its own CLI login. Existing real Codex
   evidence is documented in `provider-validation.md`; this Studio continuation used
   a simulated agent for repeatable UI tests, not a fresh paid model run.
+- Codex billing follows the CLI's authentication: ChatGPT sign-in uses the account's
+  plan allowance and any eligible additional credits; API-key sign-in uses separately
+  billed API usage. Studio creates no extra free quota. Check `codex login status`
+  before using it. Codex does not report dollar cost to ERA, so dollar enforcement is
+  unavailable and the existing explicit unmetered-provider opt-in remains required.
+  See [OpenAI authentication](https://learn.chatgpt.com/docs/auth) and
+  [pricing and limits](https://learn.chatgpt.com/docs/pricing).
 - An unexpected exit marks jobs interrupted on restart. Project locks prevent
   resuming over a surviving process; inspect it before retrying. In-flight inline AI
   assistance is a bounded request, not a resumable job.

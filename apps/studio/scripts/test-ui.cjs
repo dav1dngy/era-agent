@@ -19,7 +19,7 @@ module.exports = async function testUI({ win, controlPlane, repo }) {
   const go = async (hash, expr) => { await js(`location.hash = ${JSON.stringify(hash)}`); await dom(expr, hash); };
   const click = async (label) => { await dom(`[...document.querySelectorAll('button')].some(b => b.textContent.trim() === ${JSON.stringify(label)} && !b.disabled)`, label); await js(`[...document.querySelectorAll('button')].find(b => b.textContent.trim() === ${JSON.stringify(label)} && !b.disabled).click()`); };
   const check = (name) => { checks.push({ name, ok: true }); process.stdout.write(`PASS ${name}\n`); };
-  const screenshot = async (name) => writeFileSync(path.join(out, `${name}.png`), (await win.webContents.capturePage()).toPNG());
+  const screenshot = async (name) => { await delay(200); writeFileSync(path.join(out, `${name}.png`), (await win.webContents.capturePage()).toPNG()); };
   const finishedJob = async (kind) => {
     let job;
     await until(async () => { job = (await api('GET', '/api/jobs')).jobs.find((j) => j.kind === kind); return job && ['succeeded', 'failed', 'cancelled'].includes(job.status); }, kind, 100_000);
@@ -34,10 +34,20 @@ module.exports = async function testUI({ win, controlPlane, repo }) {
     assert.equal(win.webContents.getLastWebPreferences().sandbox, true);
     check('Desktop launch, sandbox, isolated preload and authenticated API');
     assert.equal((await api('GET', '/api/overview')).rea.available, true, JSON.stringify((await api('GET', '/api/overview')).rea));
-    await screenshot('home-dark');
+    await screenshot('home-empty-dark');
 
     await api('POST', '/api/projects', { id: 'cart', mode: 'modify', source, task: 'Fix the cart total to account for quantity', commands: { test: ['node --test tests/*.test.js'] }, acceptance: { commands: [{ name: 'quantity', command: 'node --test acceptance/cart-quantity.test.js', baseline: 'fail' }] }, team: { roles: { implementer: 'custom:fixture' } } });
-    await go('#/projects/cart', "document.querySelector('h1')?.textContent === 'cart'");
+    await dom("!!document.querySelector('.dashboard-project-card')", 'recent project appears');
+    await screenshot('home-dark');
+    await go('#/projects', "!!document.querySelector('.project-card')");
+    await screenshot('projects-dark');
+    await js("{const i=document.querySelector('[aria-label=\"Search projects\"]'); i.value='does-not-exist'; i.dispatchEvent(new Event('input',{bubbles:true}));}");
+    await dom("!document.querySelector('.project-card')", 'project search filters results');
+    await js("{const i=document.querySelector('[aria-label=\"Search projects\"]'); i.value='cart'; i.dispatchEvent(new Event('input',{bubbles:true}));}");
+    await dom("!!document.querySelector('.project-card')", 'project search finds results');
+    await click('Open project');
+    await dom("document.querySelector('h1')?.textContent === 'cart'", 'project card opens real project');
+    check('Dashboard project cards and project search use live project state');
     await click('Advanced');
     await dom("!![...document.querySelectorAll('button')].find(b => b.textContent === 'Open in workbench')", 'advanced');
     await click('Simple');
@@ -109,6 +119,22 @@ module.exports = async function testUI({ win, controlPlane, repo }) {
     await go('#/home', "!!document.querySelector('.home')");
     await dom("document.documentElement.dataset.theme === 'light'", 'light theme');
     await screenshot('home-light');
+    await api('PUT', '/api/settings', { appearance: { theme: 'dark' } });
+    await dom("document.documentElement.dataset.theme === 'dark'", 'restore dark theme');
+    win.setSize(1024, 768);
+    await dom("window.innerWidth <= 1024", 'narrow desktop window');
+    assert.equal(await js("document.querySelector('.dashboard').scrollWidth <= document.querySelector('.workspace').clientWidth"), true, 'dashboard fits the narrow desktop');
+    await screenshot('home-narrow-dark');
+    await js("document.querySelector('[aria-label=\"Toggle sidebar\"]').click()");
+    await dom("!document.querySelector('.frame.collapsed')", 'expanded navigation');
+    assert.equal(await js("document.querySelector('.dashboard').scrollWidth <= document.querySelector('.workspace').clientWidth"), true, 'dashboard fits expanded navigation');
+    await screenshot('home-expanded-dark');
+    await js("document.querySelector('[aria-label=\"Search commands and projects\"]').click()");
+    await dom("!!document.querySelector('.palette [aria-label=\"Command\"]')", 'header command search');
+    await js("document.querySelector('[aria-label=\"Command\"]').dispatchEvent(new KeyboardEvent('keydown', {key:'Escape',bubbles:true}))");
+    await dom("!document.querySelector('.palette')", 'command palette closes');
+    win.setSize(1440, 900);
+    check('Responsive dashboard, expandable navigation and command search');
 
     // Exercise shared components against inert, hostile report text in the actual browser runtime.
     const safe = await js(`(async () => { const {html,render}=await import('/js/html.js'); const {Md,Btn}=await import('/js/ui.js'); const host=document.createElement('div'); document.body.append(host); render(html\`<div><\${Md} text=\${'<img src=x onerror="window.pwned=1">'} /><\${Btn} kind="primary" class="right">Test<//></div>\`,host); const ok=!host.querySelector('img') && !window.pwned && host.querySelector('button').classList.contains('primary'); render(null,host); host.remove(); return ok; })()`);

@@ -39,7 +39,7 @@ function Terminal() {
     let xt;
     (async () => {
       const [{ Terminal: XTerm }, { FitAddon }] = await Promise.all([import('/vendor/xterm.mjs'), import('/vendor/addon-fit.mjs')]);
-      xt = new XTerm({ fontFamily: getComputedStyle(document.documentElement).getPropertyValue('--font-mono'), fontSize: 12, cursorBlink: true, theme: document.documentElement.dataset.theme === 'light' ? { background: '#ffffff', foreground: '#17191c', cursor: '#17191c' } : { background: '#0f1012', foreground: '#e7e8ea' }, allowProposedApi: false });
+      xt = new XTerm({ fontFamily: getComputedStyle(document.documentElement).getPropertyValue('--font-mono'), fontSize: 12, cursorBlink: true, theme: document.documentElement.dataset.theme === 'light' ? { background: '#ffffff', foreground: '#17191c', cursor: '#17191c' } : { background: '#101010', foreground: '#ededed' }, allowProposedApi: false });
       const fit = new FitAddon();
       xt.loadAddon(fit);
       xt.open(host.current);

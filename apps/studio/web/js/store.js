@@ -18,7 +18,7 @@ export const state = {
   toasts: [],
   modal: null,
   palette: false,
-  sidebarCollapsed: false,
+  sidebarCollapsed: true,
   bottomOpen: false,
   bottomTab: 'logs',
   contextOpen: true,

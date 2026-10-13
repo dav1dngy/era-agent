@@ -4,6 +4,7 @@ import { Badge, Btn, Callout, Empty, Md, Section, Spinner, baseName, duration, u
 import { navigate, openModal, closeModal, set, toast, useStore } from '../store.js';
 import { buildPipeline, groupFindings, humanStep, progressPercent, simpleStatus } from '../model.js';
 import { jobLog } from '../main.js';
+import { Icon } from '../icons.js';
 
 export function Pipeline({ stages, compact = false }) {
   if (!stages.length) return html`<div class="muted">No run yet.</div>`;
@@ -24,18 +25,43 @@ function useProject(id) {
 
 export function ProjectsView() {
   const s = useStore();
-  return html`<div class="page">
-    <div class="page-head"><div class="grow"><h1>Projects</h1><p>Each project keeps its own configuration, runs, approvals and logs. Originals are never changed without your approval.</p></div>
-      <${Btn} onClick=${() => openModal({ title: 'Clone repository', body: html`<${CloneRepository} />` })}>Clone repository<//><${Btn} kind="primary" onClick=${() => openModal({ title: 'New project', wide: true, body: html`<${CreateProject} />` })}>New project<//></div>
-    ${s.projects.length === 0 ? html`<${Empty} title="No projects yet">Use <b>New Task</b> to start from a sentence, or create a project from a folder. ERA never touches the folder itself: it works on an isolated copy.<//>` : html`
-    <table class="table" aria-label="Projects"><thead><tr><th>Project</th><th>Mode</th><th>Status</th><th>Target</th><th>Latest run</th><th></th></tr></thead><tbody>
-      ${s.projects.map((p) => html`<tr class="clickable" onClick=${() => { set({ currentProject: p.id }); navigate(['projects', p.id]); }}>
-        <td><button class="btn ghost" onClick=${(e) => { e.stopPropagation(); navigate(['projects', p.id]); }}>${p.id}</button></td><td>${p.mode}</td>
-        <td><${Badge} status=${p.active_job ? 'running' : p.status} /></td>
-        <td class="mono truncate" style="max-width:340px" title=${p.source ?? p.reference}>${baseName(p.source ?? p.reference)}</td>
-        <td class="muted">${p.latest_run ? `${p.latest_run.op} · ${when(p.latest_run.updated_at ?? p.latest_run.created_at)}` : '—'}</td>
-        <td>${p.status === 'awaiting-approval' ? html`<${Btn} size="sm" kind="primary" onClick=${(e) => { e.stopPropagation(); navigate(['projects', p.id, 'review']); }}>Review & approve<//>` : null}</td></tr>`)}
-    </tbody></table>`}
+  const [search, setSearch] = useState('');
+  const [filter, setFilter] = useState('all');
+  const query = search.trim().toLocaleLowerCase();
+  const running = s.projects.filter((p) => p.active_job).length;
+  const awaiting = s.projects.filter((p) => p.status === 'awaiting-approval').length;
+  const projects = s.projects.filter((p) => (filter === 'all' || (filter === 'running' ? p.active_job : p.status === 'awaiting-approval')) && (!query || [p.id, p.task, p.source, p.reference, p.mode].some((value) => String(value ?? '').toLocaleLowerCase().includes(query))));
+  const create = () => openModal({ title: 'New project', wide: true, body: html`<${CreateProject} />` });
+  const open = (id, route = 'projects', tab) => { set({ currentProject: id }); navigate([route, id, ...(tab ? [tab] : [])]); };
+  return html`<div class="page projects-page">
+    <header class="projects-heading">
+      <div><div class="projects-eyebrow">Your workspace</div><h1>Projects</h1><p>A place for every idea. Pick up a project and keep building.</p></div>
+      <div class="projects-heading-actions"><${Btn} onClick=${() => openModal({ title: 'Clone repository', body: html`<${CloneRepository} />` })}><${Icon} name="code" size=${16} />Clone repository<//><${Btn} kind="primary" onClick=${create}><${Icon} name="plus" size=${16} />New project<//></div>
+    </header>
+    <div class="projects-summary" aria-label="Project summary">
+      <div class="projects-summary-item"><span class="projects-summary-icon"><${Icon} name="projects" size=${19} /></span><div><span class="projects-summary-label">Total projects</span><strong>${s.projects.length}</strong></div></div>
+      <div class="projects-summary-item"><span class="projects-summary-icon"><${Icon} name="clock" size=${19} /></span><div><span class="projects-summary-label">Running now</span><strong>${running}</strong></div></div>
+      <div class="projects-summary-item"><span class="projects-summary-icon"><${Icon} name="check" size=${19} /></span><div><span class="projects-summary-label">Awaiting approval</span><strong>${awaiting}</strong></div></div>
+    </div>
+    <div class="projects-toolbar">
+      <div class="projects-filters" role="group" aria-label="Filter projects">
+        ${[['all', 'All projects', s.projects.length], ['running', 'Running', running], ['approval', 'To review', awaiting]].map(([value, label, count]) => html`<button type="button" aria-pressed=${filter === value} onClick=${() => setFilter(value)}>${label}<span>${count}</span></button>`)}
+      </div>
+      <label class="projects-search"><${Icon} name="search" size=${16} /><input type="search" aria-label="Search projects" placeholder="Search projects…" value=${search} onInput=${(e) => setSearch(e.target.value)} /></label>
+    </div>
+    ${s.projects.length === 0 ? html`<section class="projects-empty"><span class="projects-empty-icon"><${Icon} name="folder" size=${28} /></span><h2>Your next project starts here</h2><p>Add a local folder or clone a repository. Keep the source, workflow and review together in one place.</p><${Btn} kind="primary" onClick=${create}><${Icon} name="plus" size=${16} />New project<//></section>` : projects.length === 0 ? html`<section class="projects-empty"><span class="projects-empty-icon"><${Icon} name="search" size=${28} /></span><h2>No projects found</h2><p>Try another search or show all projects.</p><${Btn} onClick=${() => { setSearch(''); setFilter('all'); }}>Clear filters<//></section>` : html`
+      <div class="projects-grid" role="list" aria-label="Projects">${projects.map((p) => {
+        const target = p.source ?? p.reference ?? p.destination;
+        const mode = { review: 'Review', modify: 'Modify', rebuild: 'Rebuild' }[p.mode] ?? p.mode;
+        return html`<article class="project-card" role="listitem" key=${p.id}>
+          <div class="project-card-top"><span class="project-card-icon"><${Icon} name=${p.mode === 'modify' ? 'code' : 'folder'} size=${23} /></span><${Badge} status=${p.active_job ? 'running' : p.status} /></div>
+          <div class="project-card-main"><h2><button type="button" onClick=${() => open(p.id)}>${p.id}</button></h2><p class="project-card-description">${p.task || (p.mode === 'review' ? 'Explore the code, understand the findings and plan what comes next.' : p.mode === 'rebuild' ? 'Build a new project from an authorized reference.' : 'Make changes in an isolated working copy and review the result.')}</p></div>
+          <div class="project-card-target" title=${target || 'No target folder'}><${Icon} name="folder" size=${14} /><span>${baseName(target) || 'No target folder'}</span><span class="project-card-mode">${mode}</span></div>
+          <div class="project-card-run"><${Icon} name="clock" size=${14} /><span>${p.latest_run ? `${p.latest_run.op} · ${when(p.latest_run.updated_at ?? p.latest_run.created_at)}` : 'No runs yet'}</span></div>
+          <footer class="project-card-actions">${s.settings?.mode === 'advanced' ? html`<${Btn} kind="ghost" size="sm" onClick=${() => open(p.id, 'workbench')}><${Icon} name="code" size=${15} />Workbench<//>` : html`<span class="project-card-footnote">${mode} workspace</span>`}${p.status === 'awaiting-approval' ? html`<${Btn} kind="primary" size="sm" onClick=${() => open(p.id, 'projects', 'review')}>Review & approve<${Icon} name="arrowUpRight" size=${15} /><//>` : html`<${Btn} size="sm" onClick=${() => open(p.id)}>Open project<${Icon} name="arrowUpRight" size=${15} /><//>`}</footer>
+        </article>`;
+      })}</div>`}
+    <p class="projects-footnote"><${Icon} name="check" size=${14} />Agent changes stay in an isolated working copy until you approve them.</p>
   </div>`;
 }
 
