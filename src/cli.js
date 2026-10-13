@@ -35,7 +35,8 @@ Analysis mode (uses the REA engine):
 Self-improvement mode:
   self-analyze                Pack ERA, analyze it with REA, report findings
   improve [--cycles N]        Run bounded improvement cycles (propose, implement, evaluate)
-  improve propose             Run REA self-analysis and open one experiment worktree
+  improve propose [--finding ID]  Run REA self-analysis and open one experiment worktree
+                              (--finding selects a specific REA-derived candidate)
   improve evaluate <cycle>    Test, benchmark and accept/reject an experiment
   improve abandon <cycle>     Discard a pending experiment
   benchmark [--versions a,b]  Benchmark the current checkout or tagged versions
@@ -57,7 +58,7 @@ export function parseArgs(argv) {
       const key = a.slice(2);
       const next = argv[i + 1];
       if (key === 'arg') flags.arg.push(argv[++i]);
-      else if (['cycles', 'repetitions', 'out', 'versions', 'implementer'].includes(key) && next !== undefined) flags[key] = argv[++i];
+      else if (['cycles', 'repetitions', 'out', 'versions', 'implementer', 'finding'].includes(key) && next !== undefined) flags[key] = argv[++i];
       else flags[key] = true;
     } else positional.push(a);
   }
@@ -134,7 +135,7 @@ async function cmdImprove(ctx, { positional, flags }) {
   const base = { root, config: ctx.config, rea: ctx.rea };
   if (flags.implementer) ctx.config.improvement.implementerCommand = flags.implementer;
   if (sub === 'propose') {
-    const cycle = await proposeCycle(base);
+    const cycle = await proposeCycle({ ...base, findingId: flags.finding ?? null });
     if (!cycle.cycle_id) return print(cycle.message), 0;
     print(`Proposed ${cycle.cycle_id}: ${cycle.proposal.finding.title}\nHypothesis: ${cycle.proposal.hypothesis}\nWorktree: ${cycle.worktree}\nInstructions: ${cycle.instructions_file}\nNext: implement and commit in the worktree, then run \`era improve evaluate ${cycle.cycle_id}\`.`);
     return 0;

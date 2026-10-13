@@ -43,7 +43,7 @@ function reaBudget(limits) {
 
 const selfSummary = (s) => ({ id: s.self_analysis_id, metrics: s.metrics, findings: s.findings, missing_modules: s.missing_modules, runs: s.runs, report: s.report });
 
-export async function proposeCycle({ root, config, rea }) {
+export async function proposeCycle({ root, config, rea, findingId = null }) {
   assertNotCI();
   const limits = effectiveLimits(config.limits, config.improvement);
   const stateDir = config.stateDirAbs;
@@ -66,7 +66,13 @@ export async function proposeCycle({ root, config, rea }) {
     const baselineBench = await runBenchmark({ codeRoot: root, datasetsDir: join(root, 'benchmarks', 'datasets'), repetitions: 1, reaCommand: rea.command, label: 'planning' });
 
     const attempted = new Set(decidedCycles(events).map((e) => e.finding_id));
-    const ranked = rankCandidates(baselineSelf.findings, baselineBench, attempted);
+    let ranked = rankCandidates(baselineSelf.findings, baselineBench, attempted);
+    if (findingId) {
+      // Operator selection among the REA-derived candidates (may retry an attempted one).
+      const chosen = rankCandidates(baselineSelf.findings, baselineBench).find((c) => c.id === findingId);
+      if (!chosen) throw new Error(`Finding ${findingId} is not among the current REA-derived candidates.`);
+      ranked = [chosen, ...ranked.filter((c) => c.id !== findingId)];
+    }
     if (ranked.length === 0) {
       appendLedger(stateDir, { type: 'no-candidates', base_commit: baseCommit, self_analysis_id: baselineSelf.self_analysis_id });
       return { cycle_id: null, message: 'No unattempted improvement candidates found.', self: baselineSelf };
@@ -87,6 +93,7 @@ export async function proposeCycle({ root, config, rea }) {
       branch,
       worktree,
       proposal,
+      selected_by: findingId ? 'operator' : 'planner',
       alternatives: ranked.slice(1, 6).map((c) => ({ id: c.id, area: c.area, title: c.title })),
       baseline_self_analysis: selfSummary(baselineSelf),
       planning_benchmark: baselineBench.aggregate,
