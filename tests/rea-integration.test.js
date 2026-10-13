@@ -44,7 +44,8 @@ test('era analyze inspects a Mach-O through REA', { skip }, () => {
 test('REA self-analysis of this checkout covers every source module', { skip }, async () => {
   const self = await evaluateSelf({ codeRoot: ROOT, stateDir: tempDir(), reaCommand: REA_BIN });
   assert.deepEqual(self.missing_modules, []);
-  assert.equal(self.runs.length, 2);
+  assert.ok(self.runs.filter((r) => r.operation === 'analyze_javascript_application').length >= 1);
+  assert.equal(self.runs.filter((r) => r.operation === 'capture_process_scenario').length, 1);
   assert.ok(self.runs.every((r) => r.status === 'succeeded'), JSON.stringify(self.runs.map((r) => r.errors)));
   assert.ok(self.metrics.startup_ms > 0);
 });
