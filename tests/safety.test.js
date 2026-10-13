@@ -76,7 +76,10 @@ test('lock acquisition is exclusive across processes and release honours ownersh
   const { runProcess } = await import('../src/core/process.js');
   const dir = tempDir();
   const url = new URL('../src/safety/policy.js', import.meta.url).href;
-  const script = `import('${url}').then(({ acquireLock }) => { try { acquireLock(${JSON.stringify(dir)}, 'racer'); console.log('got'); setTimeout(() => {}, 1500); } catch { console.log('busy'); } });`;
+  // The holder keeps the lock until every racer has tried (they signal via files),
+  // so a slow-starting racer can never see an already-released lock.
+  const done = join(dir, 'tried');
+  const script = `const fs = require('fs'); import('${url}').then(({ acquireLock }) => { let got = false; try { acquireLock(${JSON.stringify(dir)}, 'racer'); got = true; console.log('got'); } catch { console.log('busy'); } fs.appendFileSync(${JSON.stringify(done)}, 'x'); if (got) { const t = setInterval(() => { if (fs.readFileSync(${JSON.stringify(done)}, 'utf8').length >= 4) { clearInterval(t); } }, 50); } });`;
   const results = await Promise.all([1, 2, 3, 4].map(() => runProcess(process.execPath, ['-e', script], { timeoutMs: 10_000 })));
   assert.equal(results.filter((r) => r.stdout.trim() === 'got').length, 1, results.map((r) => r.stdout.trim()).join(','));
 });
