@@ -199,6 +199,36 @@ the negative native figures are run-to-run Hopper variance.
 
 Methodology: [docs/benchmark-methodology.md](docs/benchmark-methodology.md).
 
+## Connect AI agents
+
+ERA keeps three roles separate: REA does the reverse engineering, a **coding
+agent** edits ERA in Improvement Lab experiments, and an optional **reasoning
+provider** explains analyses.
+
+**Use REA's tools from Claude Code, Codex, Cursor, Gemini CLI, Copilot CLI or VS Code (MCP).**
+REA ships the MCP server and the client registration; ERA forwards to them:
+
+```bash
+era rea setup --dry-run        # show which installed clients REA would configure
+era rea setup                  # register REA's MCP server (REA asks before changing configs)
+era rea mcp doctor             # validate MCP startup and tool listing
+```
+
+Clients then see REA's tools (for example `analyze_javascript_application`,
+`inspect_macho`). ERA's own commands are CLI-only in v0.1.0; there is no
+separate ERA MCP server.
+
+**Use Claude Code or Codex as the Improvement Lab coding agent.**
+
+```bash
+era agents                                          # what is installed
+era improve implement <cycle> --agent claude-code   # claude -p, acceptEdits, --max-budget-usd
+era improve implement <cycle> --agent codex         # codex exec -s workspace-write
+```
+
+Budgets are configured in `era.config.json` (`improvement.budget`). Both
+adapters are tested only against fake CLIs in this release.
+
 ## Providers
 
 | Role | Default | Options |
@@ -250,6 +280,15 @@ See [SECURITY.md](SECURITY.md).
   interactive experiment dashboard and benchmark comparison, onboarding.
 * **v0.3.0**: multi-agent verification, advanced workflows, team collaboration,
   role-based permissions.
+
+## Acknowledgements
+
+ERA would not exist without **Reverse Engineer Anything (REA)** by
+[morluto](https://github.com/morluto) and its contributors
+(<https://github.com/morluto/rea>). REA provides every reverse-engineering
+capability ERA uses. ERA is an **independent open-source project**. It is not
+affiliated with or endorsed by the REA authors, and it does not modify or
+redistribute REA's source (REA is installed from npm as a dependency).
 
 ## Contributing and license
 
