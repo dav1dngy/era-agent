@@ -248,7 +248,7 @@ See [SECURITY.md](SECURITY.md).
 ## Limitations
 
 * **Experimental.** Five improvement experiments so far. The real coding agent
-  was the `manual` mode (changes made interactively in the experiment worktree). The `claude-code` and
+  was Claude Code working interactively (`manual` mode). The `claude-code` and
   `codex` adapters are tested only against fake CLIs.
 * Native analysis covers Mach-O only. Hopper's public API exposes no complete
   function bodies, and Hopper occasionally hangs (ERA's watchdog contains it).
@@ -289,6 +289,13 @@ ERA would not exist without **Reverse Engineer Anything (REA)** by
 capability ERA uses. ERA is an **independent open-source project**. It is not
 affiliated with or endorsed by the REA authors, and it does not modify or
 redistribute REA's source (REA is installed from npm as a dependency).
+
+## Development
+
+ERA was developed by [dav1dngy](https://github.com/dav1dngy) together with
+**Claude** (Anthropic) using [Claude Code](https://claude.com/claude-code), which
+wrote and tested most of the implementation and acted as the coding agent in the
+Improvement Lab experiments. Claude is credited as a co-author in the commit history.
 
 ## Contributing and license
 
