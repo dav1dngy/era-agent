@@ -101,7 +101,13 @@ export async function main(argv) {
     process.stdout.write(`${VERSION}\n`);
     return 0;
   }
-  const config = loadConfig(process.cwd());
+  let config;
+  try {
+    config = loadConfig(process.cwd());
+  } catch (err) {
+    process.stderr.write(`era: ${err.message}\n`);
+    return 1;
+  }
   // Raw evidence, logs and the ledger are private to the user.
   mkdirSync(config.stateDirAbs, { recursive: true, mode: 0o700 });
   try {

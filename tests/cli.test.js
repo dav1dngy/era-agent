@@ -86,3 +86,12 @@ test('explain never sends files referenced by an imported analysis to a provider
   writeFileSync(invalid, JSON.stringify({ report_path: secret }));
   assert.match(runEra(['explain', invalid], { cwd: dir, env: { ERA_REA_BIN: FAKE_REA } }).stderr, /Not a valid ERA analysis record/);
 });
+
+test('a malformed era.config.json gives a clear error, not a stack trace', () => {
+  const dir = tempDir();
+  writeFileSync(join(dir, 'era.config.json'), '{bad');
+  const r = runEra(['status'], { cwd: dir, env: { ERA_REA_BIN: FAKE_REA } });
+  assert.equal(r.status, 1);
+  assert.match(r.stderr, /^era: Invalid era\.config\.json:/);
+  assert.ok(!r.stderr.includes('    at '), r.stderr);
+});
