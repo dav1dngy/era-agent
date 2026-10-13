@@ -33,8 +33,10 @@ test('era analyze reverse engineers a JavaScript application through REA', { ski
   assert.ok(a.facts.includes('import:src/main.js->src/net.js'));
 });
 
+// Structure only: Hopper decompilation is nondeterministic (occasional hangs and
+// session conflicts) and is covered by recorded Hopper Evidence in analysis.test.js.
 test('era analyze inspects a Mach-O through REA', { skip }, () => {
-  const r = runEra(['analyze', join(DATASETS, 'native-hello', 'hello'), '--json'], { env: { ERA_STATE_DIR: tempDir() } });
+  const r = runEra(['analyze', join(DATASETS, 'native-hello', 'hello'), '--no-decompile', '--json'], { env: { ERA_STATE_DIR: tempDir() } });
   assert.equal(r.status, 0, r.stderr);
   const a = JSON.parse(r.stdout);
   assert.equal(a.runs[0].operation, 'inspect_macho');

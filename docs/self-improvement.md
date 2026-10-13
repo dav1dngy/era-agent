@@ -152,8 +152,16 @@ them. `limits.maxCycles` was raised from 3 to 6 and `maxReaRunsPerCycle` from
 * **Fix outside the Lab:** `src/core/watchdog.mjs` now bounds every REA, era,
   test and agent subprocess from inside its own process group and kills the
   group if the parent disappears (commit `f71f7de`).
-* **Re-evaluation:** after `era improve rebase` onto the final release-candidate
-  `main`: run as the last step before handover. The result is in `.era/cycles/cycle-20261013T112629-18505d/report.md` (`era improve show cycle-20261013T112629-18505d`); this document is updated when the maintainer decides.
+* **Re-evaluation (base `f02fdfc`, after `era improve rebase`): rejected.**
+  Findings 26 → 9, complete coverage, accuracy 0.9867 = 0.9867, error rate 0,
+  time +12% (within the 30% guard). One candidate test failed:
+  `era analyze inspects a Mach-O through REA`. That test needed Hopper
+  decompilation to succeed. It passed twice when re-run on the candidate branch,
+  so the failure was Hopper flakiness, not the change. Per the frozen criteria,
+  the cycle stays rejected, and it was not re-run unchanged.
+* **Follow-up:** the test now checks Mach-O structure only (`--no-decompile`);
+  decompilation stays covered by recorded Hopper Evidence. The same change is
+  retried as experiment 5.
 
 ### Not run in this campaign
 
