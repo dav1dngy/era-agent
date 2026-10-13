@@ -2,7 +2,8 @@
 import { join, resolve } from 'node:path';
 import { readLedger, decidedCycles, pendingCycles, awaitingApproval, appendLedger } from '../orchestration/ledger.js';
 import * as vm from '../orchestration/versions.js';
-import { runBenchmark, runReaBaseline } from '../evaluation/benchmark.js';
+import { runBenchmark, runReaBaseline, benchmarkProvenance } from '../evaluation/benchmark.js';
+import { validRepetitions } from '../orchestration/cycle.js';
 import { renderBenchmarkTable, renderOverheadTable } from '../reporting/table.js';
 import { renderDashboard } from '../reporting/dashboard.js';
 import { selectedAgentId } from '../agents/coding-agents.js';
@@ -16,7 +17,7 @@ const print = (value, asJson) => process.stdout.write(asJson ? `${JSON.stringify
 async function benchmark(ctx, { flags }) {
   const root = (await vm.repoRoot(ctx.config.cwd)) ?? ctx.config.cwd;
   const datasetsDir = join(root, 'benchmarks', 'datasets');
-  const repetitions = Number(flags.repetitions ?? ctx.config.benchmark.repetitions);
+  const repetitions = validRepetitions(flags.repetitions ?? ctx.config.benchmark.repetitions);
   const engine = await ctx.rea.version();
   const results = [];
   if (flags.versions) {
@@ -25,13 +26,16 @@ async function benchmark(ctx, { flags }) {
       await vm.removeWorktree(root, path);
       await vm.git(root, ['worktree', 'add', '--detach', path, tag]);
       try {
-        results.push(await runBenchmark({ codeRoot: path, datasetsDir, repetitions, reaCommand: ctx.rea.command, label: tag }));
+        const provenance = await benchmarkProvenance({ codeRoot: path, datasetsDir, rea: ctx.rea });
+        results.push(await runBenchmark({ codeRoot: path, datasetsDir, repetitions, reaCommand: ctx.rea.command, label: tag, provenance }));
       } finally {
         await vm.removeWorktree(root, path);
       }
     }
   } else {
-    results.push(await runBenchmark({ codeRoot: root, datasetsDir, repetitions, reaCommand: ctx.rea.command, label: (await vm.currentVersion(root).catch(() => null)) ?? 'working-tree' }));
+    const provenance = await benchmarkProvenance({ codeRoot: root, datasetsDir, rea: ctx.rea });
+    // Exact identity (e.g. era-v4-3-gabc1234-dirty), never just the nearest tag.
+    results.push(await runBenchmark({ codeRoot: root, datasetsDir, repetitions, reaCommand: ctx.rea.command, label: provenance.describe, provenance }));
   }
   const reaBaseline = flags['rea-baseline'] ? await runReaBaseline({ datasetsDir, repetitions, reaCommand: ctx.rea.command, decompile: !!(await ctx.rea.status()).decompiler_available }) : null;
   const out = flags.out ? resolve(flags.out) : join(ctx.config.stateDirAbs, 'benchmarks', `benchmark-${Date.now()}.json`);

@@ -6,6 +6,7 @@ import { join, resolve } from 'node:path';
 import { tmpdir } from 'node:os';
 import { runProcess } from '../core/process.js';
 import { median } from '../core/util.js';
+import { createHash } from 'node:crypto';
 import { scoreFacts } from './score.js';
 import { planWorkflow, decompileCandidates } from '../analysis/analyze.js';
 import { sandboxCommand, sandboxAvailable } from '../safety/sandbox.js';
@@ -37,22 +38,28 @@ async function runCase(codeRoot, c, env, timeoutMs) {
     cpu_s: r.resources ? r.resources.user_s + r.resources.sys_s : null,
     max_rss_bytes: r.resources?.max_rss_bytes ?? null,
     rea_runs: analysis?.runs?.length ?? 0,
+    evidence_ids: (analysis?.runs ?? []).map((run) => run.evidence_id).filter(Boolean),
     facts,
     score: scoreFacts(facts, c.truth),
     error: ok ? null : [r.timedOut ? 'timed out' : null, r.signal ? `signal ${r.signal}` : null, r.stderr.trim().split('\n').pop() || `exit ${r.exitCode}`].filter(Boolean).join('; '),
   };
 }
 
-export async function runBenchmark({ codeRoot, datasetsDir, repetitions = 3, reaCommand = null, timeoutMs = 600_000, label = null }) {
+export async function runBenchmark({ codeRoot, datasetsDir, repetitions = 3, reaCommand = null, timeoutMs = 600_000, label = null, provenance = {} }) {
   const cases = loadManifest(datasetsDir);
   const stateDir = mkdtempSync(join(tmpdir(), 'era-bench-'));
   const env = { ...process.env, ERA_STATE_DIR: stateDir };
   if (reaCommand) env.ERA_REA_BIN = reaCommand;
   const results = [];
+  const samples = [];
   try {
     for (const c of cases) {
       const reps = [];
-      for (let i = 0; i < repetitions; i++) reps.push(await runCase(codeRoot, c, env, timeoutMs));
+      for (let i = 0; i < repetitions; i++) {
+        const rep = await runCase(codeRoot, c, env, timeoutMs);
+        reps.push(rep);
+        samples.push({ case: c.id, repetition: i, ok: rep.ok, wall_ms: rep.wall_ms, cpu_s: rep.cpu_s, max_rss_bytes: rep.max_rss_bytes, rea_runs: rep.rea_runs, evidence_ids: rep.evidence_ids, facts: rep.facts, error: rep.error });
+      }
       const okReps = reps.filter((r) => r.ok);
       const signature = (r) => JSON.stringify(r.facts);
       const stable = okReps.length === reps.length && okReps.every((r) => signature(r) === signature(okReps[0]));
@@ -83,10 +90,12 @@ export async function runBenchmark({ codeRoot, datasetsDir, repetitions = 3, rea
   const totalReps = results.reduce((s, r) => s + r.repetitions, 0);
   return {
     label,
-    code_root: codeRoot,
     created_at: new Date().toISOString(),
     repetitions,
+    provenance: { ...provenance, mode: 'full-subprocess' },
     cases: results,
+    // Per-repetition facts: every aggregate can be recomputed from this file and the truth files.
+    samples,
     aggregate: {
       accuracy_f1: mean('f1'),
       precision: mean('precision'),
@@ -104,6 +113,24 @@ export async function runBenchmark({ codeRoot, datasetsDir, repetitions = 3, rea
 // Executes, per case, the same REA command sequence ERA issues (including the
 // runtime sandbox wrapper and per-function decompilation), directly and without
 // ERA, to measure ERA's orchestration overhead under identical conditions.
+// Identity of the code, data and engine a benchmark ran against.
+export async function benchmarkProvenance({ codeRoot, datasetsDir, rea }) {
+  const git = async (args) => (await runProcess('git', args, { cwd: codeRoot, timeoutMs: 60_000 })).stdout.trim();
+  const datasetFiles = (await runProcess('git', ['ls-files', '-s', '--', datasetsDir], { cwd: codeRoot, timeoutMs: 60_000 })).stdout;
+  const status = rea ? await rea.status() : null;
+  return {
+    commit: await git(['rev-parse', 'HEAD']),
+    tree: await git(['rev-parse', 'HEAD^{tree}']),
+    describe: await git(['describe', '--tags', '--dirty', '--always']),
+    dirty: (await git(['status', '--porcelain', '--untracked-files=no'])) !== '',
+    datasets_sha256: createHash('sha256').update(datasetFiles).digest('hex'),
+    rea_version: status?.version ?? null,
+    providers: (status?.providers ?? []).map((p) => `${p.id}=${p.status}`),
+    node: process.version,
+    platform: `${process.platform}-${process.arch}`,
+  };
+}
+
 export async function runReaBaseline({ datasetsDir, repetitions = 3, reaCommand = 'rea', decompile = false, maxDecompiledFunctions = 8, timeoutMs = 600_000 }) {
   const cases = loadManifest(datasetsDir);
   const work = mkdtempSync(join(tmpdir(), 'era-rea-baseline-'));

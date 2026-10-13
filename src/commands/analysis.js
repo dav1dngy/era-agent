@@ -1,5 +1,5 @@
 // Analysis Mode commands: analyze, inspect, explain, and the REA passthrough.
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, statSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { spawn } from 'node:child_process';
 import { analyzeTarget } from '../analysis/analyze.js';
@@ -13,8 +13,11 @@ import { writeText } from '../core/util.js';
 const print = (value, asJson) => process.stdout.write(asJson ? `${JSON.stringify(value, null, 2)}\n` : `${value}\n`);
 
 async function analyze(ctx, { positional, flags }) {
+  // Only native targets can be decompiled: skip the provider probe otherwise.
   let decompile = false;
-  if (!flags['no-decompile']) decompile = !!(await ctx.rea.status()).decompiler_available;
+  const target = positional[0] ? resolve(positional[0]) : null;
+  const native = target && existsSync(target) && statSync(target).isFile() && detectTarget(target).kind === 'mach-o';
+  if (native && !flags['no-decompile']) decompile = !!(await ctx.rea.status()).decompiler_available;
   const analysis = await analyzeTarget(positional[0], {
     rea: ctx.rea,
     stateDir: ctx.config.stateDirAbs,

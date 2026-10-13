@@ -109,3 +109,13 @@ test('parseTapTests reads top-level results including skips', async () => {
   const t = parseTapTests('ok 1 - alpha\n    ok 1 - sub\nnot ok 2 - beta\nok 3 - gamma # SKIP no sandbox\n');
   assert.deepEqual(t, [{ name: 'alpha', status: 'pass' }, { name: 'beta', status: 'fail' }, { name: 'gamma', status: 'skip' }]);
 });
+
+test('benchmark provenance identifies the exact commit, data and engine (audit F09)', async () => {
+  const { benchmarkProvenance } = await import('../src/evaluation/benchmark.js');
+  const p = await benchmarkProvenance({ codeRoot: ROOT, datasetsDir: DATASETS, rea: null });
+  assert.match(p.commit, /^[0-9a-f]{40}$/);
+  assert.match(p.tree, /^[0-9a-f]{40}$/);
+  assert.match(p.datasets_sha256, /^[0-9a-f]{64}$/);
+  assert.equal(typeof p.dirty, 'boolean');
+  assert.ok(p.describe.length > 0);
+});
