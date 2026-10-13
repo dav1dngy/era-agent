@@ -141,9 +141,10 @@ description: [docs/improvement-lab.md](docs/improvement-lab.md).
 | 1 | Infer CommonJS export names from REA's semantic graph | F1 0.956 → 0.987, but REA self-analysis findings 7 → 9 | **rejected** (main untouched) |
 | 2 | Split REA self-analysis into size-balanced passes | coverage finding resolved, findings 7 → 6 | accepted → era-v2 |
 | 3 | Retry #1 on era-v2 | F1 0.956 → 0.987, findings 6 → 5 | accepted → era-v3 |
-| 4 | Byte-bounded REA passes with import placeholders (campaign 2) | findings 26 → 7, complete REA coverage | awaiting maintainer approval (pending re-evaluation on the final `main`) |
+| 4 | Byte-bounded REA passes with import placeholders (campaign 2) | findings 26 → 7, complete REA coverage | first evaluation passed; **rejected** on re-evaluation (a Hopper-flaky test); retried as #5 |
 
 Cycles 1–3 ran before the approval gate existed and were merged automatically.
+Experiment #5 (`cycle-20261013T150739-02fd6c`) retries #4's change after the flaky test was fixed; its result is in `era improve show`.
 Every record (cycle JSON, REA run records with output digests, self-analysis
 reports, ledger) is in [`experiments/`](experiments/). The narrative is in
 [docs/self-improvement.md](docs/self-improvement.md).
