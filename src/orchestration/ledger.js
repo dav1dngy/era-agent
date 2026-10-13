@@ -1,14 +1,15 @@
 // Append-only JSONL ledger of improvement cycles, decisions and rollbacks.
 import { appendFileSync, existsSync, mkdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { redact } from '../safety/secrets.js';
 
 export function ledgerPath(stateDir) {
   return join(stateDir, 'ledger.jsonl');
 }
 
 export function appendLedger(stateDir, event) {
-  mkdirSync(stateDir, { recursive: true });
-  const entry = { at: new Date().toISOString(), ...event };
+  mkdirSync(stateDir, { recursive: true, mode: 0o700 });
+  const entry = redact({ at: new Date().toISOString(), ...event });
   appendFileSync(ledgerPath(stateDir), `${JSON.stringify(entry)}\n`);
   return entry;
 }

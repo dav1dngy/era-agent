@@ -1,7 +1,7 @@
 // ERA command-line interface: argument parsing, context (config, REA client,
 // structured logger), signal handling and dispatch to lazily loaded command
 // modules in src/commands/.
-import { readFileSync } from 'node:fs';
+import { chmodSync, mkdirSync, readFileSync } from 'node:fs';
 import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadConfig } from './core/config.js';
@@ -102,6 +102,13 @@ export async function main(argv) {
     return 0;
   }
   const config = loadConfig(process.cwd());
+  // Raw evidence, logs and the ledger are private to the user.
+  mkdirSync(config.stateDirAbs, { recursive: true, mode: 0o700 });
+  try {
+    chmodSync(config.stateDirAbs, 0o700);
+  } catch {
+    // not ours to change
+  }
   const log = createLogger({ stateDir: config.stateDirAbs, correlationId: process.env.ERA_CORRELATION_ID || null, base: { era_version: VERSION } });
   if (!process.env.ERA_CORRELATION_ID) process.env.ERA_CORRELATION_ID = log.executionId;
   const rea = ReaClient.fromConfig(config, log);

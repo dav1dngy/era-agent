@@ -1,5 +1,5 @@
 import { createHash, randomBytes } from 'node:crypto';
-import { createReadStream, mkdirSync, writeFileSync, statSync } from 'node:fs';
+import { createReadStream, mkdirSync, renameSync, writeFileSync, statSync } from 'node:fs';
 import { dirname } from 'node:path';
 
 export function newId(prefix) {
@@ -21,14 +21,20 @@ export function sha256Text(text) {
   return createHash('sha256').update(text).digest('hex');
 }
 
-export function writeJson(path, value) {
+// Atomic replacement: readers never observe a partially written file.
+function atomicWrite(path, data) {
   mkdirSync(dirname(path), { recursive: true });
-  writeFileSync(path, `${JSON.stringify(value, null, 2)}\n`);
+  const tmp = `${path}.tmp-${process.pid}-${randomBytes(3).toString('hex')}`;
+  writeFileSync(tmp, data);
+  renameSync(tmp, path);
+}
+
+export function writeJson(path, value) {
+  atomicWrite(path, `${JSON.stringify(value, null, 2)}\n`);
 }
 
 export function writeText(path, text) {
-  mkdirSync(dirname(path), { recursive: true });
-  writeFileSync(path, text);
+  atomicWrite(path, text);
 }
 
 export function fileInfo(path) {

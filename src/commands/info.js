@@ -6,7 +6,7 @@ import { runBenchmark, runReaBaseline } from '../evaluation/benchmark.js';
 import { renderBenchmarkTable, renderOverheadTable } from '../reporting/table.js';
 import { renderDashboard } from '../reporting/dashboard.js';
 import { selectedAgentId } from '../agents/coding-agents.js';
-import { effectiveLimits } from '../safety/policy.js';
+import { effectiveLimits, acquireLock } from '../safety/policy.js';
 import { sandboxAvailable } from '../safety/sandbox.js';
 import { writeJson, writeText } from '../core/util.js';
 import { requireRepo } from './lab.js';
@@ -116,11 +116,19 @@ async function rollback(ctx, { positional }) {
   const root = await requireRepo(ctx.config.cwd);
   const target = positional[0];
   if (!target) throw new Error('Usage: era rollback <version>');
-  const { commit, unchanged } = await vm.rollbackTo(root, target);
-  if (unchanged) return print(`Working tree already matches ${target}; nothing to roll back.`), 0;
-  const tag = await vm.nextVersionTag(root);
-  await vm.tagVersion(root, tag, `${tag}: rollback to ${target}`);
-  appendLedger(ctx.config.stateDirAbs, { type: 'rollback', to: target, version: tag, commit });
+  const release = acquireLock(ctx.config.stateDirAbs, `rollback ${target}`);
+  let commit;
+  let tag;
+  try {
+    const r = await vm.rollbackTo(root, target);
+    if (r.unchanged) return print(`Working tree already matches ${target}; nothing to roll back.`), 0;
+    commit = r.commit;
+    tag = await vm.nextVersionTag(root);
+    await vm.tagVersion(root, tag, `${tag}: rollback to ${target}`);
+    appendLedger(ctx.config.stateDirAbs, { type: 'rollback', to: target, version: tag, commit });
+  } finally {
+    release();
+  }
   ctx.log.info('rollback', { to: target, version: tag, commit });
   print(`Restored ${target} as ${tag} (${commit.slice(0, 12)}).`);
   return 0;

@@ -8,7 +8,7 @@ import { runBenchmark, runSupervisedBenchmark } from '../evaluation/benchmark.js
 import { runTests } from '../evaluation/tests.js';
 import { evaluateSelf } from '../evaluation/self-eval.js';
 import { decide, loadAcceptance } from '../evaluation/decision.js';
-import { PROTECTED_PATHS, protectedChanges, assertCycleAllowed, assertNotCI, acquireLock, clearStaleLock, effectiveLimits, effectiveBudget, authorizeAgentRun, SafetyError } from '../safety/policy.js';
+import { PROTECTED_PATHS, protectedChanges, assertCycleAllowed, assertNotCI, acquireLock, clearStaleLock, lockHolder, effectiveLimits, effectiveBudget, authorizeAgentRun, SafetyError } from '../safety/policy.js';
 import { appendLedger, readLedger, decidedCycles, pendingCycles } from './ledger.js';
 import * as vm from './versions.js';
 import { newId, writeJson, writeText } from '../core/util.js';
@@ -68,6 +68,10 @@ export async function proposeCycle({ root, config, rea, findingId = null }) {
   await vm.assertStable(root);
   const release = acquireLock(stateDir, 'propose');
   try {
+    // Re-validated under the lock.
+    const fresh = readLedger(stateDir);
+    if (pendingCycles(fresh).length > 0) throw new SafetyError(`A cycle is already pending (${pendingCycles(fresh)[0].cycle_id}); evaluate or abandon it first.`);
+    assertCycleAllowed(decidedCycles(fresh).length, limits);
     const budget = reaBudget(limits);
     const acceptance = loadAcceptance(root);
     const baseCommit = await vm.headCommit(root);
@@ -145,6 +149,8 @@ export async function implementCycle({ config, cycle, agent }) {
   if (agent.metered && perCycleLeft <= 0) throw new SafetyError(`Per-cycle coding-agent budget exhausted for ${cycle.cycle_id} ($${budget.maxCostUsdPerCycle.toFixed(2)}).`);
   const budgetUsd = Math.min(authorizeAgentRun({ agent, budget, spentUsd: spentUsd(events) }), perCycleLeft);
   const runId = newId('agent');
+  const release = acquireLock(stateDir, `implement ${cycle.cycle_id}`);
+  try {
   appendLedger(stateDir, { type: 'implementer-started', run_id: runId, cycle_id: cycle.cycle_id, agent: agent.id, budget_usd: agent.metered ? budgetUsd : null });
   const result = await runCodingAgent({
     agent,
@@ -161,6 +167,9 @@ export async function implementCycle({ config, cycle, agent }) {
   cycle.implementer = result;
   saveCycle(stateDir, cycle);
   return result;
+  } finally {
+    release();
+  }
 }
 
 export async function evaluateCycle({ root, config, rea, cycleId, repetitions, guard = null, trustCandidate = false }) {
@@ -335,9 +344,13 @@ export async function approveCycle({ root, config, cycleId, approver }) {
     const protectedNow = protectedChanges(await vm.changedFiles(root, cycle.base_commit, evaluated.commit));
     if (protectedNow.length) throw new SafetyError(`Protected paths changed: ${protectedNow.join(', ')}.`);
     const tag = await vm.nextVersionTag(root);
+    // Journal the intent first: a crash between merge, tag and state update is
+    // completed (or undone) idempotently by `era improve recover`.
+    Object.assign(cycle, { status: 'integrating', integrating: { tag, commit: evaluated.commit, base_commit: cycle.base_commit, approver, at: new Date().toISOString() } });
+    saveCycle(stateDir, cycle);
     const merge = await vm.promote(root, evaluated.commit, `era: integrate ${cycleId} (${cycle.proposal.finding.id}) as ${tag}\n\nCandidate: ${evaluated.commit}\nApproved-by: ${approver}`);
     await vm.tagVersion(root, tag, `${tag}: ${cycle.proposal.hypothesis.slice(0, 200)}`);
-    Object.assign(cycle, { status: 'integrated', version: tag, merge_commit: merge, approved_by: approver, approved_at: new Date().toISOString() });
+    Object.assign(cycle, { status: 'integrated', version: tag, merge_commit: merge, approved_by: approver, approved_at: new Date().toISOString(), integrating: undefined });
     saveCycle(stateDir, cycle);
     writeText(join(cycleDir(stateDir, cycleId), 'report.md'), renderCycleReport(cycle));
     appendLedger(stateDir, { type: 'cycle-approved', cycle_id: cycleId, approver, version: tag, merge_commit: merge });
@@ -348,15 +361,22 @@ export async function approveCycle({ root, config, cycleId, approver }) {
 }
 
 export async function declineCycle({ config, cycleId, approver, reason = 'declined by maintainer' }) {
+  const release = acquireLock(config.stateDirAbs, `decline ${cycleId}`);
+  try {
   const cycle = loadCycle(config.stateDirAbs, cycleId);
   if (cycle.status !== 'awaiting-approval') throw new Error(`Cycle ${cycleId} is ${cycle.status}; only cycles awaiting approval can be declined.`);
   Object.assign(cycle, { status: 'declined', declined_by: approver, decline_reason: reason });
   saveCycle(config.stateDirAbs, cycle);
   appendLedger(config.stateDirAbs, { type: 'cycle-declined', cycle_id: cycleId, approver, reason });
   return cycle;
+  } finally {
+    release();
+  }
 }
 
 export async function abandonCycle({ root, config, cycleId, reason = 'abandoned by user' }) {
+  const release = acquireLock(config.stateDirAbs, `cancel ${cycleId}`);
+  try {
   const cycle = loadCycle(config.stateDirAbs, cycleId);
   if (!['proposed', 'inconclusive'].includes(cycle.status)) throw new Error(`Cycle ${cycleId} is already ${cycle.status}.`);
   await vm.removeWorktree(root, cycle.worktree);
@@ -365,6 +385,9 @@ export async function abandonCycle({ root, config, cycleId, reason = 'abandoned 
   saveCycle(config.stateDirAbs, cycle);
   appendLedger(config.stateDirAbs, { type: 'cycle-abandoned', cycle_id: cycleId, reason });
   return cycle;
+  } finally {
+    release();
+  }
 }
 
 // Restores a consistent state after a crash or kill -9: stale locks, cycles
@@ -372,8 +395,12 @@ export async function abandonCycle({ root, config, cycleId, reason = 'abandoned 
 // worktrees.
 export async function recoverState({ root, config }) {
   const stateDir = config.stateDirAbs;
+  const holder = lockHolder(stateDir);
+  if (holder) throw new SafetyError(`An ERA operation is still running (pid ${holder.pid}, ${holder.owner}); recovery would interfere with it.`);
   const actions = [];
   if (clearStaleLock(stateDir)) actions.push('removed stale improvement lock');
+  const release = acquireLock(stateDir, 'recover');
+  try {
   await vm.git(root, ['worktree', 'prune'], { allowFail: true });
   const cyclesDir = join(stateDir, 'cycles');
   for (const id of existsSync(cyclesDir) ? readdirSync(cyclesDir) : []) {
@@ -381,6 +408,23 @@ export async function recoverState({ root, config }) {
     try {
       cycle = loadCycle(stateDir, id);
     } catch {
+      continue;
+    }
+    if (cycle.status === 'integrating' && cycle.integrating) {
+      const j = cycle.integrating;
+      const merged = (await vm.git(root, ['merge-base', '--is-ancestor', j.commit, vm.STABLE_BRANCH], { allowFail: true })).code === 0;
+      if (merged) {
+        const head = await vm.headCommit(root, vm.STABLE_BRANCH);
+        if (!(await vm.listVersions(root)).some((v) => v.tag === j.tag)) await vm.git(root, ['tag', '-a', j.tag, head, '-m', `${j.tag}: ${cycle.proposal.hypothesis.slice(0, 200)}`]);
+        Object.assign(cycle, { status: 'integrated', version: j.tag, merge_commit: head, approved_by: j.approver, approved_at: j.at, integrating: undefined });
+        saveCycle(stateDir, cycle);
+        appendLedger(stateDir, { type: 'cycle-approved', cycle_id: id, approver: j.approver, version: j.tag, merge_commit: head, recovered: true });
+        actions.push(`${id}: completed interrupted integration as ${j.tag}`);
+      } else {
+        Object.assign(cycle, { status: 'awaiting-approval', integrating: undefined });
+        saveCycle(stateDir, cycle);
+        actions.push(`${id}: integration had not started; back to awaiting-approval`);
+      }
       continue;
     }
     if (cycle.status === 'evaluating') {
@@ -401,6 +445,9 @@ export async function recoverState({ root, config }) {
   }
   if (actions.length) appendLedger(stateDir, { type: 'state-recovered', actions });
   return actions;
+  } finally {
+    release();
+  }
 }
 
 const fmt = (v, digits = 4) => (typeof v === 'number' ? (Number.isInteger(v) ? String(v) : v.toFixed(digits)) : String(v ?? '—'));

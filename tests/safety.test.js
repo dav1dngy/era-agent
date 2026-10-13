@@ -71,3 +71,27 @@ test('clearStaleLock removes only locks held by dead processes', () => {
   writeFileSync(join(dir, 'improve.lock'), JSON.stringify({ pid: 2 ** 22 + 54321, owner: 'dead' }));
   assert.equal(clearStaleLock(dir), true);
 });
+
+test('lock acquisition is exclusive across processes and release honours ownership', async () => {
+  const { runProcess } = await import('../src/core/process.js');
+  const dir = tempDir();
+  const url = new URL('../src/safety/policy.js', import.meta.url).href;
+  const script = `import('${url}').then(({ acquireLock }) => { try { acquireLock(${JSON.stringify(dir)}, 'racer'); console.log('got'); setTimeout(() => {}, 1500); } catch { console.log('busy'); } });`;
+  const results = await Promise.all([1, 2, 3, 4].map(() => runProcess(process.execPath, ['-e', script], { timeoutMs: 10_000 })));
+  assert.equal(results.filter((r) => r.stdout.trim() === 'got').length, 1, results.map((r) => r.stdout.trim()).join(','));
+});
+
+test('recovery refuses while a live process holds the lock (audit F06)', async () => {
+  const { recoverState } = await import('../src/orchestration/cycle.js');
+  const { loadConfig } = await import('../src/core/config.js');
+  const { initRepo } = await import('./helpers.js');
+  const { dir } = initRepo();
+  const config = loadConfig(dir, {});
+  const release = acquireLock(config.stateDirAbs, 'live evaluation');
+  try {
+    await assert.rejects(recoverState({ root: dir, config }), /still running/);
+  } finally {
+    release();
+  }
+  assert.deepEqual(await recoverState({ root: dir, config }), []);
+});

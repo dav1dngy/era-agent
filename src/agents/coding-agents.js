@@ -9,8 +9,9 @@ import { existsSync, readFileSync, mkdtempSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { runProcess } from '../core/process.js';
+import { redactText } from '../safety/secrets.js';
 
-const tail = (s) => s.slice(-4000);
+const tail = (s) => redactText(s.slice(-4000));
 
 const CODEX_FALLBACKS = ['/Applications/ChatGPT.app/Contents/Resources/codex-cli/bin/codex', '/Applications/Codex.app/Contents/Resources/codex-cli/bin/codex'];
 
@@ -25,7 +26,8 @@ async function probeBinary(command, args = ['--version']) {
 }
 
 export function agentPrompt(task) {
-  const instructions = readFileSync(task.instructionsFile, 'utf8');
+  // Findings may quote analyzed text: redact secret-looking values before they reach a model.
+  const instructions = redactText(readFileSync(task.instructionsFile, 'utf8'));
   return [
     'You are the coding agent for one ERA Improvement Lab experiment.',
     `Work only inside the git worktree ${task.worktree}; it is already checked out on the experiment branch.`,

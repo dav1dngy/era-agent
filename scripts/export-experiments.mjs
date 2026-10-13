@@ -8,12 +8,13 @@ import { createHash } from 'node:crypto';
 import { join } from 'node:path';
 import { readLedger, decidedCycles } from '../src/orchestration/ledger.js';
 import { anonymize } from './anonymize.mjs';
+import { redactText } from '../src/safety/secrets.js';
 
 const stateDir = process.env.ERA_STATE_DIR ?? '.era';
 const outDir = process.argv[2] ?? 'experiments/cycles';
 const sha = (p) => createHash('sha256').update(readFileSync(p)).digest('hex');
 // Copies a text file with local paths anonymized.
-const publish = (src, dest) => writeFileSync(dest, anonymize(readFileSync(src, 'utf8')));
+const publish = (src, dest) => writeFileSync(dest, redactText(anonymize(readFileSync(src, 'utf8'))));
 
 function exportRuns(runs, dest) {
   const manifest = [];

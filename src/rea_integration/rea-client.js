@@ -8,6 +8,7 @@ import { createRequire } from 'node:module';
 import { runProcess } from '../core/process.js';
 import { newId, sha256File, fileInfo, writeJson, writeText } from '../core/util.js';
 import { nullLogger } from '../core/log.js';
+import { redactText } from '../safety/secrets.js';
 
 const PACKAGE_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
 
@@ -170,8 +171,8 @@ export class ReaClient {
       output_file: outputFile,
       output_bytes: proc.stdoutBytes,
       progress_events: progress.length,
-      warnings,
-      errors,
+      warnings: warnings.map(redactText),
+      errors: errors.map(redactText),
       resources: proc.resources,
     };
     if (runDir) {

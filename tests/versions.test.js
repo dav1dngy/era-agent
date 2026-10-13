@@ -104,3 +104,28 @@ test('approval refuses a branch that moved after evaluation and integrates only 
   assert.equal(done.status, 'integrated');
   assert.equal(readFileSync(join(dir, 'file.txt'), 'utf8'), 'evaluated\n');
 });
+
+test('a crash during integration is completed idempotently by recovery (audit F06)', async () => {
+  const { recoverState } = await import('../src/orchestration/cycle.js');
+  const { loadConfig } = await import('../src/core/config.js');
+  const { writeJson } = await import('../src/core/util.js');
+  const { dir, git } = initRepo();
+  const base = await vm.headCommit(dir);
+  git('checkout', '-q', '-b', 'experiment/c2');
+  writeFileSync(join(dir, 'file.txt'), 'candidate\n');
+  git('commit', '-qam', 'candidate');
+  const cand = await vm.headCommit(dir);
+  git('checkout', '-q', 'main');
+  const config = loadConfig(dir, {});
+  const cycleFile = join(config.stateDirAbs, 'cycles', 'c2', 'cycle.json');
+  const record = (status, extra = {}) => writeJson(cycleFile, { cycle_id: 'c2', status, base_commit: base, branch: 'experiment/c2', worktree: join(dir, 'nowhere'), proposal: { finding: { id: 'F' }, hypothesis: 'h' }, integrating: { tag: 'era-v2', commit: cand, approver: 'm', at: 'now' }, ...extra });
+  // Crash before the merge: recovery returns the cycle to awaiting-approval.
+  record('integrating');
+  assert.match((await recoverState({ root: dir, config })).join(), /back to awaiting-approval/);
+  // Crash after the merge, before the tag and state update: recovery completes it once.
+  record('integrating');
+  git('merge', '--no-ff', '-q', '-m', 'integrate', cand);
+  assert.match((await recoverState({ root: dir, config })).join(), /completed interrupted integration as era-v2/);
+  assert.deepEqual((await vm.listVersions(dir)).map((v) => v.tag), ['era-v1', 'era-v2']);
+  assert.deepEqual(await recoverState({ root: dir, config }), [], 'idempotent');
+});

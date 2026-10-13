@@ -1,7 +1,8 @@
 // Safety Controller. This module is a protected path: experiments that modify
 // it (or the benchmark datasets, acceptance criteria and evaluator) are rejected
 // automatically, so ERA cannot loosen its own constraints.
-import { existsSync, readFileSync, writeFileSync, unlinkSync, mkdirSync, statSync } from 'node:fs';
+import { closeSync, existsSync, openSync, readFileSync, unlinkSync, mkdirSync, statSync, writeSync } from 'node:fs';
+import { randomBytes } from 'node:crypto';
 import { join } from 'node:path';
 
 export const HARD_LIMITS = Object.freeze({
@@ -103,6 +104,11 @@ function readLock(lockFile) {
   }
 }
 
+export function lockHolder(stateDir) {
+  const holder = readLock(join(stateDir, 'improve.lock'));
+  return holder && isAlive(holder.pid) ? holder : null;
+}
+
 // Removes a lock whose holder process no longer exists. Returns true if removed.
 export function clearStaleLock(stateDir) {
   const lockFile = join(stateDir, 'improve.lock');
@@ -113,24 +119,40 @@ export function clearStaleLock(stateDir) {
   return true;
 }
 
-// Single-writer lock for self-improvement. Stale locks (dead pid) are replaced.
+// Single-writer lock. Created exclusively (O_EXCL) with an ownership token, so
+// two processes can never both hold it; a lock whose holder died is taken over.
+// Release only removes the lock if this holder still owns it.
 export function acquireLock(stateDir, owner) {
-  mkdirSync(stateDir, { recursive: true });
+  mkdirSync(stateDir, { recursive: true, mode: 0o700 });
   const lockFile = join(stateDir, 'improve.lock');
-  if (existsSync(lockFile)) {
-    const holder = readLock(lockFile);
-    if (holder && isAlive(holder.pid)) {
-      throw new SafetyError(`Another improvement run holds the lock (pid ${holder.pid}, ${holder.owner}).`);
+  const token = randomBytes(12).toString('hex');
+  const body = JSON.stringify({ pid: process.pid, owner, token, at: new Date().toISOString() });
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const fd = openSync(lockFile, 'wx', 0o600);
+      writeSync(fd, body);
+      closeSync(fd);
+      return () => {
+        if (readLock(lockFile)?.token === token) {
+          try {
+            unlinkSync(lockFile);
+          } catch {
+            // already removed
+          }
+        }
+      };
+    } catch (err) {
+      if (err.code !== 'EEXIST') throw err;
+      const holder = readLock(lockFile);
+      if (holder && isAlive(holder.pid)) throw new SafetyError(`Another ERA operation holds the lock (pid ${holder.pid}, ${holder.owner}).`);
+      try {
+        unlinkSync(lockFile);
+      } catch {
+        // another process took it over first; the retry will see its lock
+      }
     }
   }
-  writeFileSync(lockFile, JSON.stringify({ pid: process.pid, owner, at: new Date().toISOString() }));
-  return () => {
-    try {
-      unlinkSync(lockFile);
-    } catch {
-      // already removed
-    }
-  };
+  throw new SafetyError('Could not acquire the ERA lock.');
 }
 
 function isAlive(pid) {

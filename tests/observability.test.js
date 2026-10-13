@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync, existsSync, writeFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { createLogger } from '../src/core/log.js';
 import { redact, redactText, containsSecret } from '../src/safety/secrets.js';
@@ -47,4 +47,24 @@ test('CLI invocations are logged with REA run events (fake REA)', () => {
   assert.ok(events.every((e) => e.execution_id === events[0].execution_id && e.era_version));
   assert.equal(events[1].rea_version, '9.9.9-fake');
   assert.equal(events[2].status, 'succeeded');
+});
+
+test('ledger entries, agent prompts and agent output tails are redacted (audit F08)', async () => {
+  const { appendLedger, readLedger } = await import('../src/orchestration/ledger.js');
+  const { agentPrompt, commandAgent } = await import('../src/agents/coding-agents.js');
+  const key = ['sk', 'ant', 'x'.repeat(30)].join('-');
+  const dir = tempDir();
+  appendLedger(dir, { type: 'note', detail: `found ${key}` });
+  assert.ok(!JSON.stringify(readLedger(dir)).includes(key));
+  const instructions = join(dir, 'i.md');
+  writeFileSync(instructions, `finding quotes ${key}`);
+  assert.ok(!agentPrompt({ worktree: dir, instructionsFile: instructions }).includes(key));
+  const r = await commandAgent(`echo ${key}`).implement({ worktree: dir, instructionsFile: instructions, proposalFile: instructions, cycleId: 'c', timeoutMs: 10_000 });
+  assert.ok(!r.stdout_tail.includes(key));
+});
+
+test('the ERA state directory is private to the user', () => {
+  const state = join(tempDir(), 'state');
+  runEra(['status', '--json'], { cwd: tempDir(), env: { ERA_STATE_DIR: state, ERA_REA_BIN: FAKE_REA } });
+  assert.equal(statSync(state).mode & 0o777, 0o700);
 });
