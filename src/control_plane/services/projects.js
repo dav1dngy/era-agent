@@ -1,11 +1,12 @@
 // Projects and Project Lab (review / modify / rebuild) for the control plane. All behavior comes from
 // ProjectLab and the CLI; this file validates requests, enforces Studio permissions and shapes responses.
 import { createHash } from 'node:crypto';
-import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
-import { dirname } from 'node:path';
+import { existsSync, mkdirSync, readFileSync, realpathSync, renameSync, writeFileSync } from 'node:fs';
+import { basename, dirname, relative, resolve } from 'node:path';
 import { SafetyError } from '../../safety/policy.js';
 import { assertRemoteConsent, rolesOf } from '../../agents/team.js';
-import { assertReady } from '../../project_lab/schema.js';
+import { protectedViolations } from '../../project_lab/workspace.js';
+import { assertExternalPath, assertReady } from '../../project_lab/schema.js';
 import { insideAllowedRoots } from '../settings.js';
 import { HttpError, bad, conflict, denied, missing } from '../errors.js';
 import { PathError, listDir, readText, resolveInside } from '../paths.js';
@@ -19,8 +20,13 @@ export function projectsService(ctx) {
 
   const loadProject = (id) => {
     try {
-      return lab.get(id);
-    } catch {
+      const project = lab.get(id);
+      for (const key of ['source', 'reference', 'destination']) {
+        if (project[key] && !insideAllowedRoots(project[key], ctx.settings())) throw denied(`${key} is outside the allowed workspace roots.`);
+      }
+      return project;
+    } catch (err) {
+      if (err.status === 403) throw err;
       throw missing(`Unknown project "${id}".`);
     }
   };
@@ -45,13 +51,21 @@ export function projectsService(ctx) {
     return lab.list().map((p) => {
       const job = jobs.active(p.id);
       const latest = lab.store.latestRun(p.id);
-      return { ...p, active_job: job ? jobs.summary(job) : null, latest_run: runSummary(latest) };
+      const full = loadProject(p.id);
+      return { ...p, task: full.task, agent: full.agent, team: full.team, active_job: job ? jobs.summary(job) : null, latest_run: runSummary(latest) };
     });
   }
 
   function create(input) {
     if (!input || typeof input !== 'object') throw bad('Project definition must be an object.');
     const settings = ctx.settings();
+    if (!input.id) {
+      const base = basename(input.source || input.destination || input.reference || 'project').toLowerCase().replace(/[^a-z0-9_-]/g, '-').replace(/^[^a-z0-9]+/, '').slice(0, 45) || 'project';
+      let id = base;
+      let n = 2;
+      while (lab.store.exists(id)) id = `${base}-${n++}`;
+      input = { ...input, id };
+    }
     for (const key of ['source', 'reference', 'destination']) {
       if (input[key] && !insideAllowedRoots(input[key], settings)) throw denied(`${key} is outside the allowed workspace roots (Settings → Workspaces).`);
     }
@@ -71,6 +85,9 @@ export function projectsService(ctx) {
 
   function update(id, patch) {
     loadProject(id);
+    for (const key of ['source', 'reference', 'destination']) {
+      if (patch[key] && !insideAllowedRoots(patch[key], ctx.settings())) throw denied(`${key} is outside the allowed workspace roots.`);
+    }
     try {
       const p = lab.update(id, patch);
       audit.record('project.updated', { project_id: id, keys: Object.keys(patch) });
@@ -289,6 +306,8 @@ export function projectsService(ctx) {
     if (/^(\.git|\.era)(\/|$)/.test(rel)) throw denied('That path is protected.');
     try {
       const file = resolveInside(r.root, rel);
+      const canonical = relative(realpathSync(r.root), existsSync(file) ? realpathSync(file) : file);
+      if (protectedViolations([canonical], loadProject(id).protected).length) throw denied('That path is protected by the project configuration.');
       mkdirSync(dirname(file), { recursive: true });
       const tmp = `${file}.era-${process.pid}.tmp`;
       writeFileSync(tmp, content);
@@ -298,8 +317,30 @@ export function projectsService(ctx) {
     }
     const sha = createHash('sha256').update(content).digest('hex');
     audit.record('file.written', { project_id: id, root: which, path: rel, sha256: sha, run_id: r.run_id ?? null });
-    return { saved: true, sha256: sha, note: which === 'workspace' ? 'The verified diff is now stale: re-run verification (resume) before approval.' : null };
+    return { saved: true, sha256: sha, note: which === 'workspace' ? 'The verified diff may now be stale. Resume an interrupted/manual run to verify it; a changed run awaiting approval must be rejected and started again.' : null };
   }
 
-  return { rootFor, list, status, create, update, remove, startOp, cancel, runDetail, patchText, fileDiff, approve, reject, rollback, tree, readFile, writeFile, view };
+
+  // Connect an authorized Git repository: a plain `git clone` into an allowed location, run as a job.
+  // Credentials are never prompted for or stored (GIT_TERMINAL_PROMPT=0): public repositories and repositories
+  // reachable through the user's own Git credential helper or SSH agent only.
+  function clone(body = {}) {
+    const url = String(body.url ?? '');
+    if (!/^(https:\/\/[\w.-]+\/[\w./~%+-]+|ssh:\/\/[\w.@-]+\/[\w./~%+-]+|[\w.-]+@[\w.-]+:[\w./~%+-]+)$/.test(url) || url.startsWith('-')) throw bad('Use an https://, ssh:// or git@host:path repository URL.');
+    if (body.authorized !== true) throw bad('Confirm that you are authorized to work on this repository ("authorized": true).');
+    const settings = ctx.settings();
+    const parent = body.destination ? resolve(String(body.destination)) : settings.workspaces.defaultLocation;
+    if (!parent) throw bad('Choose a destination folder (or set Settings → Workspaces → Default project location).');
+    const name = String(body.name ?? basename(url).replace(/\.git$/, '')).replace(/[^\w.-]/g, '-');
+    if (!name || name === '.' || name === '..') throw bad('Choose a repository folder name.');
+    const dest = resolve(parent, name);
+    assertExternalPath(dest, 'Clone destination');
+    if (!insideAllowedRoots(dest, settings)) throw denied('The destination is outside the allowed workspace roots.');
+    if (existsSync(dest)) throw conflict(`${dest} already exists.`);
+    const job = jobs.start({ kind: 'git.clone', label: `clone ${name}`, args: [], exec: { command: 'git', args: ['-c', 'protocol.file.allow=never', '-c', 'core.hooksPath=/dev/null', 'clone', '--no-tags', '--depth', '50', '--', url, dest] }, env: { GIT_TERMINAL_PROMPT: '0' }, cwd: ctx.config.cwd });
+    audit.record('project.clone', { job_id: job.id, url: url.replace(/\/\/[^@/]*@/, '//'), destination: dest });
+    return { ...job, destination: dest };
+  }
+
+  return { clone, rootFor, list, status, create, update, remove, startOp, cancel, runDetail, patchText, fileDiff, approve, reject, rollback, tree, readFile, writeFile, view };
 }

@@ -42,13 +42,13 @@ const custom = {
   fake: { command: 'true', simulated: true },
 };
 
-async function plane({ eraConfig = {}, settings = null } = {}) {
+async function plane({ eraConfig = {}, settings = null, createAgent } = {}) {
   const cwd = tempDir();
   writeFileSync(join(cwd, 'era.config.json'), JSON.stringify({ projectLab: { budget: { allowUnmeteredAgents: true }, customAgents: custom }, ...eraConfig }));
   const stateDir = join(cwd, 'state');
   const config = loadConfig(cwd, { ERA_STATE_DIR: stateDir, ERA_REA_BIN: FAKE_ENGINE });
   const rea = new ReaClient({ command: FAKE_ENGINE, stateDir: config.stateDirAbs, measureResources: false });
-  const cp = await createControlPlane({ config, rea, version: 'test', env: { ...process.env, ERA_REA_BIN: FAKE_ENGINE } });
+  const cp = await createControlPlane({ config, rea, ...(createAgent ? { createAgent } : {}), version: 'test', env: { ...process.env, ERA_REA_BIN: FAKE_ENGINE } });
   await cp.start();
   const api = async (method, path, body, { token = cp.token, headers = {} } = {}) => {
     const res = await fetch(`${cp.url}${path}`, { method, headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}), ...(body !== undefined ? { 'Content-Type': 'application/json' } : {}), ...headers }, body: body !== undefined ? JSON.stringify(body) : undefined });
@@ -424,7 +424,7 @@ test('event bus: bounded buffer reports when a client missed events', () => {
   for (let i = 0; i < 6; i++) bus.publish('x', { i });
   assert.equal(bus.since(5).complete, true);
   assert.equal(bus.since(1).complete, false, 'ids 2-3 were dropped: the client must resync');
-  const e = bus.publish('t', { api_key: 'sk-ant-abcdefghijklmnopqrstuvwxyz' });
+  const e = bus.publish('t', { api_key: 'sk-ant-' + 'abcdefghijklmnopqrstuvwxyz' });
   assert.match(JSON.stringify(e), /REDACTED/);
 });
 
@@ -489,7 +489,7 @@ test('analysis: detection reports unsupported targets and blocks unsafe options;
     assert.match(unsupported.json.error, /cannot analyze this target/);
     assert.equal((await p.api('POST', '/api/analysis', { target: join(dir, 'nope') })).status, 404);
     const rt = await p.api('POST', '/api/analysis', { target: dir, runtime: true });
-    assert.equal(rt.status, 403);
+    assert.equal(rt.status, 400);
     assert.match(rt.json.error, /Runtime capture/);
 
     const started = await p.api('POST', '/api/analysis', { target: dir });
@@ -646,4 +646,104 @@ test('CLI compatibility: `era studio doctor` and the existing commands still wor
   assert.equal(runEra(['status', '--json'], { cwd, env }).status, 0);
   assert.equal(runEra(['project', 'list', '--json'], { cwd, env }).status, 0);
   assert.equal(runEra(['agents', '--json'], { cwd, env }).status, 0);
+});
+
+// Studio continuation: policy regressions found while completing the desktop client.
+test('workspace roots reject symlink escapes, updates outside roots and access after revocation', async () => {
+  const allowed = tempDir();
+  const src = fixture();
+  symlinkSync(src, join(allowed, 'escape'));
+  const p = await plane();
+  try {
+    await p.api('POST', '/api/projects', newProject(src));
+    await p.api('PUT', '/api/settings', { workspaces: { allowedRoots: [allowed] } });
+    assert.equal((await p.api('GET', '/api/projects/cart/file?root=source&path=src/cart.js')).status, 403);
+    assert.equal((await p.api('POST', '/api/projects', newProject(join(allowed, 'escape'), { id: 'escape' }))).status, 403);
+    assert.equal((await p.api('POST', '/api/analysis/detect', { target: join(allowed, 'escape') })).status, 403);
+    await p.api('PUT', '/api/settings', { workspaces: { allowedRoots: [src] } });
+    assert.equal((await p.api('PATCH', '/api/projects/cart', { source: allowed })).status, 403);
+    assert.equal((await p.api('GET', '/api/projects/cart/file?root=source&path=src/cart.js')).status, 200);
+  } finally { await p.stop(); }
+});
+test('desktop diagnostics switch is enforced by the API', async () => {
+  const p = await plane({ settings: { advanced: { diagnostics: false } } });
+  try { assert.equal((await p.api('GET', '/api/diagnostics')).status, 403); }
+  finally { await p.stop(); }
+});
+test('clone validates authorization, URL and destination before creating a job', async () => {
+  const p = await plane();
+  try {
+    const request = { url: 'https://example.com/repo.git', destination: tempDir(), authorized: true };
+    assert.equal((await p.api('POST', '/api/projects/clone', { ...request, authorized: false })).status, 400);
+    assert.equal((await p.api('POST', '/api/projects/clone', { ...request, url: 'file:///tmp/repo' })).status, 400);
+    assert.equal((await p.api('POST', '/api/projects/clone', { ...request, destination: process.cwd() })).status, 403);
+    assert.equal((await p.api('POST', '/api/projects/clone', { ...request, name: '..' })).status, 400);
+    assert.equal(p.cp.ctx.jobs.list().length, 0);
+  } finally { await p.stop(); }
+});
+test('shutdown interrupts queued work instead of launching it as running work exits', async () => {
+  const p = await plane({ settings: { execution: { concurrentJobs: 1 } } });
+  const jobs = p.cp.ctx.jobs;
+  const first = jobs.start({ kind: 'test', label: 'sleep', args: [], exec: { command: process.execPath, args: ['-e', 'setTimeout(() => {}, 60000)'] } });
+  const queued = jobs.start({ kind: 'test', label: 'queued', args: [], exec: { command: process.execPath, args: ['-e', 'throw Error("must not run")'] } });
+  await p.stop();
+  assert.equal(jobs.get(queued.id).status, 'interrupted');
+  assert.equal(jobs.get(queued.id).pid, null);
+  assert.notEqual(jobs.get(first.id).status, 'running');
+  assert.equal(jobs.children.size, 0);
+});
+test('workbench protects configured paths and metadata through dot paths and aliases', async () => {
+  const src = fixture();
+  mkdirSync(join(src, '.git'));
+  writeFileSync(join(src, '.git', 'config'), 'private');
+  symlinkSync(join(src, '.git'), join(src, 'alias'));
+  const p = await plane({ settings: { permissions: { directEdit: true } } });
+  try {
+    await p.api('POST', '/api/projects', newProject(src, { protected: ['src/cart.js'] }));
+    for (const name of ['./.git/config', 'alias/config', 'src/cart.js']) {
+      assert.equal((await p.api('PUT', '/api/projects/cart/file?root=source', { path: name, content: 'changed' })).status, 403, name);
+    }
+    assert.equal(readFileSync(join(src, '.git/config'), 'utf8'), 'private');
+  } finally { await p.stop(); }
+});
+test('AI assistance enforces consent and refuses excluded credential selections before invoking an agent', async () => {
+  let calls = 0;
+  const { createCodingAgent } = await import('../src/agents/coding-agents.js');
+  const p = await plane({ createAgent: (id, config) => ({ ...createCodingAgent(id, config), implement: async () => { calls++; throw Error('must not invoke'); } }) });
+  try {
+    const src = fixture();
+    writeFileSync(join(src, '.env'), 'LOCAL_PLACEHOLDER=example');
+    await p.api('POST', '/api/projects', newProject(src));
+    const request = { action: 'explain', root: 'source', path: '.env', selection: 'LOCAL_PLACEHOLDER=example', agent: 'custom:remote' };
+    assert.equal((await p.api('POST', '/api/projects/cart/assist', request)).status, 403);
+    const allowed = await p.api('POST', '/api/projects/cart/assist', { ...request, consent_remote: ['custom:remote'] });
+    assert.equal(allowed.status, 403);
+    assert.match(allowed.json.error, /excluded/);
+    assert.equal(calls, 0);
+  } finally { await p.stop(); }
+});
+test('inline assistance uses a read-only prompt file and the shared cumulative project budget', async () => {
+  const { createCodingAgent } = await import('../src/agents/coding-agents.js');
+  let calls = 0;
+  const p = await plane({ createAgent: (id, config) => ({ ...createCodingAgent(id, config), metered: true, implement: async (task) => {
+    calls++;
+    assert.equal(task.readOnly, true);
+    assert.match(readFileSync(task.instructionsFile, 'utf8'), /TASK: Explain/);
+    assert.equal(task.budgetUsd, 1);
+    return { ok: true, cost_usd: 1, cost_reported: true, output: 'The function computes a cart total.', duration_ms: 1 };
+  } }) });
+  try {
+    const src = fixture();
+    const before = treeDigest(src).sha256;
+    await p.api('POST', '/api/projects', newProject(src, { limits: { maxCostUsdTotal: 1 } }));
+    const body = { action: 'explain', root: 'source', path: 'src/cart.js', selection: 'function total(items)', agent: 'custom:impl' };
+    const first = await p.api('POST', '/api/projects/cart/assist', body);
+    assert.equal(first.status, 200, first.text);
+    assert.equal((await p.api('GET', '/api/projects/cart')).json.spend.agent_usd, 1);
+    const second = await p.api('POST', '/api/projects/cart/assist', body);
+    assert.equal(second.status, 403);
+    assert.match(second.json.error, /budget exhausted/);
+    assert.equal(calls, 1);
+    assert.equal(treeDigest(src).sha256, before);
+  } finally { await p.stop(); }
 });

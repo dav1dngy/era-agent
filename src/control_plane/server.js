@@ -4,12 +4,13 @@
 //   - streams real backend events (Server-Sent Events, resumable with Last-Event-ID).
 // It contains no UI. `apps/studio` is one client; the CLI (`era studio serve`) starts it.
 import { createServer } from 'node:http';
-import { createReadStream, existsSync, statSync } from 'node:fs';
-import { createRequire } from 'node:module';
+import { createHash } from 'node:crypto';
+import { createReadStream, existsSync, readFileSync, statSync } from 'node:fs';
 import { dirname, extname, join, normalize, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { SafetyError } from '../safety/policy.js';
 import { createProjectLab } from '../project_lab/lab.js';
+import { createCodingAgent } from '../agents/coding-agents.js';
 import { nullLogger } from '../core/log.js';
 import { AuditLog, EventBus } from './events.js';
 import { checkHostAndOrigin, checkMutationContentType, checkToken, newToken } from './auth.js';
@@ -32,43 +33,35 @@ const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; cha
 const CSP = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self'; worker-src 'self' blob:; frame-ancestors 'none'; base-uri 'none'; form-action 'none'; object-src 'none'";
 
 // Third-party front-end libraries are served from node_modules, allowlisted by name (nothing else is reachable).
-function vendorMap() {
-  const req = createRequire(join(HERE, '..', '..', 'apps', 'studio', 'package.json'));
-  const rootReq = createRequire(join(HERE, '..', '..', 'package.json'));
-  const find = (spec) => {
-    for (const r of [req, rootReq]) {
-      try {
-        return r.resolve(spec);
-      } catch {
-        // try the next resolver
-      }
-    }
-    return null;
-  };
-  const pkgDir = (name) => {
-    const p = find(`${name}/package.json`);
-    return p ? dirname(p) : null;
-  };
+function vendorMap(extraRoots = []) {
+  // Locate packages by directory (some packages hide package.json behind their "exports" map).
+  const roots = [...extraRoots, join(HERE, '..', '..', 'apps', 'studio', 'node_modules'), join(HERE, '..', '..', 'node_modules')];
+  const pkgDir = (name) => roots.map((r) => join(r, name)).find((d) => existsSync(join(d, 'package.json'))) ?? null;
   const preact = pkgDir('preact');
   const htm = pkgDir('htm');
   const monaco = pkgDir('monaco-editor');
   const xterm = pkgDir('@xterm/xterm');
+  const inter = pkgDir('@fontsource-variable/inter');
   const files = {};
   if (preact) Object.assign(files, { '/vendor/preact.js': join(preact, 'dist', 'preact.module.js'), '/vendor/preact-hooks.js': join(preact, 'hooks', 'dist', 'hooks.module.js') });
+  if (inter) files['/vendor/inter.woff2'] = join(inter, 'files', 'inter-latin-wght-normal.woff2');
   if (htm) files['/vendor/htm.js'] = join(htm, 'dist', 'htm.module.js');
-  if (xterm) Object.assign(files, { '/vendor/xterm.js': join(xterm, 'lib', 'xterm.js'), '/vendor/xterm.css': join(xterm, 'css', 'xterm.css') });
+  if (xterm) Object.assign(files, { '/vendor/xterm.mjs': join(xterm, 'lib', 'xterm.mjs'), '/vendor/xterm.css': join(xterm, 'css', 'xterm.css') });
+  const fit = pkgDir('@xterm/addon-fit');
+  if (fit) files['/vendor/addon-fit.mjs'] = join(fit, 'lib', 'addon-fit.mjs');
   return { files, monacoDir: monaco ? join(monaco, 'min', 'vs') : null };
 }
 
-export async function createControlPlane({ config, rea, log = nullLogger, version = 'dev', host = '127.0.0.1', port = 0, token = newToken(), webRoot = DEFAULT_WEB_ROOT, eraBin, env } = {}) {
+export async function createControlPlane({ config, rea, log = nullLogger, version = 'dev', host = '127.0.0.1', port = 0, token = newToken(), webRoot = DEFAULT_WEB_ROOT, vendorRoots = [], eraBin, env, createAgent = createCodingAgent } = {}) {
   if (host !== '127.0.0.1' && host !== '::1') throw new SafetyError('The control plane only binds the loopback interface.');
   const bus = new EventBus();
   const audit = new AuditLog(config.stateDirAbs);
   const settingsStore = new SettingsStore(config.stateDirAbs, { eraConfig: config });
   const getSettings = () => settingsStore.load();
-  const lab = createProjectLab({ config, rea, log });
+  const lab = createProjectLab({ config, rea, log, createAgent });
   const jobs = new JobManager({ config, bus, audit, getSettings, ...(eraBin ? { eraBin } : {}), ...(env ? { env } : {}) });
-  const ctx = { config, rea, log, version, bus, audit, jobs, lab, settings: getSettings, host, port: 0 };
+  const ctx = { config, rea, log, version, bus, audit, jobs, lab, createAgent, settings: getSettings, host, port: 0 };
+  ctx.getSettingsStore = () => settingsStore;
   ctx.projects = projectsService(ctx);
   ctx.analysis = analysisService(ctx);
   ctx.agents = agentsService(ctx);
@@ -76,7 +69,7 @@ export async function createControlPlane({ config, rea, log = nullLogger, versio
   ctx.workbench = workbenchService(ctx);
   ctx.system = systemService(ctx);
   ctx.tasks = tasksService(ctx);
-  const vendor = vendorMap();
+  const vendor = vendorMap(vendorRoots);
 
   const body = (req) =>
     new Promise((resolveBody, reject) => {
@@ -113,6 +106,7 @@ export async function createControlPlane({ config, rea, log = nullLogger, versio
 
   route('GET', '/api/overview', async () => ctx.system.overview());
   route('GET', '/api/tools', async () => ctx.system.tools());
+  route('POST', '/api/tools/rea-doctor', async () => ({ job: ctx.system.reaDoctor() }));
   route('GET', '/api/diagnostics', async () => ctx.system.diagnostics());
   route('GET', '/api/audit', async () => ({ entries: audit.tail(300) }));
   route('GET', '/api/settings', async () => ({ settings: getSettings() }));
@@ -130,6 +124,8 @@ export async function createControlPlane({ config, rea, log = nullLogger, versio
   route('GET', '/api/projects/:id', async (m) => P.status(m[1]));
   route('PATCH', '/api/projects/:id', async (m, _r, _u, b) => ({ project: P.update(m[1], b) }));
   route('DELETE', '/api/projects/:id', async (m) => P.remove(m[1]));
+  route('POST', '/api/projects/clone', async (_m, _r, _u, b) => ({ job: P.clone(b) }));
+  route('POST', '/api/projects/:id/assist', async (m, _r, _u, b) => ctx.workbench.assist(m[1], b));
   route('POST', '/api/projects/:id/ops/:op', async (m, _r, _u, b) => ({ job: P.startOp(m[1], m[2], b) }));
   route('POST', '/api/projects/:id/cancel', async (m) => P.cancel(m[1]));
   route('GET', '/api/projects/:id/runs/:run', async (m) => P.runDetail(m[1], m[2] === 'latest' ? null : m[2]));
@@ -246,9 +242,22 @@ export async function createControlPlane({ config, rea, log = nullLogger, versio
     return send(res, 404, { error: 'Unknown endpoint' });
   }
 
+  // The only inline script is the import map; its exact content is allowed by hash instead of 'unsafe-inline'.
+  const cspCache = new Map();
+  function cspFor(file) {
+    if (extname(file) !== '.html') return CSP;
+    const mtime = statSync(file).mtimeMs;
+    const hit = cspCache.get(file);
+    if (hit?.mtime === mtime) return hit.csp;
+    const hashes = [...readFileSync(file, 'utf8').matchAll(/<script type="importmap">([\s\S]*?)<\/script>/g)].map((m) => `'sha256-${createHash('sha256').update(m[1]).digest('base64')}'`);
+    const csp = hashes.length ? CSP.replace("script-src 'self'", `script-src 'self' ${hashes.join(' ')}`) : CSP;
+    cspCache.set(file, { mtime, csp });
+    return csp;
+  }
+
   function serveFile(res, file, extra = {}) {
     const type = MIME[extname(file)] ?? 'application/octet-stream';
-    res.writeHead(200, { 'Content-Type': type, 'Content-Security-Policy': CSP, 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'no-referrer', 'Cache-Control': 'no-cache', ...extra });
+    res.writeHead(200, { 'Content-Type': type, 'Content-Security-Policy': cspFor(file), 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'no-referrer', 'Cache-Control': 'no-cache', ...extra });
     createReadStream(file).pipe(res);
   }
 

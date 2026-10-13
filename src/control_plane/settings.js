@@ -2,7 +2,8 @@
 // The UI edits it through the control plane; the control plane enforces it. Nothing here stores credentials:
 // AI providers keep their own sign-in (ERA only asks the CLIs whether they are signed in).
 import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
-import { isAbsolute, join, resolve } from 'node:path';
+import { isAbsolute, join, relative } from 'node:path';
+import { realish } from '../project_lab/schema.js';
 import { presetTable } from '../agents/team.js';
 
 export const DEFAULT_SETTINGS = Object.freeze({
@@ -168,7 +169,14 @@ function diffKeys(a, b, prefix = '') {
 export function insideAllowedRoots(path, settings) {
   const roots = settings.workspaces.allowedRoots;
   if (roots.length === 0) return true;
-  const p = resolve(path);
-  return roots.some((r) => p === resolve(r) || p.startsWith(resolve(r) + '/'));
+  try {
+    const p = realish(path);
+    return roots.some((r) => {
+      const rel = relative(realish(r), p);
+      return !isAbsolute(rel) && rel !== '..' && !rel.startsWith('../');
+    });
+  } catch {
+    return false;
+  }
 }
 

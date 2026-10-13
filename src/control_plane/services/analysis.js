@@ -80,6 +80,7 @@ export function analysisService(ctx) {
   async function detect(path) {
     if (typeof path !== 'string' || !path) throw bad('target path is required.');
     const target = resolve(path);
+    if (!insideAllowedRoots(target, ctx.settings())) throw denied('The target is outside the allowed workspace roots.');
     if (!existsSync(target)) throw missing(`Target does not exist: ${target}`);
     try {
       assertTargetPath(target);
@@ -97,6 +98,7 @@ export function analysisService(ctx) {
     if (!info.supported) throw bad(`ERA cannot analyze this target: ${info.reason}`, { kind: info.kind });
     if (!info.rea.available) throw bad(`REA is not available: ${info.rea.error ?? 'not found'}. Run \`era rea doctor\`.`);
     const args = ['analyze', info.target, '--json'];
+    if (body.runtime && info.kind !== 'mach-o') throw bad('Runtime capture is supported only for native Mach-O executables.');
     if (body.runtime) {
       if (!ctx.settings().permissions.runtimeCapture) throw denied('Runtime capture executes the target program. Enable Settings → Permissions → Runtime capture first.');
       args.push('--runtime');

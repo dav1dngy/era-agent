@@ -3,6 +3,7 @@ import { existsSync } from 'node:fs';
 import { arch, platform, release } from 'node:os';
 import { join } from 'node:path';
 import { sandboxAvailable } from '../../safety/sandbox.js';
+import { denied } from '../errors.js';
 import { HARD_LIMITS, PROTECTED_PATHS } from '../../safety/policy.js';
 
 export function systemService(ctx) {
@@ -32,8 +33,12 @@ export function systemService(ctx) {
   }
 
   function diagnostics() {
+    if (!ctx.settings().advanced.diagnostics) throw denied('Diagnostics are disabled in Settings → Advanced.');
     return { audit_tail: ctx.audit.tail(100), jobs: ctx.jobs.list().slice(0, 50), state_dir: ctx.config.stateDirAbs, log_dir: join(ctx.config.stateDirAbs, 'logs'), log_dir_exists: existsSync(join(ctx.config.stateDirAbs, 'logs')), hard_limits: HARD_LIMITS, protected_paths: PROTECTED_PATHS };
   }
 
-  return { overview, tools, diagnostics };
+  // `era rea doctor` as a job (REA's own diagnostic, unchanged).
+  const reaDoctor = () => ctx.jobs.start({ kind: 'rea.doctor', label: 'REA doctor', args: ['rea', 'doctor'] });
+
+  return { overview, tools, diagnostics, reaDoctor };
 }

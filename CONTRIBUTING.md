@@ -1,6 +1,7 @@
 # Contributing to ERA
 
-Thanks for helping! ERA is small and dependency-free apart from the REA engine.
+Thanks for helping! ERA core is small and dependency-free apart from the REA engine; the optional Studio
+client has its own desktop/UI dependencies.
 
 ## Development setup
 
@@ -37,3 +38,22 @@ See docs/testing.md for which tests use the real REA engine and which use fakes.
 2. Run `npm test`, `npm run lint` and `node scripts/check.mjs`.
 3. If behaviour changes, run `era benchmark` and include the table.
 4. Update `CHANGELOG.md`.
+
+## ERA Studio development
+
+```bash
+npm ci --prefix apps/studio
+node bin/era.mjs studio app --dev
+node --test tests/control-plane.test.js tests/studio-ui-model.test.js
+npm run test:desktop --prefix apps/studio
+npm run package --prefix apps/studio
+npm run test:package --prefix apps/studio
+node scripts/third-party-notices.mjs
+```
+
+The desktop test uses genuine Electron, Monaco, REA and project tests, with a clearly
+simulated coding agent on disposable fixtures. It never approves a user's project.
+Screenshots/results go to ignored `apps/studio/out/validation`. The package test runs
+the generated app outside the repository with temporary state. Build from locked
+sources; never include local state or credentials. Keep the CLI independent of UI
+packages. See `docs/ERA_STUDIO_TESTING.md` for remaining validation gaps.

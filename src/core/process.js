@@ -95,7 +95,8 @@ export function runProcess(command, args, options = {}) {
     let settled = false;
     let child;
     try {
-      child = spawn(file, argv, { cwd, env, stdio: ['pipe', 'pipe', 'pipe'], detached: process.platform !== 'win32' });
+      const childEnv = process.versions.electron && file === process.execPath ? { ...env, ELECTRON_RUN_AS_NODE: '1' } : env;
+      child = spawn(file, argv, { cwd, env: childEnv, stdio: ['pipe', 'pipe', 'pipe'], detached: process.platform !== 'win32' });
     } catch (err) {
       resolvePromise({ exitCode: null, signal: null, timedOut: false, durationMs: 0, stdout: '', stderr: '', stdoutBytes: 0, resources: null, spawnError: err.message });
       return;

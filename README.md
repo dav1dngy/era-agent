@@ -200,6 +200,27 @@ the negative native figures are run-to-run Hopper variance.
 
 Methodology: [docs/benchmark-methodology.md](docs/benchmark-methodology.md).
 
+## ERA Studio (v0.2.0 development)
+
+ERA Studio is the local Electron desktop / browser interface for the existing ERA
+backend: natural-language task planning, Simple/Advanced modes, Monaco workbench and
+diffs, sandboxed terminal, Project Lab, analysis evidence, Agent Command Center,
+Improvement Lab and explicit approval/rollback.
+
+```bash
+npm ci --prefix apps/studio
+node bin/era.mjs studio doctor
+node bin/era.mjs studio app
+# Browser alternative: node bin/era.mjs studio serve --open
+# Unsigned macOS application: npm run package --prefix apps/studio
+```
+
+CLI users do not need Studio's optional dependencies. macOS arm64 is validated;
+no signed/notarized release is published. Read the [Studio guide](docs/ERA_STUDIO.md),
+[architecture](docs/ERA_STUDIO_ARCHITECTURE.md), [security limits](docs/ERA_STUDIO_SECURITY.md)
+and [actual validation results](docs/ERA_STUDIO_TESTING.md). No debugger, extension
+marketplace, SSO/RBAC or Windows/Linux support is claimed for this development build.
+
 ## ERA Project Lab (v0.2.0, in development)
 
 Project Lab applies ERA to **external projects you are authorized to work on**. Three modes:
@@ -324,10 +345,9 @@ See [SECURITY.md](SECURITY.md).
 
 ## Roadmap
 
-* **v0.2.0**: Project Lab (in development on `feature/era-v0.2.0`; designed with a
-  stable programmatic API and JSON state so ERA Studio can build on it). ERA Studio
-  (graphical interface), visualized analyses, an interactive experiment dashboard and
-  benchmark comparison, onboarding: not started.
+* **v0.2.0**: Project Lab, configurable multi-agent engineering and ERA Studio are
+  implemented in development on `feature/era-v0.2.0`. Next: independent engineering
+  and security review, signed distribution and broader platform validation.
 * **v0.3.0**: multi-agent verification, advanced workflows, team collaboration,
   role-based permissions.
 

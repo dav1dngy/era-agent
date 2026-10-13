@@ -3,7 +3,7 @@
 // cancellation and recovery as on the command line. The control plane only schedules, observes and
 // records. Progress comes from the backend's own state files through `poll`, never from the UI.
 import { spawn } from 'node:child_process';
-import { mkdirSync, readFileSync, readdirSync, renameSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, readdirSync, renameSync, unlinkSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { newId } from '../core/util.js';
@@ -26,14 +26,6 @@ function parseTrailingJson(text) {
 }
 const TERMINAL = ['succeeded', 'failed', 'cancelled', 'interrupted'];
 
-const alive = (pid) => {
-  try {
-    process.kill(pid, 0);
-    return true;
-  } catch (err) {
-    return err.code === 'EPERM';
-  }
-};
 
 export class JobManager {
   constructor({ config, bus, audit, getSettings, eraBin = ERA_BIN, env = process.env }) {
@@ -51,6 +43,7 @@ export class JobManager {
     this.queue = [];
     this.runtime = new Map();
     this.listeners = new Set();
+    this.closing = false;
     this.load();
   }
 
@@ -58,11 +51,16 @@ export class JobManager {
     for (const f of readdirSync(this.dir).filter((n) => n.endsWith('.json'))) {
       try {
         const job = JSON.parse(readFileSync(join(this.dir, f), 'utf8'));
-        // A job recorded as running whose process is gone was interrupted (Studio or the machine stopped).
-        if (!TERMINAL.includes(job.status) && !(job.pid && alive(job.pid) && job.status === 'running')) {
+        if (TERMINAL.includes(job.status) && Date.parse(job.finished_at) < Date.now() - this.getSettings().privacy.logRetentionDays * 86_400_000) {
+          unlinkSync(join(this.dir, f));
+          continue;
+        }
+        // A restarted server cannot reattach pipes or supervise an old PID (it may even have been reused).
+        // Project Lab's own locks still prevent resuming over a surviving project process.
+        if (!TERMINAL.includes(job.status)) {
           job.status = 'interrupted';
           job.finished_at ??= new Date().toISOString();
-          job.error ??= 'The job was interrupted (ERA Studio or the machine stopped). Project operations can be resumed.';
+          job.error ??= 'ERA Studio restarted and no longer owns this job. Check for a surviving process before resuming; Project Lab enforces its run lock.';
           this.persist(job);
         }
         this.jobs.set(job.id, job);
@@ -103,12 +101,13 @@ export class JobManager {
 
   // spec: { kind, label, args: [..era args..], project_id?, poll?: () => snapshot, cancel?: async () => void, env?: {} }
   start(spec) {
+    if (this.closing) throw new Error('ERA Studio is shutting down.');
     if (spec.project_id && this.active(spec.project_id)) {
       const e = new Error(`Project "${spec.project_id}" already has an active job (${this.active(spec.project_id).id}).`);
       e.status = 409;
       throw e;
     }
-    const job = { id: newId('job'), kind: spec.kind, label: spec.label, project_id: spec.project_id ?? null, args: spec.args.map((a) => redactText(String(a))), status: 'queued', created_at: new Date().toISOString(), started_at: null, finished_at: null, exit_code: null, signal: null, pid: null, cancel_requested: false, result: null, error: null, log_tail: [] };
+    const job = { id: newId('job'), kind: spec.kind, label: spec.label, project_id: spec.project_id ?? null, args: (spec.exec ? spec.exec.args : spec.args).map((a) => redactText(String(a))), status: 'queued', created_at: new Date().toISOString(), started_at: null, finished_at: null, exit_code: null, signal: null, pid: null, cancel_requested: false, result: null, error: null, log_tail: [] };
     this.jobs.set(job.id, job);
     this.runtime.set(job.id, spec);
     this.persist(job);
@@ -120,6 +119,7 @@ export class JobManager {
   }
 
   pump() {
+    if (this.closing) return;
     const max = this.getSettings().execution.concurrentJobs;
     while (this.queue.length && [...this.jobs.values()].filter((j) => j.status === 'running').length < max) {
       const id = this.queue.shift();
@@ -132,9 +132,13 @@ export class JobManager {
     const spec = this.runtime.get(job.id);
     const env = { ...this.env, ...(spec.env ?? {}), ERA_STATE_DIR: this.config.stateDirAbs };
     delete env.NODE_TEST_CONTEXT;
+    // Inside the Electron shell, process.execPath is the Electron binary: run it as plain Node for CLI jobs.
+    if (process.versions.electron) env.ELECTRON_RUN_AS_NODE = '1';
     let child;
     try {
-      child = spawn(process.execPath, [this.eraBin, ...spec.args], { cwd: spec.cwd ?? this.config.cwd, env, stdio: ['ignore', 'pipe', 'pipe'], detached: true });
+      // Normally the ERA CLI; services may also build an allowlisted fixed command (git clone), never from raw client input.
+      const [file, argv] = spec.exec ? [spec.exec.command, spec.exec.args] : [process.execPath, [this.eraBin, ...spec.args]];
+      child = spawn(file, argv, { cwd: spec.cwd ?? this.config.cwd, env, stdio: ['ignore', 'pipe', 'pipe'], detached: true });
     } catch (err) {
       this.finish(job, { status: 'failed', error: err.message });
       return;
@@ -178,7 +182,8 @@ export class JobManager {
     child.on('close', (code, signal) => {
       const result = parseTrailingJson(stdout);
       const status = job.cancel_requested ? 'cancelled' : code === 0 ? 'succeeded' : signal ? 'interrupted' : 'failed';
-      const err = status === 'failed' || status === 'interrupted' ? job.log_tail.filter((l) => l.startsWith('! ')).slice(-3).map((l) => l.slice(2)).join('\n') || `exited with code ${code}` : null;
+      const analysisErrors = result?.runs?.flatMap((r) => r.errors ?? []).join('; ');
+      const err = status === 'failed' || status === 'interrupted' ? job.log_tail.filter((l) => l.startsWith('! ')).slice(-3).map((l) => l.slice(2)).join('\n') || analysisErrors || `exited with code ${code}` : null;
       this.finish(job, { status, exit_code: code, signal, result, error: err });
     });
   }
@@ -240,16 +245,22 @@ export class JobManager {
 
   // Server shutdown: stop running jobs gracefully; project runs stay resumable.
   async shutdown() {
-    for (const [id, child] of this.children) {
-      try {
-        process.kill(-child.pid, 'SIGTERM');
-      } catch {
-        // gone
-      }
-      this.jobs.get(id).error ??= 'ERA Studio closed while this job was running.';
+    this.closing = true;
+    for (const id of this.queue.splice(0)) {
+      const job = this.jobs.get(id);
+      if (job?.status === 'queued') this.finish(job, { status: 'interrupted', error: 'ERA Studio closed before this job started.' });
     }
-    await new Promise((r) => setTimeout(r, this.children.size ? 1500 : 0));
+    const pending = [...this.children.entries()];
+    for (const [id, child] of pending) {
+      this.jobs.get(id).error ??= 'ERA Studio closed while this job was running.';
+      try { process.kill(-child.pid, 'SIGTERM'); } catch { /* already gone */ }
+    }
+    if (pending.length) await new Promise((r) => setTimeout(r, 1500));
+    for (const [id, child] of pending) {
+      if (!this.children.has(id)) continue;
+      try { process.kill(-child.pid, 'SIGKILL'); } catch { /* already gone */ }
+      this.finish(this.jobs.get(id), { status: 'interrupted', error: 'ERA Studio closed while this job was running.' });
+    }
     for (const p of this.pollers.values()) clearInterval(p);
   }
 }
-

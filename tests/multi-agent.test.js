@@ -316,12 +316,13 @@ test('credential files and agent instruction files are withheld; secret-looking 
   // secret content inside a normal source file, sent to a remote provider
   const lab2 = newLab();
   const src2 = fixture();
-  writeFileSync(join(src2, 'src', 'config.js'), "module.exports = { key: 'AKIAABCDEFGHIJKLMNOP' };\n");
+  const fakeKey = 'AKIA' + 'ABCDEFGHIJKLMNOP';
+  writeFileSync(join(src2, 'src', 'config.js'), `module.exports = { key: '${fakeKey}' };\n`);
   lab2.create(project(src2, { team: team({ implementer: 'remote' }), exposure: { remote_consent: ['custom:remote'] } }));
   const blocked = await lab2.modify('cart');
   assert.equal(blocked.run.status, 'failed');
   assert.match(blocked.run.error, /Secret-looking content was found in 1 source file.*src\/config\.js: AWS access key/);
-  assert.doesNotMatch(JSON.stringify(blocked.run), /AKIAABCDEFGHIJKLMNOP/, 'the secret value is never recorded');
+  assert.equal(JSON.stringify(blocked.run).includes(fakeKey), false, 'the secret value is never recorded');
   lab2.update('cart', { exposure: { allow_secret_content: true } });
   const allowed = await lab2.modify('cart');
   assert.equal(allowed.run.status, 'awaiting-approval', allowed.run.error);

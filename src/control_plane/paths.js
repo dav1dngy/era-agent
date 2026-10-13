@@ -18,17 +18,20 @@ const MAX_READ = 2_000_000;
 // Resolves rel (a path inside root); rejects absolute paths, "..", NULs and symlink escapes.
 export function resolveInside(root, rel = '') {
   if (typeof rel !== 'string' || rel.includes('\0') || rel.startsWith('/') || rel.split(/[\\/]/).includes('..')) throw new PathError('Path is outside the allowed root');
+  if (rel.split(/[\\/]/).some((p) => p === '.git' || p === '.era')) throw new PathError('That path is protected');
   const realRoot = realpathSync(root);
   const target = resolve(realRoot, rel);
   if (target !== realRoot && !target.startsWith(realRoot + sep)) throw new PathError('Path is outside the allowed root');
   // For existing paths, the real location must stay inside the root as well.
   if (existsSync(target)) {
     const real = realpathSync(target);
+    if (real.slice(realRoot.length + 1).split(sep).some((p) => p === '.git' || p === '.era')) throw new PathError('That path is protected');
     if (real !== realRoot && !real.startsWith(realRoot + sep)) throw new PathError('Path resolves outside the allowed root (symlink)');
   } else {
     let head = target;
     while (!existsSync(head)) head = resolve(head, '..');
     const real = realpathSync(head);
+    if (real.slice(realRoot.length + 1).split(sep).some((p) => p === '.git' || p === '.era')) throw new PathError('That path is protected');
     if (real !== realRoot && !real.startsWith(realRoot + sep)) throw new PathError('Path resolves outside the allowed root');
   }
   return target;

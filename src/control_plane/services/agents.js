@@ -1,6 +1,6 @@
 // Agent Command Center data: provider capability/availability, teams, live activity and usage.
 // Every value is read from the adapters (probe/auth) or from Project Lab's run records and ledgers.
-import { agentCapabilities, codingAgentIds, createCodingAgent } from '../../agents/coding-agents.js';
+import { agentCapabilities, codingAgentIds } from '../../agents/coding-agents.js';
 import { ROLE_NAMES, ROLES, detectTeam, presetTable, rolesProviders } from '../../agents/team.js';
 
 const CACHE_MS = 10_000;
@@ -23,7 +23,7 @@ export function agentsService(ctx) {
     const ids = [...codingAgentIds(), ...Object.keys(custom).map((n) => `custom:${n}`)];
     const rows = [];
     for (const id of ids) {
-      const agent = createCodingAgent(id, ctx.config);
+      const agent = ctx.createAgent(id, ctx.config);
       let probe;
       let auth = { authenticated: null, detail: null };
       try {
