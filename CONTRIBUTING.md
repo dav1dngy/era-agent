@@ -8,8 +8,12 @@ Thanks for helping! ERA is small and dependency-free apart from the REA engine.
 npm install
 npm test                 # unit + REA integration tests (integration skips without REA)
 ERA_SKIP_REA=1 npm test  # unit tests only
+npm run lint             # ESLint
 node scripts/check.mjs   # syntax check + secret scan
+bash scripts/clean-install-test.sh   # installation from a packed tarball
 ```
+
+See docs/testing.md for which tests use the real REA engine and which use fakes.
 
 ## Ground rules
 
@@ -30,6 +34,6 @@ node scripts/check.mjs   # syntax check + secret scan
 ## Pull requests
 
 1. Add or update tests.
-2. Run `npm test` and `node scripts/check.mjs`.
+2. Run `npm test`, `npm run lint` and `node scripts/check.mjs`.
 3. If behaviour changes, run `era benchmark` and include the table.
 4. Update `CHANGELOG.md`.

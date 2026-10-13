@@ -4,7 +4,7 @@
 
 | Requirement | Notes |
 |---|---|
-| macOS (arm64 verified) or Linux | macOS 27 arm64 is the verified host. On Linux, Mach-O inspection and Hopper decompilation are unavailable, but JavaScript, archive and process workflows are supported by REA there |
+| macOS (arm64 verified) or Linux | macOS 27 arm64 is the verified host. On Linux, Mach-O inspection, Hopper decompilation and the runtime sandbox are unavailable; JavaScript and archive workflows work |
 | Node.js `>=22.19` (REA needs `^22.19 \|\| ^24.11 \|\| >=26`) | verified with v24.20.0 |
 | npm | to install dependencies |
 | git | required for self-improvement (worktrees, tags) |
@@ -51,22 +51,57 @@ readiness report.
 
 ## Configuration
 
-`era.config.json` in the working directory (all fields optional):
+`era.config.json` in the working directory (all fields optional). The values below are this repository's configuration; built-in defaults differ only in `limits.maxCycles` (3) and `limits.maxReaRunsPerCycle` (12):
 
 ```json
 {
   "stateDir": ".era",
   "rea": { "command": null, "timeoutMs": 600000, "measureResources": true },
   "analysis": { "maxDecompiledFunctions": 8 },
-  "limits": { "maxCycles": 3, "maxReaRunsPerCycle": 12, "commandTimeoutMs": 900000 },
-  "improvement": { "implementerCommand": null, "implementerTimeoutMs": 1800000 },
+  "limits": { "maxCycles": 6, "maxReaRunsPerCycle": 40, "commandTimeoutMs": 900000 },
+  "improvement": {
+    "agent": null,
+    "implementerCommand": null,
+    "implementerTimeoutMs": 1800000,
+    "budget": { "maxCostUsdPerCycle": 5, "maxCostUsdTotal": 20, "allowUnmeteredAgents": false }
+  },
+  "agents": { "claude-code": { "command": "claude", "model": null }, "codex": { "command": null, "model": null } },
+  "reasoning": { "provider": "none", "allowRemote": false, "command": { "run": null, "remote": true } },
   "benchmark": { "repetitions": 3 }
 }
 ```
 
-Environment overrides: `ERA_REA_BIN`, `ERA_STATE_DIR` (see `.env.example`).
-Limits are capped by hard limits in `src/safety/policy.js` (for example, at most 10
-cycles and one parallel experiment).
+* `improvement.agent`: `manual` (default), `command`, `claude-code` or `codex`.
+  `era agents` shows what is installed. Codex is found on `PATH` or inside the
+  ChatGPT app bundle.
+* `reasoning.provider`: `none` explains locally without a model. A `command`
+  provider receives the prompt on stdin, for example a local model:
+  `{ "run": "ollama run llama3", "remote": false }`.
+* Environment: `ERA_REA_BIN`, `ERA_STATE_DIR`, `ERA_LOG_LEVEL`
+  (`debug|info|warn|error`), `ERA_LOG=off`. See `.env.example`.
+
+All limits are capped by hard limits in `src/safety/policy.js`.
+
+## MCP clients (Claude Code, Codex, Cursor, …)
+
+REA ships the MCP server and the client registration. ERA reuses both:
+
+```bash
+era rea setup --dry-run      # show which agent clients REA would configure
+era rea setup                # register REA's MCP server with detected clients
+era rea mcp doctor           # validate MCP startup and tool listing
+```
+
+## Troubleshooting
+
+| Symptom | Fix |
+|---|---|
+| `REA: unavailable` in `era status` | run `npm install`, or set `ERA_REA_BIN` |
+| `provider_unavailable` / decompilation skipped | install Hopper, or set `GHIDRA_INSTALL_DIR`; check `era rea providers` |
+| `This Hopper target is already open in REA session …` | a REA process from an earlier crash still holds the session: find it with `pgrep -fl "rea function"` and stop it (ERA's watchdog prevents new orphans) |
+| `Another improvement run holds the lock` | wait, or run `era improve recover` if that process is gone |
+| `The stable branch moved since … was evaluated` | `era improve rebase <cycle>`, then `era improve evaluate <cycle>` |
+| `Runtime capture executes the target, and no sandbox is available` | use macOS, or pass `--unsandboxed` for trusted binaries only |
 
 ## Verify the installation
 

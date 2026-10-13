@@ -68,6 +68,8 @@ automatic publication.
 
 The implementer was Claude Code working interactively in the experiment worktree
 (manual mode: `era improve propose` → edit/commit → `era improve evaluate`).
+These three cycles ran before the approval gate existed, so accepted cycles
+were merged automatically.
 Every number below comes from `experiments/cycles/*/cycle.json`.
 
 | # | Cycle | Base | Candidate (selected by) | Target result | Decision |
@@ -120,6 +122,52 @@ time −0.4%, memory −0.2%, tests 64 → 66.
 * The planner has no hypothesis template for `incomplete-analysis-coverage`
   (the proposal text falls back to the finding title).
 
+## Campaign 2 (development round 2)
+
+Rules changed before this campaign. Accepted experiments now stop at
+`awaiting-approval`, and only `era improve approve` (a maintainer) integrates
+them. `limits.maxCycles` was raised from 3 to 6 and `maxReaRunsPerCycle` from
+12 to 40.
+
+### Experiment 4: `cycle-20261013T112629-18505d`
+
+* **Finding:** `F-5dd92e0c8a`, REA `resource_constraint` on
+  `src/self_analysis/self-analyze.js`. At proposal, REA reported incomplete
+  coverage for 23 files, and `src/self_analysis/self-analyze.js` was missing from
+  REA's graph entirely. The packed source alone (34 files, 158 KB) exceeded REA's
+  per-run result budget, so the era-v2 grouping (full source in every pass) no
+  longer worked. Which files were starved varied between runs, which is why the
+  real-REA coverage test on `main` failed intermittently.
+* **Change:** each real file is analyzed in exactly one REA pass of at most
+  50 KB. Local imports that cross passes resolve to one-line placeholder files.
+* **First evaluation (base `5004f96`):** accepted on all guards. Findings
+  26 → 7 under the stable rules, complete coverage, tests 101 → 104 passing,
+  benchmark time −10.9%. **However, the benchmark evidence for the native cases
+  was invalid in both baseline and candidate** (error rate 0.4, F1 0.593). An
+  `era analyze` subprocess died from a signal of undetermined origin. Its
+  Hopper-backed `rea function` child was orphaned before ERA's timeout could
+  fire, hung, and kept REA's per-target Hopper session open, so every later
+  decompilation was refused. Because both sides failed identically, the decision
+  was unaffected, but that evidence should not support an approval.
+* **Fix outside the Lab:** `src/core/watchdog.mjs` now bounds every REA, era,
+  test and agent subprocess from inside its own process group and kills the
+  group if the parent disappears (commit `f71f7de`).
+* **Re-evaluation:** after `era improve rebase` onto the final release-candidate
+  `main`: EXPERIMENT_4_REEVAL
+
+### Not run in this campaign
+
+Experiments 5 and 6 are allowed by the limits but were not started. They need a
+reliable baseline, and `main`'s REA self-analysis stays nondeterministic until
+experiment 4 is approved. Approval also requires `main` to be at the evaluated
+base, so independent experiments would each need a rebase after any
+integration. Ranked candidates after experiment 4 (from its candidate
+self-analysis): `untested-module` for `src/commands/{lab,info,analysis}.js`,
+`spawn-without-error-listener` in `tests/e2e-lab.test.js` and
+`tests/mcp.test.js`, `high-fan-out` in `src/commands/info.js` and
+`src/orchestration/cycle.js`, and the benchmark gaps `B-js-esm-app` (an REA
+limitation) and `B-native-macho` (`/usr/lib/dyld` counted as a linked library).
+
 ## Running it yourself
 
 ```bash
@@ -131,16 +179,16 @@ era history
 era benchmark --versions era-v1,era-v2,era-v3
 ```
 
-With an implementer command (unattended, bounded by `limits.maxCycles`):
+With a coding agent (unattended, bounded by `limits.maxCycles` and the budget;
+accepted experiments still wait for approval):
 
 ```bash
-era improve --cycles 1 --implementer './my-implementer.sh'
+era improve --cycles 1 --agent claude-code     # or codex, or command with --implementer
+era improve implement <cycle> --agent codex    # one step at a time
 ```
 
-The command runs with `cwd` = experiment worktree and receives
-`ERA_INSTRUCTIONS_FILE`, `ERA_PROPOSAL_FILE`, `ERA_WORKTREE` and `ERA_CYCLE_ID`.
-Its changes are committed on the experiment branch. A headless Claude Code
-invocation such as
-`claude -p "$(cat "$ERA_INSTRUCTIONS_FILE")" --permission-mode acceptEdits`
-can serve as the implementer. **That configuration was not exercised in this
-release.** The implementer path is covered by tests with scripted commands only.
+Agents run with `cwd` = experiment worktree and receive `ERA_INSTRUCTIONS_FILE`,
+`ERA_PROPOSAL_FILE`, `ERA_WORKTREE` and `ERA_CYCLE_ID`. Their changes are
+committed on the experiment branch. **The `claude-code` and `codex` adapters have
+been tested only against fake CLIs.** No real headless agent run is part of this
+release's evidence.
