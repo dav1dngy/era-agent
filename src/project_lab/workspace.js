@@ -118,6 +118,8 @@ export async function workspaceChanges(dir, baseline) {
   return { files, patch, stat };
 }
 
+export const patchSha256 = (changes) => createHash('sha256').update(changes.patch).digest('hex');
+
 // Commits the current workspace state (used to checkpoint agent attempts).
 export async function checkpoint(dir, message) {
   await assertOwnRepo(dir);

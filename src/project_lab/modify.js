@@ -2,7 +2,6 @@
 // verifies it with the project's own build/tests plus the acceptance criteria,
 // detects regressions, and produces a reviewable diff. Nothing reaches the
 // original project until a human approves.
-import { createHash } from 'node:crypto';
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { Pause } from './context.js';
@@ -11,7 +10,7 @@ import { regressions } from './runner.js';
 import { reviewAndCorrect, runArchitect } from './team.js';
 import { independence } from '../agents/team.js';
 import { resolveCommands, runVerification, stepDetect, stepWorkspace, summarizeCommands } from './steps.js';
-import { protectedViolations, workspaceChanges, writePatch } from './workspace.js';
+import { patchSha256, protectedViolations, workspaceChanges, writePatch } from './workspace.js';
 
 const TEST_FILE = /(^|\/)(tests?|__tests__|spec)\/|\.(test|spec)\.[a-z]+$|(^|\/)test_[^/]+\.py$/;
 
@@ -104,16 +103,23 @@ export function failureFeedback(decision, verification) {
   return parts.join('\n');
 }
 
-// Pure decision over measured facts: accepts only when every condition holds.
-export function evaluateChange({ project, baseline, after, changes }) {
+// The guards on WHAT changed (not on how the checks went). They must be applied to the final state of the working copy:
+// build, test and acceptance commands run inside it and can change it, so a list captured before they ran proves nothing.
+export function changeGuards({ project, changes }) {
   const reasons = [];
-  const warnings = [];
   const paths = changes.files.map((f) => f.path);
   if (paths.length === 0) reasons.push('No files were changed.');
   const violations = protectedViolations(paths, project.protected);
   if (violations.length) reasons.push(`Protected files were changed: ${violations.slice(0, 10).join(', ')}.`);
   if (paths.length > project.limits.maxChangedFiles) reasons.push(`${paths.length} files changed (limit ${project.limits.maxChangedFiles}).`);
   if (Buffer.byteLength(changes.patch) > project.limits.maxDiffBytes) reasons.push(`The diff is ${Buffer.byteLength(changes.patch)} bytes (limit ${project.limits.maxDiffBytes}).`);
+  return reasons;
+}
+
+// Pure decision over measured facts: accepts only when every condition holds.
+export function evaluateChange({ project, baseline, after, changes }) {
+  const reasons = changeGuards({ project, changes });
+  const warnings = [];
 
   if (after.build.length) {
     if (baseline.build_ok && !after.build_ok) reasons.push('The build passed at baseline and fails now.');
@@ -188,8 +194,12 @@ export async function runModify(c) {
       return { skipped: true, decision: { pass: false, reasons: [impl && impl.ok === false ? `The coding agent failed (exit ${impl.exit_code}${impl.timed_out ? ', timed out' : ''}) and changed nothing.` : 'The coding agent made no changes.'], warnings: [] }, verification: { build: [], test: [], acceptance: [], tests: null }, changed: [] };
     }
     const verification = await runVerification(c, commands, { acceptance: true });
-    const decision = evaluateChange({ project, baseline, after: verification, changes });
-    return { decision, verification, changed: changes.files, stat: changes.stat };
+    // The commands may have changed the working copy: judge, hash and report the state that exists NOW.
+    const settled = await workspaceChanges(c.workspace, ws.baseline_commit);
+    const decision = evaluateChange({ project, baseline, after: verification, changes: settled });
+    const touched = changedByCommands(changes, settled);
+    if (touched.length) decision.warnings.push(`The build/test/acceptance commands changed the working copy: ${touched.slice(0, 8).join(', ')}. The guards were applied to the final state.`);
+    return { decision, verification, changed: settled.files, stat: settled.stat, patch_sha256: patchSha256(settled) };
   };
 
   const maxAttempts = project.limits.maxAttempts;
@@ -230,6 +240,11 @@ export async function runModify(c) {
     const patchFile = join(c.runDir, 'change.patch');
     if (changes.patch) writePatch(patchFile, changes.patch);
     const decision = { ...last.decision, reasons: [...last.decision.reasons], warnings: [...last.decision.warnings] };
+    // The decision must describe exactly the patch that approval will apply: re-apply the guards to it and refuse a state
+    // that was never verified (changed after the last verification).
+    decision.reasons.push(...changeGuards({ project, changes }).filter((r) => !decision.reasons.includes(r)));
+    if (last.patch_sha256 && last.patch_sha256 !== patchSha256(changes)) decision.reasons.push('The working copy changed after the last verification, so the final diff was never verified. Run `era project resume` to verify it.');
+    decision.pass = decision.reasons.length === 0;
     if (review?.unresolved.length) {
       decision.pass = false;
       decision.reasons.push(`The independent review (${review.reviewer}) left ${review.unresolved.length} unresolved ${review.block_on}-or-higher finding(s): ${review.unresolved.slice(0, 5).map((f) => f.title).join('; ')}.`);
@@ -248,13 +263,25 @@ export async function runModify(c) {
       files: changes.files,
       stat: changes.stat,
       patch_file: existsSync(patchFile) ? patchFile : null,
-      patch_sha256: createHash('sha256').update(changes.patch).digest('hex'),
+      patch_sha256: patchSha256(changes),
       baseline_commit: ws.baseline_commit,
       source_digest: ws.source_digest,
       attempts: c.run.attempts.length,
       verification: last.verification ? { build: last.verification.build, test: last.verification.test, acceptance: last.verification.acceptance, tests: last.verification.tests } : null,
     };
   });
+}
+
+// Paths whose content differs between the state before the verification commands ran and the state after.
+export function changedByCommands(before, after) {
+  const index = (c) => new Map(c.files.map((f) => [f.path, f.status]));
+  const a = index(before);
+  const b = index(after);
+  const out = [];
+  for (const [path, status] of b) if (a.get(path) !== status) out.push(path);
+  for (const path of a.keys()) if (!b.has(path)) out.push(path);
+  if (!out.length && patchSha256(before) !== patchSha256(after)) out.push('(contents of already changed files)');
+  return out;
 }
 
 async function workspaceFileList(dir) {

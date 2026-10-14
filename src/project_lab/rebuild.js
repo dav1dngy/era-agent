@@ -12,9 +12,9 @@ import { Pause } from './context.js';
 import { imageReferencePaths, prepareReferenceImages } from './images.js';
 import { DEFAULT_VISUAL, externalResourceFindings, findRenderer, renderAndCompare, visualHints } from './visual.js';
 import { detectProject } from './detect.js';
-import { evaluateChange, failureFeedback } from './modify.js';
+import { changeGuards, changedByCommands, evaluateChange, failureFeedback } from './modify.js';
 import { resolveCommands, runVerification, summarizeCommands } from './steps.js';
-import { initBaseline, removeWorkspace, treeDigest, walkFiles, workspaceChanges, writePatch } from './workspace.js';
+import { initBaseline, patchSha256, removeWorkspace, treeDigest, walkFiles, workspaceChanges, writePatch } from './workspace.js';
 
 // Only structure is handed to the implementer: no decompiled code, no strings.
 const SPEC_FACT_CATEGORIES = new Set(['export', 'import', 'dependency', 'call', 'function', 'module', 'external', 'entry', 'arch', 'member']);
@@ -353,6 +353,8 @@ export async function runRebuild(c) {
     return { baseline_commit: await initBaseline(c.workspace, 'scaffold: specification'), source_digest: null };
   });
 
+  // SPEC.md is the specification the agent works from; it must not be edited by the agent or by any command.
+  const guardProject = { ...project, protected: [...project.protected, 'SPEC.md'] };
   let last = null;
   let commands = { build: [], test: [] };
   for (let n = 1; n <= project.limits.maxAttempts; n++) {
@@ -381,7 +383,11 @@ export async function runRebuild(c) {
       }
       // The baseline is the (empty) scaffold: any build/test failure now is a failure.
       const empty = { build: [], test: [], acceptance: [], build_ok: true, test_ok: true, tests: null };
-      const decision = evaluateChange({ project: { ...project, protected: [...project.protected, 'SPEC.md'] }, baseline: empty, after: verification, changes });
+      // Build, test, behavior and rendering commands ran inside the working copy: judge and hash the state that exists now.
+      const settled = await workspaceChanges(c.workspace, ws.baseline_commit);
+      const decision = evaluateChange({ project: guardProject, baseline: empty, after: verification, changes: settled });
+      const touched = changedByCommands(changes, settled);
+      if (touched.length) decision.warnings.push(`The build/test/acceptance/behavior commands changed the working copy: ${touched.slice(0, 8).join(', ')}. The guards were applied to the final state.`);
       for (const r of results) if (!r.match) decision.reasons.push(`Behavior "${r.name}" does not match: ${r.reasons.join(', ')}.`);
       if (site) {
         decision.reasons.push(...site.reasons);
@@ -395,7 +401,7 @@ export async function runRebuild(c) {
           decision.pass = false;
         }
       }
-      return { decision, verification, behaviors: results, visual: site?.visual ?? null, changed: changes.files, stat: changes.stat };
+      return { decision, verification, behaviors: results, visual: site?.visual ?? null, changed: settled.files, stat: settled.stat, patch_sha256: patchSha256(settled) };
     });
     last = verify;
     c.run.attempts = [...c.run.attempts.filter((a) => a.n !== n), { n, agent: impl.agent, ok: impl.ok ?? true, pass: verify.decision.pass, reasons: verify.decision.reasons, cost_usd: impl.cost_usd ?? null }];
@@ -411,14 +417,18 @@ export async function runRebuild(c) {
     const changes = await workspaceChanges(c.workspace, ws.baseline_commit);
     const patchFile = join(c.runDir, 'change.patch');
     if (changes.patch) writePatch(patchFile, changes.patch);
+    // The decision must describe exactly what approval will copy out: re-apply the guards to the final state and refuse a
+    // state that was never verified.
+    const reasons = [...last.decision.reasons, ...changeGuards({ project: guardProject, changes }).filter((r) => !last.decision.reasons.includes(r))];
+    if (last.patch_sha256 && last.patch_sha256 !== patchSha256(changes)) reasons.push('The working copy changed after the last verification, so the final result was never verified. Run `era project resume` to verify it.');
     return {
-      pass: last.decision.pass,
-      reasons: last.decision.reasons,
+      pass: reasons.length === 0,
+      reasons,
       warnings: last.decision.warnings,
       files: changes.files,
       stat: changes.stat,
       patch_file: existsSync(patchFile) ? patchFile : null,
-      patch_sha256: createHash('sha256').update(changes.patch).digest('hex'),
+      patch_sha256: patchSha256(changes),
       baseline_commit: ws.baseline_commit,
       attempts: c.run.attempts.length,
       behaviors: last.behaviors,
