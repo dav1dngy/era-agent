@@ -3,7 +3,16 @@
 All notable changes to ERA. Versions `era-vN` are internal self-improvement
 checkpoints (annotated git tags); `vX.Y.Z` are releases.
 
-## v0.2.0 — unreleased (branch `feature/era-v0.2.0`)
+## v0.2.0-dev.0 — 2026-10-14 (development prerelease)
+
+Development preview from `feature/era-v0.2.0`; stable `main` and v0.1.0 remain
+unchanged. Includes an unsigned macOS arm64 Studio build and a CLI npm tarball;
+no npm registry publication. See `docs/release-notes-v0.2.0-dev.0.md` for validation
+scope, installation requirements and known limitations. Screenshot-to-website
+Rebuild is not implemented, and Rebuild still requires configured acceptance checks.
+Studio's production dependency audit reports two low-severity findings involving
+Monaco's transitive DOMPurify dependency (GHSA-p98j-92pf-mc4p and GHSA-6688-9rhm-gjv2).
+They remain open in this preview; no breaking dependency update was applied.
 
 ### ERA Studio
 - Graphite UI refresh: floating icon navigation, original line icons, a task dashboard

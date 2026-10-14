@@ -3,6 +3,8 @@
 ERA Studio is a local desktop and browser client of ERA. It reuses the original
 REA engine, Project Lab, configurable coding agents and Improvement Lab. This is
 an unsigned development build, not a production release or enterprise certification.
+The `v0.2.0-dev.0` GitHub prerelease publishes this development checkpoint without
+merging it into stable `main` or publishing a new npm registry version.
 
 ## Install and launch
 
@@ -62,6 +64,12 @@ remote provider is involved.
   behavior capture and advanced acceptance definitions remain available through the
   existing CLI/project configuration; there is no dedicated behavior editor in Studio.
   REA evidence supports an independent implementation; this is not full source recovery.
+  At least one acceptance check or test command must be configured; Studio does not
+  generate these automatically. Screenshot-to-website reconstruction is not implemented:
+  choosing a JPEG reference does not pass its image content to the coding agent.
+  The New Task Rebuild dialog also has incomplete project setup: starting without
+  a project folder can fail, and it does not save new reference/destination values
+  for an existing project. Use the CLI/project configuration for these values.
 - **Improve:** configure an ERA Git checkout under Workspaces. View real version and
   experiment history, self-analyze, propose, implement, evaluate, inspect guards/diffs,
   approve or decline, rebase and roll back through the existing Improvement Lab.
@@ -121,7 +129,8 @@ explicitly for the packaged app. No automatic updater is installed.
 This build has **no Developer ID signing or notarization**. Distribution requires an
 Apple Developer ID identity, hardened-runtime/entitlement review, signing the final
 bundle, notarizing and stapling it, and a clean-machine Gatekeeper test. Do not disable
-Gatekeeper globally. No public release, push or merge is performed by these commands.
+Gatekeeper globally. These local build commands do not push, merge or publish; the
+development prerelease is created separately and does not replace stable v0.1.0.
 
 ## Troubleshooting and limits
 

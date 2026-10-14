@@ -2,7 +2,10 @@
 
 Validation date: 2026-10-14 (Europe/Berlin). Platform: macOS arm64,
 Node 24.20.0, Electron 44.7.1 (embedded Node 24.21.0), REA 6.4.0.
-Development branch: `feature/era-v0.2.0`. Nothing is merged or published.
+Development branch: `feature/era-v0.2.0`. The checks below were recorded before
+publication. The `v0.2.0-dev.0` development prerelease publishes that checkpoint
+without merging it into stable `main`; see `release-notes-v0.2.0-dev.0.md` for
+the separate release-preparation checks and outstanding validation.
 
 ## Measured checkpoint results
 

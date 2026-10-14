@@ -36,6 +36,14 @@ and tested; they do not establish enterprise compliance or replace an independen
 
 ## Limits and release blockers
 
+For the `v0.2.0-dev.0` development prerelease, the Studio production dependency
+audit reports two low-severity findings involving Monaco's transitive DOMPurify
+dependency: [GHSA-p98j-92pf-mc4p](https://github.com/advisories/GHSA-p98j-92pf-mc4p)
+and [GHSA-6688-9rhm-gjv2](https://github.com/advisories/GHSA-6688-9rhm-gjv2).
+These remain open; no breaking dependency update was applied for this checkpoint.
+The separate root production dependency audit reported zero vulnerabilities.
+Audit severity is not an independent assessment of exploitability in Studio.
+
 This listener is not a multi-user service. A process with the user's OS privileges
 can access their local files and may recover the token. There is no RBAC, SSO,
 remote hosting or OS-admin threat protection. Studio does not store provider credentials;
