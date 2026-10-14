@@ -1,0 +1,242 @@
+{
+  "harness": "experiments/studio-baseline/measure.mjs",
+  "measuredAt": "2026-10-14T12:19:01.715Z",
+  "root": "/Users/david/dev/era-agent",
+  "environment": {
+    "hardware": "Apple M1",
+    "cpuCount": 8,
+    "memGb": 8,
+    "os": "darwin 27.0.0 arm64",
+    "node": "v24.20.0",
+    "electron": "44.7.1",
+    "power": "Now drawing from 'Battery Power'",
+    "loadavgBefore": [
+      3.55,
+      38.55,
+      46.53
+    ],
+    "note": "Other desktop apps (Claude, ChatGPT/Codex) were running on this machine; measurements include that background noise.",
+    "loadavgAfter": [
+      4.03,
+      22.52,
+      38.12
+    ]
+  },
+  "runs": 10,
+  "fixPath": {
+    "interactiveLoginShellPathMs": {
+      "n": 10,
+      "min": 762.13,
+      "median": 780.59,
+      "p95": 970.47,
+      "max": 970.47,
+      "mean": 801.36
+    },
+    "nodeVersionProbeMs": {
+      "n": 10,
+      "min": 17.19,
+      "median": 17.61,
+      "p95": 19.32,
+      "max": 19.32,
+      "mean": 17.78
+    },
+    "shell": "/bin/zsh"
+  },
+  "controlPlane": {
+    "startupToListeningMs": {
+      "n": 10,
+      "min": 102.53,
+      "median": 111.86,
+      "p95": 129.07,
+      "max": 129.07,
+      "mean": 112.64
+    },
+    "startupToFirstApiOkMs": {
+      "n": 10,
+      "min": 1631.31,
+      "median": 1674.59,
+      "p95": 2105.19,
+      "max": 2105.19,
+      "mean": 1707.84
+    },
+    "idle": {
+      "rssMbAtStart": 74.9,
+      "rssMbAfter10s": 68.2,
+      "cpuPercentOver10s": 0
+    },
+    "rssMbAfterLatencyRun": 64.3,
+    "latency": {
+      "/": {
+        "status": 200,
+        "coldMs": 7.05,
+        "warm": {
+          "n": 30,
+          "min": 0.95,
+          "median": 2.37,
+          "p95": 3.52,
+          "max": 3.94,
+          "mean": 2.23
+        }
+      },
+      "/api/overview": {
+        "status": 200,
+        "coldMs": 1170.15,
+        "warm": {
+          "n": 30,
+          "min": 866.45,
+          "median": 890.79,
+          "p95": 918.15,
+          "max": 967.62,
+          "mean": 894.94
+        }
+      },
+      "/api/projects": {
+        "status": 200,
+        "coldMs": 0.75,
+        "warm": {
+          "n": 30,
+          "min": 0.63,
+          "median": 1.66,
+          "p95": 1.79,
+          "max": 1.79,
+          "mean": 1.63
+        }
+      },
+      "/api/agents": {
+        "status": 200,
+        "coldMs": 604.09,
+        "warm": {
+          "n": 30,
+          "min": 1.59,
+          "median": 1.75,
+          "p95": 2.4,
+          "max": 5.86,
+          "mean": 1.92
+        }
+      },
+      "/api/improvement": {
+        "status": 200,
+        "coldMs": 110.39,
+        "warm": {
+          "n": 30,
+          "min": 61.3,
+          "median": 63.65,
+          "p95": 69.6,
+          "max": 74.48,
+          "mean": 64.5
+        }
+      },
+      "/api/diagnostics": {
+        "status": 200,
+        "coldMs": 2.37,
+        "warm": {
+          "n": 30,
+          "min": 1.62,
+          "median": 1.7,
+          "p95": 2.07,
+          "max": 2.08,
+          "mean": 1.73
+        }
+      },
+      "/api/tools": {
+        "status": 200,
+        "coldMs": 941.14,
+        "warm": {
+          "n": 30,
+          "min": 876.13,
+          "median": 904.7,
+          "p95": 965.65,
+          "max": 1018.38,
+          "mean": 909.07
+        }
+      },
+      "/api/jobs": {
+        "status": 200,
+        "coldMs": 1.38,
+        "warm": {
+          "n": 30,
+          "min": 0.49,
+          "median": 1.6,
+          "p95": 1.84,
+          "max": 1.9,
+          "mean": 1.52
+        }
+      },
+      "/api/settings": {
+        "status": 200,
+        "coldMs": 1.84,
+        "warm": {
+          "n": 30,
+          "min": 1.59,
+          "median": 1.67,
+          "p95": 1.83,
+          "max": 2.01,
+          "mean": 1.69
+        }
+      }
+    },
+    "concurrency8x3WallMs": {
+      "n": 3,
+      "min": 3057.09,
+      "median": 3894.79,
+      "p95": 4560.49,
+      "max": 4560.49,
+      "mean": 3837.46
+    },
+    "unauthenticatedStatus": 401
+  },
+  "electronSmoke": {
+    "smokeWallMs": {
+      "n": 10,
+      "min": 4017.17,
+      "median": 4065.03,
+      "p95": 6012.8,
+      "max": 6012.8,
+      "mean": 4266.62
+    },
+    "allOk": true,
+    "note": "--smoke = process start, PATH fix, control plane start, hidden window load, shell rendered, one API call, clean quit."
+  },
+  "electronRunning": {
+    "after12s": {
+      "processes": 5,
+      "rssMb": 443.8
+    },
+    "after22s": {
+      "processes": 5,
+      "rssMb": 413.3
+    },
+    "treeCpuPercentOver10s": 0.2
+  },
+  "rea": {
+    "reaDoctorMs": {
+      "n": 5,
+      "min": 884.74,
+      "median": 893.9,
+      "p95": 997.91,
+      "max": 997.91,
+      "mean": 912.07
+    },
+    "reaDoctorExit": [
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "analyzeSingleFileMs": {
+      "n": 3,
+      "min": 2613.86,
+      "median": 2616.87,
+      "p95": 4695.18,
+      "max": 4695.18,
+      "mean": 3308.64
+    },
+    "analyzeExit": [
+      0,
+      0,
+      0
+    ],
+    "target": "apps/studio/web/js/api.js"
+  }
+}
