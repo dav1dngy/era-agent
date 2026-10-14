@@ -102,6 +102,10 @@ jobs:
         run: npm audit signatures --prefix apps/studio
       - name: 'Studio known vulnerabilities (high and critical block; the documented low DOMPurify entries are tracked in docs/ERA_V020_REMEDIATION.md)'
         run: npm audit --omit=dev --audit-level=high --prefix apps/studio
+      - name: Electron binary is present (the screenshot renderer and desktop scenarios need it)
+        run: |
+          test -f apps/studio/node_modules/electron/path.txt || node apps/studio/node_modules/electron/install.js
+          test -f apps/studio/node_modules/electron/path.txt
       - name: Studio renderer and dependency tests must run, not skip
         run: |
           node --test tests/studio-dependencies.test.js tests/studio-ui-model.test.js tests/studio-rebuild-model.test.js tests/screenshot-rebuild.test.js tests/control-plane-system.test.js tests/control-plane-jobs.test.js tests/audit-control-plane.test.js tests/audit-remediation.test.js | tee studio-tests.log
