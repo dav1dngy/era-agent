@@ -38,6 +38,24 @@ jobs:
         uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
         with:
           subject-path: dist/era-agent-*.tgz
+      - name: ERA Studio desktop - dependencies
+        run: npm ci --prefix apps/studio
+      - name: ERA Studio desktop - Electron scenarios
+        run: npm run test:desktop --prefix apps/studio
+      - name: ERA Studio desktop - build and packaged smoke test
+        run: |
+          npm run package --prefix apps/studio
+          npm run test:package --prefix apps/studio
+      - name: ERA Studio desktop - archive, checksum and SBOM
+        run: |
+          app=$(ls -d apps/studio/out/*/ | head -1)
+          ditto -c -k --keepParent "${app%/}/ERA Studio.app" "dist/era-studio-darwin-$(node -p "process.arch").zip"
+          npm sbom --sbom-format cyclonedx --omit dev --prefix apps/studio > dist/era-studio.cdx.json
+          (cd dist && shasum -a 256 era-studio-darwin-*.zip > era-studio.sha256 && cat era-studio.sha256)
+      - name: 'Build provenance attestation (ERA Studio archive, separate from the CLI tarball)'
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: dist/era-studio-darwin-*.zip
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: release-candidate
