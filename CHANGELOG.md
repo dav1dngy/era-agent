@@ -3,7 +3,23 @@
 All notable changes to ERA. Versions `era-vN` are internal self-improvement
 checkpoints (annotated git tags); `vX.Y.Z` are releases.
 
-## Unreleased (branch `feature/era-v0.2.0`, after v0.2.0-dev.1)
+## v0.2.0-rc.1: release candidate (branch `feature/era-v0.2.0`; not released, not tagged)
+
+Release candidate for v0.2.0: the first version with ERA Studio, Project Lab and Multi-Agent Engineering. The stable release is still v0.1.0. See
+`docs/release-notes-v0.2.0.md` for what is verified, the security summary, known limitations and what has to happen before publication.
+
+### Release preparation
+- **In-app Documentation** (sidebar, command palette, Help menu, F1): eight sections (Getting Started, Installation, Project Lab, Reverse Engineering,
+  Multi-Agent Configuration, Improvement Lab, Security and Permissions, Troubleshooting) rendered from the repository's own pages by the control plane from a fixed
+  allowlist; no second copy of the text. New pages: `getting-started.md`, `troubleshooting.md`.
+- **Real screenshots** and a repeatable capture process (`npm run capture:screenshots --prefix apps/studio`; ten views, manifest, privacy check before each capture).
+- **README** rewritten around v0.2.0 with the Studio showcase; macOS installation documented, with the unsigned development build clearly separated from a (non-existent) signed and notarized release.
+- `scripts/external-user-validation.sh` (clean clone, scrubbed environment, 23 steps) and `npm run check:history` (credentials, e-mail addresses and local paths in every added line of the history).
+- Fixed while preparing: the Content-Security-Policy blocked every authenticated image; the Settings categories were invisible while the sidebar is collapsed; the Improvement Lab listed
+  self-analyses as quoted ids with "Invalid Date".
+- The self-analysis pass size is 60 KB (was 50 KB): the Improvement Lab needed 2 x 25 REA runs per cycle against a hard cap of 50; it needs 2 x 21 now.
+- Versions are `0.2.0-rc.1`; `.env.example` lists every variable ERA reads.
+
 
 ### Independent audit remediation (see `docs/ERA_V020_REMEDIATION.md`)
 - **Security (HIGH):** verification and approval bind to the final working copy (protected paths, limits, patch hash) including changes made by build and test
@@ -12,10 +28,10 @@ checkpoints (annotated git tags); `vX.Y.Z` are releases.
   signalling other processes and reads of the home directory and shared temp folders.
 - **Reliability and policy:** malformed requests no longer stop the control plane; terminals are closed when their permission, allowed roots or run state
   change; the working-copy terminal can read its own copy.
-- **Studio:** offline Help (sidebar, palette, Help menu), keyboard-contained command palette, real captures with a manifest.
+- **Studio:** offline help (replaced in this release candidate by the Documentation section), keyboard-contained command palette, real captures with a manifest.
 - **Release engineering:** CI and release validation cover the desktop app; Lab evidence is reconstructable (thin bundle, ledger export, hashes);
   installation routes and status claims are consistent; `docs/SUPPORT_AND_VALIDATION.md` is the evidence matrix.
-- 28 new regression tests (335 tests in total). `limits.maxReaRunsPerCycle` is 50, the hard cap: the Improvement Lab has no headroom left.
+- 28 new regression tests (335 tests in total). `limits.maxReaRunsPerCycle` is 50, the hard cap (a cycle needs 2 x 21 runs after the pass size was raised to 60 KB).
 - Not release-ready: see the blockers in `docs/ERA_V020_REMEDIATION.md` section 5.
 
 ### Phase 3B: Studio self-improvement (see `docs/ERA_STUDIO_SELF_IMPROVEMENT.md`)

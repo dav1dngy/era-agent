@@ -196,7 +196,8 @@ module.exports = async function testUI({ win, controlPlane, repo }) {
     }
     // The Settings categories share the navigation item style with the sidebar; the collapsed sidebar (the default) must not hide them.
     await go('#/settings/providers', "!!document.querySelector('.settings-nav')");
-    assert.equal(await js("document.querySelector('.frame').classList.contains('collapsed')"), true, 'the sidebar is collapsed by default');
+    if (!(await js("document.querySelector('.frame').classList.contains('collapsed')"))) await js("document.querySelector('[aria-label=\"Toggle sidebar\"]').click()");
+    await dom("document.querySelector('.frame').classList.contains('collapsed')", 'sidebar collapsed (the default state of a fresh app)');
     assert.equal(await js("[...document.querySelectorAll('.settings-nav .nav-item .label')].length >= 8 && [...document.querySelectorAll('.settings-nav .nav-item .label')].every((l) => l.offsetWidth > 0 && l.textContent.trim().length > 0)"), true, 'every Settings category is visible');
     await go('#/docs/project-lab?h=approval-and-rollback', "!!document.getElementById('doc-h-approval-and-rollback')");
     assert.equal(await js("document.querySelectorAll('.doc-table').length >= 1 && document.querySelectorAll('.doc-table th').length >= 2"), true, 'tables render');

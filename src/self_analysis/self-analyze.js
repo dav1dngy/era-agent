@@ -17,7 +17,10 @@ import { newId, sha256File, writeJson, writeText } from '../core/util.js';
 import { runRules, graphView } from './rules.js';
 import { renderRunTable } from '../analysis/report.js';
 
-export const PASS_BYTE_BUDGET = 50_000;
+// Measured on ERA 0.2.0-rc.1 with REA 6.4.0: at 50,000 bytes the artifact needed 25 passes, at 60,000 bytes 20 and at 70,000 bytes 17, with no
+// `resource_constraint` in any of them. The Improvement Lab spends two analyses (baseline and candidate) per cycle against a hard cap of 50 REA runs, so
+// a smaller pass size makes the Lab unusable as ERA grows. Raise it again only after checking that no pass reports `resource_constraint`.
+export const PASS_BYTE_BUDGET = 60_000;
 export const PLACEHOLDER = '// ERA self-analysis placeholder: this file is analyzed in another REA pass.\n';
 
 export async function prepareSelfArtifact(eraRoot, workDir) {
