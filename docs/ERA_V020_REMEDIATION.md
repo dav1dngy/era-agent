@@ -69,6 +69,8 @@ Offline documentation (first a bundled Help view, replaced in Phase 7 by a Docum
 
 ## 3. Test evidence
 
+*This is the record of the remediation phase. The figures for the release candidate (345 tests, 17 desktop scenario groups, the clean-clone walk-through) are in [SUPPORT_AND_VALIDATION.md](SUPPORT_AND_VALIDATION.md) and the [release notes](release-notes-v0.2.0.md).*
+
 All results below are from one validation chain run on 2026-10-15 on commit `02cc35a`; the commits after it change documentation only. Platform: macOS 27.0.1
 arm64 (Apple M1), Node 24.20.0 (Electron 44.7.1 embeds 24.21.0), REA 6.4.0, Hopper and Ghidra 12.1.4 available (IDA not). The machine was kept awake with `caffeinate`.
 
