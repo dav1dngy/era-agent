@@ -1,9 +1,9 @@
 # Pull request: ERA v0.2.0 (release candidate 1)
 
-> **Prepared, not opened.** Nothing was pushed. The branch `feature/era-v0.2.0` exists locally with @@UNPUBLISHED@@ commits that are not on GitHub (the remote branch is at `52dcf82`).
+> **Prepared, not opened.** Nothing was pushed. The branch `feature/era-v0.2.0` exists locally with every commit after `52dcf82` (the remote branch) not yet on GitHub.
 > Do not push or open this pull request without deciding the history question in [release-notes-v0.2.0.md](release-notes-v0.2.0.md#9-before-this-can-be-published).
 
-**Base:** `main` (v0.1.0) · **Head:** `feature/era-v0.2.0` @ `@@COMMIT@@` · **Version:** `0.2.0-rc.1` (becomes `0.2.0` only at release)
+**Base:** `main` (v0.1.0) · **Head:** `feature/era-v0.2.0` @ `the tip of the branch (tested code: `58c8fa7`)` · **Version:** `0.2.0-rc.1` (becomes `0.2.0` only at release)
 
 ## Summary
 
@@ -37,7 +37,7 @@ unchanged REA engine. Includes the fixes for an independent security and quality
 * **Protected paths changed by hand** (`src/safety/`, `src/evaluation/`): the sandbox now denies signalling and home/temp reads; four evaluation call sites got explicit read allowances. A real Lab cycle was run on the final code to confirm the Lab still works.
 * **Improvement Lab capacity:** the self-analysis pass size changed from 50 KB to 60 KB to fit the 50-run REA cap; the cap itself was not changed.
 * **History:** three unpublished commits contain a local filesystem path (see the release notes).
-* **Size:** 41 commits, 433 files, about 79k added lines (a large part is evidence under `experiments/` and screenshots under `docs/assets/`). A squash merge keeps `main` readable.
+* **Size:** 41 commits against `main` (43 since the v0.1.0 tag), 437 files, about 79k added lines (a large part is evidence under `experiments/` and screenshots under `docs/assets/`). A squash merge keeps `main` readable.
 
 ## Commands (not run)
 

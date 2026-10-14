@@ -1,7 +1,7 @@
 # ERA v0.2.0, release candidate 1 (`0.2.0-rc.1`)
 
 > **Status: release candidate. Nothing has been published.** No tag, GitHub release, npm package or push was made for this version. The stable release remains
-> **v0.1.0**. The release candidate commit is `@@COMMIT@@` on branch `feature/era-v0.2.0`. Publishing needs your explicit approval; the open decisions are in section 9.
+> **v0.1.0**. The release candidate commit is `the tip of `feature/era-v0.2.0` (the code was tested at `58c8fa7`; the commits after it change documentation, release notes and packaging evidence only)` on branch `feature/era-v0.2.0`. Publishing needs your explicit approval; the open decisions are in section 9.
 
 ERA is an open-source reverse-engineering agent built on the original [Reverse Engineer Anything (REA)](https://github.com/morluto/rea) engine. v0.2.0 is the first
 version that contains **ERA Studio**, **Project Lab** and **Multi-Agent Engineering**. REA is unchanged (`rea-agents@6.4.0`, an unmodified dependency); everything
@@ -9,7 +9,7 @@ reverse-engineering related still comes from recorded REA executions.
 
 ## 1. What is new since v0.1.0
 
-@@STATS@@
+43 commits and 437 files (about 79,000 added lines, a large part being evidence under `experiments/` and screenshots under `docs/assets/`) since v0.1.0: `src/` +6,980 lines, `apps/studio/` 46 files, `tests/` 53 files, `docs/` 38 files.
 
 | Area | What you get | Where |
 |---|---|---|
@@ -36,7 +36,23 @@ candidate and verify its checksum first; see [installation](installation.md#era-
 
 ## 3. Verified
 
-@@TESTS@@
+Run on 2026-10-15 on macOS 27.0.1 arm64 (Apple M1), Node 24.20.0, Electron 44.7.1, REA 6.4.0, tested code revision `58c8fa7`:
+
+| Check | Result | Real or mocked |
+|---|---|---|
+| `npm run lint`, `npm run check` | pass; 637 tracked files scanned | static |
+| `npm test` | **345 tests: 344 pass, 0 fail, 1 skipped** (153 s); the skip is the "runtime without a sandbox" test, which cannot run on macOS | real git, processes, sandbox, REA and MCP; the Lab end-to-end suite uses a fake engine; coding agents are scripted |
+| `npm run test:desktop --prefix apps/studio` | **17 of 17 scenario groups pass** | real Electron, control plane and REA; coding agent is a stand-in |
+| `npm run package` and `npm run test:package` | pass: unsigned arm64 app, `ok:true`, renderer without Node, REA reachable, loopback only | real |
+| the **extracted zip** launched from another folder | pass (`--smoke`, same checks) | real |
+| `scripts/external-user-validation.sh` | **23 of 23 steps**: fresh clone, scrubbed environment, install, provider configuration, Studio, REA analysis, Project Lab task, diff, tests, approve, roll back, reject | real; scripted agent; clones the local checkout |
+| `npm run clean-install-test` | pass: the packed CLI analyzed a fixture (15 facts) with its own REA | real |
+| A real Improvement Lab cycle on the final sandbox code | accepted by the Lab (all guards pass, 178 tests); evidence in `experiments/remediation/` | real REA and sandbox, throwaway clone, not approved |
+| `npm audit --omit=dev` | root: 0 vulnerabilities; Studio: 2 low (documented) | advisory database |
+| `npm audit signatures` | pass | registry |
+
+Two failures occurred on the way and were fixed rather than skipped: the Lab end-to-end test failed because the self-analysis needed 52 REA runs against a cap of 50 (pass size raised from 50 KB to 60 KB, cap unchanged), and the
+documentation test caught a link to these missing release notes.
 
 What is real, mocked, historical or unverified, per area and revision: [SUPPORT_AND_VALIDATION.md](SUPPORT_AND_VALIDATION.md).
 
@@ -60,12 +76,12 @@ The fixes were **not re-reviewed by an independent party**. Details, limits and 
 
 ## 6. Security and privacy summary
 
-* **Secrets and personal data:** `npm run check` scans every tracked file; `npm run check:history` scans every added line in every branch. Result for this candidate: @@HISTORY@@
-* **Dependencies:** root production audit @@AUDIT_ROOT@@; Studio production audit @@AUDIT_STUDIO@@ (two LOW advisories in Monaco's bundled DOMPurify 3.4.15, not fixable by an override, with a
+* **Secrets and personal data:** `npm run check` scans every tracked file; `npm run check:history` scans every added line in every branch. Result for this candidate: 79 commits, one identity (the GitHub no-reply address), no credentials, no foreign e-mail addresses; 3 synthetic credential-shaped values under `tests/` (counted separately); **17 added lines with a local filesystem path (the account name) in 3 unpublished commits**, see section 9.
+* **Dependencies:** root production audit reports 0 vulnerabilities; Studio production audit reports 2 low (two LOW advisories in Monaco's bundled DOMPurify 3.4.15, not fixable by an override, with a
   reachability test and a version-bound exception); registry signatures verified.
 * **Execution:** on macOS project commands, terminals, the Git panel and Lab candidates run in a sandbox (no network, writes confined, no signalling other processes, no reads of the home
   directory or shared temp folders). There is no ERA sandbox on Linux. Coding-agent CLIs run under their own isolation and can read whatever your account can; authorizing a remote provider authorizes that.
-* **Cloud transmission:** none by default. ERA has no telemetry and makes no network calls of its own; remote providers need per-project consent, unmetered agents (Codex reports tokens, not dollars) are refused until you enable them.
+* **Cloud transmission:** none by default. ERA has no telemetry and makes no network calls of its own (checked in the source: the only `fetch` calls are relative requests from the UI to its local control plane, and there is no analytics or telemetry code); remote providers need per-project consent, unmetered agents (Codex reports tokens, not dollars) are refused until you enable them.
 * **Executable permissions:** only the intended scripts and one Mach-O test fixture are executable.
 * **Not certified, not independently reviewed:** see [SECURITY.md](../SECURITY.md).
 
@@ -73,7 +89,7 @@ The fixes were **not re-reviewed by an independent party**. Details, limits and 
 
 * macOS arm64 only for Studio; Windows and Linux Studio are unverified; unsigned and not notarized; no debugger, extension marketplace, collaboration, SSO or RBAC.
 * Claude Code was never validated against the real CLI; no `claude+codex` team ran live; Codex has no dollar cap; real-provider evidence is small and historical.
-* The Improvement Lab needs a branch named `main`, cannot evaluate `apps/studio/`, and is close to its 50-run REA cap (a cycle needs @@LABRUNS@@ runs).
+* The Improvement Lab needs a branch named `main`, cannot evaluate `apps/studio/`, and is close to its 50-run REA cap (a cycle needs 2 x 21 = 42 of 50 runs).
 * Native decompilation depends on Hopper/Ghidra/IDA, can time out, and needs the Mac awake; Ghidra needs a JDK 21 and `GHIDRA_INSTALL_DIR`.
 * The terminal revocation kills the process group; a process that starts its own session escapes it.
 * Screenshots cover ten views; the Rebuild checklist, screenshot comparison and plan approval are not captured. Keyboard behavior was verified; a screen-reader pass was not.
@@ -81,7 +97,18 @@ The fixes were **not re-reviewed by an independent party**. Details, limits and 
 
 ## 8. Artifacts
 
-@@ARTIFACTS@@
+Built from the tested code with `npm pack`, `npm sbom` and `npm run package --prefix apps/studio`, in `dist/` of the local checkout (git-ignored, **not published and not attached anywhere**). Rebuild them with those commands; the zip is not reproducible byte for byte.
+
+| File | What it is | Size | SHA-256 |
+|---|---|---|---|
+| `era-agent-0.2.0-rc.1.tgz` | the CLI package (no Studio); contains `bin/`, `src/`, `era.config.json`, README, LICENSE, THIRD_PARTY_NOTICES; no personal paths | 201,728 B | `d82ae31dff560330c01c9f8e9b4d7608103efc30c20edddf1612daaf76cae67c` |
+| `era-studio-0.2.0-rc.1-darwin-arm64-unsigned.zip` | the **unsigned** macOS arm64 desktop app (500 MB unpacked, with the in-app documentation) | 182,442,797 B | `18ceeabcc351494bea02b88cf9e8f6024a9f581ed2e458cc72ec304c8a45151e` |
+| `era-agent-0.2.0-rc.1.cdx.json` | CycloneDX SBOM of the CLI's production dependencies | 165,315 B | `2641df38cab055dd474d942f7726503afb3aa59046f9a42cf1689767a8d5a988` |
+| `era-studio-0.2.0-rc.1.cdx.json` | CycloneDX SBOM of Studio's npm production dependencies (not the bundled Electron runtime) | 11,303 B | `fa4952445b16115286528bf7f85848f0d8989dcf03194cc0d7fa71e285d17bf1` |
+| `SHA256SUMS` | the four checksums above (`shasum -a 256 -c SHA256SUMS`) | 398 B | |
+
+**Signature state of the app, measured:** `codesign -dv` reports an ad-hoc, linker-signed Electron binary (`Signature=adhoc`, no team identifier) and `spctl --assess` rejects the bundle. It carries no
+Developer ID signature and is not notarized. It is a development build, not a distributable production release. No provenance attestation exists (it is produced by the release-validation workflow, which has not run).
 
 ## 9. Before this can be published
 
