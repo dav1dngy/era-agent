@@ -194,6 +194,10 @@ module.exports = async function testUI({ win, controlPlane, repo }) {
     for (const [id, expect] of [['installation', 'Choose what to install'], ['project-lab', 'Rebuild prerequisites'], ['reverse-engineering', 'Engine resolution'], ['multi-agent', 'Who does what'], ['improvement-lab', 'Isolation and evidence ownership'], ['security', 'Controls added after the independent v0.2.0 audit'], ['troubleshooting', 'Native analysis']]) {
       await go(`#/docs/${id}`, `document.body.textContent.includes(${lit(expect)})`);
     }
+    // The Settings categories share the navigation item style with the sidebar; the collapsed sidebar (the default) must not hide them.
+    await go('#/settings/providers', "!!document.querySelector('.settings-nav')");
+    assert.equal(await js("document.querySelector('.frame').classList.contains('collapsed')"), true, 'the sidebar is collapsed by default');
+    assert.equal(await js("[...document.querySelectorAll('.settings-nav .nav-item .label')].length >= 8 && [...document.querySelectorAll('.settings-nav .nav-item .label')].every((l) => l.offsetWidth > 0 && l.textContent.trim().length > 0)"), true, 'every Settings category is visible');
     await go('#/docs/project-lab?h=approval-and-rollback', "!!document.getElementById('doc-h-approval-and-rollback')");
     assert.equal(await js("document.querySelectorAll('.doc-table').length >= 1 && document.querySelectorAll('.doc-table th').length >= 2"), true, 'tables render');
     assert.equal(await js("[...document.querySelectorAll('.doc-body a')].every((a) => a.getAttribute('href').startsWith('#') || a.getAttribute('href').startsWith('https://'))"), true, 'every link is an in-app page or an https link');

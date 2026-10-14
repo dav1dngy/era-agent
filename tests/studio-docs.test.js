@@ -150,7 +150,7 @@ test('documentation routes need the token and serve only allowlisted pages and i
     for (const name of ['docs/assets/../../package.json', 'docs/assets/x.svg', 'docs/installation.md', 'package.json', '/etc/hosts', 'docs/assets/%2e%2e/x.png']) {
       assert.equal((await p.get(`/api/docs/image?name=${encodeURIComponent(name)}`)).status, 404, `image ${JSON.stringify(name)} must not be served`);
     }
-    const shot = 'docs/assets/v0.2.0-dev/01-first-launch-dark.png';
+    const shot = 'docs/assets/screenshots/01-main-workspace.png';
     if (existsSync(join(ROOT, shot))) {
       const img = await p.get(`/api/docs/image?name=${encodeURIComponent(shot)}`);
       assert.equal(img.status, 200);

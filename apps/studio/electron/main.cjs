@@ -20,7 +20,8 @@ const WEB_ROOT = path.join(__dirname, '..', 'web');
 const VENDOR_ROOTS = [path.join(__dirname, '..', 'node_modules')];
 const args = new Set(process.argv.slice(1));
 const TEST_UI = !packaged && args.has('--test-ui');
-const SMOKE = args.has('--smoke') || TEST_UI;
+const CAPTURE_UI = !packaged && args.has('--capture-ui'); // documentation screenshots, see scripts/capture-screenshots.cjs
+const SMOKE = args.has('--smoke') || TEST_UI || CAPTURE_UI;
 
 if (SMOKE && process.env.ERA_STATE_DIR) app.setPath('userData', path.join(process.env.ERA_STATE_DIR, 'chromium'));
 
@@ -181,6 +182,7 @@ app.whenReady().then(async () => {
     if (SMOKE) {
       let code = await smoke();
       if (code === 0 && TEST_UI) code = await require('../scripts/test-ui.cjs')({ win, controlPlane, repo: ERA_ROOT });
+      if (code === 0 && CAPTURE_UI) code = await require('../scripts/capture-ui.cjs')({ win, controlPlane, repo: ERA_ROOT });
       if (code === 0) app.quit(); // Exercise the normal window/worker shutdown path in smoke tests too.
       else { await controlPlane.stop(); app.exit(code); }
     }

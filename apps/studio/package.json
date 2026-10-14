@@ -11,7 +11,8 @@
     "serve": "node ../../bin/era.mjs studio serve --open",
     "package": "node scripts/package-mac.cjs",
     "test:desktop": "node scripts/test-desktop.cjs",
-    "test:package": "node scripts/test-package.cjs"
+    "test:package": "node scripts/test-package.cjs",
+    "capture:screenshots": "node scripts/capture-screenshots.cjs"
   },
   "dependencies": {
     "@fontsource-variable/inter": "5.2.8",

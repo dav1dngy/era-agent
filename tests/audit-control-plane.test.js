@@ -298,3 +298,25 @@ test('M02: a working-copy terminal is closed when its run stops being editable',
     await p.stop();
   }
 });
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Found while preparing the release screenshots: the Improvement Lab page listed self-analyses as quoted ids with "Invalid Date" because the
+// API returned bare ids (oldest first, limited to 20) while the page expects records.
+
+test('the improvement overview lists self-analyses newest first with their date and counts', async () => {
+  const p = await plane();
+  try {
+    for (const [id, created, findings, runs] of [['self-20261001T100000-aaaaaa', '2026-10-01T10:00:00.000Z', 3, 5], ['self-20261002T100000-bbbbbb', '2026-10-02T10:00:00.000Z', 1, 7]]) {
+      const dir = join(p.config.stateDirAbs, 'self-analyses', id);
+      mkdirSync(dir, { recursive: true });
+      writeFileSync(join(dir, 'self-analysis.json'), JSON.stringify({ self_analysis_id: id, created_at: created, findings: Array.from({ length: findings }, (_, i) => ({ id: `F-${i}` })), runs: Array.from({ length: runs }, () => ({})) }));
+    }
+    mkdirSync(join(p.config.stateDirAbs, 'self-analyses', 'self-20261003T100000-cccccc'), { recursive: true }); // unreadable record: still listed, without invented numbers
+    const o = (await p.api('GET', '/api/improvement')).json;
+    assert.deepEqual(o.self_analyses.map((a) => a.id), ['self-20261003T100000-cccccc', 'self-20261002T100000-bbbbbb', 'self-20261001T100000-aaaaaa']);
+    assert.deepEqual(o.self_analyses[1], { id: 'self-20261002T100000-bbbbbb', created_at: '2026-10-02T10:00:00.000Z', findings: 1, rea_runs: 7 });
+    assert.deepEqual(o.self_analyses[0], { id: 'self-20261003T100000-cccccc', created_at: null, findings: null, rea_runs: null });
+  } finally {
+    await p.stop();
+  }
+});

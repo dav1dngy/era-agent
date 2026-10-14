@@ -48,13 +48,25 @@ export function improvementService(ctx) {
     }).filter(Boolean);
   }
 
+  // Newest first, with what the page shows: when it ran and how many findings and REA runs it recorded.
+  function selfAnalyses() {
+    return listSelfAnalyses(stateDir()).reverse().slice(0, 20).map((id) => {
+      try {
+        const r = JSON.parse(readFileSync(join(stateDir(), 'self-analyses', id, 'self-analysis.json'), 'utf8'));
+        return { id, created_at: r.created_at ?? null, findings: Array.isArray(r.findings) ? r.findings.length : null, rea_runs: Array.isArray(r.runs) ? r.runs.length : null };
+      } catch {
+        return { id, created_at: null, findings: null, rea_runs: null };
+      }
+    });
+  }
+
   async function overview() {
     const co = await checkout();
     const versions = co.available ? await vm.listVersions(co.root) : [];
     const events = readLedger(stateDir());
     const rollbacks = events.filter((e) => e.type === 'rollback');
     const list = cycles();
-    return { checkout: co, current_version: co.available ? await vm.currentVersion(co.root) : null, versions, cycles: list, awaiting_approval: list.filter((c) => c.status === 'awaiting-approval'), self_analyses: listSelfAnalyses(stateDir()).slice(0, 20), rollbacks, ledger: events.slice(-100), limits: { maxCycles: ctx.config.improvement?.maxCycles ?? ctx.config.limits?.maxCycles ?? null } };
+    return { checkout: co, current_version: co.available ? await vm.currentVersion(co.root) : null, versions, cycles: list, awaiting_approval: list.filter((c) => c.status === 'awaiting-approval'), self_analyses: selfAnalyses(), rollbacks, ledger: events.slice(-100), limits: { maxCycles: ctx.config.improvement?.maxCycles ?? ctx.config.limits?.maxCycles ?? null } };
   }
 
   function cycle(id) {
