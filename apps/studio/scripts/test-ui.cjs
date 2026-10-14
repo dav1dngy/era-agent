@@ -11,7 +11,14 @@ module.exports = async function testUI({ win, controlPlane, repo }) {
   const js = (code) => win.webContents.executeJavaScript(code, true);
   // Values reach the page as base64 of their JSON text and are decoded there: only [A-Za-z0-9+/=] is ever spliced into code.
   const lit = (v) => `JSON.parse(new TextDecoder().decode(Uint8Array.from(atob('${Buffer.from(JSON.stringify(v), 'utf8').toString('base64')}'), (c) => c.charCodeAt(0))))`;
-  const api = (method, url, body) => js(`(async () => { const r = await fetch(${lit(url)}, {method:${lit(method)},headers:{'Content-Type':'application/json'},body:${body === undefined ? 'undefined' : `JSON.stringify(${lit(body)})`}}); const data = await r.json(); if (!r.ok) throw Error(r.status + ': ' + JSON.stringify(data)); return data; })()`);
+  // Test-setup requests are made by this (main-process) script with the control plane's token, so no code string is built
+  // from values. Page-driven requests, which use the injected authentication, are exercised by the UI scenarios themselves.
+  const api = async (method, url, body) => {
+    const r = await fetch(new URL(url, controlPlane.url).href, { method, headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${controlPlane.token}` }, body: body === undefined ? undefined : JSON.stringify(body) });
+    const data = await r.json();
+    if (!r.ok) throw Error(`${r.status}: ${JSON.stringify(data)}`);
+    return data;
+  };
   const until = async (predicate, label, ms = 30_000) => {
     const end = Date.now() + ms;
     while (Date.now() < end) { if (await predicate()) return; await delay(100); }
@@ -55,7 +62,8 @@ module.exports = async function testUI({ win, controlPlane, repo }) {
     await dom("!![...document.querySelectorAll('button')].find(b => b.textContent === 'Open in workbench')", 'advanced');
     await click('Simple');
     assert.equal(await js("document.querySelector('select[aria-label=\"Current project\"]').value"), 'cart');
-    assert.equal((await api('GET', '/api/settings')).settings.mode, 'simple');
+    // The click saves the setting asynchronously; wait for the saved state instead of reading it at once.
+    await until(async () => (await api('GET', '/api/settings')).settings.mode === 'simple', 'simple mode saved');
     check('Open project and switch presentation mode without losing project context');
 
     await click('Run review');
