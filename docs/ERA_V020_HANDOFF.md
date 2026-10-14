@@ -1,18 +1,31 @@
-# ERA v0.2.0 development handoff (end of Phase 3A)
+# ERA v0.2.0 development handoff
 
-Written 2026-10-14 for a new Claude Code session. It records what was verified at the commit below, not what earlier docs
-claim. Next phase: **Phase 3B, REA-driven ERA Studio self-improvement** (not started).
+## Current status (read this first; updated after the audit remediation)
 
-## Repository state
+- **Branch** `feature/era-v0.2.0` (`git log -1` is the current checkpoint). The remote branch of the same name is at `52dcf82`, so everything
+  after Phase 3A, including Phase 3B, the audit and the remediation, exists only locally until someone decides to publish it. Tags
+  `v0.2.0-dev.0` and `v0.2.0-dev.1` exist; `main` (v0.1.0) is untouched.
+- **Rule: do not merge into `main`, push, tag, publish or create a release without an explicit instruction from the user, each time.**
+- **Done:** Phase 3A (Studio); Phase 3B (measured Studio baseline, real REA analysis of the Studio bundle, two Lab-accepted improvements, one
+  rejected; [ERA_STUDIO_SELF_IMPROVEMENT.md](ERA_STUDIO_SELF_IMPROVEMENT.md)); an independent audit
+  ([ERA_V020_INDEPENDENT_AUDIT.md](ERA_V020_INDEPENDENT_AUDIT.md): NOT READY, 5 HIGH, 8 MEDIUM, 3 LOW); and its remediation
+  ([ERA_V020_REMEDIATION.md](ERA_V020_REMEDIATION.md): all HIGH and MEDIUM findings fixed with regression tests; L01 partial).
+- **Evidence for the current revision** (test counts, platform, real vs mocked): [SUPPORT_AND_VALIDATION.md](SUPPORT_AND_VALIDATION.md).
+  Everything below the "Phase 3A record" heading is the 2026-10-14 record of that earlier checkpoint and is kept for history; where it
+  differs from the pages above, the pages above win.
+- **Not release-ready.** Remaining blockers are listed in section 5 of the remediation document: independent re-review of the fixes, a hosted CI run
+  of the desktop job, signing and notarization (if a distributed app is intended), real Claude Code and `claude+codex` validation with
+  explicit authorization, clean-machine installation, five missing captures and an accessibility pass.
+- **Improvement Lab:** needs a branch named `main` (it merges accepted cycles there), is blind to `apps/studio/`, and is now at its REA-run hard cap
+  (50 per cycle: the self-analysis needs 25 runs per side). Run it in a throwaway clone with its own `main`, as Phase 3B and the remediation did.
+- **Next:** Phase 4 (enterprise engineering and security) once the blockers above are owned; do not start it by weakening a regression test.
+- **Environment:** Ghidra needs a JDK 21 on `PATH` and `GHIDRA_INSTALL_DIR` (set in `~/.zshrc` on the development machine). Keep the machine
+  awake during Hopper-backed runs (`caffeinate`). Check `git status` and running sessions before editing; another session may be working.
 
-- Branch `feature/era-v0.2.0`; commit at verification time: `52dcf82ffc246fc85731af8505d33dcda767f187`
-  ("Add screenshot-rebuild validation evidence and provider-validation notes"). The checkpoint commit that adds this file
-  follows it (`git log -2`).
-- The branch tracks `origin/feature/era-v0.2.0` and was up to date with it when checked. Tags `v0.2.0-dev.0` and
-  `v0.2.0-dev.1` already exist (development prereleases from before this handoff). `main` is untouched.
-- **Rule: do not merge into `main`, push tags, or create a release without an explicit instruction from the user.**
-- Working tree was clean at verification, apart from this file. Another Claude session was committing to this branch
-  while the handoff began; check `git status` and `ps` for concurrent sessions before editing.
+## Phase 3A record (historical, 2026-10-14)
+
+Written for a new Claude Code session at the end of Phase 3A. It records what was verified at commit `52dcf82ffc246fc85731af8505d33dcda767f187`
+("Add screenshot-rebuild validation evidence and provider-validation notes"). Numbers below are from that checkpoint, not the current one.
 
 ## Architecture
 
