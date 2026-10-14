@@ -71,7 +71,7 @@ export function ReviewCenter({ id }) {
     title: 'Approve this change?',
     body: html`<div class="col"><div class="kv"><dt>Applies to</dt><dd class="mono">${run.op === 'modify' ? s.projects.find((p) => p.id === id)?.source : s.projects.find((p) => p.id === id)?.destination}</dd><dt>Files</dt><dd>${fin.files.length} (${fin.files.map((f) => f.status).join('')})</dd><dt>Evaluated artifact</dt><dd class="mono">sha256 ${short(fin.patch_sha256, 24)}…</dd><dt>Verification</dt><dd>${fin.pass ? 'build, tests and acceptance passed' : 'did not pass'}</dd></div>
       ${risks.length ? html`<${Callout} kind="warn" title="High-risk aspects">${risks.map((r) => html`<div>• ${r}</div>`)}<//>` : null}
-      <p class="muted">Approval applies exactly this verified diff. If anything changed since verification, ERA refuses and nothing is applied. You can roll it back afterwards. <a href="#/help/approval" onClick=${closeModal}>How approval and rollback work</a></p></div>`,
+      <p class="muted">Approval applies exactly this verified diff. If anything changed since verification, ERA refuses and nothing is applied. You can roll it back afterwards. <a href="#/docs/project-lab?h=approval-and-rollback" onClick=${closeModal}>How approval and rollback work</a></p></div>`,
     footer: html`<${Btn} onClick=${closeModal}>Cancel<//><${Btn} kind="primary" data-autofocus="true" onClick=${async () => {
       try {
         const fresh = await get(`/api/projects/${id}/runs/latest`);

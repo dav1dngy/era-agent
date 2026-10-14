@@ -92,3 +92,30 @@ kbd { font-family: var(--font-mono); font-size: var(--fs-xs); background: var(--
 .meter { flex: 1; height: 8px; border-radius: 4px; background: var(--surface-3); overflow: hidden; }
 .meter > div { height: 100%; background: var(--accent); }
 @media (max-width: 900px) { .compare { grid-template-columns: 1fr; } }
+
+/* Documentation (in-app rendering of the repository's Markdown pages) */
+.docs-layout { display: grid; grid-template-columns: 220px minmax(0, 1fr) 200px; gap: var(--space-5); align-items: start; margin-top: var(--space-4); }
+.docs-nav { position: sticky; top: 0; display: flex; flex-direction: column; gap: 2px; }
+.docs-nav-item, .docs-related a, .docs-toc a { display: block; padding: 6px 10px; border-radius: var(--radius-sm); color: var(--text-muted); text-decoration: none; }
+.docs-nav-item:hover, .docs-related a:hover, .docs-toc a:hover { background: var(--surface-2); color: var(--text); }
+.docs-nav-item.current { background: var(--surface-2); color: var(--text); font-weight: 600; }
+.docs-related { list-style: none; margin: 0 0 var(--space-2) var(--space-3); padding: 0; border-left: 1px solid var(--border); }
+.docs-related a { font-size: var(--fs-sm); text-transform: capitalize; } .docs-related a.current { color: var(--text); font-weight: 600; }
+.docs-toc { position: sticky; top: 0; font-size: var(--fs-sm); } .docs-toc ul { list-style: none; margin: var(--space-2) 0 0; padding: 0; }
+.docs-article { min-width: 0; background: var(--surface-1); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: var(--space-5) var(--space-6); line-height: 1.6; }
+.doc-body h2 { font-size: var(--fs-2xl); margin: 0 0 var(--space-4); }
+.doc-body h3 { font-size: var(--fs-xl); margin: var(--space-6) 0 var(--space-3); padding-top: var(--space-3); border-top: 1px solid var(--border); }
+.doc-body h4 { font-size: var(--fs-lg); margin: var(--space-5) 0 var(--space-2); } .doc-body h5, .doc-body h6 { margin: var(--space-4) 0 var(--space-2); }
+.doc-body p, .doc-body ul, .doc-body ol { margin: 0 0 var(--space-3); } .doc-body li { margin: 2px 0; } .doc-body li > ul, .doc-body li > ol { margin: 4px 0; }
+.doc-body a { color: var(--accent); }
+.doc-body code { font-family: var(--font-mono); font-size: .92em; background: var(--surface-3); padding: 1px 5px; border-radius: 4px; }
+.doc-code { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius); padding: var(--space-3) var(--space-4); overflow-x: auto; margin: 0 0 var(--space-3); }
+.doc-code code { background: none; padding: 0; font-size: var(--fs-sm); }
+.doc-quote { margin: 0 0 var(--space-3); padding: var(--space-1) var(--space-4); border-left: 3px solid var(--border-strong); color: var(--text-muted); }
+.doc-table { overflow-x: auto; margin: 0 0 var(--space-4); border: 1px solid var(--border); border-radius: var(--radius); }
+.doc-table table { width: 100%; border-collapse: collapse; } .doc-table th, .doc-table td { text-align: left; vertical-align: top; padding: var(--space-2) var(--space-3); border-bottom: 1px solid var(--border); }
+.doc-table th { color: var(--text-muted); font-size: var(--fs-xs); text-transform: uppercase; letter-spacing: .05em; background: var(--surface-2); } .doc-table tr:last-child td { border-bottom: 0; }
+.doc-figure { margin: 0 0 var(--space-4); } .doc-figure figcaption { font-size: var(--fs-xs); margin-top: 4px; }
+.doc-image { max-width: 100%; height: auto; border: 1px solid var(--border); border-radius: var(--radius); }
+@media (max-width: 1180px) { .docs-layout { grid-template-columns: 200px minmax(0, 1fr); } .docs-toc { display: none; } }
+@media (max-width: 860px) { .docs-layout { grid-template-columns: 1fr; } .docs-nav { position: static; flex-direction: row; flex-wrap: wrap; } .docs-article { padding: var(--space-4); } }

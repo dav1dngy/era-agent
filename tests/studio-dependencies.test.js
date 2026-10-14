@@ -44,6 +44,9 @@ test('Studio\'s Content-Security-Policy forbids inline script (event handlers) a
     const script = /script-src ([^;]+)/.exec(csp)[1];
     assert.ok(!script.includes("'unsafe-inline'") && !script.includes("'unsafe-eval'"), script);
     assert.ok(/^'self'( 'sha256-[A-Za-z0-9+/=]+')*$/.test(script), `script sources are only self and the import-map hash: ${script}`);
+    // authenticated images (AuthImage) are fetched with the token and shown from blob: URLs; blob: is allowed for images only, never for script
+    assert.match(csp, /img-src 'self' data: blob:;/);
+    assert.ok(!/script-src[^;]*blob:/.test(csp));
     assert.match(csp, /connect-src 'self'/);
     assert.match(csp, /object-src 'none'/);
     assert.match(csp, /frame-ancestors 'none'/);

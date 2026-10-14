@@ -65,7 +65,9 @@ Target selection → Capability detection → Baseline analysis → REA / source
    Up to `limits.maxAttempts` attempts; after a failed attempt the next prompt
    carries the failing commands' output.
 7. **Verification and regression detection.** Build, tests and acceptance commands
-   run again. A change passes only if: files changed, no protected file changed,
+   run again. The guards are applied to the working copy **after** those commands
+   ran, because they run inside it and can change it; the decision is bound to the
+   hash of exactly that diff. A change passes only if: files changed, no protected file changed,
    limits respected, the build did not break, no test that passed at baseline
    stopped passing **or stopped being listed** (deleted tests are a regression),
    and every acceptance command passes. Edited or deleted existing test files are
@@ -83,8 +85,26 @@ Target selection → Capability detection → Baseline analysis → REA / source
   `--check`). **Rollback** reverses the same patch, and refuses if you edited the
   touched files since (your later edits are never overwritten).
 * **Rebuild**: approval copies the new project (without `.git`) into the empty
-  `destination`. Rollback deletes it only if it is unmodified.
+  `destination` and records a complete manifest of what was written (every path, nothing
+  excluded). Rollback deletes the destination only if it still matches that manifest file for
+  file; if you added, removed or changed anything, including inside `.git`, `build` or
+  `node_modules`, it refuses, names the paths and deletes nothing.
 * Review runs change nothing and need no approval.
+
+### Rebuild prerequisites
+
+Before a Modify or Rebuild run, `era project check <id>` (and Studio's checklist) lists everything that
+could stop or weaken it, each with a fix; starting is refused with the whole list:
+
+* a coding agent is installed and signed in, and supports images if you give screenshots;
+* a spending cap exists, or unmetered agents are explicitly allowed;
+* consent for each remote provider, and (Rebuild) your authorization statement for the reference;
+* acceptance checks or behaviors to compare, because nothing is accepted without them;
+* for Rebuild, an **empty** destination folder outside the project;
+* a sandbox for running commands (macOS), or Trusted execution / `--trust-project` if you accept running them unconfined;
+* for screenshot references, an offline renderer for the visual comparison.
+
+Rebuild reconstructs *stated* behavior of a reference you are authorized to analyze; it does not prove equivalence.
 
 ## Isolation
 
@@ -92,7 +112,7 @@ Target selection → Capability detection → Baseline analysis → REA / source
 |---|---|
 | Original project | Never written by any operation except `approve`/`rollback`. A content digest is checked at the end of every run; a difference marks the run failed with `ISOLATION VIOLATION` |
 | ERA itself | Source, reference and destination inside ERA's installation are refused (symlinks resolved). All git commands for a working copy run with `GIT_CEILING_DIRECTORIES`, so git can never reach another repository |
-| Project code (build, tests, acceptance, rebuilt behaviors, the reference executable) | Run in the macOS sandbox: no network, writes only to the working copy and a private temp dir, no reads of ERA's state or of other projects, secret-free environment. Without a sandbox they run only for `trust_project: true` / `--trust-project` |
+| Project code (build, tests, acceptance, rebuilt behaviors, the reference executable) | Run in the macOS sandbox: no network, writes only to the working copy and a private temp dir, no signalling of other processes, no reads of ERA's state, of other projects or of the home directory and shared temp folders (toolchains on `PATH` and the working copy stay readable), secret-free environment. Without a sandbox they run only for `trust_project: true` / `--trust-project` |
 | Coding agents | `command` agents are confined the same way, except that they may use the network and keep their environment. `claude-code` and `codex` run with their own permission models (Claude `acceptEdits`, Codex `workspace-write`; **read-only** modes during Review). They are not sandboxed by ERA |
 | Several projects | Separate state directories, separate locks, separate ledgers |
 | Prompts | Project content is treated as untrusted data and the prompts say so; prompts and agent output are redacted for secret patterns before storage |

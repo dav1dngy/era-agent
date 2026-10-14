@@ -11,7 +11,7 @@ const ICON = { pass: '✓', warn: '!', fail: '✕', info: 'i' };
 export function Checklist({ checks, onRecheck }) {
   const sum = checklistSummary(checks);
   return html`<div class="checklist" role="region" aria-label="Prerequisites">
-    <div class="row"><b>Before you start</b><${Badge} status=${sum.tone === 'bad' ? 'failed' : sum.tone === 'warn' ? 'waiting' : 'ready'} label=${sum.text} />${onRecheck ? html`<${Btn} size="sm" class="right" onClick=${onRecheck}>Check again<//>` : null}<a href="#/help/rebuild" class=${onRecheck ? '' : 'right'}>What do these mean?</a></div>
+    <div class="row"><b>Before you start</b><${Badge} status=${sum.tone === 'bad' ? 'failed' : sum.tone === 'warn' ? 'waiting' : 'ready'} label=${sum.text} />${onRecheck ? html`<${Btn} size="sm" class="right" onClick=${onRecheck}>Check again<//>` : null}<a href="#/docs/project-lab?h=rebuild-prerequisites" class=${onRecheck ? '' : 'right'}>What do these mean?</a></div>
     <ul>${checks.map((c) => html`<li class=${`check-${c.status}`}><span class="check-icon" aria-hidden="true">${ICON[c.status] ?? '·'}</span>
       <span class="sr-only">${c.status}: </span>
       <div><b>${c.label}</b> <span class="muted">${c.message}</span>${c.fix && c.status !== 'pass' ? html`<div class="check-fix">→ ${c.fix}${/Settings → Execution/.test(c.fix) ? html` <a href="#/settings/execution">Open Execution settings</a>` : ''}${/Settings → Permissions/.test(c.fix) ? html` <a href="#/settings/permissions">Open Permissions</a>` : ''}</div>` : null}</div></li>`)}</ul>

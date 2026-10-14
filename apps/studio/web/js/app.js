@@ -16,9 +16,12 @@ const NAV = [
   { id: 'improvement', label: 'Improvement Lab', icon: 'improvement', adv: true },
   { id: 'agents', label: 'Agent Command Center', icon: 'agents', adv: false },
   { id: 'tools', label: 'Tools', icon: 'tools', adv: true },
-  { id: 'help', label: 'Help', icon: 'help', adv: false },
+  { id: 'docs', label: 'Documentation', icon: 'book', adv: false },
   { id: 'settings', label: 'Settings', icon: 'settings', adv: false },
 ];
+
+// Palette shortcuts into the documentation (title, section, optional heading id); the pages themselves come from /api/docs.
+const DOC_COMMANDS = [['Getting Started', 'getting-started'], ['Installation', 'installation'], ['Project Lab', 'project-lab'], ['Rebuild prerequisites', 'project-lab', 'rebuild-prerequisites'], ['Approval and rollback', 'project-lab', 'approval-and-rollback'], ['Reverse Engineering', 'reverse-engineering'], ['Multi-Agent Configuration', 'multi-agent'], ['Improvement Lab', 'improvement-lab'], ['Security and Permissions', 'security'], ['Troubleshooting', 'troubleshooting']];
 
 function Sidebar() {
   const s = useStore();
@@ -31,10 +34,10 @@ function Sidebar() {
   return html`<nav class="sidebar" aria-label="Main">
     <button class="sidebar-brand" onClick=${() => navigate('home')} aria-label="ERA Studio home" title="ERA Studio"><${EraMark} /><span class="label">ERA <span class="muted">Studio</span></span></button>
     <span class="nav-section">WORKSPACE</span>
-    <div class="nav-group">${NAV.filter((n) => !['settings', 'help'].includes(n.id) && (advanced || !n.adv)).map(navItem)}</div>
+    <div class="nav-group">${NAV.filter((n) => !['settings', 'docs'].includes(n.id) && (advanced || !n.adv)).map(navItem)}</div>
     <div class="sidebar-foot">
       <button class="nav-item" onClick=${() => set({ palette: true })} aria-label="Command palette" title="Command palette · ⌘K"><span class="ico"><${Icon} name="command" /></span><span class="label">Commands <kbd>⌘K</kbd></span></button>
-      ${navItem(NAV.find((n) => n.id === 'help'))}
+      ${navItem(NAV.find((n) => n.id === 'docs'))}
       ${navItem(NAV.find((n) => n.id === 'settings'))}
       <div class="sidebar-local" title="Local workspace"><span class="local-monogram">E</span><span class="label"><b>Local workspace</b><small>ERA Studio</small></span></div>
     </div>
@@ -89,7 +92,7 @@ function CommandPalette() {
   const cmds = useMemo(() => {
     const list = [
       ['New task', () => navigate('home')], ['Projects', () => navigate('projects')], ['Agent Command Center', () => navigate('agents')], ['Settings', () => navigate('settings')],
-      ['Help and documentation', () => navigate('help')], ['Help: getting started', () => navigate(['help', 'start'])], ['Help: providers, cost and consent', () => navigate(['help', 'costs'])], ['Help: Rebuild prerequisites', () => navigate(['help', 'rebuild'])], ['Help: approval and rollback', () => navigate(['help', 'approval'])], ['Help: troubleshooting', () => navigate(['help', 'troubleshooting'])],
+      ['Documentation', () => navigate('docs')], ...DOC_COMMANDS.map(([title, id, anchor]) => [`Documentation: ${title}`, () => navigate(['docs', id], anchor ? { h: anchor } : undefined)]),
       ['Analysis workspace', () => navigate('analysis')], ['Project Lab', () => navigate('lab')], ['Improvement Lab', () => navigate('improvement')], ['Tools & MCP', () => navigate('tools')],
       ['Switch to Simple mode', () => saveSettings({ mode: 'simple' })], ['Switch to Advanced mode', () => saveSettings({ mode: 'advanced' })],
       ['Toggle theme', () => saveSettings({ appearance: { theme: document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark' } })],

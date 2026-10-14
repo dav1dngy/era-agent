@@ -45,7 +45,7 @@ function Providers() {
   const [a, setA] = useState(null);
   useEffect(() => { get('/api/agents').then(setA).catch(() => {}); }, []);
   if (!a) return html`<${Spinner} />`;
-  return html`<div class="col"><${Callout}>ERA never stores provider credentials. Each CLI keeps its own sign-in; ERA only asks whether it is signed in. To sign in, run <code>claude auth login</code> or <code>codex login</code> in a terminal. <a href="#/help/costs">Cost, consent and what a provider can read</a>. Custom command agents are declared in <code>era.config.json</code> under <code>projectLab.customAgents</code>.<//>
+  return html`<div class="col"><${Callout}>ERA never stores provider credentials. Each CLI keeps its own sign-in; ERA only asks whether it is signed in. To sign in, run <code>claude auth login</code> or <code>codex login</code> in a terminal. <a href="#/docs/getting-started?h=3-cost-consent-and-privacy">Cost, consent and what a provider can read</a>. Custom command agents are declared in <code>era.config.json</code> under <code>projectLab.customAgents</code>.<//>
     ${a.providers.map((p) => html`<div class="panel" style="padding:var(--space-3)"><div class="row"><b>${p.id}</b><${Badge} status=${p.state} /><span class="muted">${p.version ?? ''}</span></div><div class="muted" style="margin-top:4px">${p.description}</div><div class="muted">${p.capabilities.remote ? 'Sends project content to a remote service — requires your consent per project.' : 'Runs locally.'} ${p.metered ? 'Dollar cost is reported and capped.' : p.capabilities.automated ? 'Reports token usage only; ERA cannot cap its dollar cost.' : ''}</div></div>`)}</div>`;
 }
 

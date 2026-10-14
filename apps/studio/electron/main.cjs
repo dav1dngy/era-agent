@@ -136,7 +136,7 @@ function buildMenu() {
     { label: 'Go', submenu: [{ label: 'New Task', click: () => nav('#/home') }, { label: 'Projects', click: () => nav('#/projects') }, { label: 'Agent Command Center', click: () => nav('#/agents') }] },
     { label: 'View', submenu: [...(win.webContents.getLastWebPreferences().devTools ? [{ role: 'toggleDevTools' }] : []), { role: 'reload' }, { role: 'togglefullscreen' }, { role: 'zoomIn' }, { role: 'zoomOut' }, { role: 'resetZoom' }] },
     { label: 'Window', submenu: [{ role: 'minimize' }, { role: 'zoom' }, { role: 'front' }] },
-    { label: 'Help', role: 'help', submenu: [{ label: 'ERA Studio Help', accelerator: 'F1', click: () => nav('#/help') }, { label: 'Providers, Cost and Consent', click: () => nav('#/help/costs') }, { label: 'Approval and Rollback', click: () => nav('#/help/approval') }, { label: 'Troubleshooting', click: () => nav('#/help/troubleshooting') }] },
+    { label: 'Help', role: 'help', submenu: [{ label: 'ERA Studio Documentation', accelerator: 'F1', click: () => nav('#/docs/getting-started') }, { label: 'Project Lab', click: () => nav('#/docs/project-lab') }, { label: 'Approval and Rollback', click: () => nav('#/docs/project-lab?h=approval-and-rollback') }, { label: 'Security and Permissions', click: () => nav('#/docs/security') }, { label: 'Troubleshooting', click: () => nav('#/docs/troubleshooting') }] },
   ]));
 }
 

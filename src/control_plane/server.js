@@ -23,6 +23,7 @@ import { analysisService } from './services/analysis.js';
 import { improvementService } from './services/improvement.js';
 import { projectsService } from './services/projects.js';
 import { systemService } from './services/system.js';
+import { docsService } from './services/docs.js';
 import { UPLOAD_MIME, uploadsService } from './services/uploads.js';
 import { tasksService } from './services/tasks.js';
 import { workbenchService } from './services/workbench.js';
@@ -32,7 +33,7 @@ const DEFAULT_WEB_ROOT = resolve(HERE, '..', '..', 'apps', 'studio', 'web');
 const MAX_BODY = 1_000_000;
 const MAX_UPLOAD = 13 * 1024 * 1024;
 const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.mjs': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json', '.svg': 'image/svg+xml', '.png': 'image/png', '.woff2': 'font/woff2', '.ttf': 'font/ttf', '.map': 'application/json' };
-const CSP = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self'; worker-src 'self' blob:; frame-ancestors 'none'; base-uri 'none'; form-action 'none'; object-src 'none'";
+const CSP = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; worker-src 'self' blob:; frame-ancestors 'none'; base-uri 'none'; form-action 'none'; object-src 'none'";
 
 // Third-party front-end libraries are served from node_modules, allowlisted by name (nothing else is reachable).
 function vendorMap(extraRoots = []) {
@@ -80,6 +81,7 @@ export async function createControlPlane({ config, rea, log = nullLogger, versio
   ctx.system = systemService(ctx);
   ctx.uploads = uploadsService(ctx);
   ctx.tasks = tasksService(ctx);
+  ctx.docs = docsService();
   const vendor = vendorMap(vendorRoots);
 
   const rawBody = (req, limit) =>
@@ -185,6 +187,14 @@ export async function createControlPlane({ config, rea, log = nullLogger, versio
   route('GET', '/api/projects/:id/runs/:run/artifact', async (m, _r, u) => {
     const a = P.artifact(m[1], m[2] === 'latest' ? null : m[2], q(u, 'path', ''));
     return { __raw: a.bytes, type: a.mime };
+  });
+
+  // documentation: the repository's own pages and images, from a fixed allowlist
+  route('GET', '/api/docs', async () => ctx.docs.index());
+  route('GET', '/api/docs/page', async (_m, _r, u) => ctx.docs.page(q(u, 'name', '')));
+  route('GET', '/api/docs/image', async (_m, _r, u) => {
+    const img = ctx.docs.image(q(u, 'name', ''));
+    return { __raw: img.bytes, type: img.mime };
   });
 
   // analysis (REA)

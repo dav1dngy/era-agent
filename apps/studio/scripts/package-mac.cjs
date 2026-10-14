@@ -33,7 +33,8 @@ async function build() {
     writeFileSync(path.join(stage, 'package-lock.json'), JSON.stringify(merged, null, 2));
     execFileSync('npm', ['ci', '--omit=dev', '--ignore-scripts', '--no-audit', '--no-fund'], { cwd: stage, stdio: 'inherit' });
     mkdirSync(path.join(stage, 'era'));
-    for (const entry of ['src', 'bin', 'era.config.json', 'package.json', 'LICENSE', 'THIRD_PARTY_NOTICES.md']) {
+    // docs/ and SECURITY.md are the in-app Documentation (the control plane serves a fixed allowlist of them read-only)
+    for (const entry of ['src', 'bin', 'docs', 'SECURITY.md', 'era.config.json', 'package.json', 'LICENSE', 'THIRD_PARTY_NOTICES.md']) {
       cpSync(path.join(repo, entry), path.join(stage, 'era', entry), { recursive: true });
     }
     cpSync(path.join(repo, 'LICENSE'), path.join(stage, 'LICENSE'));
