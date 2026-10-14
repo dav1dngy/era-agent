@@ -2,7 +2,7 @@
 
 ERA Studio is a local desktop and browser client of ERA. It reuses the original
 REA engine, Project Lab, configurable coding agents and Improvement Lab. This is
-the v0.2.0 release candidate (`0.2.0-rc.1`): an **unsigned development build** for macOS arm64,
+v0.2.0: an **unsigned development build** for macOS arm64,
 not a signed or notarized production release and not an enterprise certification. The earlier
 `v0.2.0-dev.0` and `v0.2.0-dev.1` prereleases are development checkpoints; stable `main` stays at v0.1.0 until a release is approved.
 
@@ -13,7 +13,7 @@ specified in the root package, npm, Git and Python 3 for the terminal. Native
 function decompilation additionally needs a REA-compatible provider such as Hopper.
 Sign in to any coding-agent CLI you intend to use; Studio does not store credentials.
 
-From a checkout of the `feature/era-v0.2.0` branch (the default branch `main` is the v0.1.0 CLI and has no Studio):
+From a checkout of the tag `v0.2.0` or of `main` (the CLI-only release v0.1.0 has no Studio):
 
 ```sh
 npm ci

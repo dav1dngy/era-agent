@@ -25,9 +25,8 @@ Every reverse-engineering fact ERA reports comes from a recorded REA execution. 
 re-implements REA, and everything REA offers stays available through `era rea …`.
 [ERA and REA](#era-and-rea) separates what REA provides from what ERA adds.
 
-> **Status: v0.2.0 release candidate (`0.2.0-rc.1`), not yet released.** The stable release is
-> v0.1.0 (the CLI). The desktop app is an **unsigned development build** for macOS arm64; there
-> is no signed or notarized download. Verified on macOS 27 (arm64), Node 24 and REA 6.4.0: see
+> **Status: v0.2.0.** The previous release is v0.1.0 (the CLI, still available). The desktop app is an
+> **unsigned development build** for macOS arm64 that you build from source; there is no signed or notarized download. Verified on macOS 27 (arm64), Node 24 and REA 6.4.0: see
 > [what is verified](docs/SUPPORT_AND_VALIDATION.md), the [release notes](docs/release-notes-v0.2.0.md),
 > [limitations](#limitations) and the [security summary](docs/ERA_V020_REMEDIATION.md). An independent
 > audit found release-blocking issues that are fixed; those fixes have not been independently
@@ -59,7 +58,7 @@ stand-in, everything else is real).
 All ten views, including project management, Project Lab, the editor, settings and the documentation: [screenshot gallery](docs/assets/screenshots/README.md).
 
 ```bash
-git clone --branch feature/era-v0.2.0 https://github.com/dav1dngy/era-agent.git && cd era-agent
+git clone --branch v0.2.0 https://github.com/dav1dngy/era-agent.git && cd era-agent
 npm ci && npm ci --prefix apps/studio
 node bin/era.mjs studio doctor         # what Studio needs on this machine
 node bin/era.mjs studio app            # desktop shell; `studio serve --open` runs it in a browser
@@ -122,27 +121,25 @@ There are three different things you can install; pick the one you need.
 
 | You want | Source | Includes ERA Studio |
 |---|---|---|
-| The stable **CLI** (v0.1.0) | the default branch `main`, or the npm tarball built from it | no |
-| The **v0.2.0 development line**: CLI plus ERA Studio (desktop shell or browser) | branch `feature/era-v0.2.0` | yes |
+| **ERA with Studio** (v0.2.0): CLI plus the desktop shell and the browser workbench | the default branch `main`, or the tag `v0.2.0` | yes |
+| **The CLI only** | the `era-agent-0.2.0.tgz` attached to the release (v0.2.0), or the tag `v0.1.0` for the previous CLI-only release | no |
 | A **desktop application** | built locally with `npm run package --prefix apps/studio` (unsigned, macOS arm64). No signed or notarized download is published | yes |
 
-The CLI tarball and the default branch do **not** contain `apps/studio`; following the CLI steps and then running a Studio command fails.
+The CLI tarball and the tag `v0.1.0` do **not** contain `apps/studio`; installing only the CLI and then running a Studio command fails.
 
 ```bash
-# CLI only (stable)
-git clone https://github.com/dav1dngy/era-agent.git && cd era-agent
+# CLI only (the previous CLI-only release, v0.1.0)
+git clone --branch v0.1.0 https://github.com/dav1dngy/era-agent.git && cd era-agent
 npm install && npm test && node bin/era.mjs status
 
-# v0.2.0 development line with ERA Studio
-git clone --branch feature/era-v0.2.0 https://github.com/dav1dngy/era-agent.git && cd era-agent
+# v0.2.0 with ERA Studio
+git clone --branch v0.2.0 https://github.com/dav1dngy/era-agent.git && cd era-agent
 npm ci && npm ci --prefix apps/studio
 node bin/era.mjs studio doctor        # checks what Studio needs on this machine
 node bin/era.mjs studio app           # desktop shell; or: node bin/era.mjs studio serve --open (browser)
 ```
 
-The remote `feature/era-v0.2.0` branch may be behind the latest local work: fixes described in
-[docs/ERA_V020_REMEDIATION.md](docs/ERA_V020_REMEDIATION.md) are in a clone only once they are published. Put `era` on your PATH
-with `npm link` (optional). Studio has an in-app **Help** page (sidebar, ⌘K, and F1 in the desktop app) that works offline.
+Put `era` on your PATH with `npm link` (optional). Studio has an in-app **Documentation** section (sidebar, ⌘K, and F1 in the desktop app) that works offline.
 
 Requirements: Node.js `^22.19 || ^24.11 || >=26` (REA's supported range; verified on 24.20 only), git; Python 3 for the Studio terminal.
 Native decompilation needs Hopper, Ghidra 12.1.x (a JDK 21 on `PATH` and `GHIDRA_INSTALL_DIR`; the desktop app imports only your shell's
@@ -438,9 +435,8 @@ and the Improvement Lab; it is also under **Documentation → Troubleshooting** 
 
 ## Roadmap
 
-* **v0.2.0** (release candidate): ERA Studio, Project Lab and configurable multi-agent engineering, on
-  `feature/era-v0.2.0`. Before a release: independent re-review of the audit fixes, a green hosted CI
-  run, and (for a distributed app) signing and notarization.
+* **v0.2.0**: ERA Studio, Project Lab and configurable multi-agent engineering. Next: independent re-review of the
+  audit fixes, broader platform validation, and (for a distributed app) signing and notarization.
 * **v0.3.0**: multi-agent verification, advanced workflows, team collaboration,
   role-based permissions.
 

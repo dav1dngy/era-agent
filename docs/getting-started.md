@@ -6,11 +6,10 @@ workbench for all of it; the same functions are available from the `era` command
 
 ## 1. Install
 
-Pick the route that fits ([installation](installation.md) has the details): the stable CLI (`main`, no Studio), the development line with ERA Studio
-(`feature/era-v0.2.0`), or a locally built, **unsigned** macOS app. No signed or notarized download exists yet.
+Pick the route that fits ([installation](installation.md) has the details): the CLI only (the tarball attached to the release, or the tag `v0.1.0`), ERA with Studio (`main` or the tag `v0.2.0`), or a locally built, **unsigned** macOS app. No prebuilt, signed or notarized app exists.
 
 ```bash
-git clone --branch feature/era-v0.2.0 https://github.com/dav1dngy/era-agent.git && cd era-agent
+git clone --branch v0.2.0 https://github.com/dav1dngy/era-agent.git && cd era-agent
 npm ci && npm ci --prefix apps/studio
 node bin/era.mjs studio doctor        # what Studio needs on this machine
 node bin/era.mjs studio app           # desktop shell; `studio serve --open` for the browser

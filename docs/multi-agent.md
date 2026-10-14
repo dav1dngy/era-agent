@@ -1,6 +1,6 @@
 # ERA Multi-Agent Engineering
 
-> Status: ERA v0.2.0 development (branch `feature/era-v0.2.0`), experimental. Real-provider
+> Status: ERA v0.2.0, experimental. Real-provider
 > evidence and its gaps are in [provider-validation.md](provider-validation.md); what the
 > automated tests do and do not prove is in [multi-agent-testing.md](multi-agent-testing.md).
 

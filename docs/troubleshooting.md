@@ -7,7 +7,7 @@ Start with `node bin/era.mjs status` (environment and provider state), `node bin
 
 | Symptom | Cause and fix |
 |---|---|
-| A Studio command fails after following the CLI steps | The stable CLI (`main`, the npm tarball) has no `apps/studio`. Clone the development line and run `npm ci --prefix apps/studio` ([installation](installation.md)). |
+| A Studio command fails after following the CLI steps | The CLI tarball and the tag `v0.1.0` have no `apps/studio`. Clone the tag `v0.2.0` (or `main`) and run `npm ci --prefix apps/studio` ([installation](installation.md)). |
 | "The access token was rejected" | The token changes with every launch. Restart `era studio serve` and open the new URL. |
 | macOS says the app "cannot be opened" or is from an unidentified developer | The desktop build is **unsigned and not notarized** (a development build). An app you built yourself carries no quarantine flag and opens normally; a copy that was downloaded or transferred may be blocked. On recent macOS versions allow that one app under *System Settings → Privacy & Security → Open Anyway* (older versions: right-click → Open); this was not verified on a clean machine. Or run from source with `era studio app`. Do not disable Gatekeeper globally. |
 | The desktop app cannot find `node` or `git` | Finder-launched apps get a minimal `PATH`; Studio imports your login shell's `PATH`. Start it from a terminal if your tools live elsewhere. |

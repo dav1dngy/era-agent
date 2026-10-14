@@ -3,10 +3,10 @@
 All notable changes to ERA. Versions `era-vN` are internal self-improvement
 checkpoints (annotated git tags); `vX.Y.Z` are releases.
 
-## v0.2.0-rc.1: release candidate (branch `feature/era-v0.2.0`; not released, not tagged)
+## v0.2.0: 2026-10-15
 
-Release candidate for v0.2.0: the first version with ERA Studio, Project Lab and Multi-Agent Engineering. The stable release is still v0.1.0. See
-`docs/release-notes-v0.2.0.md` for what is verified, the security summary, known limitations and what has to happen before publication.
+The first version with ERA Studio, Project Lab and Multi-Agent Engineering. v0.1.0 remains available. The macOS desktop app is an **unsigned development build** and is not attached to the
+release (build it from source). See `docs/release-notes-v0.2.0.md` for what is verified, the security summary and the known limitations.
 
 ### Release preparation
 - **In-app Documentation** (sidebar, command palette, Help menu, F1): eight sections (Getting Started, Installation, Project Lab, Reverse Engineering,
@@ -18,7 +18,7 @@ Release candidate for v0.2.0: the first version with ERA Studio, Project Lab and
 - Fixed while preparing: the Content-Security-Policy blocked every authenticated image; the Settings categories were invisible while the sidebar is collapsed; the Improvement Lab listed
   self-analyses as quoted ids with "Invalid Date".
 - The self-analysis pass size is 60 KB (was 50 KB): the Improvement Lab needed 2 x 25 REA runs per cycle against a hard cap of 50; it needs 2 x 21 now.
-- Versions are `0.2.0-rc.1`; `.env.example` lists every variable ERA reads.
+- Versions are `0.2.0`; `.env.example` lists every variable ERA reads.
 
 
 ### Independent audit remediation (see `docs/ERA_V020_REMEDIATION.md`)

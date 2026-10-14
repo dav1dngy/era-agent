@@ -1,6 +1,6 @@
 {
   "name": "era-agent",
-  "version": "0.2.0-rc.1",
+  "version": "0.2.0",
   "description": "ERA is an AI-powered reverse-engineering agent that analyzes software, verifies its findings, and evolves its own implementation through controlled recursive self-improvement.",
   "type": "module",
   "bin": {

@@ -1,6 +1,6 @@
 # Support and validation matrix
 
-What is verified, on which platform and revision, and how. Release candidate `0.2.0-rc.1`, tested revision `58c8fa7` (the code of the release candidate; later commits change documentation, release notes and packaging evidence only), 2026-10-15,
+What is verified, on which platform and revision, and how. Version `0.2.0`, tested revision `58c8fa7` (the code of the release; later commits change documentation, release notes and the version number only), 2026-10-15,
 macOS 27.0.1 arm64, Node 24.20.0, Electron 44.7.1, REA 6.4.0. Details and commands: [ERA_V020_REMEDIATION.md](ERA_V020_REMEDIATION.md).
 
 Labels: **REAL** it ran for real on this revision; **MOCKED** a service was replaced by a fake or scripted stand-in (the orchestration is verified, not the stand-in);
@@ -24,7 +24,7 @@ Labels: **REAL** it ran for real on this revision; **MOCKED** a service was repl
 | Improvement Lab | REAL end to end with real REA and sandbox, in a throwaway clone (4 cycles on this line, 3 accepted); the end-to-end suite uses a fake engine; the self-analysis pass size is 60 KB so a cycle needs 2 x 21 REA runs (cap 50) | `experiments/studio-improvement/`, `experiments/remediation/` | approval and tagging were not run on this repository; the Lab needs a branch named `main`, cannot evaluate `apps/studio/`, and is at its REA-run hard cap |
 | Security fixes H01-H05, M01-M03 | REAL | `tests/audit-remediation.test.js`, `tests/audit-control-plane.test.js` fail on the previous code | macOS sandbox only; see the limits in the remediation document |
 | In-app Documentation (eight sections rendered from the repository pages), keyboard-contained palette | REAL | desktop scenarios, route and parser tests, native key events | no screen-reader pass |
-| CI desktop job, release validation | **UNVERIFIED** on a hosted runner | workflow YAML parses; commands run locally | first hosted run pending |
+| CI desktop job, release validation | CI runs on every pull request; the result for v0.2.0 is on pull request #1 and in the release notes. The release-validation workflow (provenance, SBOM attestation) has **not** run | workflow YAML parses; the commands were run locally | a failing hosted check is a blocker until fixed |
 | Signing, notarization, clean-machine install | **UNVERIFIED** | not done | an unsigned development build only |
 | Screenshots in the documentation | REAL, ten captures | [gallery and process](assets/screenshots/README.md), [manifest](assets/screenshots/manifest.json) | the coding agent in them is a stand-in; Rebuild checklist, screenshot comparison and plan approval not captured |
 | Independent review of the fixes | **UNVERIFIED** | none | required before a release claim |

@@ -6,7 +6,7 @@ application. It is separate from the [Improvement Lab](improvement-lab.md),
 which improves ERA itself. Project Lab never operates on ERA's own installation
 (paths inside it are refused).
 
-> Status: ERA v0.2.0 development (branch `feature/era-v0.2.0`), experimental.
+> Status: ERA v0.2.0, experimental.
 > The automated tests use scripted *mock* agents, real REA and the projects' own
 > tests. Real Codex runs (including one end-to-end modify, one screenshot rebuild
 > and a review) are recorded in [provider-validation.md](provider-validation.md);

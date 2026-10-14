@@ -1,7 +1,8 @@
-# ERA v0.2.0, release candidate 1 (`0.2.0-rc.1`)
+# ERA v0.2.0
 
-> **Status: release candidate. Nothing has been published.** No tag, GitHub release, npm package or push was made for this version. The stable release remains
-> **v0.1.0**. The release candidate commit is `the tip of `feature/era-v0.2.0` (the code was tested at `58c8fa7`; the commits after it change documentation, release notes and packaging evidence only)` on branch `feature/era-v0.2.0`. Publishing needs your explicit approval; the open decisions are in section 9.
+> **Released as v0.2.0.** The first version with ERA Studio, Project Lab and Multi-Agent Engineering. **v0.1.0 remains available** and unchanged. The desktop app is an **unsigned development build** and is **not attached**
+> to this release; build it from source. Release commit: see the tag `v0.2.0`; the code was validated at `58c8fa7` and approved at `c4304f1`, and only the version number and release documentation changed after that.
+> Hosted CI results are on [pull request #1](https://github.com/dav1dngy/era-agent/pull/1).
 
 ERA is an open-source reverse-engineering agent built on the original [Reverse Engineer Anything (REA)](https://github.com/morluto/rea) engine. v0.2.0 is the first
 version that contains **ERA Studio**, **Project Lab** and **Multi-Agent Engineering**. REA is unchanged (`rea-agents@6.4.0`, an unmodified dependency); everything
@@ -22,17 +23,16 @@ reverse-engineering related still comes from recorded REA executions.
 
 ## 2. Install
 
-Three different things; pick one ([installation](installation.md)): the stable CLI (`main`, **no Studio**), the v0.2.0 development line with Studio, or a **locally built unsigned macOS app**.
+Pick one ([installation](installation.md)): ERA with Studio (`main` or the tag `v0.2.0`), the CLI only (the tarball attached to this release), or a **locally built unsigned macOS app**.
 
 ```bash
-git clone --branch feature/era-v0.2.0 https://github.com/dav1dngy/era-agent.git && cd era-agent
+git clone --branch v0.2.0 https://github.com/dav1dngy/era-agent.git && cd era-agent
 npm ci && npm ci --prefix apps/studio
 node bin/era.mjs studio doctor && node bin/era.mjs studio app
 ```
 
 **Desktop app (macOS).** The only validated platform is macOS on Apple silicon. The app is an **unsigned, un-notarized development build**: there is no Developer ID signature,
-no notarization and no auto-updater, and no signed production release exists. Build it with `npm run package --prefix apps/studio` or use the zip attached to a release
-candidate and verify its checksum first; see [installation](installation.md#era-studio-desktop-application-macos) for the steps and the Gatekeeper note. Gatekeeper behavior was not verified on a clean machine.
+no notarization and no auto-updater, and no signed production release exists. Build it with `npm run package --prefix apps/studio`; see [installation](installation.md#era-studio-desktop-application-macos) for the steps and the Gatekeeper note. Gatekeeper behavior was not verified on a clean machine.
 
 ## 3. Verified
 
@@ -97,25 +97,22 @@ The fixes were **not re-reviewed by an independent party**. Details, limits and 
 
 ## 8. Artifacts
 
-Built from the tested code with `npm pack`, `npm sbom` and `npm run package --prefix apps/studio`, in `dist/` of the local checkout (git-ignored, **not published and not attached anywhere**). Rebuild them with those commands; the zip is not reproducible byte for byte.
+Attached to the GitHub release (built from the release commit with `npm pack` and `npm sbom`; the tarball is reproducible, `npm pack` at the tag gives the same checksum):
 
-| File | What it is | Size | SHA-256 |
-|---|---|---|---|
-| `era-agent-0.2.0-rc.1.tgz` | the CLI package (no Studio); contains `bin/`, `src/`, `era.config.json`, README, LICENSE, THIRD_PARTY_NOTICES; no personal paths | 201,728 B | `d82ae31dff560330c01c9f8e9b4d7608103efc30c20edddf1612daaf76cae67c` |
-| `era-studio-0.2.0-rc.1-darwin-arm64-unsigned.zip` | the **unsigned** macOS arm64 desktop app (500 MB unpacked, with the in-app documentation) | 182,442,797 B | `18ceeabcc351494bea02b88cf9e8f6024a9f581ed2e458cc72ec304c8a45151e` |
-| `era-agent-0.2.0-rc.1.cdx.json` | CycloneDX SBOM of the CLI's production dependencies | 165,315 B | `2641df38cab055dd474d942f7726503afb3aa59046f9a42cf1689767a8d5a988` |
-| `era-studio-0.2.0-rc.1.cdx.json` | CycloneDX SBOM of Studio's npm production dependencies (not the bundled Electron runtime) | 11,303 B | `fa4952445b16115286528bf7f85848f0d8989dcf03194cc0d7fa71e285d17bf1` |
-| `SHA256SUMS` | the four checksums above (`shasum -a 256 -c SHA256SUMS`) | 398 B | |
+| File | What it is | SHA-256 |
+|---|---|---|
+| `era-agent-0.2.0.tgz` | the CLI package (no Studio): `bin/`, `src/`, `era.config.json`, README, LICENSE, THIRD_PARTY_NOTICES; no personal paths | `73a206c457e6444398faab78f0367d7a5fc8f63f4d1c7142621d45771dbdd63f` |
+| `era-agent-0.2.0.cdx.json` | CycloneDX SBOM of the CLI's production dependencies | `5c2569919140d572e5a4a2fdae19efb9676b6b71f07eaec755b27e1c8976e0d4` |
+| `era-studio-0.2.0.cdx.json` | CycloneDX SBOM of Studio's npm production dependencies (not the bundled Electron runtime) | `14145149fb2fbd144a429083a282f13a8f8283b429ab997a0d010ddf2fc479df` |
+| `SHA256SUMS` | the checksums above (`shasum -a 256 -c SHA256SUMS`) | |
 
-**Signature state of the app, measured:** `codesign -dv` reports an ad-hoc, linker-signed Electron binary (`Signature=adhoc`, no team identifier) and `spctl --assess` rejects the bundle. It carries no
-Developer ID signature and is not notarized. It is a development build, not a distributable production release. No provenance attestation exists (it is produced by the release-validation workflow, which has not run).
+**Not attached: the macOS desktop app.** An unsigned build was produced and tested (it launches, including from an extracted archive), but it is only ad-hoc signed (`codesign -dv`: `Signature=adhoc`, no team identifier) and `spctl --assess` rejects it:
+it has no Developer ID signature, is not notarized, and would trigger Gatekeeper warnings. Build it from source instead. No provenance attestation exists (the release-validation workflow did not run).
 
-## 9. Before this can be published
+## 9. What is still open
 
-1. **Your decision on Git history.** `npm run check:history` finds local filesystem paths (the account name) in three **unpublished** commits (`86baf91`, `68f0f20`, `74b1f93`); the working tree was cleaned afterwards. Pushing the branch publishes them. Options: accept (no credentials are involved), squash the unpublished commits into one before pushing (loses per-commit history and the commit references in the docs), or rewrite those three commits (changes every later commit id).
-2. **A green hosted CI run** for the desktop job, which could not be executed here.
-3. **An independent look at the audit fixes**, ideally by someone who tries to bypass them.
-4. **Whether to ship an unsigned desktop build** at all. If a distributed macOS app is intended, it needs Developer ID signing, notarization and a clean-machine test.
-5. **Optional, with your authorization:** a real Claude Code sign-in and a live `claude+codex` run; a metered-cost check.
-
-Then, and only on your explicit instruction: open the pull request ([pull-request-v0.2.0.md](pull-request-v0.2.0.md)), merge it, tag `v0.2.0` (bump `package.json` from `0.2.0-rc.1`) and create the GitHub release.
+1. **Git history:** three early commits on the branch contain a local filesystem path (the account name) in evidence files; there are no credentials. The maintainer accepted publishing the history as is.
+2. **An independent review of the audit fixes**, ideally by someone who tries to bypass them.
+3. **A signed and notarized desktop build** (Developer ID, notarization, a clean-machine test) if a distributed macOS app is wanted.
+4. **Real-provider validation:** Claude Code and a live `claude+codex` team (needs your sign-in), and a metered-cost check.
+5. **Hosted CI** runs on every pull request; the result for this release is on pull request #1. The Studio desktop job ran on a hosted runner for the first time on this release.

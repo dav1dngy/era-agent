@@ -94,7 +94,7 @@ ERA is JavaScript, so self-reverse-engineering uses REA's static JavaScript
 application analyzer on ERA's **packed npm artifact** plus its tests, and REA's
 process capture on the CLI. ERA has no compiled binaries of its own to
 decompile. REA's analyzer has a fixed per-run result budget, so the artifact is
-split into byte-bounded passes (60 KB each since 0.2.0-rc.1, down from 50 KB in earlier cycles: the Lab runs two self-analyses per cycle against a hard cap of 50 REA runs, and the artifact had grown to 25 passes per analysis). Local imports that cross passes resolve to
+split into byte-bounded passes (60 KB each since 0.2.0, down from 50 KB in earlier cycles: the Lab runs two self-analyses per cycle against a hard cap of 50 REA runs, and the artifact had grown to 25 passes per analysis). Local imports that cross passes resolve to
 one-line placeholder files. When REA reports `resource_constraint` for a file,
 ERA records `incomplete-analysis-coverage` and suppresses absence-based rules,
 because unavailable facts are not absence.
