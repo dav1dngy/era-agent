@@ -16,6 +16,7 @@ const NAV = [
   { id: 'improvement', label: 'Improvement Lab', icon: 'improvement', adv: true },
   { id: 'agents', label: 'Agent Command Center', icon: 'agents', adv: false },
   { id: 'tools', label: 'Tools', icon: 'tools', adv: true },
+  { id: 'help', label: 'Help', icon: 'help', adv: false },
   { id: 'settings', label: 'Settings', icon: 'settings', adv: false },
 ];
 
@@ -30,9 +31,10 @@ function Sidebar() {
   return html`<nav class="sidebar" aria-label="Main">
     <button class="sidebar-brand" onClick=${() => navigate('home')} aria-label="ERA Studio home" title="ERA Studio"><${EraMark} /><span class="label">ERA <span class="muted">Studio</span></span></button>
     <span class="nav-section">WORKSPACE</span>
-    <div class="nav-group">${NAV.filter((n) => n.id !== 'settings' && (advanced || !n.adv)).map(navItem)}</div>
+    <div class="nav-group">${NAV.filter((n) => !['settings', 'help'].includes(n.id) && (advanced || !n.adv)).map(navItem)}</div>
     <div class="sidebar-foot">
       <button class="nav-item" onClick=${() => set({ palette: true })} aria-label="Command palette" title="Command palette · ⌘K"><span class="ico"><${Icon} name="command" /></span><span class="label">Commands <kbd>⌘K</kbd></span></button>
+      ${navItem(NAV.find((n) => n.id === 'help'))}
       ${navItem(NAV.find((n) => n.id === 'settings'))}
       <div class="sidebar-local" title="Local workspace"><span class="local-monogram">E</span><span class="label"><b>Local workspace</b><small>ERA Studio</small></span></div>
     </div>
@@ -83,9 +85,11 @@ function CommandPalette() {
   const [q, setQ] = useState('');
   const [sel, setSel] = useState(0);
   const input = useRef();
+  const dialog = useRef();
   const cmds = useMemo(() => {
     const list = [
       ['New task', () => navigate('home')], ['Projects', () => navigate('projects')], ['Agent Command Center', () => navigate('agents')], ['Settings', () => navigate('settings')],
+      ['Help and documentation', () => navigate('help')], ['Help: getting started', () => navigate(['help', 'start'])], ['Help: providers, cost and consent', () => navigate(['help', 'costs'])], ['Help: Rebuild prerequisites', () => navigate(['help', 'rebuild'])], ['Help: approval and rollback', () => navigate(['help', 'approval'])], ['Help: troubleshooting', () => navigate(['help', 'troubleshooting'])],
       ['Analysis workspace', () => navigate('analysis')], ['Project Lab', () => navigate('lab')], ['Improvement Lab', () => navigate('improvement')], ['Tools & MCP', () => navigate('tools')],
       ['Switch to Simple mode', () => saveSettings({ mode: 'simple' })], ['Switch to Advanced mode', () => saveSettings({ mode: 'advanced' })],
       ['Toggle theme', () => saveSettings({ appearance: { theme: document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark' } })],
@@ -95,13 +99,33 @@ function CommandPalette() {
     return list;
   }, [s.projects]);
   const shown = cmds.filter(([n]) => n.toLowerCase().includes(q.toLowerCase())).slice(0, 12);
-  useEffect(() => input.current?.focus(), []);
+  // Modal keyboard behavior, like the shared Modal: focus moves into the dialog, Tab cannot leave it, and Escape or a choice returns
+  // focus to the control that opened it.
+  useEffect(() => {
+    const opener = document.activeElement;
+    input.current?.focus();
+    const keepFocusInside = (e) => { if (dialog.current && !dialog.current.contains(e.target)) input.current?.focus(); };
+    document.addEventListener('focusin', keepFocusInside);
+    return () => {
+      document.removeEventListener('focusin', keepFocusInside);
+      if (opener && opener !== document.body && document.contains(opener)) opener.focus?.();
+    };
+  }, []);
+  useEffect(() => { document.getElementById(`palette-option-${sel}`)?.scrollIntoView?.({ block: 'nearest' }); }, [sel]);
   const run = (c) => { set({ palette: false }); c?.[1](); };
+  const onKeyDown = (e) => {
+    if (e.key === 'ArrowDown') { e.preventDefault(); setSel((x) => Math.min(shown.length - 1, x + 1)); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); setSel((x) => Math.max(0, x - 1)); }
+    else if (e.key === 'Home') { e.preventDefault(); setSel(0); }
+    else if (e.key === 'End') { e.preventDefault(); setSel(Math.max(0, shown.length - 1)); }
+    else if (e.key === 'Enter') run(shown[sel]);
+    else if (e.key === 'Escape') set({ palette: false });
+    else if (e.key === 'Tab') e.preventDefault(); // the input is the only tab stop; options are chosen with the arrow keys
+  };
   return html`<div class="scrim" onMouseDown=${(e) => e.target === e.currentTarget && set({ palette: false })}>
-    <div class="modal palette" role="dialog" aria-modal="true" aria-label="Command palette">
-      <input ref=${input} type="text" placeholder="Type a command…" aria-label="Command" value=${q} onInput=${(e) => { setQ(e.target.value); setSel(0); }}
-        onKeyDown=${(e) => { if (e.key === 'ArrowDown') { e.preventDefault(); setSel((x) => Math.min(shown.length - 1, x + 1)); } else if (e.key === 'ArrowUp') { e.preventDefault(); setSel((x) => Math.max(0, x - 1)); } else if (e.key === 'Enter') run(shown[sel]); else if (e.key === 'Escape') set({ palette: false }); }} />
-      <ul role="listbox">${shown.map((c, i) => html`<li role="option" aria-selected=${i === sel} onMouseEnter=${() => setSel(i)} onClick=${() => run(c)}>${c[0]}</li>`)}${shown.length ? null : html`<li class="muted">No matching command</li>`}</ul>
+    <div class="modal palette" role="dialog" aria-modal="true" aria-label="Command palette" ref=${dialog}>
+      <input ref=${input} type="text" role="combobox" aria-expanded="true" aria-controls="palette-list" aria-autocomplete="list" aria-activedescendant=${shown.length ? `palette-option-${sel}` : undefined} placeholder="Type a command…" aria-label="Command" value=${q} onInput=${(e) => { setQ(e.target.value); setSel(0); }} onKeyDown=${onKeyDown} />
+      <ul role="listbox" id="palette-list" aria-label="Matching commands">${shown.map((c, i) => html`<li role="option" id=${`palette-option-${i}`} aria-selected=${i === sel} onMouseEnter=${() => setSel(i)} onClick=${() => run(c)}>${c[0]}</li>`)}${shown.length ? null : html`<li class="muted" role="status">No matching command</li>`}</ul>
     </div></div>`;
 }
 

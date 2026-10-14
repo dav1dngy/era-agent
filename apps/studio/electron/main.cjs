@@ -136,6 +136,7 @@ function buildMenu() {
     { label: 'Go', submenu: [{ label: 'New Task', click: () => nav('#/home') }, { label: 'Projects', click: () => nav('#/projects') }, { label: 'Agent Command Center', click: () => nav('#/agents') }] },
     { label: 'View', submenu: [...(win.webContents.getLastWebPreferences().devTools ? [{ role: 'toggleDevTools' }] : []), { role: 'reload' }, { role: 'togglefullscreen' }, { role: 'zoomIn' }, { role: 'zoomOut' }, { role: 'resetZoom' }] },
     { label: 'Window', submenu: [{ role: 'minimize' }, { role: 'zoom' }, { role: 'front' }] },
+    { label: 'Help', role: 'help', submenu: [{ label: 'ERA Studio Help', accelerator: 'F1', click: () => nav('#/help') }, { label: 'Providers, Cost and Consent', click: () => nav('#/help/costs') }, { label: 'Approval and Rollback', click: () => nav('#/help/approval') }, { label: 'Troubleshooting', click: () => nav('#/help/troubleshooting') }] },
   ]));
 }
 

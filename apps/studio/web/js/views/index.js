@@ -8,6 +8,7 @@ import { ImprovementView } from './improvement.js';
 import { LabView } from './lab.js';
 import { ToolsView } from './tools.js';
 import { WorkbenchView } from './workbench.js';
+import { HelpView } from './help.js';
 
 const Projects = ({ route }) => (route.path[1] ? html`<${ProjectView} route=${route} />` : html`<${ProjectsView} />`);
-export const Views = { home: Home, projects: Projects, settings: SettingsView, agents: AgentsView, analysis: AnalysisView, improvement: ImprovementView, lab: LabView, tools: ToolsView, workbench: WorkbenchView };
+export const Views = { home: Home, projects: Projects, settings: SettingsView, agents: AgentsView, analysis: AnalysisView, improvement: ImprovementView, lab: LabView, tools: ToolsView, workbench: WorkbenchView, help: HelpView };

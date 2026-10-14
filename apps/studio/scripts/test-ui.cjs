@@ -147,6 +147,43 @@ module.exports = async function testUI({ win, controlPlane, repo }) {
     win.setSize(1440, 900);
     check('Responsive dashboard, expandable navigation and command search');
 
+    // Command palette keyboard behavior (real key events): focus moves in, Tab and outside focus cannot leave, arrows move the
+    // active option, Escape returns focus to the control that opened it.
+    const press = async (keyCode) => { win.webContents.sendInputEvent({ type: 'keyDown', keyCode }); win.webContents.sendInputEvent({ type: 'keyUp', keyCode }); await delay(150); };
+    win.webContents.focus();
+    await js("document.querySelector('[aria-label=\"Search commands and projects\"]').focus()");
+    await js("document.querySelector('[aria-label=\"Search commands and projects\"]').click()");
+    await dom("document.activeElement?.getAttribute('aria-label') === 'Command'", 'focus moves into the command palette');
+    await press('Tab');
+    await press('Tab');
+    assert.equal(await js("!!document.activeElement?.closest('.palette')"), true, 'Tab must not leave the palette');
+    await js("document.querySelector('.sidebar-brand').focus()");
+    await dom("document.activeElement?.getAttribute('aria-label') === 'Command'", 'focus is pulled back from the page behind the palette');
+    const first = await js("document.querySelector('[aria-label=\"Command\"]').getAttribute('aria-activedescendant')");
+    await press('Down');
+    assert.notEqual(await js("document.querySelector('[aria-label=\"Command\"]').getAttribute('aria-activedescendant')"), first, 'the arrow key moves the active option');
+    assert.equal(await js("document.querySelector('[aria-label=\"Command\"]').getAttribute('role')"), 'combobox');
+    await press('Escape');
+    await dom("!document.querySelector('.palette')", 'Escape closes the palette');
+    assert.equal(await js("document.activeElement?.getAttribute('aria-label')"), 'Search commands and projects', 'focus returns to the invoking control');
+    check('Command palette is keyboard-contained and restores focus');
+
+    // Offline help: sidebar entry, topic pages, context links and the palette.
+    assert.equal(await js("!!document.querySelector('.sidebar [aria-label=\"Help\"]')"), true, 'Help is in the navigation');
+    await js("document.querySelector('.sidebar [aria-label=\"Help\"]').click()");
+    await dom("document.querySelector('h1')?.textContent === 'Help' && document.body.textContent.includes('Getting started')", 'help opens from the navigation');
+    await go('#/help/approval', "document.body.textContent.includes('Roll back a Rebuild') && document.body.textContent.includes('file for file')");
+    await go('#/help/rebuild', "document.body.textContent.includes('empty') && document.body.textContent.includes('destination')");
+    await go('#/help/troubleshooting', "document.body.textContent.includes('GHIDRA_INSTALL_DIR')");
+    assert.equal(await js("performance.getEntriesByType('resource').every((r) => new URL(r.name).origin === location.origin)"), true, 'the help page needs no external resource');
+    await js("document.querySelector('[aria-label=\"Search commands and projects\"]').click()");
+    await js("(() => { const i = document.querySelector('[aria-label=\"Command\"]'); i.focus(); const set = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set; set.call(i, 'rollback'); i.dispatchEvent(new Event('input', { bubbles: true })); })()");
+    await dom("document.querySelector('#palette-list')?.textContent.includes('Help: approval and rollback')", 'the palette finds the help topic');
+    await press('Escape');
+    await dom("!document.querySelector('.palette')", 'palette closed after the help search');
+    await go('#/home', "!!document.querySelector('.home')");
+    check('Offline help is reachable from navigation, topics and the palette');
+
     // Exercise shared components against inert, hostile report text in the actual browser runtime.
     const safe = await js(`(async () => { const {html,render}=await import('/js/html.js'); const {Md,Btn}=await import('/js/ui.js'); const host=document.createElement('div'); document.body.append(host); render(html\`<div><\${Md} text=\${'<img src=x onerror="window.pwned=1">'} /><\${Btn} kind="primary" class="right">Test<//></div>\`,host); const ok=!host.querySelector('img') && !window.pwned && host.querySelector('button').classList.contains('primary'); render(null,host); host.remove(); return ok; })()`);
     assert.equal(safe, true);
