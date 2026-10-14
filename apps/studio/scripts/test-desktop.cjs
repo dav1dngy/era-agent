@@ -19,6 +19,10 @@ writeFileSync(path.join(cwd, 'era.config.json'), JSON.stringify({
 const env = { ...process.env, ERA_STUDIO_CWD: cwd, ERA_STATE_DIR: path.join(cwd, 'state'), ERA_STUDIO_TEST_SOURCE: source, ERA_STUDIO_TEST_OUT: out };
 delete env.NODE_TEST_CONTEXT;
 delete env.ELECTRON_RUN_AS_NODE;
+// Project Lab and the Improvement Lab refuse to run when CI/GITHUB_ACTIONS is set (a safety feature that tests/ also verifies on its own). These scenarios exercise the
+// real workflows on disposable fixtures, so the runner's CI flags must not leak into the app and its jobs.
+delete env.CI;
+delete env.GITHUB_ACTIONS;
 delete env.ERA_REA_BIN; // genuine installed REA; coding agent alone is simulated
 try {
   const result = spawnSync(require('electron'), [studio, '--test-ui'], { env, stdio: 'inherit', timeout: 240_000 });
