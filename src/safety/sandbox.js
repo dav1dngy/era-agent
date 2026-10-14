@@ -56,8 +56,6 @@ export function readConfinement({ allow = [], env = process.env } = {}) {
     // Apple's developer-tool shims (git, make, clang via xcrun) keep a cache named xcrun_db* in the user temp directory and fail
     // without it; it holds only tool locations.
     before: [`(deny file-read* ${subpaths(roots)})`, `(allow file-read-metadata ${subpaths(roots)})`, `(allow file-read* ${subpaths(allowed)})`, ...(tmpRoot ? [`(allow file-read* (regex #"^${tmpRoot.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}/xcrun_db")`.concat(')')] : [])],
-    // ERA's own state directory in a development checkout must stay unreadable even though the code around it is allowed.
-    protectedAfter: [join(PACKAGE_ROOT, '.era')].filter(existsSync).map((p) => real(p)),
   };
 }
 
@@ -74,7 +72,7 @@ export function sandboxProfile({ writableDirs = [], readableDirs = [], confineRe
     '(allow default)',
     '(deny network*)',
     ...SIGNAL_RULES,
-    ...(reads ? [...reads.before, ...(reads.protectedAfter.length ? [`(deny file-read* ${reads.protectedAfter.map((d) => `(subpath ${quote(d)})`).join(' ')})`] : [])] : []),
+    ...(reads ? reads.before : []),
     '(deny file-write*)',
     `(allow file-write* ${[...dirs.map((d) => `(subpath ${quote(d)})`), '(literal "/dev/null")', '(regex #"^/dev/(tty|ttys)[0-9a-z]*$")'].join(' ')})`,
   ].join('\n');

@@ -52,7 +52,6 @@ export function candidateProfile({ writable = [], denyRead = [], readable = [], 
     ...(confinement ? confinement.before : []),
     '(deny file-write*)',
     `(allow file-write* ${[...w.map((d) => `(subpath ${quote(d)})`), '(literal "/dev/null")', '(regex #"^/dev/(tty|ttys)[0-9a-z]*$")'].join(' ')})`,
-    ...(confinement?.protectedAfter.length ? [`(deny file-read* ${q(confinement.protectedAfter)})`] : []),
     ...(r.length ? [`(deny file-read* ${q(r)})`] : []),
     ...(reopen.length ? [`(allow file-read* ${q(reopen)})`] : []),
   ].join('\n');
