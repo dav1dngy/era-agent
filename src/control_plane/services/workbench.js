@@ -1,7 +1,8 @@
 // IDE workbench services: Git status/diff/log (read-only), text search, and a sandboxed terminal.
 // Everything is scoped to a project root granted by the control plane (see paths.js).
 import { execFile, spawn } from 'node:child_process';
-import { existsSync, mkdirSync, readFileSync, readdirSync, realpathSync, statSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, realpathSync, statSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { promisify } from 'node:util';
@@ -18,6 +19,7 @@ import { SANDBOX_EXEC, sandboxAvailable } from '../../safety/sandbox.js';
 import { redactText } from '../../safety/secrets.js';
 import { bad, conflict, denied, missing } from '../errors.js';
 import { PathError, readText, resolveInside } from '../paths.js';
+import { insideAllowedRoots } from '../settings.js';
 
 const run = promisify(execFile);
 const HELPER = join(dirname(fileURLToPath(import.meta.url)), '..', 'pty-helper.py');
@@ -25,10 +27,45 @@ const SKIP_DIRS = new Set(['.git', 'node_modules', '.era', 'dist', 'build', 'tar
 const MAX_TERMINALS = 3;
 const IDLE_MS = 30 * 60_000;
 
-const git = async (cwd, args) => {
-  const { stdout } = await run('git', ['-c', 'core.fsmonitor=false', '-c', 'core.hooksPath=/dev/null', '-c', 'core.quotePath=false', ...args], { cwd, env: { ...process.env, GIT_OPTIONAL_LOCKS: '0', GIT_TERMINAL_PROMPT: '0' }, maxBuffer: 8_000_000, timeout: 20_000 });
-  return stdout;
-};
+// Repository-local configuration that can make git run a program while merely READING a repository: clean/smudge/process filters
+// and diff/merge drivers (selected by .gitattributes or .git/info/attributes), fsmonitor, hooks, pagers, ssh/askpass/credential
+// helpers and includes of other files. Opening a project must not execute any of it.
+const EXECUTABLE_GIT_CONFIG = /^\s*\[\s*(filter|diff|merge|difftool|mergetool|include|includeIf|credential|gpg)\b|^\s*(fsmonitor|sshCommand|pager|editor|askpass|hooksPath|textconv|external|driver|program|helper|process|clean|smudge|gpgProgram)\s*=/im;
+
+export function hasExecutableGitConfig(root) {
+  for (const rel of ['.git/config', '.git/info/attributes']) {
+    try {
+      const text = readFileSync(join(root, rel), 'utf8');
+      if (rel.endsWith('attributes') ? /\bfilter\s*=|\bdiff\s*=|\bmerge\s*=/.test(text) : EXECUTABLE_GIT_CONFIG.test(text)) return true;
+    } catch {
+      // missing or unreadable: nothing to execute from this file
+    }
+  }
+  return false;
+}
+
+// Read-only git for the Studio panels. git can execute repository-controlled commands even for `status` (clean filters run while
+// comparing files), so it never runs with the user's environment or configuration:
+//   * the environment is rebuilt without secrets, HOME is a private empty directory and system/global config are disabled;
+//   * where a sandbox exists, git runs inside it: no network, no writes anywhere, reads limited to the repository and git itself
+//     (whatever a hostile filter does stays inside the repository and cannot reach out);
+//   * without a sandbox, a repository whose configuration can execute programs is not inspected unless the user enabled
+//     Trusted execution, because there would be nothing between that configuration and the user's account.
+async function git(ctx, cwd, args) {
+  const trusted = ctx.settings().permissions.trustedExecution;
+  const sandbox = sandboxAvailable();
+  if (!sandbox && !trusted && hasExecutableGitConfig(cwd)) throw denied('This repository configures programs that git would run while reading it (filters, drivers, fsmonitor or similar), and there is no sandbox on this platform. Enable Settings → Permissions → Trusted execution to inspect it anyway.');
+  const tmp = mkdtempSync(join(realpathSync(tmpdir()), 'era-git-'));
+  try {
+    const base = { PATH: process.env.PATH, LANG: process.env.LANG ?? 'en_US.UTF-8', GIT_CONFIG_NOSYSTEM: '1', GIT_CONFIG_GLOBAL: '/dev/null', GIT_ATTR_NOSYSTEM: '1', GIT_OPTIONAL_LOCKS: '0', GIT_TERMINAL_PROMPT: '0', GIT_PAGER: 'cat', PAGER: 'cat' };
+    const gitArgs = ['--no-pager', '-c', 'core.fsmonitor=false', '-c', 'core.hooksPath=/dev/null', '-c', 'core.quotePath=false', '-c', 'core.pager=cat', '-c', 'core.sshCommand=false', '-c', 'core.askPass=false', ...args];
+    const w = wrapCandidate(sandbox ? { mode: 'sandbox', mechanism: 'macos-sandbox-exec' } : { mode: 'trusted' }, 'git', gitArgs, { writable: [], readable: [cwd], denyRead: [ctx.config.stateDirAbs].filter((p) => !resolve(cwd).startsWith(resolve(p))), tmp, env: base, extraEnv: { HOME: tmp } });
+    const { stdout } = await run(w.command, w.args, { cwd, env: w.env, maxBuffer: 8_000_000, timeout: 20_000 });
+    return stdout;
+  } finally {
+    rmSync(tmp, { recursive: true, force: true });
+  }
+}
 
 export function workbenchService(ctx) {
   const { audit, projects } = ctx;
@@ -46,7 +83,7 @@ export function workbenchService(ctx) {
   async function gitStatus(id, which = 'source', runId = null) {
     const r = rootOf(id, which, runId);
     if (!existsSync(join(r.root, '.git'))) return { repository: false, note: which === 'workspace' ? 'The isolated working copy is a private repository; its changes are shown in the review.' : 'This directory is not a Git repository.' };
-    const [status, log] = await Promise.all([git(r.root, ['status', '--porcelain=v1', '-b']), git(r.root, ['log', '-n', '25', '--format=%h%x09%an%x09%ad%x09%s', '--date=short']).catch(() => '')]);
+    const [status, log] = await Promise.all([git(ctx, r.root, ['status', '--porcelain=v1', '-b']), git(ctx, r.root, ['log', '-n', '25', '--format=%h%x09%an%x09%ad%x09%s', '--date=short']).catch(() => '')]);
     const lines = status.split('\n').filter(Boolean);
     const branch = lines[0]?.startsWith('##') ? lines.shift().slice(3) : null;
     const files = lines.map((l) => ({ index: l[0], worktree: l[1], path: l.slice(3) }));
@@ -56,7 +93,7 @@ export function workbenchService(ctx) {
   async function gitFileDiff(id, which, rel, runId = null) {
     const r = rootOf(id, which, runId);
     const abs = resolveInside(r.root, rel);
-    const head = await git(r.root, ['show', `HEAD:${relative(realpathSync(r.root), abs)}`]).catch(() => '');
+    const head = await git(ctx, r.root, ['show', `HEAD:${relative(realpathSync(r.root), abs)}`]).catch(() => '');
     let working = '';
     try {
       working = readText(r.root, rel).content ?? '';
@@ -118,7 +155,7 @@ export function workbenchService(ctx) {
     const profile = `${candidateProfile({ writable: [r.root, tmp], denyRead: [...protectedStatePaths(ctx.config.stateDirAbs), ctx.config.stateDirAbs], network: false })}\n(allow pseudo-tty)\n(allow file-write* (literal "/dev/ptmx") (regex #"^/dev/ttys[0-9]+$"))\n(allow file-ioctl (literal "/dev/ptmx") (regex #"^/dev/ttys[0-9]+$"))`;
     const wrapped = sandbox ? { command: SANDBOX_EXEC, args: ['-p', profile, 'python3', HELPER, shell, '-f', '-i'], env: cleanEnv } : { command: 'python3', args: [HELPER, shell, '-f', '-i'], env: cleanEnv };
     const child = spawn(wrapped.command, wrapped.args, { cwd: r.root, env: wrapped.env, stdio: ['pipe', 'pipe', 'pipe', 'pipe'], detached: true });
-    const t = { id: newId('term'), project_id: body.project_id, root: which, cwd: r.root, pid: child.pid, started_at: new Date().toISOString(), sandboxed: sandbox, buffer: '', subs: new Set(), closed: false, exit_code: null, last_active: Date.now(), child };
+    const t = { id: newId('term'), project_id: body.project_id, root: which, run_id: r.run_id ?? null, cwd: r.root, pid: child.pid, started_at: new Date().toISOString(), sandboxed: sandbox, buffer: '', subs: new Set(), closed: false, exit_code: null, last_active: Date.now(), child };
     terminals.set(t.id, t);
     const push = (chunk) => {
       const text = redactText(chunk.toString('utf8'));
@@ -146,9 +183,60 @@ export function workbenchService(ctx) {
     return t;
   };
 
+  // Policy is checked when a terminal opens AND for as long as it lives: a shell opened under one policy must not keep the
+  // access after the permission, the allowed roots or the run state that justified it have changed.
+  function terminalViolation(t) {
+    const s = ctx.settings();
+    if (!s.permissions.terminal) return 'the Terminal permission was turned off';
+    if (t.root === 'source' && !s.permissions.directEdit) return 'Direct edit was turned off';
+    if (t.root === 'source' && !insideAllowedRoots(t.cwd, s)) return 'the project is no longer inside the allowed workspace roots';
+    try {
+      const r = rootOf(String(t.project_id ?? ''), t.root, t.run_id);
+      if (t.root === 'workspace' && !r.editable) return 'the working copy is no longer editable (a run is active, finished or applied)';
+      if (r.root !== t.cwd) return 'the project directory changed';
+    } catch {
+      return 'the project or its directory no longer exists';
+    }
+    return null;
+  }
+
+  // Stops the whole process tree at once (SIGKILL on the process group): refusing further input would leave running or
+  // background commands with their old access.
+  function revoke(t, reason) {
+    if (t.closed) return;
+    audit.record('terminal.revoked', { terminal_id: t.id, project_id: t.project_id, root: t.root, reason });
+    push_notice(t, `\r\n[terminal closed: ${reason}]\r\n`);
+    try {
+      process.kill(-t.pid, 'SIGKILL');
+    } catch {
+      // already gone
+    }
+  }
+
+  function push_notice(t, text) {
+    t.buffer = (t.buffer + text).slice(-200_000);
+    for (const sub of t.subs) sub({ type: 'data', data: text });
+  }
+
+  function enforcePolicy() {
+    for (const t of [...terminals.values()]) {
+      if (t.closed) continue;
+      const why = terminalViolation(t);
+      if (why) revoke(t, why);
+    }
+  }
+
+  const sweep = setInterval(enforcePolicy, 1000);
+  sweep.unref();
+
   function input(id, data) {
     const t = term(id);
     if (t.closed) throw conflict('The terminal has exited.');
+    const why = terminalViolation(t);
+    if (why) {
+      revoke(t, why);
+      throw denied(`This terminal was closed because ${why}.`);
+    }
     if (typeof data !== 'string' || data.length > 100_000) throw bad('data must be a string up to 100 KB.');
     t.last_active = Date.now();
     t.child.stdin.write(data);
@@ -267,7 +355,10 @@ export function workbenchService(ctx) {
   }
 
   const listTerminals = () => [...terminals.values()].map((t) => ({ id: t.id, project_id: t.project_id, root: t.root, cwd: t.cwd, sandboxed: t.sandboxed, closed: t.closed, started_at: t.started_at }));
-  const shutdown = () => [...terminals.keys()].forEach(closeTerminal);
+  const shutdown = () => {
+    clearInterval(sweep);
+    [...terminals.keys()].forEach(closeTerminal);
+  };
 
-  return { assist, gitStatus, gitFileDiff, search, openTerminal, input, resize, closeTerminal, attach, listTerminals, shutdown, resolve };
+  return { assist, gitStatus, gitFileDiff, search, openTerminal, input, resize, closeTerminal, attach, listTerminals, enforcePolicy, shutdown, resolve };
 }

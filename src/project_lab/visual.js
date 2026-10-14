@@ -57,7 +57,7 @@ export async function renderAndCompare({ renderer, htmlPath, referencePath, outD
   const tmp = realpathSync(mkdtempSync(join(tmpdir(), 'era-render-')));
   try {
     const args = [...renderer.appArgs, ...(isolation?.mode === 'sandbox' ? ['--no-sandbox'] : []), '--era-visual-compare', '--html', htmlPath, '--reference', referencePath, '--out', outDir, '--timeout', String(Math.max(10_000, timeoutMs - 5000)), ...(assetsDir ? ['--assets', assetsDir] : []), ...(width ? ['--width', String(width)] : []), ...(height ? ['--height', String(height)] : [])];
-    const w = wrapCandidate(isolation, renderer.command, args, { writable: [outDir], tmp, denyRead, env: { PATH: process.env.PATH, HOME: tmp, LANG: 'en_US.UTF-8' }, network: false });
+    const w = wrapCandidate(isolation, renderer.command, args, { writable: [outDir], readable: [dirname(htmlPath), dirname(referencePath), assetsDir].filter(Boolean), tmp, denyRead, env: { PATH: process.env.PATH, HOME: tmp, LANG: 'en_US.UTF-8' }, network: false });
     const r = await runProcess(w.command, w.args, { env: w.env, timeoutMs, watchdog: true });
     const file = join(outDir, 'result.json');
     if (existsSync(file)) {

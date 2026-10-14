@@ -141,6 +141,7 @@ export async function createControlPlane({ config, rea, log = nullLogger, versio
     audit.record('settings.updated', { changed: r.changed });
     if (r.changed.includes('execution.allowUnmeteredAgents')) audit.record('policy.unmetered_agents', { enabled: r.settings.execution.allowUnmeteredAgents, note: 'agents that report no dollar cost may now run without a dollar spending cap' });
     applyPolicy();
+    ctx.workbench.enforcePolicy();
     bus.publish('settings.updated', { changed: r.changed });
     return { settings: r.settings, changed: r.changed };
   });
@@ -335,7 +336,14 @@ export async function createControlPlane({ config, rea, log = nullLogger, versio
   }
 
   const server = createServer(async (req, res) => {
-    const url = new URL(req.url, 'http://localhost');
+    // Parsing the request target is part of handling the request: a malformed target from any local process must be answered
+    // with 400, never raised out of the callback (an uncaught rejection here would end the whole control plane and its jobs).
+    let url;
+    try {
+      url = new URL(req.url, 'http://localhost');
+    } catch {
+      return send(res, 400, { error: 'Malformed request target.' });
+    }
     try {
       if (url.pathname.startsWith('/api/')) await handleApi(req, res, url);
       else handleStatic(req, res, url);

@@ -201,7 +201,7 @@ export async function runSupervisedBenchmark({ datasetsDir, extractors, repetiti
         writeFileSync(manifest, JSON.stringify({ target: { path: c.targetPath, kind: c.kind }, evidence_files: evidenceFiles, source_root: analysis?.target?.staged_as ?? c.targetPath }));
         for (const x of extractors) {
           const tmp = mkdtempSync(join(work, 'tmp-'));
-          const cmd = wrapCandidate(isolation, process.execPath, [join(x.codeRoot, 'bin', 'era.mjs'), 'extract', '--manifest', manifest, '--json'], { writable: [], denyRead: truthDirs, tmp, extraEnv: { ERA_LOG: 'off' } });
+          const cmd = wrapCandidate(isolation, process.execPath, [join(x.codeRoot, 'bin', 'era.mjs'), 'extract', '--manifest', manifest, '--json'], { writable: [], readable: [x.codeRoot, work, c.targetPath], denyRead: truthDirs, tmp, extraEnv: { ERA_LOG: 'off' } });
           const r = await runProcess(cmd.command, cmd.args, { cwd: tmp, env: cmd.env, timeoutMs, measureResources: true, watchdog: true });
           let facts = null;
           try {

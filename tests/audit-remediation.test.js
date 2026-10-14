@@ -6,7 +6,7 @@
 // MOCK    coding agents: tiny scripts (tests/fixtures/audit/write-files.mjs). No model is called.
 import { test as nodeTest } from 'node:test';
 import assert from 'node:assert/strict';
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { loadConfig } from '../src/core/config.js';
 import { ReaClient } from '../src/rea_integration/rea-client.js';
@@ -197,4 +197,71 @@ test('H02: runs approved before manifests existed refuse when excluded directori
   writeFileSync(join(destination, 'node_modules', 'later.txt'), 'x');
   await assert.rejects(lab.rollback('rb'), /no complete manifest/);
   assert.ok(existsSync(join(destination, 'node_modules', 'later.txt')));
+});
+
+// ---------------------------------------------------------------------------------------------------------------------
+// H05: the command sandbox allowed signalling unrelated processes and reading unrelated project content.
+
+import { spawn } from 'node:child_process';
+import { homedir } from 'node:os';
+import { candidateIsolation } from '../src/safety/candidate-sandbox.js';
+import { runProjectCommand } from '../src/project_lab/runner.js';
+
+const sandboxOnly = SANDBOX ? false : 'needs the macOS sandbox';
+const alive = (pid) => {
+  try {
+    process.kill(pid, 0);
+    return true;
+  } catch {
+    return false;
+  }
+};
+const sandboxed = (command, cwd) => runProjectCommand({ command, cwd, timeoutMs: 30_000, isolation: candidateIsolation() });
+
+test('H05: a sandboxed command cannot signal an unrelated process', { skip: sandboxOnly }, async () => {
+  const sentinel = spawn(process.execPath, ['-e', 'setInterval(() => {}, 1000)'], { stdio: 'ignore' });
+  try {
+    await new Promise((r) => setTimeout(r, 300));
+    const cwd = tempDir();
+    const r = await sandboxed(`kill -TERM ${sentinel.pid}; echo rc=$?`, cwd);
+    await new Promise((res) => setTimeout(res, 300));
+    assert.equal(alive(sentinel.pid), true, `the external process must survive (command output: ${r.stdout}${r.stderr_tail})`);
+    assert.doesNotMatch(r.stdout, /rc=0/);
+  } finally {
+    sentinel.kill('SIGKILL');
+  }
+});
+
+test('H05: a sandboxed command can still manage its own children and process group', { skip: sandboxOnly }, async () => {
+  const r = await sandboxed('sleep 30 & C=$!; kill -TERM $C; wait $C 2>/dev/null; echo child-done; (sleep 30 & sleep 30 & wait) & P=$!; sleep 0.2; kill -TERM $P; echo group-ok', tempDir());
+  assert.match(r.stdout, /child-done/);
+  assert.match(r.stdout, /group-ok/);
+});
+
+test('H05: unrelated project content in shared temp locations and the home directory is unreadable', { skip: sandboxOnly }, async () => {
+  const sibling = tempDir('era-sibling-');
+  writeFileSync(join(sibling, 'private.txt'), 'SIBLING_SECRET');
+  const shared = join('/private/tmp', `era-audit-${process.pid}.txt`);
+  writeFileSync(shared, 'SHARED_TMP_SECRET');
+  try {
+    const cwd = tempDir();
+    writeFileSync(join(cwd, 'own.txt'), 'OWN_OK');
+    const homeFile = join(homedir(), '.zshrc');
+    const r = await sandboxed(`cat ${sibling}/private.txt; cat ${shared}; ${existsSync(homeFile) ? `cat ${homeFile};` : ''} cat own.txt`, cwd);
+    assert.doesNotMatch(r.stdout, /SIBLING_SECRET|SHARED_TMP_SECRET/);
+    assert.match(r.stdout, /OWN_OK/, 'its own working copy stays readable');
+    if (existsSync(homeFile)) assert.doesNotMatch(r.stdout, new RegExp(readFileSync(homeFile, 'utf8').split('\n').find((l) => l.trim().length > 12)?.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') ?? '(?!)'));
+    assert.match(r.stderr_tail, /Operation not permitted|Permission denied/);
+  } finally {
+    rmSync(shared, { force: true });
+  }
+});
+
+test('H05: normal toolchain commands keep working inside the sandbox', { skip: sandboxOnly }, async () => {
+  const cwd = tempDir();
+  const r = await sandboxed('node -e "require(\'fs\').writeFileSync(\'out.txt\', String(6*7)); console.log(\'node-ok\')" && git --version && cat out.txt', cwd);
+  assert.equal(r.exit_code, 0, r.stderr_tail);
+  assert.match(r.stdout, /node-ok/);
+  assert.match(r.stdout, /git version/);
+  assert.match(r.stdout, /42/);
 });
