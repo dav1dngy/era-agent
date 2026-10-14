@@ -1,0 +1,21 @@
+# ERA improvement proposal
+
+Work only inside: <tmp>
+
+## Finding (F-4159faffc3, test-coverage)
+No test module imports src/control_plane/services/system.js
+
+REA's import graph shows no edge from tests/ to src/control_plane/services/system.js.
+
+REA Evidence: ev_b604974fac7f13fb7ed4bb3b37a3dc6e9d9def2519623c2b97441c85aa85cbae,ev_ab3682dcf87a80c1c4e3bf2f5cb4e95867e826f269620365030284f73e016d42,ev_d8a3ccf2a0a50b16c4e09f8c6697cc230bf8ceb780314b1b6b096b3a44654ef6,ev_7c367f197a3f10c596aa8f15382d19be0af3137ce5224c2d2d434d726c5110a8,ev_f01119f309d1b4e7770d607aee63e853a8ece875a2f3cfd7a2e9ba6937821739,ev_7a6a219000e0f49bc5158b77a4d6857ccad5ed0224489a1cc8be1982dd0df2b2,ev_3d5abd114e18510849163e51893fd9416052de58ac3728901178e08d37fead84,ev_dc0d37f5b95e0a914f1cb6eb78e259c449efc8382bd2ea25d36245d0a7096486,ev_f092a3740086182fbc3775ebbe87b7f0eebcf5042278ef58c20d812b4b887b07,ev_fd156c9a20f2f0d336157f85fe3c360b6cd7920cd67f6a77e21399609178fe6b,ev_4177d6ce1c1cd58ae10fcfbad2e19dd50d8193a8cf643570f2287544cb40f6ac,ev_d60394be029d70691c09b16179f0fb6bfe22ae41675762b05d044a25da36ee4e,ev_b23225fa5be2d2628b5c993caadd3b83dd55cd409167b65d5828fa9c5af761dd,ev_18d4f5e5500a35e7f9412a4f2e94b949d9c703f45866200665d1195210d16bde,ev_ecdd6fad0a76a55c1910c15dd4765df579bf77816d84e0fc3362c7ad21ee9d6f,ev_b0f0d239533f210c1bf16c9637451bb1b8478cf6ad25f93c8d9a9061e7801fa4,ev_c289cd74144ba3c63a42e4b0f2b7c0b6400d00e8fdb58ea88c36eda270d1fc2b,ev_b70ef7ec41702a09ce045616bd7cca29a361f9598b288479546b134cb966fe66,ev_dc8b95709dd7e012706f129a37519661f0d7827884d2c7b3e255004ceb8a85bd,ev_9e8690d19a729848f960bd5126995614369788963b5114c0fdbf58ee8e8ee149,ev_fdcf29a71f08f98e367f5ca83f882ecee6d202adf57bfb38edf4eae86447bb18,ev_1f2caab3d6b80669e58bddfc31d0d79ebbc909a176fec37430bd10411698bdd3
+
+## Hypothesis
+Adding a test that imports src/control_plane/services/system.js closes a coverage gap REA found in the import graph.
+
+## Acceptance target
+{"metric":"finding_resolved","finding_id":"F-4159faffc3"}
+
+## Constraints
+- Do not modify protected paths: src/safety/, src/evaluation/, src/self_analysis/rules.js, benchmarks/datasets/, benchmarks/acceptance.json, tests/safety.test.js, tests/evaluation.test.js, tests/self-analysis.test.js, tests/candidate-isolation.test.js
+- Keep `node --test tests/*.test.js` passing.
+- Commit your change on the current branch when finished.

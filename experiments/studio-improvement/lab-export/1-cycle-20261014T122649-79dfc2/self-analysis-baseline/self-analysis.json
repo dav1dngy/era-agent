@@ -1,0 +1,603 @@
+{
+  "self_analysis_id": "self-20261014T123346-918ce7",
+  "commit": "0c98e0bb735e8be18d946fe72fef469b322f39f8",
+  "runs": [
+    {
+      "run_id": "rea-20261014T123348-9ef730",
+      "label": "supervised-self:pass-1/22",
+      "status": "succeeded",
+      "evidence_id": "ev_fe949d3b39ceb1a4ddd99d34a1809c60707ba14fc9b64b2eec4a0c8542c4628d"
+    },
+    {
+      "run_id": "rea-20261014T123352-abafba",
+      "label": "supervised-self:pass-2/22",
+      "status": "succeeded",
+      "evidence_id": "ev_9092224aca109f0e262c3394ba82bf9461c430c0dffaa9bdb270650d6fa36737"
+    },
+    {
+      "run_id": "rea-20261014T123356-aa5330",
+      "label": "supervised-self:pass-3/22",
+      "status": "succeeded",
+      "evidence_id": "ev_5224d203b3a0a78616f8b302d6ee59e769cfa61cd6a171296dd3f6a8a7e77d7b"
+    },
+    {
+      "run_id": "rea-20261014T123400-c9df97",
+      "label": "supervised-self:pass-4/22",
+      "status": "succeeded",
+      "evidence_id": "ev_a11869e81bcb4b7cbb7f64fb66e8f5f08a53dcb884247cc47b331c7f2489249f"
+    },
+    {
+      "run_id": "rea-20261014T123404-43a695",
+      "label": "supervised-self:pass-5/22",
+      "status": "succeeded",
+      "evidence_id": "ev_b0b0184d6b9c0866b029956debd18ab9b4200beb303c97ded231516c49a0b8d0"
+    },
+    {
+      "run_id": "rea-20261014T123407-df8b46",
+      "label": "supervised-self:pass-6/22",
+      "status": "succeeded",
+      "evidence_id": "ev_288b42478ea1172c9052c340a4ff8ee07142a747d7fba8511824d5906dddbddb"
+    },
+    {
+      "run_id": "rea-20261014T123411-a95def",
+      "label": "supervised-self:pass-7/22",
+      "status": "succeeded",
+      "evidence_id": "ev_96666adb32f08d06bf60dceb1b84a6c1ecbf23acc483e65e56912ab5eb0d8b8e"
+    },
+    {
+      "run_id": "rea-20261014T123414-e29489",
+      "label": "supervised-self:pass-8/22",
+      "status": "succeeded",
+      "evidence_id": "ev_a26db102f72708fd649cedaf882b44328f4fca7fd140bf5aa8a7e1f51f54967a"
+    },
+    {
+      "run_id": "rea-20261014T123417-21b5d0",
+      "label": "supervised-self:pass-9/22",
+      "status": "succeeded",
+      "evidence_id": "ev_fc07e371b70f81fc162a91d783f64cbd6af0158c54a6946ff53cb7d1ade70d9b"
+    },
+    {
+      "run_id": "rea-20261014T123421-e4dad2",
+      "label": "supervised-self:pass-10/22",
+      "status": "succeeded",
+      "evidence_id": "ev_5df33526c85f66c10f9fa86cf465a76bf8f2eb5a1d0e4094759b3f2427bdebd9"
+    },
+    {
+      "run_id": "rea-20261014T123424-95ef69",
+      "label": "supervised-self:pass-11/22",
+      "status": "succeeded",
+      "evidence_id": "ev_c280942900aa830d99772a6181ad1bed8a037e07b2893e692d5cd2bfe61671ce"
+    },
+    {
+      "run_id": "rea-20261014T123427-c8e144",
+      "label": "supervised-self:pass-12/22",
+      "status": "succeeded",
+      "evidence_id": "ev_e3a57856c039c639813c82e91af88880f4195e0a0710e7b19c0e934fcf302d84"
+    },
+    {
+      "run_id": "rea-20261014T123430-d54994",
+      "label": "supervised-self:pass-13/22",
+      "status": "succeeded",
+      "evidence_id": "ev_e9da8cd44c36528c35117ec83f75eaa66238df43aa2d1b21e900e557d57af136"
+    },
+    {
+      "run_id": "rea-20261014T123434-2cc00d",
+      "label": "supervised-self:pass-14/22",
+      "status": "succeeded",
+      "evidence_id": "ev_e8ae04e754b3b67816d4bb9d26322209f316b4000740fe791570ba85c452244a"
+    },
+    {
+      "run_id": "rea-20261014T123437-182548",
+      "label": "supervised-self:pass-15/22",
+      "status": "succeeded",
+      "evidence_id": "ev_9b99a8074198a627e36f8c36fd9d40992f610ed14edc13d899121055fc69e099"
+    },
+    {
+      "run_id": "rea-20261014T123440-d9f2fb",
+      "label": "supervised-self:pass-16/22",
+      "status": "succeeded",
+      "evidence_id": "ev_347b2f7c561a36196ea78ba7c1193cb6522b9394150d6a1c161af85f1a492405"
+    },
+    {
+      "run_id": "rea-20261014T123443-523c03",
+      "label": "supervised-self:pass-17/22",
+      "status": "succeeded",
+      "evidence_id": "ev_755596ee15f6e342eff46ad4ac576cb590a20c5fdb960b09e11917e05fe9e891"
+    },
+    {
+      "run_id": "rea-20261014T123447-57b2e9",
+      "label": "supervised-self:pass-18/22",
+      "status": "succeeded",
+      "evidence_id": "ev_e10d819c10ffe3698dd64ffa4cc1ff0febfce427d8cb5bf3a57e48871ed3bc16"
+    },
+    {
+      "run_id": "rea-20261014T123450-dd00b9",
+      "label": "supervised-self:pass-19/22",
+      "status": "succeeded",
+      "evidence_id": "ev_7b96f4d1f899526b7021e732fff509ef0867523ab5392b2999d9f4407675e9da"
+    },
+    {
+      "run_id": "rea-20261014T123454-de6d7e",
+      "label": "supervised-self:pass-20/22",
+      "status": "succeeded",
+      "evidence_id": "ev_119bacc6f6f638a016ceebc6f02fa127a3e0ab89ffb2e872154d325518353981"
+    },
+    {
+      "run_id": "rea-20261014T123458-253234",
+      "label": "supervised-self:pass-21/22",
+      "status": "succeeded",
+      "evidence_id": "ev_c90fa707f3f858301b327c58bf544634701b92efa06a624a34531adc5011536c"
+    },
+    {
+      "run_id": "rea-20261014T123501-cb660e",
+      "label": "supervised-self:pass-22/22",
+      "status": "succeeded",
+      "evidence_id": "ev_eede0dcba7e51fa5e2d4230d988fe3f3dc197b1c9cc94efcdc43c5cc9d69dc68"
+    },
+    {
+      "run_id": "rea-20261014T123506-962a1e",
+      "label": "supervised-self:runtime-help",
+      "status": "succeeded",
+      "evidence_id": "ev_f11f29efd5619b6c214eccbc7a3bb109f17d2440a5a2b0259fe6d5af9c7f6e39"
+    }
+  ],
+  "findings": [
+    {
+      "id": "F-8d81806d52",
+      "rule": "unresolved-local-import",
+      "area": "reliability",
+      "priority": 2,
+      "subject": "tests/studio-ui-model.test.js->../apps/studio/web/js/model.js",
+      "title": "Unresolved local import in tests/studio-ui-model.test.js",
+      "detail": "REA could not resolve \"../apps/studio/web/js/model.js\" imported by tests/studio-ui-model.test.js inside the packaged artifact.",
+      "evidence_ids": [
+        "ev_fe949d3b39ceb1a4ddd99d34a1809c60707ba14fc9b64b2eec4a0c8542c4628d,ev_9092224aca109f0e262c3394ba82bf9461c430c0dffaa9bdb270650d6fa36737,ev_5224d203b3a0a78616f8b302d6ee59e769cfa61cd6a171296dd3f6a8a7e77d7b,ev_a11869e81bcb4b7cbb7f64fb66e8f5f08a53dcb884247cc47b331c7f2489249f,ev_b0b0184d6b9c0866b029956debd18ab9b4200beb303c97ded231516c49a0b8d0,ev_288b42478ea1172c9052c340a4ff8ee07142a747d7fba8511824d5906dddbddb,ev_96666adb32f08d06bf60dceb1b84a6c1ecbf23acc483e65e56912ab5eb0d8b8e,ev_a26db102f72708fd649cedaf882b44328f4fca7fd140bf5aa8a7e1f51f54967a,ev_fc07e371b70f81fc162a91d783f64cbd6af0158c54a6946ff53cb7d1ade70d9b,ev_5df33526c85f66c10f9fa86cf465a76bf8f2eb5a1d0e4094759b3f2427bdebd9,ev_c280942900aa830d99772a6181ad1bed8a037e07b2893e692d5cd2bfe61671ce,ev_e3a57856c039c639813c82e91af88880f4195e0a0710e7b19c0e934fcf302d84,ev_e9da8cd44c36528c35117ec83f75eaa66238df43aa2d1b21e900e557d57af136,ev_e8ae04e754b3b67816d4bb9d26322209f316b4000740fe791570ba85c452244a,ev_9b99a8074198a627e36f8c36fd9d40992f610ed14edc13d899121055fc69e099,ev_347b2f7c561a36196ea78ba7c1193cb6522b9394150d6a1c161af85f1a492405,ev_755596ee15f6e342eff46ad4ac576cb590a20c5fdb960b09e11917e05fe9e891,ev_e10d819c10ffe3698dd64ffa4cc1ff0febfce427d8cb5bf3a57e48871ed3bc16,ev_7b96f4d1f899526b7021e732fff509ef0867523ab5392b2999d9f4407675e9da,ev_119bacc6f6f638a016ceebc6f02fa127a3e0ab89ffb2e872154d325518353981,ev_c90fa707f3f858301b327c58bf544634701b92efa06a624a34531adc5011536c,ev_eede0dcba7e51fa5e2d4230d988fe3f3dc197b1c9cc94efcdc43c5cc9d69dc68"
+      ]
+    },
+    {
+      "id": "F-e5004f5ace",
+      "rule": "unresolved-local-import",
+      "area": "reliability",
+      "priority": 2,
+      "subject": "tests/studio-rebuild-model.test.js->../apps/studio/web/js/rebuild-model.js",
+      "title": "Unresolved local import in tests/studio-rebuild-model.test.js",
+      "detail": "REA could not resolve \"../apps/studio/web/js/rebuild-model.js\" imported by tests/studio-rebuild-model.test.js inside the packaged artifact.",
+      "evidence_ids": [
+        "ev_fe949d3b39ceb1a4ddd99d34a1809c60707ba14fc9b64b2eec4a0c8542c4628d,ev_9092224aca109f0e262c3394ba82bf9461c430c0dffaa9bdb270650d6fa36737,ev_5224d203b3a0a78616f8b302d6ee59e769cfa61cd6a171296dd3f6a8a7e77d7b,ev_a11869e81bcb4b7cbb7f64fb66e8f5f08a53dcb884247cc47b331c7f2489249f,ev_b0b0184d6b9c0866b029956debd18ab9b4200beb303c97ded231516c49a0b8d0,ev_288b42478ea1172c9052c340a4ff8ee07142a747d7fba8511824d5906dddbddb,ev_96666adb32f08d06bf60dceb1b84a6c1ecbf23acc483e65e56912ab5eb0d8b8e,ev_a26db102f72708fd649cedaf882b44328f4fca7fd140bf5aa8a7e1f51f54967a,ev_fc07e371b70f81fc162a91d783f64cbd6af0158c54a6946ff53cb7d1ade70d9b,ev_5df33526c85f66c10f9fa86cf465a76bf8f2eb5a1d0e4094759b3f2427bdebd9,ev_c280942900aa830d99772a6181ad1bed8a037e07b2893e692d5cd2bfe61671ce,ev_e3a57856c039c639813c82e91af88880f4195e0a0710e7b19c0e934fcf302d84,ev_e9da8cd44c36528c35117ec83f75eaa66238df43aa2d1b21e900e557d57af136,ev_e8ae04e754b3b67816d4bb9d26322209f316b4000740fe791570ba85c452244a,ev_9b99a8074198a627e36f8c36fd9d40992f610ed14edc13d899121055fc69e099,ev_347b2f7c561a36196ea78ba7c1193cb6522b9394150d6a1c161af85f1a492405,ev_755596ee15f6e342eff46ad4ac576cb590a20c5fdb960b09e11917e05fe9e891,ev_e10d819c10ffe3698dd64ffa4cc1ff0febfce427d8cb5bf3a57e48871ed3bc16,ev_7b96f4d1f899526b7021e732fff509ef0867523ab5392b2999d9f4407675e9da,ev_119bacc6f6f638a016ceebc6f02fa127a3e0ab89ffb2e872154d325518353981,ev_c90fa707f3f858301b327c58bf544634701b92efa06a624a34531adc5011536c,ev_eede0dcba7e51fa5e2d4230d988fe3f3dc197b1c9cc94efcdc43c5cc9d69dc68"
+      ]
+    },
+    {
+      "id": "F-1acab0d81c",
+      "rule": "high-fan-out",
+      "area": "orchestration",
+      "priority": 5,
+      "subject": "src/cli.js",
+      "title": "High local fan-out in src/cli.js (9 modules)",
+      "detail": "src/cli.js statically imports 9 local modules (threshold 8); every invocation loads all of them.",
+      "evidence_ids": [
+        "ev_fe949d3b39ceb1a4ddd99d34a1809c60707ba14fc9b64b2eec4a0c8542c4628d,ev_9092224aca109f0e262c3394ba82bf9461c430c0dffaa9bdb270650d6fa36737,ev_5224d203b3a0a78616f8b302d6ee59e769cfa61cd6a171296dd3f6a8a7e77d7b,ev_a11869e81bcb4b7cbb7f64fb66e8f5f08a53dcb884247cc47b331c7f2489249f,ev_b0b0184d6b9c0866b029956debd18ab9b4200beb303c97ded231516c49a0b8d0,ev_288b42478ea1172c9052c340a4ff8ee07142a747d7fba8511824d5906dddbddb,ev_96666adb32f08d06bf60dceb1b84a6c1ecbf23acc483e65e56912ab5eb0d8b8e,ev_a26db102f72708fd649cedaf882b44328f4fca7fd140bf5aa8a7e1f51f54967a,ev_fc07e371b70f81fc162a91d783f64cbd6af0158c54a6946ff53cb7d1ade70d9b,ev_5df33526c85f66c10f9fa86cf465a76bf8f2eb5a1d0e4094759b3f2427bdebd9,ev_c280942900aa830d99772a6181ad1bed8a037e07b2893e692d5cd2bfe61671ce,ev_e3a57856c039c639813c82e91af88880f4195e0a0710e7b19c0e934fcf302d84,ev_e9da8cd44c36528c35117ec83f75eaa66238df43aa2d1b21e900e557d57af136,ev_e8ae04e754b3b67816d4bb9d26322209f316b4000740fe791570ba85c452244a,ev_9b99a8074198a627e36f8c36fd9d40992f610ed14edc13d899121055fc69e099,ev_347b2f7c561a36196ea78ba7c1193cb6522b9394150d6a1c161af85f1a492405,ev_755596ee15f6e342eff46ad4ac576cb590a20c5fdb960b09e11917e05fe9e891,ev_e10d819c10ffe3698dd64ffa4cc1ff0febfce427d8cb5bf3a57e48871ed3bc16,ev_7b96f4d1f899526b7021e732fff509ef0867523ab5392b2999d9f4407675e9da,ev_119bacc6f6f638a016ceebc6f02fa127a3e0ab89ffb2e872154d325518353981,ev_c90fa707f3f858301b327c58bf544634701b92efa06a624a34531adc5011536c,ev_eede0dcba7e51fa5e2d4230d988fe3f3dc197b1c9cc94efcdc43c5cc9d69dc68"
+      ]
+    },
+    {
+      "id": "F-47a5cebe6f",
+      "rule": "high-fan-out",
+      "area": "orchestration",
+      "priority": 5,
+      "subject": "src/project_lab/context.js",
+      "title": "High local fan-out in src/project_lab/context.js (11 modules)",
+      "detail": "src/project_lab/context.js statically imports 11 local modules (threshold 8); every invocation loads all of them.",
+      "evidence_ids": [
+        "ev_fe949d3b39ceb1a4ddd99d34a1809c60707ba14fc9b64b2eec4a0c8542c4628d,ev_9092224aca109f0e262c3394ba82bf9461c430c0dffaa9bdb270650d6fa36737,ev_5224d203b3a0a78616f8b302d6ee59e769cfa61cd6a171296dd3f6a8a7e77d7b,ev_a11869e81bcb4b7cbb7f64fb66e8f5f08a53dcb884247cc47b331c7f2489249f,ev_b0b0184d6b9c0866b029956debd18ab9b4200beb303c97ded231516c49a0b8d0,ev_288b42478ea1172c9052c340a4ff8ee07142a747d7fba8511824d5906dddbddb,ev_96666adb32f08d06bf60dceb1b84a6c1ecbf23acc483e65e56912ab5eb0d8b8e,ev_a26db102f72708fd649cedaf882b44328f4fca7fd140bf5aa8a7e1f51f54967a,ev_fc07e371b70f81fc162a91d783f64cbd6af0158c54a6946ff53cb7d1ade70d9b,ev_5df33526c85f66c10f9fa86cf465a76bf8f2eb5a1d0e4094759b3f2427bdebd9,ev_c280942900aa830d99772a6181ad1bed8a037e07b2893e692d5cd2bfe61671ce,ev_e3a57856c039c639813c82e91af88880f4195e0a0710e7b19c0e934fcf302d84,ev_e9da8cd44c36528c35117ec83f75eaa66238df43aa2d1b21e900e557d57af136,ev_e8ae04e754b3b67816d4bb9d26322209f316b4000740fe791570ba85c452244a,ev_9b99a8074198a627e36f8c36fd9d40992f610ed14edc13d899121055fc69e099,ev_347b2f7c561a36196ea78ba7c1193cb6522b9394150d6a1c161af85f1a492405,ev_755596ee15f6e342eff46ad4ac576cb590a20c5fdb960b09e11917e05fe9e891,ev_e10d819c10ffe3698dd64ffa4cc1ff0febfce427d8cb5bf3a57e48871ed3bc16,ev_7b96f4d1f899526b7021e732fff509ef0867523ab5392b2999d9f4407675e9da,ev_119bacc6f6f638a016ceebc6f02fa127a3e0ab89ffb2e872154d325518353981,ev_c90fa707f3f858301b327c58bf544634701b92efa06a624a34531adc5011536c,ev_eede0dcba7e51fa5e2d4230d988fe3f3dc197b1c9cc94efcdc43c5cc9d69dc68"
+      ]
+    },
+    {
+      "id": "F-4b3fff1dd6",
+      "rule": "high-fan-out",
+      "area": "orchestration",
+      "priority": 5,
+      "subject": "src/project_lab/rebuild.js",
+      "title": "High local fan-out in src/project_lab/rebuild.js (9 modules)",
+      "detail": "src/project_lab/rebuild.js statically imports 9 local modules (threshold 8); every invocation loads all of them.",
+      "evidence_ids": [
+        "ev_fe949d3b39ceb1a4ddd99d34a1809c60707ba14fc9b64b2eec4a0c8542c4628d,ev_9092224aca109f0e262c3394ba82bf9461c430c0dffaa9bdb270650d6fa36737,ev_5224d203b3a0a78616f8b302d6ee59e769cfa61cd6a171296dd3f6a8a7e77d7b,ev_a11869e81bcb4b7cbb7f64fb66e8f5f08a53dcb884247cc47b331c7f2489249f,ev_b0b0184d6b9c0866b029956debd18ab9b4200beb303c97ded231516c49a0b8d0,ev_288b42478ea1172c9052c340a4ff8ee07142a747d7fba8511824d5906dddbddb,ev_96666adb32f08d06bf60dceb1b84a6c1ecbf23acc483e65e56912ab5eb0d8b8e,ev_a26db102f72708fd649cedaf882b44328f4fca7fd140bf5aa8a7e1f51f54967a,ev_fc07e371b70f81fc162a91d783f64cbd6af0158c54a6946ff53cb7d1ade70d9b,ev_5df33526c85f66c10f9fa86cf465a76bf8f2eb5a1d0e4094759b3f2427bdebd9,ev_c280942900aa830d99772a6181ad1bed8a037e07b2893e692d5cd2bfe61671ce,ev_e3a57856c039c639813c82e91af88880f4195e0a0710e7b19c0e934fcf302d84,ev_e9da8cd44c36528c35117ec83f75eaa66238df43aa2d1b21e900e557d57af136,ev_e8ae04e754b3b67816d4bb9d26322209f316b4000740fe791570ba85c452244a,ev_9b99a8074198a627e36f8c36fd9d40992f610ed14edc13d899121055fc69e099,ev_347b2f7c561a36196ea78ba7c1193cb6522b9394150d6a1c161af85f1a492405,ev_755596ee15f6e342eff46ad4ac576cb590a20c5fdb960b09e11917e05fe9e891,ev_e10d819c10ffe3698dd64ffa4cc1ff0febfce427d8cb5bf3a57e48871ed3bc16,ev_7b96f4d1f899526b7021e732fff509ef0867523ab5392b2999d9f4407675e9da,ev_119bacc6f6f638a016ceebc6f02fa127a3e0ab89ffb2e872154d325518353981,ev_c90fa707f3f858301b327c58bf544634701b92efa06a624a34531adc5011536c,ev_eede0dcba7e51fa5e2d4230d988fe3f3dc197b1c9cc94efcdc43c5cc9d69dc68"
+      ]
+    },
+    {
+      "id": "F-5893f06124",
+      "rule": "high-fan-out",
+      "area": "orchestration",
+      "priority": 5,
+      "subject": "src/project_lab/lab.js",
+      "title": "High local fan-out in src/project_lab/lab.js (15 modules)",
+      "detail": "src/project_lab/lab.js statically imports 15 local modules (threshold 8); every invocation loads all of them.",
+      "evidence_ids": [
+        "ev_fe949d3b39ceb1a4ddd99d34a1809c60707ba14fc9b64b2eec4a0c8542c4628d,ev_9092224aca109f0e262c3394ba82bf9461c430c0dffaa9bdb270650d6fa36737,ev_5224d203b3a0a78616f8b302d6ee59e769cfa61cd6a171296dd3f6a8a7e77d7b,ev_a11869e81bcb4b7cbb7f64fb66e8f5f08a53dcb884247cc47b331c7f2489249f,ev_b0b0184d6b9c0866b029956debd18ab9b4200beb303c97ded231516c49a0b8d0,ev_288b42478ea1172c9052c340a4ff8ee07142a747d7fba8511824d5906dddbddb,ev_96666adb32f08d06bf60dceb1b84a6c1ecbf23acc483e65e56912ab5eb0d8b8e,ev_a26db102f72708fd649cedaf882b44328f4fca7fd140bf5aa8a7e1f51f54967a,ev_fc07e371b70f81fc162a91d783f64cbd6af0158c54a6946ff53cb7d1ade70d9b,ev_5df33526c85f66c10f9fa86cf465a76bf8f2eb5a1d0e4094759b3f2427bdebd9,ev_c280942900aa830d99772a6181ad1bed8a037e07b2893e692d5cd2bfe61671ce,ev_e3a57856c039c639813c82e91af88880f4195e0a0710e7b19c0e934fcf302d84,ev_e9da8cd44c36528c35117ec83f75eaa66238df43aa2d1b21e900e557d57af136,ev_e8ae04e754b3b67816d4bb9d26322209f316b4000740fe791570ba85c452244a,ev_9b99a8074198a627e36f8c36fd9d40992f610ed14edc13d899121055fc69e099,ev_347b2f7c561a36196ea78ba7c1193cb6522b9394150d6a1c161af85f1a492405,ev_755596ee15f6e342eff46ad4ac576cb590a20c5fdb960b09e11917e05fe9e891,ev_e10d819c10ffe3698dd64ffa4cc1ff0febfce427d8cb5bf3a57e48871ed3bc16,ev_7b96f4d1f899526b7021e732fff509ef0867523ab5392b2999d9f4407675e9da,ev_119bacc6f6f638a016ceebc6f02fa127a3e0ab89ffb2e872154d325518353981,ev_c90fa707f3f858301b327c58bf544634701b92efa06a624a34531adc5011536c,ev_eede0dcba7e51fa5e2d4230d988fe3f3dc197b1c9cc94efcdc43c5cc9d69dc68"
+      ]
+    },
+    {
+      "id": "F-79b85988d7",
+      "rule": "high-fan-out",
+      "area": "orchestration",
+      "priority": 5,
+      "subject": "src/commands/info.js",
+      "title": "High local fan-out in src/commands/info.js (12 modules)",
+      "detail": "src/commands/info.js statically imports 12 local modules (threshold 8); every invocation loads all of them.",
+      "evidence_ids": [
+        "ev_fe949d3b39ceb1a4ddd99d34a1809c60707ba14fc9b64b2eec4a0c8542c4628d,ev_9092224aca109f0e262c3394ba82bf9461c430c0dffaa9bdb270650d6fa36737,ev_5224d203b3a0a78616f8b302d6ee59e769cfa61cd6a171296dd3f6a8a7e77d7b,ev_a11869e81bcb4b7cbb7f64fb66e8f5f08a53dcb884247cc47b331c7f2489249f,ev_b0b0184d6b9c0866b029956debd18ab9b4200beb303c97ded231516c49a0b8d0,ev_288b42478ea1172c9052c340a4ff8ee07142a747d7fba8511824d5906dddbddb,ev_96666adb32f08d06bf60dceb1b84a6c1ecbf23acc483e65e56912ab5eb0d8b8e,ev_a26db102f72708fd649cedaf882b44328f4fca7fd140bf5aa8a7e1f51f54967a,ev_fc07e371b70f81fc162a91d783f64cbd6af0158c54a6946ff53cb7d1ade70d9b,ev_5df33526c85f66c10f9fa86cf465a76bf8f2eb5a1d0e4094759b3f2427bdebd9,ev_c280942900aa830d99772a6181ad1bed8a037e07b2893e692d5cd2bfe61671ce,ev_e3a57856c039c639813c82e91af88880f4195e0a0710e7b19c0e934fcf302d84,ev_e9da8cd44c36528c35117ec83f75eaa66238df43aa2d1b21e900e557d57af136,ev_e8ae04e754b3b67816d4bb9d26322209f316b4000740fe791570ba85c452244a,ev_9b99a8074198a627e36f8c36fd9d40992f610ed14edc13d899121055fc69e099,ev_347b2f7c561a36196ea78ba7c1193cb6522b9394150d6a1c161af85f1a492405,ev_755596ee15f6e342eff46ad4ac576cb590a20c5fdb960b09e11917e05fe9e891,ev_e10d819c10ffe3698dd64ffa4cc1ff0febfce427d8cb5bf3a57e48871ed3bc16,ev_7b96f4d1f899526b7021e732fff509ef0867523ab5392b2999d9f4407675e9da,ev_119bacc6f6f638a016ceebc6f02fa127a3e0ab89ffb2e872154d325518353981,ev_c90fa707f3f858301b327c58bf544634701b92efa06a624a34531adc5011536c,ev_eede0dcba7e51fa5e2d4230d988fe3f3dc197b1c9cc94efcdc43c5cc9d69dc68"
+      ]
+    },
+    {
+      "id": "F-9658ff6752",
+      "rule": "high-fan-out",
+      "area": "orchestration",
+      "priority": 5,
+      "subject": "src/orchestration/cycle.js",
+      "title": "High local fan-out in src/orchestration/cycle.js (14 modules)",
+      "detail": "src/orchestration/cycle.js statically imports 14 local modules (threshold 8); every invocation loads all of them.",
+      "evidence_ids": [
+        "ev_fe949d3b39ceb1a4ddd99d34a1809c60707ba14fc9b64b2eec4a0c8542c4628d,ev_9092224aca109f0e262c3394ba82bf9461c430c0dffaa9bdb270650d6fa36737,ev_5224d203b3a0a78616f8b302d6ee59e769cfa61cd6a171296dd3f6a8a7e77d7b,ev_a11869e81bcb4b7cbb7f64fb66e8f5f08a53dcb884247cc47b331c7f2489249f,ev_b0b0184d6b9c0866b029956debd18ab9b4200beb303c97ded231516c49a0b8d0,ev_288b42478ea1172c9052c340a4ff8ee07142a747d7fba8511824d5906dddbddb,ev_96666adb32f08d06bf60dceb1b84a6c1ecbf23acc483e65e56912ab5eb0d8b8e,ev_a26db102f72708fd649cedaf882b44328f4fca7fd140bf5aa8a7e1f51f54967a,ev_fc07e371b70f81fc162a91d783f64cbd6af0158c54a6946ff53cb7d1ade70d9b,ev_5df33526c85f66c10f9fa86cf465a76bf8f2eb5a1d0e4094759b3f2427bdebd9,ev_c280942900aa830d99772a6181ad1bed8a037e07b2893e692d5cd2bfe61671ce,ev_e3a57856c039c639813c82e91af88880f4195e0a0710e7b19c0e934fcf302d84,ev_e9da8cd44c36528c35117ec83f75eaa66238df43aa2d1b21e900e557d57af136,ev_e8ae04e754b3b67816d4bb9d26322209f316b4000740fe791570ba85c452244a,ev_9b99a8074198a627e36f8c36fd9d40992f610ed14edc13d899121055fc69e099,ev_347b2f7c561a36196ea78ba7c1193cb6522b9394150d6a1c161af85f1a492405,ev_755596ee15f6e342eff46ad4ac576cb590a20c5fdb960b09e11917e05fe9e891,ev_e10d819c10ffe3698dd64ffa4cc1ff0febfce427d8cb5bf3a57e48871ed3bc16,ev_7b96f4d1f899526b7021e732fff509ef0867523ab5392b2999d9f4407675e9da,ev_119bacc6f6f638a016ceebc6f02fa127a3e0ab89ffb2e872154d325518353981,ev_c90fa707f3f858301b327c58bf544634701b92efa06a624a34531adc5011536c,ev_eede0dcba7e51fa5e2d4230d988fe3f3dc197b1c9cc94efcdc43c5cc9d69dc68"
+      ]
+    },
+    {
+      "id": "F-a5285507ea",
+      "rule": "high-fan-out",
+      "area": "orchestration",
+      "priority": 5,
+      "subject": "src/control_plane/services/workbench.js",
+      "title": "High local fan-out in src/control_plane/services/workbench.js (12 modules)",
+      "detail": "src/control_plane/services/workbench.js statically imports 12 local modules (threshold 8); every invocation loads all of them.",
+      "evidence_ids": [
+        "ev_fe949d3b39ceb1a4ddd99d34a1809c60707ba14fc9b64b2eec4a0c8542c4628d,ev_9092224aca109f0e262c3394ba82bf9461c430c0dffaa9bdb270650d6fa36737,ev_5224d203b3a0a78616f8b302d6ee59e769cfa61cd6a171296dd3f6a8a7e77d7b,ev_a11869e81bcb4b7cbb7f64fb66e8f5f08a53dcb884247cc47b331c7f2489249f,ev_b0b0184d6b9c0866b029956debd18ab9b4200beb303c97ded231516c49a0b8d0,ev_288b42478ea1172c9052c340a4ff8ee07142a747d7fba8511824d5906dddbddb,ev_96666adb32f08d06bf60dceb1b84a6c1ecbf23acc483e65e56912ab5eb0d8b8e,ev_a26db102f72708fd649cedaf882b44328f4fca7fd140bf5aa8a7e1f51f54967a,ev_fc07e371b70f81fc162a91d783f64cbd6af0158c54a6946ff53cb7d1ade70d9b,ev_5df33526c85f66c10f9fa86cf465a76bf8f2eb5a1d0e4094759b3f2427bdebd9,ev_c280942900aa830d99772a6181ad1bed8a037e07b2893e692d5cd2bfe61671ce,ev_e3a57856c039c639813c82e91af88880f4195e0a0710e7b19c0e934fcf302d84,ev_e9da8cd44c36528c35117ec83f75eaa66238df43aa2d1b21e900e557d57af136,ev_e8ae04e754b3b67816d4bb9d26322209f316b4000740fe791570ba85c452244a,ev_9b99a8074198a627e36f8c36fd9d40992f610ed14edc13d899121055fc69e099,ev_347b2f7c561a36196ea78ba7c1193cb6522b9394150d6a1c161af85f1a492405,ev_755596ee15f6e342eff46ad4ac576cb590a20c5fdb960b09e11917e05fe9e891,ev_e10d819c10ffe3698dd64ffa4cc1ff0febfce427d8cb5bf3a57e48871ed3bc16,ev_7b96f4d1f899526b7021e732fff509ef0867523ab5392b2999d9f4407675e9da,ev_119bacc6f6f638a016ceebc6f02fa127a3e0ab89ffb2e872154d325518353981,ev_c90fa707f3f858301b327c58bf544634701b92efa06a624a34531adc5011536c,ev_eede0dcba7e51fa5e2d4230d988fe3f3dc197b1c9cc94efcdc43c5cc9d69dc68"
+      ]
+    },
+    {
+      "id": "F-e4f5145a90",
+      "rule": "high-fan-out",
+      "area": "orchestration",
+      "priority": 5,
+      "subject": "src/control_plane/server.js",
+      "title": "High local fan-out in src/control_plane/server.js (18 modules)",
+      "detail": "src/control_plane/server.js statically imports 18 local modules (threshold 8); every invocation loads all of them.",
+      "evidence_ids": [
+        "ev_fe949d3b39ceb1a4ddd99d34a1809c60707ba14fc9b64b2eec4a0c8542c4628d,ev_9092224aca109f0e262c3394ba82bf9461c430c0dffaa9bdb270650d6fa36737,ev_5224d203b3a0a78616f8b302d6ee59e769cfa61cd6a171296dd3f6a8a7e77d7b,ev_a11869e81bcb4b7cbb7f64fb66e8f5f08a53dcb884247cc47b331c7f2489249f,ev_b0b0184d6b9c0866b029956debd18ab9b4200beb303c97ded231516c49a0b8d0,ev_288b42478ea1172c9052c340a4ff8ee07142a747d7fba8511824d5906dddbddb,ev_96666adb32f08d06bf60dceb1b84a6c1ecbf23acc483e65e56912ab5eb0d8b8e,ev_a26db102f72708fd649cedaf882b44328f4fca7fd140bf5aa8a7e1f51f54967a,ev_fc07e371b70f81fc162a91d783f64cbd6af0158c54a6946ff53cb7d1ade70d9b,ev_5df33526c85f66c10f9fa86cf465a76bf8f2eb5a1d0e4094759b3f2427bdebd9,ev_c280942900aa830d99772a6181ad1bed8a037e07b2893e692d5cd2bfe61671ce,ev_e3a57856c039c639813c82e91af88880f4195e0a0710e7b19c0e934fcf302d84,ev_e9da8cd44c36528c35117ec83f75eaa66238df43aa2d1b21e900e557d57af136,ev_e8ae04e754b3b67816d4bb9d26322209f316b4000740fe791570ba85c452244a,ev_9b99a8074198a627e36f8c36fd9d40992f610ed14edc13d899121055fc69e099,ev_347b2f7c561a36196ea78ba7c1193cb6522b9394150d6a1c161af85f1a492405,ev_755596ee15f6e342eff46ad4ac576cb590a20c5fdb960b09e11917e05fe9e891,ev_e10d819c10ffe3698dd64ffa4cc1ff0febfce427d8cb5bf3a57e48871ed3bc16,ev_7b96f4d1f899526b7021e732fff509ef0867523ab5392b2999d9f4407675e9da,ev_119bacc6f6f638a016ceebc6f02fa127a3e0ab89ffb2e872154d325518353981,ev_c90fa707f3f858301b327c58bf544634701b92efa06a624a34531adc5011536c,ev_eede0dcba7e51fa5e2d4230d988fe3f3dc197b1c9cc94efcdc43c5cc9d69dc68"
+      ]
+    },
+    {
+      "id": "F-58e0ea7c53",
+      "rule": "unreachable-module",
+      "area": "code-quality",
+      "priority": 6,
+      "subject": "src/core/watchdog.mjs",
+      "title": "Module not reachable from the CLI entrypoint: src/core/watchdog.mjs",
+      "detail": "No static import path from bin/ reaches src/core/watchdog.mjs in REA's application graph; it is dead code or loaded dynamically.",
+      "evidence_ids": [
+        "ev_fe949d3b39ceb1a4ddd99d34a1809c60707ba14fc9b64b2eec4a0c8542c4628d,ev_9092224aca109f0e262c3394ba82bf9461c430c0dffaa9bdb270650d6fa36737,ev_5224d203b3a0a78616f8b302d6ee59e769cfa61cd6a171296dd3f6a8a7e77d7b,ev_a11869e81bcb4b7cbb7f64fb66e8f5f08a53dcb884247cc47b331c7f2489249f,ev_b0b0184d6b9c0866b029956debd18ab9b4200beb303c97ded231516c49a0b8d0,ev_288b42478ea1172c9052c340a4ff8ee07142a747d7fba8511824d5906dddbddb,ev_96666adb32f08d06bf60dceb1b84a6c1ecbf23acc483e65e56912ab5eb0d8b8e,ev_a26db102f72708fd649cedaf882b44328f4fca7fd140bf5aa8a7e1f51f54967a,ev_fc07e371b70f81fc162a91d783f64cbd6af0158c54a6946ff53cb7d1ade70d9b,ev_5df33526c85f66c10f9fa86cf465a76bf8f2eb5a1d0e4094759b3f2427bdebd9,ev_c280942900aa830d99772a6181ad1bed8a037e07b2893e692d5cd2bfe61671ce,ev_e3a57856c039c639813c82e91af88880f4195e0a0710e7b19c0e934fcf302d84,ev_e9da8cd44c36528c35117ec83f75eaa66238df43aa2d1b21e900e557d57af136,ev_e8ae04e754b3b67816d4bb9d26322209f316b4000740fe791570ba85c452244a,ev_9b99a8074198a627e36f8c36fd9d40992f610ed14edc13d899121055fc69e099,ev_347b2f7c561a36196ea78ba7c1193cb6522b9394150d6a1c161af85f1a492405,ev_755596ee15f6e342eff46ad4ac576cb590a20c5fdb960b09e11917e05fe9e891,ev_e10d819c10ffe3698dd64ffa4cc1ff0febfce427d8cb5bf3a57e48871ed3bc16,ev_7b96f4d1f899526b7021e732fff509ef0867523ab5392b2999d9f4407675e9da,ev_119bacc6f6f638a016ceebc6f02fa127a3e0ab89ffb2e872154d325518353981,ev_c90fa707f3f858301b327c58bf544634701b92efa06a624a34531adc5011536c,ev_eede0dcba7e51fa5e2d4230d988fe3f3dc197b1c9cc94efcdc43c5cc9d69dc68"
+      ]
+    },
+    {
+      "id": "F-09767b28e2",
+      "rule": "spawn-without-error-listener",
+      "area": "error-handling",
+      "priority": 7,
+      "subject": "tests/multi-agent.test.js",
+      "title": "Child process spawned without an 'error' listener in tests/multi-agent.test.js",
+      "detail": "REA shows tests/multi-agent.test.js imports a child_process launcher but registers no 'error' event listener; spawn failures (ENOENT, EACCES) would surface as unhandled errors.",
+      "evidence_ids": [
+        "ev_fe949d3b39ceb1a4ddd99d34a1809c60707ba14fc9b64b2eec4a0c8542c4628d,ev_9092224aca109f0e262c3394ba82bf9461c430c0dffaa9bdb270650d6fa36737,ev_5224d203b3a0a78616f8b302d6ee59e769cfa61cd6a171296dd3f6a8a7e77d7b,ev_a11869e81bcb4b7cbb7f64fb66e8f5f08a53dcb884247cc47b331c7f2489249f,ev_b0b0184d6b9c0866b029956debd18ab9b4200beb303c97ded231516c49a0b8d0,ev_288b42478ea1172c9052c340a4ff8ee07142a747d7fba8511824d5906dddbddb,ev_96666adb32f08d06bf60dceb1b84a6c1ecbf23acc483e65e56912ab5eb0d8b8e,ev_a26db102f72708fd649cedaf882b44328f4fca7fd140bf5aa8a7e1f51f54967a,ev_fc07e371b70f81fc162a91d783f64cbd6af0158c54a6946ff53cb7d1ade70d9b,ev_5df33526c85f66c10f9fa86cf465a76bf8f2eb5a1d0e4094759b3f2427bdebd9,ev_c280942900aa830d99772a6181ad1bed8a037e07b2893e692d5cd2bfe61671ce,ev_e3a57856c039c639813c82e91af88880f4195e0a0710e7b19c0e934fcf302d84,ev_e9da8cd44c36528c35117ec83f75eaa66238df43aa2d1b21e900e557d57af136,ev_e8ae04e754b3b67816d4bb9d26322209f316b4000740fe791570ba85c452244a,ev_9b99a8074198a627e36f8c36fd9d40992f610ed14edc13d899121055fc69e099,ev_347b2f7c561a36196ea78ba7c1193cb6522b9394150d6a1c161af85f1a492405,ev_755596ee15f6e342eff46ad4ac576cb590a20c5fdb960b09e11917e05fe9e891,ev_e10d819c10ffe3698dd64ffa4cc1ff0febfce427d8cb5bf3a57e48871ed3bc16,ev_7b96f4d1f899526b7021e732fff509ef0867523ab5392b2999d9f4407675e9da,ev_119bacc6f6f638a016ceebc6f02fa127a3e0ab89ffb2e872154d325518353981,ev_c90fa707f3f858301b327c58bf544634701b92efa06a624a34531adc5011536c,ev_eede0dcba7e51fa5e2d4230d988fe3f3dc197b1c9cc94efcdc43c5cc9d69dc68"
+      ]
+    },
+    {
+      "id": "F-2c7f7ed193",
+      "rule": "spawn-without-error-listener",
+      "area": "error-handling",
+      "priority": 7,
+      "subject": "tests/e2e-lab.test.js",
+      "title": "Child process spawned without an 'error' listener in tests/e2e-lab.test.js",
+      "detail": "REA shows tests/e2e-lab.test.js imports a child_process launcher but registers no 'error' event listener; spawn failures (ENOENT, EACCES) would surface as unhandled errors.",
+      "evidence_ids": [
+        "ev_fe949d3b39ceb1a4ddd99d34a1809c60707ba14fc9b64b2eec4a0c8542c4628d,ev_9092224aca109f0e262c3394ba82bf9461c430c0dffaa9bdb270650d6fa36737,ev_5224d203b3a0a78616f8b302d6ee59e769cfa61cd6a171296dd3f6a8a7e77d7b,ev_a11869e81bcb4b7cbb7f64fb66e8f5f08a53dcb884247cc47b331c7f2489249f,ev_b0b0184d6b9c0866b029956debd18ab9b4200beb303c97ded231516c49a0b8d0,ev_288b42478ea1172c9052c340a4ff8ee07142a747d7fba8511824d5906dddbddb,ev_96666adb32f08d06bf60dceb1b84a6c1ecbf23acc483e65e56912ab5eb0d8b8e,ev_a26db102f72708fd649cedaf882b44328f4fca7fd140bf5aa8a7e1f51f54967a,ev_fc07e371b70f81fc162a91d783f64cbd6af0158c54a6946ff53cb7d1ade70d9b,ev_5df33526c85f66c10f9fa86cf465a76bf8f2eb5a1d0e4094759b3f2427bdebd9,ev_c280942900aa830d99772a6181ad1bed8a037e07b2893e692d5cd2bfe61671ce,ev_e3a57856c039c639813c82e91af88880f4195e0a0710e7b19c0e934fcf302d84,ev_e9da8cd44c36528c35117ec83f75eaa66238df43aa2d1b21e900e557d57af136,ev_e8ae04e754b3b67816d4bb9d26322209f316b4000740fe791570ba85c452244a,ev_9b99a8074198a627e36f8c36fd9d40992f610ed14edc13d899121055fc69e099,ev_347b2f7c561a36196ea78ba7c1193cb6522b9394150d6a1c161af85f1a492405,ev_755596ee15f6e342eff46ad4ac576cb590a20c5fdb960b09e11917e05fe9e891,ev_e10d819c10ffe3698dd64ffa4cc1ff0febfce427d8cb5bf3a57e48871ed3bc16,ev_7b96f4d1f899526b7021e732fff509ef0867523ab5392b2999d9f4407675e9da,ev_119bacc6f6f638a016ceebc6f02fa127a3e0ab89ffb2e872154d325518353981,ev_c90fa707f3f858301b327c58bf544634701b92efa06a624a34531adc5011536c,ev_eede0dcba7e51fa5e2d4230d988fe3f3dc197b1c9cc94efcdc43c5cc9d69dc68"
+      ]
+    },
+    {
+      "id": "F-3643a25c70",
+      "rule": "spawn-without-error-listener",
+      "area": "error-handling",
+      "priority": 7,
+      "subject": "tests/regressions.test.js",
+      "title": "Child process spawned without an 'error' listener in tests/regressions.test.js",
+      "detail": "REA shows tests/regressions.test.js imports a child_process launcher but registers no 'error' event listener; spawn failures (ENOENT, EACCES) would surface as unhandled errors.",
+      "evidence_ids": [
+        "ev_fe949d3b39ceb1a4ddd99d34a1809c60707ba14fc9b64b2eec4a0c8542c4628d,ev_9092224aca109f0e262c3394ba82bf9461c430c0dffaa9bdb270650d6fa36737,ev_5224d203b3a0a78616f8b302d6ee59e769cfa61cd6a171296dd3f6a8a7e77d7b,ev_a11869e81bcb4b7cbb7f64fb66e8f5f08a53dcb884247cc47b331c7f2489249f,ev_b0b0184d6b9c0866b029956debd18ab9b4200beb303c97ded231516c49a0b8d0,ev_288b42478ea1172c9052c340a4ff8ee07142a747d7fba8511824d5906dddbddb,ev_96666adb32f08d06bf60dceb1b84a6c1ecbf23acc483e65e56912ab5eb0d8b8e,ev_a26db102f72708fd649cedaf882b44328f4fca7fd140bf5aa8a7e1f51f54967a,ev_fc07e371b70f81fc162a91d783f64cbd6af0158c54a6946ff53cb7d1ade70d9b,ev_5df33526c85f66c10f9fa86cf465a76bf8f2eb5a1d0e4094759b3f2427bdebd9,ev_c280942900aa830d99772a6181ad1bed8a037e07b2893e692d5cd2bfe61671ce,ev_e3a57856c039c639813c82e91af88880f4195e0a0710e7b19c0e934fcf302d84,ev_e9da8cd44c36528c35117ec83f75eaa66238df43aa2d1b21e900e557d57af136,ev_e8ae04e754b3b67816d4bb9d26322209f316b4000740fe791570ba85c452244a,ev_9b99a8074198a627e36f8c36fd9d40992f610ed14edc13d899121055fc69e099,ev_347b2f7c561a36196ea78ba7c1193cb6522b9394150d6a1c161af85f1a492405,ev_755596ee15f6e342eff46ad4ac576cb590a20c5fdb960b09e11917e05fe9e891,ev_e10d819c10ffe3698dd64ffa4cc1ff0febfce427d8cb5bf3a57e48871ed3bc16,ev_7b96f4d1f899526b7021e732fff509ef0867523ab5392b2999d9f4407675e9da,ev_119bacc6f6f638a016ceebc6f02fa127a3e0ab89ffb2e872154d325518353981,ev_c90fa707f3f858301b327c58bf544634701b92efa06a624a34531adc5011536c,ev_eede0dcba7e51fa5e2d4230d988fe3f3dc197b1c9cc94efcdc43c5cc9d69dc68"
+      ]
+    },
+    {
+      "id": "F-bc9c0440fd",
+      "rule": "spawn-without-error-listener",
+      "area": "error-handling",
+      "priority": 7,
+      "subject": "tests/mcp.test.js",
+      "title": "Child process spawned without an 'error' listener in tests/mcp.test.js",
+      "detail": "REA shows tests/mcp.test.js imports a child_process launcher but registers no 'error' event listener; spawn failures (ENOENT, EACCES) would surface as unhandled errors.",
+      "evidence_ids": [
+        "ev_fe949d3b39ceb1a4ddd99d34a1809c60707ba14fc9b64b2eec4a0c8542c4628d,ev_9092224aca109f0e262c3394ba82bf9461c430c0dffaa9bdb270650d6fa36737,ev_5224d203b3a0a78616f8b302d6ee59e769cfa61cd6a171296dd3f6a8a7e77d7b,ev_a11869e81bcb4b7cbb7f64fb66e8f5f08a53dcb884247cc47b331c7f2489249f,ev_b0b0184d6b9c0866b029956debd18ab9b4200beb303c97ded231516c49a0b8d0,ev_288b42478ea1172c9052c340a4ff8ee07142a747d7fba8511824d5906dddbddb,ev_96666adb32f08d06bf60dceb1b84a6c1ecbf23acc483e65e56912ab5eb0d8b8e,ev_a26db102f72708fd649cedaf882b44328f4fca7fd140bf5aa8a7e1f51f54967a,ev_fc07e371b70f81fc162a91d783f64cbd6af0158c54a6946ff53cb7d1ade70d9b,ev_5df33526c85f66c10f9fa86cf465a76bf8f2eb5a1d0e4094759b3f2427bdebd9,ev_c280942900aa830d99772a6181ad1bed8a037e07b2893e692d5cd2bfe61671ce,ev_e3a57856c039c639813c82e91af88880f4195e0a0710e7b19c0e934fcf302d84,ev_e9da8cd44c36528c35117ec83f75eaa66238df43aa2d1b21e900e557d57af136,ev_e8ae04e754b3b67816d4bb9d26322209f316b4000740fe791570ba85c452244a,ev_9b99a8074198a627e36f8c36fd9d40992f610ed14edc13d899121055fc69e099,ev_347b2f7c561a36196ea78ba7c1193cb6522b9394150d6a1c161af85f1a492405,ev_755596ee15f6e342eff46ad4ac576cb590a20c5fdb960b09e11917e05fe9e891,ev_e10d819c10ffe3698dd64ffa4cc1ff0febfce427d8cb5bf3a57e48871ed3bc16,ev_7b96f4d1f899526b7021e732fff509ef0867523ab5392b2999d9f4407675e9da,ev_119bacc6f6f638a016ceebc6f02fa127a3e0ab89ffb2e872154d325518353981,ev_c90fa707f3f858301b327c58bf544634701b92efa06a624a34531adc5011536c,ev_eede0dcba7e51fa5e2d4230d988fe3f3dc197b1c9cc94efcdc43c5cc9d69dc68"
+      ]
+    },
+    {
+      "id": "F-f18fb268ae",
+      "rule": "spawn-without-error-listener",
+      "area": "error-handling",
+      "priority": 7,
+      "subject": "tests/project-lab.test.js",
+      "title": "Child process spawned without an 'error' listener in tests/project-lab.test.js",
+      "detail": "REA shows tests/project-lab.test.js imports a child_process launcher but registers no 'error' event listener; spawn failures (ENOENT, EACCES) would surface as unhandled errors.",
+      "evidence_ids": [
+        "ev_fe949d3b39ceb1a4ddd99d34a1809c60707ba14fc9b64b2eec4a0c8542c4628d,ev_9092224aca109f0e262c3394ba82bf9461c430c0dffaa9bdb270650d6fa36737,ev_5224d203b3a0a78616f8b302d6ee59e769cfa61cd6a171296dd3f6a8a7e77d7b,ev_a11869e81bcb4b7cbb7f64fb66e8f5f08a53dcb884247cc47b331c7f2489249f,ev_b0b0184d6b9c0866b029956debd18ab9b4200beb303c97ded231516c49a0b8d0,ev_288b42478ea1172c9052c340a4ff8ee07142a747d7fba8511824d5906dddbddb,ev_96666adb32f08d06bf60dceb1b84a6c1ecbf23acc483e65e56912ab5eb0d8b8e,ev_a26db102f72708fd649cedaf882b44328f4fca7fd140bf5aa8a7e1f51f54967a,ev_fc07e371b70f81fc162a91d783f64cbd6af0158c54a6946ff53cb7d1ade70d9b,ev_5df33526c85f66c10f9fa86cf465a76bf8f2eb5a1d0e4094759b3f2427bdebd9,ev_c280942900aa830d99772a6181ad1bed8a037e07b2893e692d5cd2bfe61671ce,ev_e3a57856c039c639813c82e91af88880f4195e0a0710e7b19c0e934fcf302d84,ev_e9da8cd44c36528c35117ec83f75eaa66238df43aa2d1b21e900e557d57af136,ev_e8ae04e754b3b67816d4bb9d26322209f316b4000740fe791570ba85c452244a,ev_9b99a8074198a627e36f8c36fd9d40992f610ed14edc13d899121055fc69e099,ev_347b2f7c561a36196ea78ba7c1193cb6522b9394150d6a1c161af85f1a492405,ev_755596ee15f6e342eff46ad4ac576cb590a20c5fdb960b09e11917e05fe9e891,ev_e10d819c10ffe3698dd64ffa4cc1ff0febfce427d8cb5bf3a57e48871ed3bc16,ev_7b96f4d1f899526b7021e732fff509ef0867523ab5392b2999d9f4407675e9da,ev_119bacc6f6f638a016ceebc6f02fa127a3e0ab89ffb2e872154d325518353981,ev_c90fa707f3f858301b327c58bf544634701b92efa06a624a34531adc5011536c,ev_eede0dcba7e51fa5e2d4230d988fe3f3dc197b1c9cc94efcdc43c5cc9d69dc68"
+      ]
+    },
+    {
+      "id": "F-10f9abb9c9",
+      "rule": "untested-module",
+      "area": "test-coverage",
+      "priority": 10,
+      "subject": "src/control_plane/services/improvement.js",
+      "title": "No test module imports src/control_plane/services/improvement.js",
+      "detail": "REA's import graph shows no edge from tests/ to src/control_plane/services/improvement.js.",
+      "evidence_ids": [
+        "ev_fe949d3b39ceb1a4ddd99d34a1809c60707ba14fc9b64b2eec4a0c8542c4628d,ev_9092224aca109f0e262c3394ba82bf9461c430c0dffaa9bdb270650d6fa36737,ev_5224d203b3a0a78616f8b302d6ee59e769cfa61cd6a171296dd3f6a8a7e77d7b,ev_a11869e81bcb4b7cbb7f64fb66e8f5f08a53dcb884247cc47b331c7f2489249f,ev_b0b0184d6b9c0866b029956debd18ab9b4200beb303c97ded231516c49a0b8d0,ev_288b42478ea1172c9052c340a4ff8ee07142a747d7fba8511824d5906dddbddb,ev_96666adb32f08d06bf60dceb1b84a6c1ecbf23acc483e65e56912ab5eb0d8b8e,ev_a26db102f72708fd649cedaf882b44328f4fca7fd140bf5aa8a7e1f51f54967a,ev_fc07e371b70f81fc162a91d783f64cbd6af0158c54a6946ff53cb7d1ade70d9b,ev_5df33526c85f66c10f9fa86cf465a76bf8f2eb5a1d0e4094759b3f2427bdebd9,ev_c280942900aa830d99772a6181ad1bed8a037e07b2893e692d5cd2bfe61671ce,ev_e3a57856c039c639813c82e91af88880f4195e0a0710e7b19c0e934fcf302d84,ev_e9da8cd44c36528c35117ec83f75eaa66238df43aa2d1b21e900e557d57af136,ev_e8ae04e754b3b67816d4bb9d26322209f316b4000740fe791570ba85c452244a,ev_9b99a8074198a627e36f8c36fd9d40992f610ed14edc13d899121055fc69e099,ev_347b2f7c561a36196ea78ba7c1193cb6522b9394150d6a1c161af85f1a492405,ev_755596ee15f6e342eff46ad4ac576cb590a20c5fdb960b09e11917e05fe9e891,ev_e10d819c10ffe3698dd64ffa4cc1ff0febfce427d8cb5bf3a57e48871ed3bc16,ev_7b96f4d1f899526b7021e732fff509ef0867523ab5392b2999d9f4407675e9da,ev_119bacc6f6f638a016ceebc6f02fa127a3e0ab89ffb2e872154d325518353981,ev_c90fa707f3f858301b327c58bf544634701b92efa06a624a34531adc5011536c,ev_eede0dcba7e51fa5e2d4230d988fe3f3dc197b1c9cc94efcdc43c5cc9d69dc68"
+      ]
+    },
+    {
+      "id": "F-27e45a7959",
+      "rule": "untested-module",
+      "area": "test-coverage",
+      "priority": 10,
+      "subject": "src/control_plane/services/agents.js",
+      "title": "No test module imports src/control_plane/services/agents.js",
+      "detail": "REA's import graph shows no edge from tests/ to src/control_plane/services/agents.js.",
+      "evidence_ids": [
+        "ev_fe949d3b39ceb1a4ddd99d34a1809c60707ba14fc9b64b2eec4a0c8542c4628d,ev_9092224aca109f0e262c3394ba82bf9461c430c0dffaa9bdb270650d6fa36737,ev_5224d203b3a0a78616f8b302d6ee59e769cfa61cd6a171296dd3f6a8a7e77d7b,ev_a11869e81bcb4b7cbb7f64fb66e8f5f08a53dcb884247cc47b331c7f2489249f,ev_b0b0184d6b9c0866b029956debd18ab9b4200beb303c97ded231516c49a0b8d0,ev_288b42478ea1172c9052c340a4ff8ee07142a747d7fba8511824d5906dddbddb,ev_96666adb32f08d06bf60dceb1b84a6c1ecbf23acc483e65e56912ab5eb0d8b8e,ev_a26db102f72708fd649cedaf882b44328f4fca7fd140bf5aa8a7e1f51f54967a,ev_fc07e371b70f81fc162a91d783f64cbd6af0158c54a6946ff53cb7d1ade70d9b,ev_5df33526c85f66c10f9fa86cf465a76bf8f2eb5a1d0e4094759b3f2427bdebd9,ev_c280942900aa830d99772a6181ad1bed8a037e07b2893e692d5cd2bfe61671ce,ev_e3a57856c039c639813c82e91af88880f4195e0a0710e7b19c0e934fcf302d84,ev_e9da8cd44c36528c35117ec83f75eaa66238df43aa2d1b21e900e557d57af136,ev_e8ae04e754b3b67816d4bb9d26322209f316b4000740fe791570ba85c452244a,ev_9b99a8074198a627e36f8c36fd9d40992f610ed14edc13d899121055fc69e099,ev_347b2f7c561a36196ea78ba7c1193cb6522b9394150d6a1c161af85f1a492405,ev_755596ee15f6e342eff46ad4ac576cb590a20c5fdb960b09e11917e05fe9e891,ev_e10d819c10ffe3698dd64ffa4cc1ff0febfce427d8cb5bf3a57e48871ed3bc16,ev_7b96f4d1f899526b7021e732fff509ef0867523ab5392b2999d9f4407675e9da,ev_119bacc6f6f638a016ceebc6f02fa127a3e0ab89ffb2e872154d325518353981,ev_c90fa707f3f858301b327c58bf544634701b92efa06a624a34531adc5011536c,ev_eede0dcba7e51fa5e2d4230d988fe3f3dc197b1c9cc94efcdc43c5cc9d69dc68"
+      ]
+    },
+    {
+      "id": "F-2b16e74726",
+      "rule": "untested-module",
+      "area": "test-coverage",
+      "priority": 10,
+      "subject": "src/project_lab/report.js",
+      "title": "No test module imports src/project_lab/report.js",
+      "detail": "REA's import graph shows no edge from tests/ to src/project_lab/report.js.",
+      "evidence_ids": [
+        "ev_fe949d3b39ceb1a4ddd99d34a1809c60707ba14fc9b64b2eec4a0c8542c4628d,ev_9092224aca109f0e262c3394ba82bf9461c430c0dffaa9bdb270650d6fa36737,ev_5224d203b3a0a78616f8b302d6ee59e769cfa61cd6a171296dd3f6a8a7e77d7b,ev_a11869e81bcb4b7cbb7f64fb66e8f5f08a53dcb884247cc47b331c7f2489249f,ev_b0b0184d6b9c0866b029956debd18ab9b4200beb303c97ded231516c49a0b8d0,ev_288b42478ea1172c9052c340a4ff8ee07142a747d7fba8511824d5906dddbddb,ev_96666adb32f08d06bf60dceb1b84a6c1ecbf23acc483e65e56912ab5eb0d8b8e,ev_a26db102f72708fd649cedaf882b44328f4fca7fd140bf5aa8a7e1f51f54967a,ev_fc07e371b70f81fc162a91d783f64cbd6af0158c54a6946ff53cb7d1ade70d9b,ev_5df33526c85f66c10f9fa86cf465a76bf8f2eb5a1d0e4094759b3f2427bdebd9,ev_c280942900aa830d99772a6181ad1bed8a037e07b2893e692d5cd2bfe61671ce,ev_e3a57856c039c639813c82e91af88880f4195e0a0710e7b19c0e934fcf302d84,ev_e9da8cd44c36528c35117ec83f75eaa66238df43aa2d1b21e900e557d57af136,ev_e8ae04e754b3b67816d4bb9d26322209f316b4000740fe791570ba85c452244a,ev_9b99a8074198a627e36f8c36fd9d40992f610ed14edc13d899121055fc69e099,ev_347b2f7c561a36196ea78ba7c1193cb6522b9394150d6a1c161af85f1a492405,ev_755596ee15f6e342eff46ad4ac576cb590a20c5fdb960b09e11917e05fe9e891,ev_e10d819c10ffe3698dd64ffa4cc1ff0febfce427d8cb5bf3a57e48871ed3bc16,ev_7b96f4d1f899526b7021e732fff509ef0867523ab5392b2999d9f4407675e9da,ev_119bacc6f6f638a016ceebc6f02fa127a3e0ab89ffb2e872154d325518353981,ev_c90fa707f3f858301b327c58bf544634701b92efa06a624a34531adc5011536c,ev_eede0dcba7e51fa5e2d4230d988fe3f3dc197b1c9cc94efcdc43c5cc9d69dc68"
+      ]
+    },
+    {
+      "id": "F-2c251e5e09",
+      "rule": "untested-module",
+      "area": "test-coverage",
+      "priority": 10,
+      "subject": "src/commands/studio.js",
+      "title": "No test module imports src/commands/studio.js",
+      "detail": "REA's import graph shows no edge from tests/ to src/commands/studio.js.",
+      "evidence_ids": [
+        "ev_fe949d3b39ceb1a4ddd99d34a1809c60707ba14fc9b64b2eec4a0c8542c4628d,ev_9092224aca109f0e262c3394ba82bf9461c430c0dffaa9bdb270650d6fa36737,ev_5224d203b3a0a78616f8b302d6ee59e769cfa61cd6a171296dd3f6a8a7e77d7b,ev_a11869e81bcb4b7cbb7f64fb66e8f5f08a53dcb884247cc47b331c7f2489249f,ev_b0b0184d6b9c0866b029956debd18ab9b4200beb303c97ded231516c49a0b8d0,ev_288b42478ea1172c9052c340a4ff8ee07142a747d7fba8511824d5906dddbddb,ev_96666adb32f08d06bf60dceb1b84a6c1ecbf23acc483e65e56912ab5eb0d8b8e,ev_a26db102f72708fd649cedaf882b44328f4fca7fd140bf5aa8a7e1f51f54967a,ev_fc07e371b70f81fc162a91d783f64cbd6af0158c54a6946ff53cb7d1ade70d9b,ev_5df33526c85f66c10f9fa86cf465a76bf8f2eb5a1d0e4094759b3f2427bdebd9,ev_c280942900aa830d99772a6181ad1bed8a037e07b2893e692d5cd2bfe61671ce,ev_e3a57856c039c639813c82e91af88880f4195e0a0710e7b19c0e934fcf302d84,ev_e9da8cd44c36528c35117ec83f75eaa66238df43aa2d1b21e900e557d57af136,ev_e8ae04e754b3b67816d4bb9d26322209f316b4000740fe791570ba85c452244a,ev_9b99a8074198a627e36f8c36fd9d40992f610ed14edc13d899121055fc69e099,ev_347b2f7c561a36196ea78ba7c1193cb6522b9394150d6a1c161af85f1a492405,ev_755596ee15f6e342eff46ad4ac576cb590a20c5fdb960b09e11917e05fe9e891,ev_e10d819c10ffe3698dd64ffa4cc1ff0febfce427d8cb5bf3a57e48871ed3bc16,ev_7b96f4d1f899526b7021e732fff509ef0867523ab5392b2999d9f4407675e9da,ev_119bacc6f6f638a016ceebc6f02fa127a3e0ab89ffb2e872154d325518353981,ev_c90fa707f3f858301b327c58bf544634701b92efa06a624a34531adc5011536c,ev_eede0dcba7e51fa5e2d4230d988fe3f3dc197b1c9cc94efcdc43c5cc9d69dc68"
+      ]
+    },
+    {
+      "id": "F-2fe456ef5b",
+      "rule": "untested-module",
+      "area": "test-coverage",
+      "priority": 10,
+      "subject": "src/commands/lab.js",
+      "title": "No test module imports src/commands/lab.js",
+      "detail": "REA's import graph shows no edge from tests/ to src/commands/lab.js.",
+      "evidence_ids": [
+        "ev_fe949d3b39ceb1a4ddd99d34a1809c60707ba14fc9b64b2eec4a0c8542c4628d,ev_9092224aca109f0e262c3394ba82bf9461c430c0dffaa9bdb270650d6fa36737,ev_5224d203b3a0a78616f8b302d6ee59e769cfa61cd6a171296dd3f6a8a7e77d7b,ev_a11869e81bcb4b7cbb7f64fb66e8f5f08a53dcb884247cc47b331c7f2489249f,ev_b0b0184d6b9c0866b029956debd18ab9b4200beb303c97ded231516c49a0b8d0,ev_288b42478ea1172c9052c340a4ff8ee07142a747d7fba8511824d5906dddbddb,ev_96666adb32f08d06bf60dceb1b84a6c1ecbf23acc483e65e56912ab5eb0d8b8e,ev_a26db102f72708fd649cedaf882b44328f4fca7fd140bf5aa8a7e1f51f54967a,ev_fc07e371b70f81fc162a91d783f64cbd6af0158c54a6946ff53cb7d1ade70d9b,ev_5df33526c85f66c10f9fa86cf465a76bf8f2eb5a1d0e4094759b3f2427bdebd9,ev_c280942900aa830d99772a6181ad1bed8a037e07b2893e692d5cd2bfe61671ce,ev_e3a57856c039c639813c82e91af88880f4195e0a0710e7b19c0e934fcf302d84,ev_e9da8cd44c36528c35117ec83f75eaa66238df43aa2d1b21e900e557d57af136,ev_e8ae04e754b3b67816d4bb9d26322209f316b4000740fe791570ba85c452244a,ev_9b99a8074198a627e36f8c36fd9d40992f610ed14edc13d899121055fc69e099,ev_347b2f7c561a36196ea78ba7c1193cb6522b9394150d6a1c161af85f1a492405,ev_755596ee15f6e342eff46ad4ac576cb590a20c5fdb960b09e11917e05fe9e891,ev_e10d819c10ffe3698dd64ffa4cc1ff0febfce427d8cb5bf3a57e48871ed3bc16,ev_7b96f4d1f899526b7021e732fff509ef0867523ab5392b2999d9f4407675e9da,ev_119bacc6f6f638a016ceebc6f02fa127a3e0ab89ffb2e872154d325518353981,ev_c90fa707f3f858301b327c58bf544634701b92efa06a624a34531adc5011536c,ev_eede0dcba7e51fa5e2d4230d988fe3f3dc197b1c9cc94efcdc43c5cc9d69dc68"
+      ]
+    },
+    {
+      "id": "F-407c918f78",
+      "rule": "untested-module",
+      "area": "test-coverage",
+      "priority": 10,
+      "subject": "src/project_lab/review.js",
+      "title": "No test module imports src/project_lab/review.js",
+      "detail": "REA's import graph shows no edge from tests/ to src/project_lab/review.js.",
+      "evidence_ids": [
+        "ev_fe949d3b39ceb1a4ddd99d34a1809c60707ba14fc9b64b2eec4a0c8542c4628d,ev_9092224aca109f0e262c3394ba82bf9461c430c0dffaa9bdb270650d6fa36737,ev_5224d203b3a0a78616f8b302d6ee59e769cfa61cd6a171296dd3f6a8a7e77d7b,ev_a11869e81bcb4b7cbb7f64fb66e8f5f08a53dcb884247cc47b331c7f2489249f,ev_b0b0184d6b9c0866b029956debd18ab9b4200beb303c97ded231516c49a0b8d0,ev_288b42478ea1172c9052c340a4ff8ee07142a747d7fba8511824d5906dddbddb,ev_96666adb32f08d06bf60dceb1b84a6c1ecbf23acc483e65e56912ab5eb0d8b8e,ev_a26db102f72708fd649cedaf882b44328f4fca7fd140bf5aa8a7e1f51f54967a,ev_fc07e371b70f81fc162a91d783f64cbd6af0158c54a6946ff53cb7d1ade70d9b,ev_5df33526c85f66c10f9fa86cf465a76bf8f2eb5a1d0e4094759b3f2427bdebd9,ev_c280942900aa830d99772a6181ad1bed8a037e07b2893e692d5cd2bfe61671ce,ev_e3a57856c039c639813c82e91af88880f4195e0a0710e7b19c0e934fcf302d84,ev_e9da8cd44c36528c35117ec83f75eaa66238df43aa2d1b21e900e557d57af136,ev_e8ae04e754b3b67816d4bb9d26322209f316b4000740fe791570ba85c452244a,ev_9b99a8074198a627e36f8c36fd9d40992f610ed14edc13d899121055fc69e099,ev_347b2f7c561a36196ea78ba7c1193cb6522b9394150d6a1c161af85f1a492405,ev_755596ee15f6e342eff46ad4ac576cb590a20c5fdb960b09e11917e05fe9e891,ev_e10d819c10ffe3698dd64ffa4cc1ff0febfce427d8cb5bf3a57e48871ed3bc16,ev_7b96f4d1f899526b7021e732fff509ef0867523ab5392b2999d9f4407675e9da,ev_119bacc6f6f638a016ceebc6f02fa127a3e0ab89ffb2e872154d325518353981,ev_c90fa707f3f858301b327c58bf544634701b92efa06a624a34531adc5011536c,ev_eede0dcba7e51fa5e2d4230d988fe3f3dc197b1c9cc94efcdc43c5cc9d69dc68"
+      ]
+    },
+    {
+      "id": "F-40fc9e9205",
+      "rule": "untested-module",
+      "area": "test-coverage",
+      "priority": 10,
+      "subject": "src/control_plane/services/workbench.js",
+      "title": "No test module imports src/control_plane/services/workbench.js",
+      "detail": "REA's import graph shows no edge from tests/ to src/control_plane/services/workbench.js.",
+      "evidence_ids": [
+        "ev_fe949d3b39ceb1a4ddd99d34a1809c60707ba14fc9b64b2eec4a0c8542c4628d,ev_9092224aca109f0e262c3394ba82bf9461c430c0dffaa9bdb270650d6fa36737,ev_5224d203b3a0a78616f8b302d6ee59e769cfa61cd6a171296dd3f6a8a7e77d7b,ev_a11869e81bcb4b7cbb7f64fb66e8f5f08a53dcb884247cc47b331c7f2489249f,ev_b0b0184d6b9c0866b029956debd18ab9b4200beb303c97ded231516c49a0b8d0,ev_288b42478ea1172c9052c340a4ff8ee07142a747d7fba8511824d5906dddbddb,ev_96666adb32f08d06bf60dceb1b84a6c1ecbf23acc483e65e56912ab5eb0d8b8e,ev_a26db102f72708fd649cedaf882b44328f4fca7fd140bf5aa8a7e1f51f54967a,ev_fc07e371b70f81fc162a91d783f64cbd6af0158c54a6946ff53cb7d1ade70d9b,ev_5df33526c85f66c10f9fa86cf465a76bf8f2eb5a1d0e4094759b3f2427bdebd9,ev_c280942900aa830d99772a6181ad1bed8a037e07b2893e692d5cd2bfe61671ce,ev_e3a57856c039c639813c82e91af88880f4195e0a0710e7b19c0e934fcf302d84,ev_e9da8cd44c36528c35117ec83f75eaa66238df43aa2d1b21e900e557d57af136,ev_e8ae04e754b3b67816d4bb9d26322209f316b4000740fe791570ba85c452244a,ev_9b99a8074198a627e36f8c36fd9d40992f610ed14edc13d899121055fc69e099,ev_347b2f7c561a36196ea78ba7c1193cb6522b9394150d6a1c161af85f1a492405,ev_755596ee15f6e342eff46ad4ac576cb590a20c5fdb960b09e11917e05fe9e891,ev_e10d819c10ffe3698dd64ffa4cc1ff0febfce427d8cb5bf3a57e48871ed3bc16,ev_7b96f4d1f899526b7021e732fff509ef0867523ab5392b2999d9f4407675e9da,ev_119bacc6f6f638a016ceebc6f02fa127a3e0ab89ffb2e872154d325518353981,ev_c90fa707f3f858301b327c58bf544634701b92efa06a624a34531adc5011536c,ev_eede0dcba7e51fa5e2d4230d988fe3f3dc197b1c9cc94efcdc43c5cc9d69dc68"
+      ]
+    },
+    {
+      "id": "F-4159faffc3",
+      "rule": "untested-module",
+      "area": "test-coverage",
+      "priority": 10,
+      "subject": "src/control_plane/services/system.js",
+      "title": "No test module imports src/control_plane/services/system.js",
+      "detail": "REA's import graph shows no edge from tests/ to src/control_plane/services/system.js.",
+      "evidence_ids": [
+        "ev_fe949d3b39ceb1a4ddd99d34a1809c60707ba14fc9b64b2eec4a0c8542c4628d,ev_9092224aca109f0e262c3394ba82bf9461c430c0dffaa9bdb270650d6fa36737,ev_5224d203b3a0a78616f8b302d6ee59e769cfa61cd6a171296dd3f6a8a7e77d7b,ev_a11869e81bcb4b7cbb7f64fb66e8f5f08a53dcb884247cc47b331c7f2489249f,ev_b0b0184d6b9c0866b029956debd18ab9b4200beb303c97ded231516c49a0b8d0,ev_288b42478ea1172c9052c340a4ff8ee07142a747d7fba8511824d5906dddbddb,ev_96666adb32f08d06bf60dceb1b84a6c1ecbf23acc483e65e56912ab5eb0d8b8e,ev_a26db102f72708fd649cedaf882b44328f4fca7fd140bf5aa8a7e1f51f54967a,ev_fc07e371b70f81fc162a91d783f64cbd6af0158c54a6946ff53cb7d1ade70d9b,ev_5df33526c85f66c10f9fa86cf465a76bf8f2eb5a1d0e4094759b3f2427bdebd9,ev_c280942900aa830d99772a6181ad1bed8a037e07b2893e692d5cd2bfe61671ce,ev_e3a57856c039c639813c82e91af88880f4195e0a0710e7b19c0e934fcf302d84,ev_e9da8cd44c36528c35117ec83f75eaa66238df43aa2d1b21e900e557d57af136,ev_e8ae04e754b3b67816d4bb9d26322209f316b4000740fe791570ba85c452244a,ev_9b99a8074198a627e36f8c36fd9d40992f610ed14edc13d899121055fc69e099,ev_347b2f7c561a36196ea78ba7c1193cb6522b9394150d6a1c161af85f1a492405,ev_755596ee15f6e342eff46ad4ac576cb590a20c5fdb960b09e11917e05fe9e891,ev_e10d819c10ffe3698dd64ffa4cc1ff0febfce427d8cb5bf3a57e48871ed3bc16,ev_7b96f4d1f899526b7021e732fff509ef0867523ab5392b2999d9f4407675e9da,ev_119bacc6f6f638a016ceebc6f02fa127a3e0ab89ffb2e872154d325518353981,ev_c90fa707f3f858301b327c58bf544634701b92efa06a624a34531adc5011536c,ev_eede0dcba7e51fa5e2d4230d988fe3f3dc197b1c9cc94efcdc43c5cc9d69dc68"
+      ]
+    },
+    {
+      "id": "F-5907d881ba",
+      "rule": "untested-module",
+      "area": "test-coverage",
+      "priority": 10,
+      "subject": "src/commands/info.js",
+      "title": "No test module imports src/commands/info.js",
+      "detail": "REA's import graph shows no edge from tests/ to src/commands/info.js.",
+      "evidence_ids": [
+        "ev_fe949d3b39ceb1a4ddd99d34a1809c60707ba14fc9b64b2eec4a0c8542c4628d,ev_9092224aca109f0e262c3394ba82bf9461c430c0dffaa9bdb270650d6fa36737,ev_5224d203b3a0a78616f8b302d6ee59e769cfa61cd6a171296dd3f6a8a7e77d7b,ev_a11869e81bcb4b7cbb7f64fb66e8f5f08a53dcb884247cc47b331c7f2489249f,ev_b0b0184d6b9c0866b029956debd18ab9b4200beb303c97ded231516c49a0b8d0,ev_288b42478ea1172c9052c340a4ff8ee07142a747d7fba8511824d5906dddbddb,ev_96666adb32f08d06bf60dceb1b84a6c1ecbf23acc483e65e56912ab5eb0d8b8e,ev_a26db102f72708fd649cedaf882b44328f4fca7fd140bf5aa8a7e1f51f54967a,ev_fc07e371b70f81fc162a91d783f64cbd6af0158c54a6946ff53cb7d1ade70d9b,ev_5df33526c85f66c10f9fa86cf465a76bf8f2eb5a1d0e4094759b3f2427bdebd9,ev_c280942900aa830d99772a6181ad1bed8a037e07b2893e692d5cd2bfe61671ce,ev_e3a57856c039c639813c82e91af88880f4195e0a0710e7b19c0e934fcf302d84,ev_e9da8cd44c36528c35117ec83f75eaa66238df43aa2d1b21e900e557d57af136,ev_e8ae04e754b3b67816d4bb9d26322209f316b4000740fe791570ba85c452244a,ev_9b99a8074198a627e36f8c36fd9d40992f610ed14edc13d899121055fc69e099,ev_347b2f7c561a36196ea78ba7c1193cb6522b9394150d6a1c161af85f1a492405,ev_755596ee15f6e342eff46ad4ac576cb590a20c5fdb960b09e11917e05fe9e891,ev_e10d819c10ffe3698dd64ffa4cc1ff0febfce427d8cb5bf3a57e48871ed3bc16,ev_7b96f4d1f899526b7021e732fff509ef0867523ab5392b2999d9f4407675e9da,ev_119bacc6f6f638a016ceebc6f02fa127a3e0ab89ffb2e872154d325518353981,ev_c90fa707f3f858301b327c58bf544634701b92efa06a624a34531adc5011536c,ev_eede0dcba7e51fa5e2d4230d988fe3f3dc197b1c9cc94efcdc43c5cc9d69dc68"
+      ]
+    },
+    {
+      "id": "F-66c48aec2b",
+      "rule": "untested-module",
+      "area": "test-coverage",
+      "priority": 10,
+      "subject": "src/commands/project.js",
+      "title": "No test module imports src/commands/project.js",
+      "detail": "REA's import graph shows no edge from tests/ to src/commands/project.js.",
+      "evidence_ids": [
+        "ev_fe949d3b39ceb1a4ddd99d34a1809c60707ba14fc9b64b2eec4a0c8542c4628d,ev_9092224aca109f0e262c3394ba82bf9461c430c0dffaa9bdb270650d6fa36737,ev_5224d203b3a0a78616f8b302d6ee59e769cfa61cd6a171296dd3f6a8a7e77d7b,ev_a11869e81bcb4b7cbb7f64fb66e8f5f08a53dcb884247cc47b331c7f2489249f,ev_b0b0184d6b9c0866b029956debd18ab9b4200beb303c97ded231516c49a0b8d0,ev_288b42478ea1172c9052c340a4ff8ee07142a747d7fba8511824d5906dddbddb,ev_96666adb32f08d06bf60dceb1b84a6c1ecbf23acc483e65e56912ab5eb0d8b8e,ev_a26db102f72708fd649cedaf882b44328f4fca7fd140bf5aa8a7e1f51f54967a,ev_fc07e371b70f81fc162a91d783f64cbd6af0158c54a6946ff53cb7d1ade70d9b,ev_5df33526c85f66c10f9fa86cf465a76bf8f2eb5a1d0e4094759b3f2427bdebd9,ev_c280942900aa830d99772a6181ad1bed8a037e07b2893e692d5cd2bfe61671ce,ev_e3a57856c039c639813c82e91af88880f4195e0a0710e7b19c0e934fcf302d84,ev_e9da8cd44c36528c35117ec83f75eaa66238df43aa2d1b21e900e557d57af136,ev_e8ae04e754b3b67816d4bb9d26322209f316b4000740fe791570ba85c452244a,ev_9b99a8074198a627e36f8c36fd9d40992f610ed14edc13d899121055fc69e099,ev_347b2f7c561a36196ea78ba7c1193cb6522b9394150d6a1c161af85f1a492405,ev_755596ee15f6e342eff46ad4ac576cb590a20c5fdb960b09e11917e05fe9e891,ev_e10d819c10ffe3698dd64ffa4cc1ff0febfce427d8cb5bf3a57e48871ed3bc16,ev_7b96f4d1f899526b7021e732fff509ef0867523ab5392b2999d9f4407675e9da,ev_119bacc6f6f638a016ceebc6f02fa127a3e0ab89ffb2e872154d325518353981,ev_c90fa707f3f858301b327c58bf544634701b92efa06a624a34531adc5011536c,ev_eede0dcba7e51fa5e2d4230d988fe3f3dc197b1c9cc94efcdc43c5cc9d69dc68"
+      ]
+    },
+    {
+      "id": "F-6f84721171",
+      "rule": "untested-module",
+      "area": "test-coverage",
+      "priority": 10,
+      "subject": "src/control_plane/errors.js",
+      "title": "No test module imports src/control_plane/errors.js",
+      "detail": "REA's import graph shows no edge from tests/ to src/control_plane/errors.js.",
+      "evidence_ids": [
+        "ev_fe949d3b39ceb1a4ddd99d34a1809c60707ba14fc9b64b2eec4a0c8542c4628d,ev_9092224aca109f0e262c3394ba82bf9461c430c0dffaa9bdb270650d6fa36737,ev_5224d203b3a0a78616f8b302d6ee59e769cfa61cd6a171296dd3f6a8a7e77d7b,ev_a11869e81bcb4b7cbb7f64fb66e8f5f08a53dcb884247cc47b331c7f2489249f,ev_b0b0184d6b9c0866b029956debd18ab9b4200beb303c97ded231516c49a0b8d0,ev_288b42478ea1172c9052c340a4ff8ee07142a747d7fba8511824d5906dddbddb,ev_96666adb32f08d06bf60dceb1b84a6c1ecbf23acc483e65e56912ab5eb0d8b8e,ev_a26db102f72708fd649cedaf882b44328f4fca7fd140bf5aa8a7e1f51f54967a,ev_fc07e371b70f81fc162a91d783f64cbd6af0158c54a6946ff53cb7d1ade70d9b,ev_5df33526c85f66c10f9fa86cf465a76bf8f2eb5a1d0e4094759b3f2427bdebd9,ev_c280942900aa830d99772a6181ad1bed8a037e07b2893e692d5cd2bfe61671ce,ev_e3a57856c039c639813c82e91af88880f4195e0a0710e7b19c0e934fcf302d84,ev_e9da8cd44c36528c35117ec83f75eaa66238df43aa2d1b21e900e557d57af136,ev_e8ae04e754b3b67816d4bb9d26322209f316b4000740fe791570ba85c452244a,ev_9b99a8074198a627e36f8c36fd9d40992f610ed14edc13d899121055fc69e099,ev_347b2f7c561a36196ea78ba7c1193cb6522b9394150d6a1c161af85f1a492405,ev_755596ee15f6e342eff46ad4ac576cb590a20c5fdb960b09e11917e05fe9e891,ev_e10d819c10ffe3698dd64ffa4cc1ff0febfce427d8cb5bf3a57e48871ed3bc16,ev_7b96f4d1f899526b7021e732fff509ef0867523ab5392b2999d9f4407675e9da,ev_119bacc6f6f638a016ceebc6f02fa127a3e0ab89ffb2e872154d325518353981,ev_c90fa707f3f858301b327c58bf544634701b92efa06a624a34531adc5011536c,ev_eede0dcba7e51fa5e2d4230d988fe3f3dc197b1c9cc94efcdc43c5cc9d69dc68"
+      ]
+    },
+    {
+      "id": "F-84ffe6219c",
+      "rule": "untested-module",
+      "area": "test-coverage",
+      "priority": 10,
+      "subject": "src/control_plane/jobs.js",
+      "title": "No test module imports src/control_plane/jobs.js",
+      "detail": "REA's import graph shows no edge from tests/ to src/control_plane/jobs.js.",
+      "evidence_ids": [
+        "ev_fe949d3b39ceb1a4ddd99d34a1809c60707ba14fc9b64b2eec4a0c8542c4628d,ev_9092224aca109f0e262c3394ba82bf9461c430c0dffaa9bdb270650d6fa36737,ev_5224d203b3a0a78616f8b302d6ee59e769cfa61cd6a171296dd3f6a8a7e77d7b,ev_a11869e81bcb4b7cbb7f64fb66e8f5f08a53dcb884247cc47b331c7f2489249f,ev_b0b0184d6b9c0866b029956debd18ab9b4200beb303c97ded231516c49a0b8d0,ev_288b42478ea1172c9052c340a4ff8ee07142a747d7fba8511824d5906dddbddb,ev_96666adb32f08d06bf60dceb1b84a6c1ecbf23acc483e65e56912ab5eb0d8b8e,ev_a26db102f72708fd649cedaf882b44328f4fca7fd140bf5aa8a7e1f51f54967a,ev_fc07e371b70f81fc162a91d783f64cbd6af0158c54a6946ff53cb7d1ade70d9b,ev_5df33526c85f66c10f9fa86cf465a76bf8f2eb5a1d0e4094759b3f2427bdebd9,ev_c280942900aa830d99772a6181ad1bed8a037e07b2893e692d5cd2bfe61671ce,ev_e3a57856c039c639813c82e91af88880f4195e0a0710e7b19c0e934fcf302d84,ev_e9da8cd44c36528c35117ec83f75eaa66238df43aa2d1b21e900e557d57af136,ev_e8ae04e754b3b67816d4bb9d26322209f316b4000740fe791570ba85c452244a,ev_9b99a8074198a627e36f8c36fd9d40992f610ed14edc13d899121055fc69e099,ev_347b2f7c561a36196ea78ba7c1193cb6522b9394150d6a1c161af85f1a492405,ev_755596ee15f6e342eff46ad4ac576cb590a20c5fdb960b09e11917e05fe9e891,ev_e10d819c10ffe3698dd64ffa4cc1ff0febfce427d8cb5bf3a57e48871ed3bc16,ev_7b96f4d1f899526b7021e732fff509ef0867523ab5392b2999d9f4407675e9da,ev_119bacc6f6f638a016ceebc6f02fa127a3e0ab89ffb2e872154d325518353981,ev_c90fa707f3f858301b327c58bf544634701b92efa06a624a34531adc5011536c,ev_eede0dcba7e51fa5e2d4230d988fe3f3dc197b1c9cc94efcdc43c5cc9d69dc68"
+      ]
+    },
+    {
+      "id": "F-8e844c0b5b",
+      "rule": "untested-module",
+      "area": "test-coverage",
+      "priority": 10,
+      "subject": "src/core/watchdog.mjs",
+      "title": "No test module imports src/core/watchdog.mjs",
+      "detail": "REA's import graph shows no edge from tests/ to src/core/watchdog.mjs.",
+      "evidence_ids": [
+        "ev_fe949d3b39ceb1a4ddd99d34a1809c60707ba14fc9b64b2eec4a0c8542c4628d,ev_9092224aca109f0e262c3394ba82bf9461c430c0dffaa9bdb270650d6fa36737,ev_5224d203b3a0a78616f8b302d6ee59e769cfa61cd6a171296dd3f6a8a7e77d7b,ev_a11869e81bcb4b7cbb7f64fb66e8f5f08a53dcb884247cc47b331c7f2489249f,ev_b0b0184d6b9c0866b029956debd18ab9b4200beb303c97ded231516c49a0b8d0,ev_288b42478ea1172c9052c340a4ff8ee07142a747d7fba8511824d5906dddbddb,ev_96666adb32f08d06bf60dceb1b84a6c1ecbf23acc483e65e56912ab5eb0d8b8e,ev_a26db102f72708fd649cedaf882b44328f4fca7fd140bf5aa8a7e1f51f54967a,ev_fc07e371b70f81fc162a91d783f64cbd6af0158c54a6946ff53cb7d1ade70d9b,ev_5df33526c85f66c10f9fa86cf465a76bf8f2eb5a1d0e4094759b3f2427bdebd9,ev_c280942900aa830d99772a6181ad1bed8a037e07b2893e692d5cd2bfe61671ce,ev_e3a57856c039c639813c82e91af88880f4195e0a0710e7b19c0e934fcf302d84,ev_e9da8cd44c36528c35117ec83f75eaa66238df43aa2d1b21e900e557d57af136,ev_e8ae04e754b3b67816d4bb9d26322209f316b4000740fe791570ba85c452244a,ev_9b99a8074198a627e36f8c36fd9d40992f610ed14edc13d899121055fc69e099,ev_347b2f7c561a36196ea78ba7c1193cb6522b9394150d6a1c161af85f1a492405,ev_755596ee15f6e342eff46ad4ac576cb590a20c5fdb960b09e11917e05fe9e891,ev_e10d819c10ffe3698dd64ffa4cc1ff0febfce427d8cb5bf3a57e48871ed3bc16,ev_7b96f4d1f899526b7021e732fff509ef0867523ab5392b2999d9f4407675e9da,ev_119bacc6f6f638a016ceebc6f02fa127a3e0ab89ffb2e872154d325518353981,ev_c90fa707f3f858301b327c58bf544634701b92efa06a624a34531adc5011536c,ev_eede0dcba7e51fa5e2d4230d988fe3f3dc197b1c9cc94efcdc43c5cc9d69dc68"
+      ]
+    },
+    {
+      "id": "F-90d3872550",
+      "rule": "untested-module",
+      "area": "test-coverage",
+      "priority": 10,
+      "subject": "src/control_plane/services/uploads.js",
+      "title": "No test module imports src/control_plane/services/uploads.js",
+      "detail": "REA's import graph shows no edge from tests/ to src/control_plane/services/uploads.js.",
+      "evidence_ids": [
+        "ev_fe949d3b39ceb1a4ddd99d34a1809c60707ba14fc9b64b2eec4a0c8542c4628d,ev_9092224aca109f0e262c3394ba82bf9461c430c0dffaa9bdb270650d6fa36737,ev_5224d203b3a0a78616f8b302d6ee59e769cfa61cd6a171296dd3f6a8a7e77d7b,ev_a11869e81bcb4b7cbb7f64fb66e8f5f08a53dcb884247cc47b331c7f2489249f,ev_b0b0184d6b9c0866b029956debd18ab9b4200beb303c97ded231516c49a0b8d0,ev_288b42478ea1172c9052c340a4ff8ee07142a747d7fba8511824d5906dddbddb,ev_96666adb32f08d06bf60dceb1b84a6c1ecbf23acc483e65e56912ab5eb0d8b8e,ev_a26db102f72708fd649cedaf882b44328f4fca7fd140bf5aa8a7e1f51f54967a,ev_fc07e371b70f81fc162a91d783f64cbd6af0158c54a6946ff53cb7d1ade70d9b,ev_5df33526c85f66c10f9fa86cf465a76bf8f2eb5a1d0e4094759b3f2427bdebd9,ev_c280942900aa830d99772a6181ad1bed8a037e07b2893e692d5cd2bfe61671ce,ev_e3a57856c039c639813c82e91af88880f4195e0a0710e7b19c0e934fcf302d84,ev_e9da8cd44c36528c35117ec83f75eaa66238df43aa2d1b21e900e557d57af136,ev_e8ae04e754b3b67816d4bb9d26322209f316b4000740fe791570ba85c452244a,ev_9b99a8074198a627e36f8c36fd9d40992f610ed14edc13d899121055fc69e099,ev_347b2f7c561a36196ea78ba7c1193cb6522b9394150d6a1c161af85f1a492405,ev_755596ee15f6e342eff46ad4ac576cb590a20c5fdb960b09e11917e05fe9e891,ev_e10d819c10ffe3698dd64ffa4cc1ff0febfce427d8cb5bf3a57e48871ed3bc16,ev_7b96f4d1f899526b7021e732fff509ef0867523ab5392b2999d9f4407675e9da,ev_119bacc6f6f638a016ceebc6f02fa127a3e0ab89ffb2e872154d325518353981,ev_c90fa707f3f858301b327c58bf544634701b92efa06a624a34531adc5011536c,ev_eede0dcba7e51fa5e2d4230d988fe3f3dc197b1c9cc94efcdc43c5cc9d69dc68"
+      ]
+    },
+    {
+      "id": "F-bab02a0010",
+      "rule": "untested-module",
+      "area": "test-coverage",
+      "priority": 10,
+      "subject": "src/control_plane/auth.js",
+      "title": "No test module imports src/control_plane/auth.js",
+      "detail": "REA's import graph shows no edge from tests/ to src/control_plane/auth.js.",
+      "evidence_ids": [
+        "ev_fe949d3b39ceb1a4ddd99d34a1809c60707ba14fc9b64b2eec4a0c8542c4628d,ev_9092224aca109f0e262c3394ba82bf9461c430c0dffaa9bdb270650d6fa36737,ev_5224d203b3a0a78616f8b302d6ee59e769cfa61cd6a171296dd3f6a8a7e77d7b,ev_a11869e81bcb4b7cbb7f64fb66e8f5f08a53dcb884247cc47b331c7f2489249f,ev_b0b0184d6b9c0866b029956debd18ab9b4200beb303c97ded231516c49a0b8d0,ev_288b42478ea1172c9052c340a4ff8ee07142a747d7fba8511824d5906dddbddb,ev_96666adb32f08d06bf60dceb1b84a6c1ecbf23acc483e65e56912ab5eb0d8b8e,ev_a26db102f72708fd649cedaf882b44328f4fca7fd140bf5aa8a7e1f51f54967a,ev_fc07e371b70f81fc162a91d783f64cbd6af0158c54a6946ff53cb7d1ade70d9b,ev_5df33526c85f66c10f9fa86cf465a76bf8f2eb5a1d0e4094759b3f2427bdebd9,ev_c280942900aa830d99772a6181ad1bed8a037e07b2893e692d5cd2bfe61671ce,ev_e3a57856c039c639813c82e91af88880f4195e0a0710e7b19c0e934fcf302d84,ev_e9da8cd44c36528c35117ec83f75eaa66238df43aa2d1b21e900e557d57af136,ev_e8ae04e754b3b67816d4bb9d26322209f316b4000740fe791570ba85c452244a,ev_9b99a8074198a627e36f8c36fd9d40992f610ed14edc13d899121055fc69e099,ev_347b2f7c561a36196ea78ba7c1193cb6522b9394150d6a1c161af85f1a492405,ev_755596ee15f6e342eff46ad4ac576cb590a20c5fdb960b09e11917e05fe9e891,ev_e10d819c10ffe3698dd64ffa4cc1ff0febfce427d8cb5bf3a57e48871ed3bc16,ev_7b96f4d1f899526b7021e732fff509ef0867523ab5392b2999d9f4407675e9da,ev_119bacc6f6f638a016ceebc6f02fa127a3e0ab89ffb2e872154d325518353981,ev_c90fa707f3f858301b327c58bf544634701b92efa06a624a34531adc5011536c,ev_eede0dcba7e51fa5e2d4230d988fe3f3dc197b1c9cc94efcdc43c5cc9d69dc68"
+      ]
+    },
+    {
+      "id": "F-bad1f25c9e",
+      "rule": "untested-module",
+      "area": "test-coverage",
+      "priority": 10,
+      "subject": "src/project_lab/exposure.js",
+      "title": "No test module imports src/project_lab/exposure.js",
+      "detail": "REA's import graph shows no edge from tests/ to src/project_lab/exposure.js.",
+      "evidence_ids": [
+        "ev_fe949d3b39ceb1a4ddd99d34a1809c60707ba14fc9b64b2eec4a0c8542c4628d,ev_9092224aca109f0e262c3394ba82bf9461c430c0dffaa9bdb270650d6fa36737,ev_5224d203b3a0a78616f8b302d6ee59e769cfa61cd6a171296dd3f6a8a7e77d7b,ev_a11869e81bcb4b7cbb7f64fb66e8f5f08a53dcb884247cc47b331c7f2489249f,ev_b0b0184d6b9c0866b029956debd18ab9b4200beb303c97ded231516c49a0b8d0,ev_288b42478ea1172c9052c340a4ff8ee07142a747d7fba8511824d5906dddbddb,ev_96666adb32f08d06bf60dceb1b84a6c1ecbf23acc483e65e56912ab5eb0d8b8e,ev_a26db102f72708fd649cedaf882b44328f4fca7fd140bf5aa8a7e1f51f54967a,ev_fc07e371b70f81fc162a91d783f64cbd6af0158c54a6946ff53cb7d1ade70d9b,ev_5df33526c85f66c10f9fa86cf465a76bf8f2eb5a1d0e4094759b3f2427bdebd9,ev_c280942900aa830d99772a6181ad1bed8a037e07b2893e692d5cd2bfe61671ce,ev_e3a57856c039c639813c82e91af88880f4195e0a0710e7b19c0e934fcf302d84,ev_e9da8cd44c36528c35117ec83f75eaa66238df43aa2d1b21e900e557d57af136,ev_e8ae04e754b3b67816d4bb9d26322209f316b4000740fe791570ba85c452244a,ev_9b99a8074198a627e36f8c36fd9d40992f610ed14edc13d899121055fc69e099,ev_347b2f7c561a36196ea78ba7c1193cb6522b9394150d6a1c161af85f1a492405,ev_755596ee15f6e342eff46ad4ac576cb590a20c5fdb960b09e11917e05fe9e891,ev_e10d819c10ffe3698dd64ffa4cc1ff0febfce427d8cb5bf3a57e48871ed3bc16,ev_7b96f4d1f899526b7021e732fff509ef0867523ab5392b2999d9f4407675e9da,ev_119bacc6f6f638a016ceebc6f02fa127a3e0ab89ffb2e872154d325518353981,ev_c90fa707f3f858301b327c58bf544634701b92efa06a624a34531adc5011536c,ev_eede0dcba7e51fa5e2d4230d988fe3f3dc197b1c9cc94efcdc43c5cc9d69dc68"
+      ]
+    },
+    {
+      "id": "F-caf3d963cd",
+      "rule": "untested-module",
+      "area": "test-coverage",
+      "priority": 10,
+      "subject": "src/project_lab/preflight.js",
+      "title": "No test module imports src/project_lab/preflight.js",
+      "detail": "REA's import graph shows no edge from tests/ to src/project_lab/preflight.js.",
+      "evidence_ids": [
+        "ev_fe949d3b39ceb1a4ddd99d34a1809c60707ba14fc9b64b2eec4a0c8542c4628d,ev_9092224aca109f0e262c3394ba82bf9461c430c0dffaa9bdb270650d6fa36737,ev_5224d203b3a0a78616f8b302d6ee59e769cfa61cd6a171296dd3f6a8a7e77d7b,ev_a11869e81bcb4b7cbb7f64fb66e8f5f08a53dcb884247cc47b331c7f2489249f,ev_b0b0184d6b9c0866b029956debd18ab9b4200beb303c97ded231516c49a0b8d0,ev_288b42478ea1172c9052c340a4ff8ee07142a747d7fba8511824d5906dddbddb,ev_96666adb32f08d06bf60dceb1b84a6c1ecbf23acc483e65e56912ab5eb0d8b8e,ev_a26db102f72708fd649cedaf882b44328f4fca7fd140bf5aa8a7e1f51f54967a,ev_fc07e371b70f81fc162a91d783f64cbd6af0158c54a6946ff53cb7d1ade70d9b,ev_5df33526c85f66c10f9fa86cf465a76bf8f2eb5a1d0e4094759b3f2427bdebd9,ev_c280942900aa830d99772a6181ad1bed8a037e07b2893e692d5cd2bfe61671ce,ev_e3a57856c039c639813c82e91af88880f4195e0a0710e7b19c0e934fcf302d84,ev_e9da8cd44c36528c35117ec83f75eaa66238df43aa2d1b21e900e557d57af136,ev_e8ae04e754b3b67816d4bb9d26322209f316b4000740fe791570ba85c452244a,ev_9b99a8074198a627e36f8c36fd9d40992f610ed14edc13d899121055fc69e099,ev_347b2f7c561a36196ea78ba7c1193cb6522b9394150d6a1c161af85f1a492405,ev_755596ee15f6e342eff46ad4ac576cb590a20c5fdb960b09e11917e05fe9e891,ev_e10d819c10ffe3698dd64ffa4cc1ff0febfce427d8cb5bf3a57e48871ed3bc16,ev_7b96f4d1f899526b7021e732fff509ef0867523ab5392b2999d9f4407675e9da,ev_119bacc6f6f638a016ceebc6f02fa127a3e0ab89ffb2e872154d325518353981,ev_c90fa707f3f858301b327c58bf544634701b92efa06a624a34531adc5011536c,ev_eede0dcba7e51fa5e2d4230d988fe3f3dc197b1c9cc94efcdc43c5cc9d69dc68"
+      ]
+    },
+    {
+      "id": "F-d58db2ed7a",
+      "rule": "untested-module",
+      "area": "test-coverage",
+      "priority": 10,
+      "subject": "src/project_lab/steps.js",
+      "title": "No test module imports src/project_lab/steps.js",
+      "detail": "REA's import graph shows no edge from tests/ to src/project_lab/steps.js.",
+      "evidence_ids": [
+        "ev_fe949d3b39ceb1a4ddd99d34a1809c60707ba14fc9b64b2eec4a0c8542c4628d,ev_9092224aca109f0e262c3394ba82bf9461c430c0dffaa9bdb270650d6fa36737,ev_5224d203b3a0a78616f8b302d6ee59e769cfa61cd6a171296dd3f6a8a7e77d7b,ev_a11869e81bcb4b7cbb7f64fb66e8f5f08a53dcb884247cc47b331c7f2489249f,ev_b0b0184d6b9c0866b029956debd18ab9b4200beb303c97ded231516c49a0b8d0,ev_288b42478ea1172c9052c340a4ff8ee07142a747d7fba8511824d5906dddbddb,ev_96666adb32f08d06bf60dceb1b84a6c1ecbf23acc483e65e56912ab5eb0d8b8e,ev_a26db102f72708fd649cedaf882b44328f4fca7fd140bf5aa8a7e1f51f54967a,ev_fc07e371b70f81fc162a91d783f64cbd6af0158c54a6946ff53cb7d1ade70d9b,ev_5df33526c85f66c10f9fa86cf465a76bf8f2eb5a1d0e4094759b3f2427bdebd9,ev_c280942900aa830d99772a6181ad1bed8a037e07b2893e692d5cd2bfe61671ce,ev_e3a57856c039c639813c82e91af88880f4195e0a0710e7b19c0e934fcf302d84,ev_e9da8cd44c36528c35117ec83f75eaa66238df43aa2d1b21e900e557d57af136,ev_e8ae04e754b3b67816d4bb9d26322209f316b4000740fe791570ba85c452244a,ev_9b99a8074198a627e36f8c36fd9d40992f610ed14edc13d899121055fc69e099,ev_347b2f7c561a36196ea78ba7c1193cb6522b9394150d6a1c161af85f1a492405,ev_755596ee15f6e342eff46ad4ac576cb590a20c5fdb960b09e11917e05fe9e891,ev_e10d819c10ffe3698dd64ffa4cc1ff0febfce427d8cb5bf3a57e48871ed3bc16,ev_7b96f4d1f899526b7021e732fff509ef0867523ab5392b2999d9f4407675e9da,ev_119bacc6f6f638a016ceebc6f02fa127a3e0ab89ffb2e872154d325518353981,ev_c90fa707f3f858301b327c58bf544634701b92efa06a624a34531adc5011536c,ev_eede0dcba7e51fa5e2d4230d988fe3f3dc197b1c9cc94efcdc43c5cc9d69dc68"
+      ]
+    },
+    {
+      "id": "F-d6ec111fdd",
+      "rule": "untested-module",
+      "area": "test-coverage",
+      "priority": 10,
+      "subject": "src/control_plane/services/projects.js",
+      "title": "No test module imports src/control_plane/services/projects.js",
+      "detail": "REA's import graph shows no edge from tests/ to src/control_plane/services/projects.js.",
+      "evidence_ids": [
+        "ev_fe949d3b39ceb1a4ddd99d34a1809c60707ba14fc9b64b2eec4a0c8542c4628d,ev_9092224aca109f0e262c3394ba82bf9461c430c0dffaa9bdb270650d6fa36737,ev_5224d203b3a0a78616f8b302d6ee59e769cfa61cd6a171296dd3f6a8a7e77d7b,ev_a11869e81bcb4b7cbb7f64fb66e8f5f08a53dcb884247cc47b331c7f2489249f,ev_b0b0184d6b9c0866b029956debd18ab9b4200beb303c97ded231516c49a0b8d0,ev_288b42478ea1172c9052c340a4ff8ee07142a747d7fba8511824d5906dddbddb,ev_96666adb32f08d06bf60dceb1b84a6c1ecbf23acc483e65e56912ab5eb0d8b8e,ev_a26db102f72708fd649cedaf882b44328f4fca7fd140bf5aa8a7e1f51f54967a,ev_fc07e371b70f81fc162a91d783f64cbd6af0158c54a6946ff53cb7d1ade70d9b,ev_5df33526c85f66c10f9fa86cf465a76bf8f2eb5a1d0e4094759b3f2427bdebd9,ev_c280942900aa830d99772a6181ad1bed8a037e07b2893e692d5cd2bfe61671ce,ev_e3a57856c039c639813c82e91af88880f4195e0a0710e7b19c0e934fcf302d84,ev_e9da8cd44c36528c35117ec83f75eaa66238df43aa2d1b21e900e557d57af136,ev_e8ae04e754b3b67816d4bb9d26322209f316b4000740fe791570ba85c452244a,ev_9b99a8074198a627e36f8c36fd9d40992f610ed14edc13d899121055fc69e099,ev_347b2f7c561a36196ea78ba7c1193cb6522b9394150d6a1c161af85f1a492405,ev_755596ee15f6e342eff46ad4ac576cb590a20c5fdb960b09e11917e05fe9e891,ev_e10d819c10ffe3698dd64ffa4cc1ff0febfce427d8cb5bf3a57e48871ed3bc16,ev_7b96f4d1f899526b7021e732fff509ef0867523ab5392b2999d9f4407675e9da,ev_119bacc6f6f638a016ceebc6f02fa127a3e0ab89ffb2e872154d325518353981,ev_c90fa707f3f858301b327c58bf544634701b92efa06a624a34531adc5011536c,ev_eede0dcba7e51fa5e2d4230d988fe3f3dc197b1c9cc94efcdc43c5cc9d69dc68"
+      ]
+    },
+    {
+      "id": "F-e2748c026a",
+      "rule": "untested-module",
+      "area": "test-coverage",
+      "priority": 10,
+      "subject": "src/commands/analysis.js",
+      "title": "No test module imports src/commands/analysis.js",
+      "detail": "REA's import graph shows no edge from tests/ to src/commands/analysis.js.",
+      "evidence_ids": [
+        "ev_fe949d3b39ceb1a4ddd99d34a1809c60707ba14fc9b64b2eec4a0c8542c4628d,ev_9092224aca109f0e262c3394ba82bf9461c430c0dffaa9bdb270650d6fa36737,ev_5224d203b3a0a78616f8b302d6ee59e769cfa61cd6a171296dd3f6a8a7e77d7b,ev_a11869e81bcb4b7cbb7f64fb66e8f5f08a53dcb884247cc47b331c7f2489249f,ev_b0b0184d6b9c0866b029956debd18ab9b4200beb303c97ded231516c49a0b8d0,ev_288b42478ea1172c9052c340a4ff8ee07142a747d7fba8511824d5906dddbddb,ev_96666adb32f08d06bf60dceb1b84a6c1ecbf23acc483e65e56912ab5eb0d8b8e,ev_a26db102f72708fd649cedaf882b44328f4fca7fd140bf5aa8a7e1f51f54967a,ev_fc07e371b70f81fc162a91d783f64cbd6af0158c54a6946ff53cb7d1ade70d9b,ev_5df33526c85f66c10f9fa86cf465a76bf8f2eb5a1d0e4094759b3f2427bdebd9,ev_c280942900aa830d99772a6181ad1bed8a037e07b2893e692d5cd2bfe61671ce,ev_e3a57856c039c639813c82e91af88880f4195e0a0710e7b19c0e934fcf302d84,ev_e9da8cd44c36528c35117ec83f75eaa66238df43aa2d1b21e900e557d57af136,ev_e8ae04e754b3b67816d4bb9d26322209f316b4000740fe791570ba85c452244a,ev_9b99a8074198a627e36f8c36fd9d40992f610ed14edc13d899121055fc69e099,ev_347b2f7c561a36196ea78ba7c1193cb6522b9394150d6a1c161af85f1a492405,ev_755596ee15f6e342eff46ad4ac576cb590a20c5fdb960b09e11917e05fe9e891,ev_e10d819c10ffe3698dd64ffa4cc1ff0febfce427d8cb5bf3a57e48871ed3bc16,ev_7b96f4d1f899526b7021e732fff509ef0867523ab5392b2999d9f4407675e9da,ev_119bacc6f6f638a016ceebc6f02fa127a3e0ab89ffb2e872154d325518353981,ev_c90fa707f3f858301b327c58bf544634701b92efa06a624a34531adc5011536c,ev_eede0dcba7e51fa5e2d4230d988fe3f3dc197b1c9cc94efcdc43c5cc9d69dc68"
+      ]
+    },
+    {
+      "id": "F-fd90fa6819",
+      "rule": "untested-module",
+      "area": "test-coverage",
+      "priority": 10,
+      "subject": "src/project_lab/team.js",
+      "title": "No test module imports src/project_lab/team.js",
+      "detail": "REA's import graph shows no edge from tests/ to src/project_lab/team.js.",
+      "evidence_ids": [
+        "ev_fe949d3b39ceb1a4ddd99d34a1809c60707ba14fc9b64b2eec4a0c8542c4628d,ev_9092224aca109f0e262c3394ba82bf9461c430c0dffaa9bdb270650d6fa36737,ev_5224d203b3a0a78616f8b302d6ee59e769cfa61cd6a171296dd3f6a8a7e77d7b,ev_a11869e81bcb4b7cbb7f64fb66e8f5f08a53dcb884247cc47b331c7f2489249f,ev_b0b0184d6b9c0866b029956debd18ab9b4200beb303c97ded231516c49a0b8d0,ev_288b42478ea1172c9052c340a4ff8ee07142a747d7fba8511824d5906dddbddb,ev_96666adb32f08d06bf60dceb1b84a6c1ecbf23acc483e65e56912ab5eb0d8b8e,ev_a26db102f72708fd649cedaf882b44328f4fca7fd140bf5aa8a7e1f51f54967a,ev_fc07e371b70f81fc162a91d783f64cbd6af0158c54a6946ff53cb7d1ade70d9b,ev_5df33526c85f66c10f9fa86cf465a76bf8f2eb5a1d0e4094759b3f2427bdebd9,ev_c280942900aa830d99772a6181ad1bed8a037e07b2893e692d5cd2bfe61671ce,ev_e3a57856c039c639813c82e91af88880f4195e0a0710e7b19c0e934fcf302d84,ev_e9da8cd44c36528c35117ec83f75eaa66238df43aa2d1b21e900e557d57af136,ev_e8ae04e754b3b67816d4bb9d26322209f316b4000740fe791570ba85c452244a,ev_9b99a8074198a627e36f8c36fd9d40992f610ed14edc13d899121055fc69e099,ev_347b2f7c561a36196ea78ba7c1193cb6522b9394150d6a1c161af85f1a492405,ev_755596ee15f6e342eff46ad4ac576cb590a20c5fdb960b09e11917e05fe9e891,ev_e10d819c10ffe3698dd64ffa4cc1ff0febfce427d8cb5bf3a57e48871ed3bc16,ev_7b96f4d1f899526b7021e732fff509ef0867523ab5392b2999d9f4407675e9da,ev_119bacc6f6f638a016ceebc6f02fa127a3e0ab89ffb2e872154d325518353981,ev_c90fa707f3f858301b327c58bf544634701b92efa06a624a34531adc5011536c,ev_eede0dcba7e51fa5e2d4230d988fe3f3dc197b1c9cc94efcdc43c5cc9d69dc68"
+      ]
+    }
+  ],
+  "missing_modules": [],
+  "valid": true,
+  "invalid": null,
+  "plan_source": "evaluated-code",
+  "metrics": {
+    "modules": 131,
+    "expected_modules": 72,
+    "startup_ms": 258,
+    "findings": 37,
+    "rea_runs": 23,
+    "passes": 22,
+    "plan_source": "evaluated-code"
+  }
+}
