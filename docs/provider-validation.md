@@ -73,6 +73,32 @@ correction loop (the hybrid run shows the loop with a scripted implementer); any
 behavior; a multi-provider (`claude+codex`) run; behavior on large or unfamiliar codebases
 (the tasks were tiny); repeatability (one run each; models are non-deterministic).
 
+
+## Screenshot-to-website rebuild with real Codex (2026-10-14)
+
+Real: OpenAI Codex CLI 0.160.1 (ChatGPT login), the Electron renderer, Project Lab, ERA's macOS sandbox. The "screenshot" is a capture
+of a test page (`tests/fixtures/screenshot/page-a`) made by the real renderer. Reproduce with
+`node scripts/validate-screenshot-rebuild.mjs` (spends a little Codex quota); evidence in `experiments/screenshot-rebuild/`.
+
+| Run | Result |
+|---|---|
+| Codex **with** the screenshot (through the Project Lab flow, one attempt) | status `awaiting-approval`, **similarity 0.9271** (threshold 0.75; layout 0.9973, edges 0.9108, color 0.8915, brightness 0.9203), 119 s, 182019 input / 3835 output tokens, files `index.html`, `styles.css` |
+| Codex **blind control**: generic brief ("landing page for a small coffee roastery"), no image, no file names, empty directory, scored against the same screenshot | **similarity 0.1048**, none of the screenshot's text in its page |
+| Calibration | identical 1.00, independent re-implementation 0.91, different page 0.00, blank page 0.06 |
+
+What this shows: the image path works end to end for Codex (the agent reproduces layout, colors and text it can only have learned from the
+screenshot) and the verification separates a faithful rebuild from an unrelated page by a wide margin. What it does not show: robustness
+on real-world pages (one synthetic page, one run each), Claude Code's image path (not validated), or that the score tracks human judgement.
+
+### An invalid control, and what it revealed
+
+The first control ran the same rebuild flow with the image argument withheld. It scored **0.9614**, higher than the run
+with the image, and its page contained "Northwind Coffee" and "Single origin", text that exists only in the screenshot. The agent had
+**located the reference image on disk by the file name listed in the specification and viewed it**: Codex's sandbox permits reading
+anywhere, and Codex can look at local images. That control is therefore invalid and is kept in the evidence file only as a finding
+(`control_1_invalid`). It is also a real isolation fact: a provider agent can read files outside its working copy, including
+other files in ERA's state directory (see `ERA_STUDIO_SECURITY.md`). The corrected control above could not find an image to read.
+
 ## Authentication and credentials handling, as implemented
 
 * ERA never reads, copies or stores provider credentials. It asks the CLI (`claude auth status`,
