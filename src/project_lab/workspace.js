@@ -7,9 +7,10 @@
 // original only as a patch, applied after verifying that the original has not
 // changed since the run began, and can be reversed with the same patch.
 import { createHash } from 'node:crypto';
-import { copyFileSync, lstatSync, mkdirSync, readFileSync, readdirSync, readlinkSync, realpathSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
+import { copyFileSync, lstatSync, mkdirSync, readFileSync, readdirSync, readlinkSync, realpathSync, symlinkSync, writeFileSync } from 'node:fs';
 import { basename, dirname, join, relative, resolve, sep } from 'node:path';
 import { runProcess } from '../core/process.js';
+import { removeTree } from '../core/util.js';
 import { SafetyError } from '../safety/policy.js';
 
 // Never copied into a working copy, never part of a digest.
@@ -132,7 +133,7 @@ export async function applyPatch(target, patchFile, { reverse = false, check = f
 }
 
 export function removeWorkspace(dir) {
-  rmSync(dir, { recursive: true, force: true });
+  return removeTree(dir);
 }
 
 export function writePatch(file, patch) {

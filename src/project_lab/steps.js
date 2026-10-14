@@ -1,4 +1,5 @@
 // Steps shared by the Review, Modify and Rebuild workflows.
+import { existsSync } from 'node:fs';
 import { detectProject } from './detect.js';
 import { exposureFilter } from './exposure.js';
 import { copyProject, initBaseline, removeWorkspace, treeDigest } from './workspace.js';
@@ -10,7 +11,9 @@ export async function stepDetect(c) {
 // Isolated working copy of the ORIGINAL project, with a baseline commit to diff against.
 export async function stepWorkspace(c) {
   return c.step('workspace', async () => {
-    removeWorkspace(c.workspace); // a previous attempt may have been interrupted mid-copy
+    // a previous attempt may have been interrupted mid-copy; starting on top of leftovers would mix two states
+    const cleared = removeWorkspace(c.workspace);
+    if (!cleared.ok && existsSync(c.workspace)) throw new Error(`The previous working copy could not be removed (${cleared.error}). Close anything using ${c.workspace} and resume.`);
     const before = treeDigest(c.project.source);
     const copied = copyProject(c.project.source, c.workspace, { maxBytes: c.project.limits.maxCopyBytes, maxFiles: c.project.limits.maxCopyFiles, exclude: exposureFilter(c.project, c.config) });
     const exposure = c.exposureCheck(copied);

@@ -3,7 +3,8 @@
 // writes only to the working copy and a private temp directory, no reads of ERA
 // state or other projects) with a scrubbed environment. Without a sandbox they
 // run only if the maintainer declared the project trusted.
-import { mkdtempSync, rmSync } from 'node:fs';
+import { mkdtempSync } from 'node:fs';
+import { removeTree } from '../core/util.js';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { runProcess } from '../core/process.js';
@@ -43,7 +44,7 @@ export async function runProjectCommand({ command, cwd, timeoutMs, isolation, de
       tests,
     };
   } finally {
-    rmSync(tmp, { recursive: true, force: true });
+    removeTree(tmp);
   }
 }
 

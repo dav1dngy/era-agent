@@ -12,7 +12,8 @@
 //   5. captures the code's `era --help` under the candidate sandbox,
 //   6. applies the stable rules. Missing or failed evidence is never "absence":
 //      the result is marked invalid instead.
-import { existsSync, mkdirSync, mkdtempSync, realpathSync, writeFileSync, readFileSync, rmSync } from 'node:fs';
+import { removeTree } from '../core/util.js';
+import { existsSync, mkdirSync, mkdtempSync, realpathSync, writeFileSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { runProcess } from '../core/process.js';
@@ -146,7 +147,7 @@ export async function evaluateSelf({ codeRoot, commit = 'HEAD', stateDir, rea, i
   result.missing_modules = expected.filter((m) => !focusCovered.has(m));
   result.metrics = { modules: focusCovered.size, expected_modules: expected.length, startup_ms: startupMs(cap.result), findings: result.findings.length, rea_runs: result.runs.length, passes: plan.passes.length, plan_source: result.plan_source };
   writeJson(join(stateDir, 'self-analyses', id, 'self-analysis.json'), { ...result, runs: result.runs.map((r) => ({ run_id: r.run_id, label: r.label, status: r.status, evidence_id: r.evidence_id })) });
-  rmSync(work, { recursive: true, force: true });
+  removeTree(work);
   if (!existsSync(join(stateDir, 'self-analyses', id, 'report.md'))) writeFileSync(join(stateDir, 'self-analyses', id, 'report.md'), `# Supervised self-analysis ${id}\n\nCommit ${commit}; ${result.findings.length} findings; plan from ${result.plan_source}.\n`);
   result.report = join(stateDir, 'self-analyses', id, 'report.md');
   return result;

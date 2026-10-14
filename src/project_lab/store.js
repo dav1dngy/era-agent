@@ -68,7 +68,7 @@ export class ProjectStore {
     const dir = join(this.dir(project.id), 'runs');
     const run = {
       run_id: newId('run'),
-      seq: (existsSync(dir) ? readdirSync(dir).length : 0) + 1,
+      seq: (existsSync(dir) ? readdirSync(dir).length : 0) + 1, // counts directories, including a run that is still being created
       project_id: project.id,
       op,
       status: 'running',
@@ -98,7 +98,10 @@ export class ProjectStore {
     const dir = join(this.dir(id), 'runs');
     if (!existsSync(dir)) return [];
     // Run IDs have one-second resolution: order by the run's sequence number, then creation time, then ID.
+    // A run directory is created before its run.json is published (the write is atomic: temp file, then rename).
+    // A directory without run.json is a run that is still being created, not a missing run: skip it.
     return readdirSync(dir)
+      .filter((r) => existsSync(join(dir, r, 'run.json')))
       .map((r) => this.loadRun(id, r))
       .sort((a, b) => (a.seq ?? 0) - (b.seq ?? 0) || a.created_at.localeCompare(b.created_at) || a.run_id.localeCompare(b.run_id));
   }
