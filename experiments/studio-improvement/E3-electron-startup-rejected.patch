@@ -1,0 +1,55 @@
+diff --git a/apps/studio/electron/main.cjs b/apps/studio/electron/main.cjs
+index 068f03e..840c14a 100644
+--- a/apps/studio/electron/main.cjs
++++ b/apps/studio/electron/main.cjs
+@@ -50,17 +50,23 @@ async function fixPath() {
+   process.env.PATH = [...new Set([...(nodeDir ? [nodeDir] : []), ...dirs])].join(':');
+ }
+ 
+-async function startControlPlane() {
++// Loading ERA's modules does not need the user's PATH, so it overlaps with fixPath (which waits on a login shell).
++function loadEraModules() {
++  return Promise.all([
++    import(pathToFileURL(path.join(ERA_ROOT, 'src', 'core', 'config.js')).href),
++    import(pathToFileURL(path.join(ERA_ROOT, 'src', 'rea_integration', 'rea-client.js')).href),
++    import(pathToFileURL(path.join(ERA_ROOT, 'src', 'core', 'log.js')).href),
++    import(pathToFileURL(path.join(ERA_ROOT, 'src', 'control_plane', 'server.js')).href),
++  ]).then(([config, reaClient, log, server]) => ({ loadConfig: config.loadConfig, ReaClient: reaClient.ReaClient, createLogger: log.createLogger, createControlPlane: server.createControlPlane }));
++}
++
++async function startControlPlane({ loadConfig, ReaClient, createLogger, createControlPlane }) {
+   const userData = app.getPath('userData');
+   // Dev (`era studio app`) shares the CLI's directory and state; a packaged app keeps its own under Application Support.
+   const cwd = process.env.ERA_STUDIO_CWD || (packaged ? userData : ERA_ROOT);
+   const stateDir = process.env.ERA_STATE_DIR || path.join(cwd, packaged ? 'state' : '.era');
+   mkdirSync(cwd, { recursive: true });
+   process.env.ERA_STATE_DIR = stateDir;
+-  const { loadConfig } = await import(pathToFileURL(path.join(ERA_ROOT, 'src', 'core', 'config.js')).href);
+-  const { ReaClient } = await import(pathToFileURL(path.join(ERA_ROOT, 'src', 'rea_integration', 'rea-client.js')).href);
+-  const { createLogger } = await import(pathToFileURL(path.join(ERA_ROOT, 'src', 'core', 'log.js')).href);
+-  const { createControlPlane } = await import(pathToFileURL(path.join(ERA_ROOT, 'src', 'control_plane', 'server.js')).href);
+   const config = loadConfig(cwd);
+   mkdirSync(config.stateDirAbs, { recursive: true, mode: 0o700 });
+   const log = createLogger({ stateDir: config.stateDirAbs, base: { era_version: app.getVersion(), surface: 'studio' } });
+@@ -68,6 +74,9 @@ async function startControlPlane() {
+   controlPlane = await createControlPlane({ config, rea, log, version: app.getVersion(), webRoot: WEB_ROOT, vendorRoots: VENDOR_ROOTS, eraBin: path.join(ERA_ROOT, 'bin', 'era.mjs') });
+   await controlPlane.start();
+   origin = controlPlane.url;
++  // The first /api/overview needs `rea providers` (about a second). Start it now, with the fixed PATH, so it runs while the
++  // window loads; the UI's request joins this probe instead of starting its own.
++  rea.status().catch(() => {});
+ }
+ 
+ function lockDownSession() {
+@@ -170,8 +179,9 @@ app.on('web-contents-created', (_e, contents) => {
+ app.whenReady().then(async () => {
+   try {
+     if (process.env.ERA_STUDIO_DEBUG_PORT) app.commandLine.appendSwitch('remote-debugging-port', process.env.ERA_STUDIO_DEBUG_PORT);
+-    await fixPath();
+-    await startControlPlane();
++    const modules = loadEraModules();
++    await Promise.all([fixPath(), modules]);
++    await startControlPlane(await modules);
+     lockDownSession();
+     registerIpc();
+     const devTools = args.has('--dev') || process.env.ERA_STUDIO_DEVTOOLS === '1' || controlPlane.ctx.settings().advanced.devTools;

@@ -44,7 +44,7 @@ logic), `docs/ERA_STUDIO_ARCHITECTURE.md`, and `docs/architecture.md`. In short:
 ## Install and start
 
 ```bash
-cd /Users/david/dev/era-agent
+cd era-agent
 npm install                       # root (REA dependency)
 npm install --prefix apps/studio  # Studio deps incl. Electron (downloads Electron)
 node bin/era.mjs status           # branch, REA resolution, providers
@@ -147,6 +147,13 @@ session's commits and the full suite then passed; the e2e-lab failure did not re
 - `tests/e2e-lab.test.js` run as 6 concurrent processes (heavy load): 6/6 passed (3 tests each). The intermittent rejection
   did **not** reproduce, so it remains undiagnosed; the test already prints the failed guards and candidate failures if it recurs.
 - Ghidra 12.1.4 verified healthy in `rea doctor` once a JDK 21 is on PATH and `GHIDRA_INSTALL_DIR` is set.
+
+## Phase 3B result (2026-10-14)
+
+Done and documented in `docs/ERA_STUDIO_SELF_IMPROVEMENT.md`: Studio baseline, real REA analysis of the Studio bundle, two Lab-accepted
+improvements (E1 REA status cache, E2 job shutdown) applied as checkpoints, one rejected (E3). The Lab ran in a throwaway clone
+(it requires a branch named `main`); no cycle was approved, merged, pushed or tagged. Final suite: 307 tests, 306 pass, 1 skipped; desktop 14/14.
+Next: Phase 4 (enterprise engineering and security). Known gap: the Lab cannot evaluate `apps/studio/` code.
 
 ## Starting a new session
 

@@ -1,6 +1,6 @@
 {
   "analysis_id": "analysis-20261014T122321-7ce052",
-  "rea_command": "/Users/david/dev/era-agent/node_modules/.bin/rea analyze-javascript-application /Users/david/dev/era-agent/apps/studio/electron --format json",
+  "rea_command": "<era-repo>/node_modules/.bin/rea analyze-javascript-application <era-repo>/apps/studio/electron --format json",
   "rea_version": "6.4.0",
   "coverage": "partial",
   "statistics": {

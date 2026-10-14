@@ -5,6 +5,13 @@ checkpoints (annotated git tags); `vX.Y.Z` are releases.
 
 ## Unreleased (branch `feature/era-v0.2.0`, after v0.2.0-dev.1)
 
+### Phase 3B: Studio self-improvement (see `docs/ERA_STUDIO_SELF_IMPROVEMENT.md`)
+- `ReaClient.status()` caches a successful probe for 30 s and shares concurrent probes: Studio's `/api/overview` and
+  `/api/tools` warm latency 891/905 ms -> 2.2/1.7 ms; Electron smoke start median 4,336 -> 3,103 ms (same machine state).
+- `JobManager.shutdown()` waits for jobs to exit instead of a fixed 1.5 s (1,503 -> 29 ms for a cooperative job).
+- New tests for the control-plane system service and job manager; `limits.maxReaRunsPerCycle` 40 -> 48.
+- Reproducible Studio baseline harness and REA analysis of the Studio bundle under `experiments/`.
+
 ### Fixed
 - **"Unknown run" race:** a status read while a run directory existed but its `run.json` was not yet published
   failed; such directories are now treated as runs still being created. Reproduced deterministically (half-created

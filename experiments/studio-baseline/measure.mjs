@@ -46,7 +46,7 @@ const fresh = () => {
 const result = {
   harness: 'experiments/studio-baseline/measure.mjs',
   measuredAt: new Date().toISOString(),
-  root: ROOT,
+  root: '<repo>', // the checkout measured (absolute path omitted)
   environment: {
     hardware: cpus()[0]?.model, cpuCount: cpus().length, memGb: +(totalmem() / 2 ** 30).toFixed(1),
     os: `${platform()} ${release()} ${arch()}`, node: process.version,
@@ -66,7 +66,7 @@ async function http(url, token, init = {}) {
 }
 
 async function controlPlane() {
-  const startup = [], toFirstOk = [], idle = [];
+  const startup = [], toFirstOk = [];
   let last;
   for (let i = 0; i < N; i++) {
     const { env } = fresh();

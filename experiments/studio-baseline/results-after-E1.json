@@ -1,7 +1,7 @@
 {
   "harness": "experiments/studio-baseline/measure.mjs",
   "measuredAt": "2026-10-14T12:50:50.361Z",
-  "root": "/Users/david/dev/era-agent",
+  "root": "<era-repo>",
   "environment": {
     "hardware": "Apple M1",
     "cpuCount": 8,

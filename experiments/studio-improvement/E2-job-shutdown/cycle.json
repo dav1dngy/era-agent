@@ -5,7 +5,7 @@
   "base_commit": "0c98e0bb735e8be18d946fe72fef469b322f39f8",
   "base_version": "era-v4",
   "branch": "experiment/cycle-20261014T125204-f7ba8a",
-  "worktree": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/worktrees/cycle-20261014T125204-f7ba8a",
+  "worktree": "<tmp>",
   "proposal": {
     "finding": {
       "id": "F-84ffe6219c",
@@ -523,9 +523,9 @@
         "started_at": "2026-10-14T12:52:06.361Z",
         "duration_ms": 3591,
         "command": [
-          "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+          "<tmp>",
           "analyze-javascript-application",
-          "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-05bNer/pass-1",
+          "<tmp>/era-supervised-05bNer/pass-1",
           "--format",
           "json"
         ],
@@ -535,7 +535,7 @@
           "version": "6.4.0"
         },
         "input": {
-          "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-05bNer/pass-1",
+          "path": "<tmp>/era-supervised-05bNer/pass-1",
           "kind": "directory",
           "bytes": null,
           "sha256": "b318a9f8baa0ecae59d54afd90ed5a2ff7ae0599466556d6ac7f746771a92ce8"
@@ -550,7 +550,7 @@
           "name": "REA JavaScript application analyzer",
           "version": "1"
         },
-        "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T125206-4e3f46/output.json",
+        "output_file": "<tmp>",
         "output_bytes": 7863502,
         "progress_events": 28,
         "warnings": [],
@@ -568,9 +568,9 @@
         "started_at": "2026-10-14T12:52:10.901Z",
         "duration_ms": 3454,
         "command": [
-          "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+          "<tmp>",
           "analyze-javascript-application",
-          "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-05bNer/pass-2",
+          "<tmp>/era-supervised-05bNer/pass-2",
           "--format",
           "json"
         ],
@@ -580,7 +580,7 @@
           "version": "6.4.0"
         },
         "input": {
-          "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-05bNer/pass-2",
+          "path": "<tmp>/era-supervised-05bNer/pass-2",
           "kind": "directory",
           "bytes": null,
           "sha256": "3257825f6f007475860643df8be8f3c529bb90ca59d5eee3de85285d199b0e8f"
@@ -595,7 +595,7 @@
           "name": "REA JavaScript application analyzer",
           "version": "1"
         },
-        "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T125210-982697/output.json",
+        "output_file": "<tmp>",
         "output_bytes": 7693219,
         "progress_events": 42,
         "warnings": [],
@@ -613,9 +613,9 @@
         "started_at": "2026-10-14T12:52:14.385Z",
         "duration_ms": 3092,
         "command": [
-          "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+          "<tmp>",
           "analyze-javascript-application",
-          "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-05bNer/pass-3",
+          "<tmp>/era-supervised-05bNer/pass-3",
           "--format",
           "json"
         ],
@@ -625,7 +625,7 @@
           "version": "6.4.0"
         },
         "input": {
-          "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-05bNer/pass-3",
+          "path": "<tmp>/era-supervised-05bNer/pass-3",
           "kind": "directory",
           "bytes": null,
           "sha256": "627ac379977bf810874cc22314716240dc962cb66ba5f4b62b0045b1f7fdfb98"
@@ -640,7 +640,7 @@
           "name": "REA JavaScript application analyzer",
           "version": "1"
         },
-        "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T125214-e0d553/output.json",
+        "output_file": "<tmp>",
         "output_bytes": 7541087,
         "progress_events": 29,
         "warnings": [],
@@ -658,9 +658,9 @@
         "started_at": "2026-10-14T12:52:17.511Z",
         "duration_ms": 3705,
         "command": [
-          "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+          "<tmp>",
           "analyze-javascript-application",
-          "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-05bNer/pass-4",
+          "<tmp>/era-supervised-05bNer/pass-4",
           "--format",
           "json"
         ],
@@ -670,7 +670,7 @@
           "version": "6.4.0"
         },
         "input": {
-          "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-05bNer/pass-4",
+          "path": "<tmp>/era-supervised-05bNer/pass-4",
           "kind": "directory",
           "bytes": null,
           "sha256": "18d48ccd0de58184a2735c04a78539c469100a3bb37e23343d50cef5e89ba077"
@@ -685,7 +685,7 @@
           "name": "REA JavaScript application analyzer",
           "version": "1"
         },
-        "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T125217-5b55de/output.json",
+        "output_file": "<tmp>",
         "output_bytes": 10126096,
         "progress_events": 41,
         "warnings": [],
@@ -703,9 +703,9 @@
         "started_at": "2026-10-14T12:52:21.255Z",
         "duration_ms": 3144,
         "command": [
-          "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+          "<tmp>",
           "analyze-javascript-application",
-          "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-05bNer/pass-5",
+          "<tmp>/era-supervised-05bNer/pass-5",
           "--format",
           "json"
         ],
@@ -715,7 +715,7 @@
           "version": "6.4.0"
         },
         "input": {
-          "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-05bNer/pass-5",
+          "path": "<tmp>/era-supervised-05bNer/pass-5",
           "kind": "directory",
           "bytes": null,
           "sha256": "a2d5042babe41396d8fbed919b221d8beecdccf055a70a29279e7da83f41217a"
@@ -730,7 +730,7 @@
           "name": "REA JavaScript application analyzer",
           "version": "1"
         },
-        "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T125221-5660ec/output.json",
+        "output_file": "<tmp>",
         "output_bytes": 8396271,
         "progress_events": 28,
         "warnings": [],
@@ -748,9 +748,9 @@
         "started_at": "2026-10-14T12:52:24.427Z",
         "duration_ms": 3333,
         "command": [
-          "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+          "<tmp>",
           "analyze-javascript-application",
-          "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-05bNer/pass-6",
+          "<tmp>/era-supervised-05bNer/pass-6",
           "--format",
           "json"
         ],
@@ -760,7 +760,7 @@
           "version": "6.4.0"
         },
         "input": {
-          "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-05bNer/pass-6",
+          "path": "<tmp>/era-supervised-05bNer/pass-6",
           "kind": "directory",
           "bytes": null,
           "sha256": "4a0363462b0e26ce089899b5b1b4e5ce256f73f9636c8a5cdc29e4d750460d45"
@@ -775,7 +775,7 @@
           "name": "REA JavaScript application analyzer",
           "version": "1"
         },
-        "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T125224-220334/output.json",
+        "output_file": "<tmp>",
         "output_bytes": 8509087,
         "progress_events": 34,
         "warnings": [],
@@ -793,9 +793,9 @@
         "started_at": "2026-10-14T12:52:27.788Z",
         "duration_ms": 3106,
         "command": [
-          "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+          "<tmp>",
           "analyze-javascript-application",
-          "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-05bNer/pass-7",
+          "<tmp>/era-supervised-05bNer/pass-7",
           "--format",
           "json"
         ],
@@ -805,7 +805,7 @@
           "version": "6.4.0"
         },
         "input": {
-          "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-05bNer/pass-7",
+          "path": "<tmp>/era-supervised-05bNer/pass-7",
           "kind": "directory",
           "bytes": null,
           "sha256": "f8a5406559e507e7d69a242ccf2c3d3a15cae9de070bd523cd24d536e4dcdca8"
@@ -820,7 +820,7 @@
           "name": "REA JavaScript application analyzer",
           "version": "1"
         },
-        "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T125227-cb39ac/output.json",
+        "output_file": "<tmp>",
         "output_bytes": 7891717,
         "progress_events": 30,
         "warnings": [],
@@ -838,9 +838,9 @@
         "started_at": "2026-10-14T12:52:30.929Z",
         "duration_ms": 3157,
         "command": [
-          "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+          "<tmp>",
           "analyze-javascript-application",
-          "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-05bNer/pass-8",
+          "<tmp>/era-supervised-05bNer/pass-8",
           "--format",
           "json"
         ],
@@ -850,7 +850,7 @@
           "version": "6.4.0"
         },
         "input": {
-          "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-05bNer/pass-8",
+          "path": "<tmp>/era-supervised-05bNer/pass-8",
           "kind": "directory",
           "bytes": null,
           "sha256": "79137f9d4abaa604ab330a58caae840a7846f3fedfe5eb13ff965ac53cb8731b"
@@ -865,7 +865,7 @@
           "name": "REA JavaScript application analyzer",
           "version": "1"
         },
-        "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T125230-096167/output.json",
+        "output_file": "<tmp>",
         "output_bytes": 7212203,
         "progress_events": 31,
         "warnings": [],
@@ -883,9 +883,9 @@
         "started_at": "2026-10-14T12:52:34.112Z",
         "duration_ms": 3278,
         "command": [
-          "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+          "<tmp>",
           "analyze-javascript-application",
-          "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-05bNer/pass-9",
+          "<tmp>/era-supervised-05bNer/pass-9",
           "--format",
           "json"
         ],
@@ -895,7 +895,7 @@
           "version": "6.4.0"
         },
         "input": {
-          "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-05bNer/pass-9",
+          "path": "<tmp>/era-supervised-05bNer/pass-9",
           "kind": "directory",
           "bytes": null,
           "sha256": "3bbe37cc29d7862413d225d36d41b8fde049334e42e5d3fefdc8f5bdc81e7d59"
@@ -910,7 +910,7 @@
           "name": "REA JavaScript application analyzer",
           "version": "1"
         },
-        "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T125234-83abfb/output.json",
+        "output_file": "<tmp>",
         "output_bytes": 8607030,
         "progress_events": 32,
         "warnings": [],
@@ -928,9 +928,9 @@
         "started_at": "2026-10-14T12:52:37.418Z",
         "duration_ms": 3197,
         "command": [
-          "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+          "<tmp>",
           "analyze-javascript-application",
-          "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-05bNer/pass-10",
+          "<tmp>/era-supervised-05bNer/pass-10",
           "--format",
           "json"
         ],
@@ -940,7 +940,7 @@
           "version": "6.4.0"
         },
         "input": {
-          "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-05bNer/pass-10",
+          "path": "<tmp>/era-supervised-05bNer/pass-10",
           "kind": "directory",
           "bytes": null,
           "sha256": "808c67c6fb35d2ff19265a31f6da7842ddb2028f907cf451fe6020c93354b57c"
@@ -955,7 +955,7 @@
           "name": "REA JavaScript application analyzer",
           "version": "1"
         },
-        "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T125237-609b02/output.json",
+        "output_file": "<tmp>",
         "output_bytes": 6747572,
         "progress_events": 34,
         "warnings": [],
@@ -973,9 +973,9 @@
         "started_at": "2026-10-14T12:52:40.638Z",
         "duration_ms": 2922,
         "command": [
-          "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+          "<tmp>",
           "analyze-javascript-application",
-          "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-05bNer/pass-11",
+          "<tmp>/era-supervised-05bNer/pass-11",
           "--format",
           "json"
         ],
@@ -985,7 +985,7 @@
           "version": "6.4.0"
         },
         "input": {
-          "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-05bNer/pass-11",
+          "path": "<tmp>/era-supervised-05bNer/pass-11",
           "kind": "directory",
           "bytes": null,
           "sha256": "0dbce5e50d81aad701b13fe82a69864dc54cf02ea2e518922adc0d3270f3f0eb"
@@ -1000,7 +1000,7 @@
           "name": "REA JavaScript application analyzer",
           "version": "1"
         },
-        "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T125240-9d4348/output.json",
+        "output_file": "<tmp>",
         "output_bytes": 6286375,
         "progress_events": 29,
         "warnings": [],
@@ -1018,9 +1018,9 @@
         "started_at": "2026-10-14T12:52:43.587Z",
         "duration_ms": 3215,
         "command": [
-          "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+          "<tmp>",
           "analyze-javascript-application",
-          "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-05bNer/pass-12",
+          "<tmp>/era-supervised-05bNer/pass-12",
           "--format",
           "json"
         ],
@@ -1030,7 +1030,7 @@
           "version": "6.4.0"
         },
         "input": {
-          "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-05bNer/pass-12",
+          "path": "<tmp>/era-supervised-05bNer/pass-12",
           "kind": "directory",
           "bytes": null,
           "sha256": "e2b84b28460537d2f29b78fb4485c5ca919cae46091bde3473b032f2490e9b54"
@@ -1045,7 +1045,7 @@
           "name": "REA JavaScript application analyzer",
           "version": "1"
         },
-        "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T125243-075129/output.json",
+        "output_file": "<tmp>",
         "output_bytes": 8458929,
         "progress_events": 31,
         "warnings": [],
@@ -1063,9 +1063,9 @@
         "started_at": "2026-10-14T12:52:46.831Z",
         "duration_ms": 3209,
         "command": [
-          "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+          "<tmp>",
           "analyze-javascript-application",
-          "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-05bNer/pass-13",
+          "<tmp>/era-supervised-05bNer/pass-13",
           "--format",
           "json"
         ],
@@ -1075,7 +1075,7 @@
           "version": "6.4.0"
         },
         "input": {
-          "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-05bNer/pass-13",
+          "path": "<tmp>/era-supervised-05bNer/pass-13",
           "kind": "directory",
           "bytes": null,
           "sha256": "ccc2b120a56e3b2366308c7ee337a886c2f735a3174c8817394ae367b2b2cbbb"
@@ -1090,7 +1090,7 @@
           "name": "REA JavaScript application analyzer",
           "version": "1"
         },
-        "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T125246-5fd951/output.json",
+        "output_file": "<tmp>",
         "output_bytes": 8225285,
         "progress_events": 32,
         "warnings": [],
@@ -1108,9 +1108,9 @@
         "started_at": "2026-10-14T12:52:50.067Z",
         "duration_ms": 3278,
         "command": [
-          "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+          "<tmp>",
           "analyze-javascript-application",
-          "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-05bNer/pass-14",
+          "<tmp>/era-supervised-05bNer/pass-14",
           "--format",
           "json"
         ],
@@ -1120,7 +1120,7 @@
           "version": "6.4.0"
         },
         "input": {
-          "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-05bNer/pass-14",
+          "path": "<tmp>/era-supervised-05bNer/pass-14",
           "kind": "directory",
           "bytes": null,
           "sha256": "57e837c95a6b44cb9ad2ae72b425a6f76d08a2f72320c40c13106583e9944c0e"
@@ -1135,7 +1135,7 @@
           "name": "REA JavaScript application analyzer",
           "version": "1"
         },
-        "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T125250-6415fc/output.json",
+        "output_file": "<tmp>",
         "output_bytes": 8753145,
         "progress_events": 32,
         "warnings": [],
@@ -1153,9 +1153,9 @@
         "started_at": "2026-10-14T12:52:53.371Z",
         "duration_ms": 2324,
         "command": [
-          "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+          "<tmp>",
           "analyze-javascript-application",
-          "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-05bNer/pass-15",
+          "<tmp>/era-supervised-05bNer/pass-15",
           "--format",
           "json"
         ],
@@ -1165,7 +1165,7 @@
           "version": "6.4.0"
         },
         "input": {
-          "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-05bNer/pass-15",
+          "path": "<tmp>/era-supervised-05bNer/pass-15",
           "kind": "directory",
           "bytes": null,
           "sha256": "8f48db357ae53fa263972a19721aa83bc9117d4bdfe26611a8e7159a4d06eee0"
@@ -1180,7 +1180,7 @@
           "name": "REA JavaScript application analyzer",
           "version": "1"
         },
-        "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T125253-727cf0/output.json",
+        "output_file": "<tmp>",
         "output_bytes": 2380148,
         "progress_events": 24,
         "warnings": [],
@@ -1198,9 +1198,9 @@
         "started_at": "2026-10-14T12:52:55.706Z",
         "duration_ms": 3250,
         "command": [
-          "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+          "<tmp>",
           "analyze-javascript-application",
-          "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-05bNer/pass-16",
+          "<tmp>/era-supervised-05bNer/pass-16",
           "--format",
           "json"
         ],
@@ -1210,7 +1210,7 @@
           "version": "6.4.0"
         },
         "input": {
-          "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-05bNer/pass-16",
+          "path": "<tmp>/era-supervised-05bNer/pass-16",
           "kind": "directory",
           "bytes": null,
           "sha256": "5ca1c9e49b17a52709052c82c624b4aa5d380c3ce5646dd405db49c2b17f2a8d"
@@ -1225,7 +1225,7 @@
           "name": "REA JavaScript application analyzer",
           "version": "1"
         },
-        "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T125255-b2fc1f/output.json",
+        "output_file": "<tmp>",
         "output_bytes": 9252999,
         "progress_events": 27,
         "warnings": [],
@@ -1243,9 +1243,9 @@
         "started_at": "2026-10-14T12:52:58.991Z",
         "duration_ms": 3557,
         "command": [
-          "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+          "<tmp>",
           "analyze-javascript-application",
-          "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-05bNer/pass-17",
+          "<tmp>/era-supervised-05bNer/pass-17",
           "--format",
           "json"
         ],
@@ -1255,7 +1255,7 @@
           "version": "6.4.0"
         },
         "input": {
-          "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-05bNer/pass-17",
+          "path": "<tmp>/era-supervised-05bNer/pass-17",
           "kind": "directory",
           "bytes": null,
           "sha256": "c6fce0303f657b72d2f06cad990267a929fbb2d0d8a324688845d98f20900ed6"
@@ -1270,7 +1270,7 @@
           "name": "REA JavaScript application analyzer",
           "version": "1"
         },
-        "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T125258-9a060c/output.json",
+        "output_file": "<tmp>",
         "output_bytes": 8022567,
         "progress_events": 47,
         "warnings": [],
@@ -1288,9 +1288,9 @@
         "started_at": "2026-10-14T12:53:02.580Z",
         "duration_ms": 3680,
         "command": [
-          "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+          "<tmp>",
           "analyze-javascript-application",
-          "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-05bNer/pass-18",
+          "<tmp>/era-supervised-05bNer/pass-18",
           "--format",
           "json"
         ],
@@ -1300,7 +1300,7 @@
           "version": "6.4.0"
         },
         "input": {
-          "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-05bNer/pass-18",
+          "path": "<tmp>/era-supervised-05bNer/pass-18",
           "kind": "directory",
           "bytes": null,
           "sha256": "5461df46ba625b2563099c682296b0e6e1238dedc58d6663a039cd4a75370003"
@@ -1315,7 +1315,7 @@
           "name": "REA JavaScript application analyzer",
           "version": "1"
         },
-        "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T125302-01fa90/output.json",
+        "output_file": "<tmp>",
         "output_bytes": 10766838,
         "progress_events": 40,
         "warnings": [],
@@ -1333,9 +1333,9 @@
         "started_at": "2026-10-14T12:53:06.295Z",
         "duration_ms": 3411,
         "command": [
-          "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+          "<tmp>",
           "analyze-javascript-application",
-          "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-05bNer/pass-19",
+          "<tmp>/era-supervised-05bNer/pass-19",
           "--format",
           "json"
         ],
@@ -1345,7 +1345,7 @@
           "version": "6.4.0"
         },
         "input": {
-          "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-05bNer/pass-19",
+          "path": "<tmp>/era-supervised-05bNer/pass-19",
           "kind": "directory",
           "bytes": null,
           "sha256": "4a190b3cb3dc4ffcb186d9df4fc56a7ee9b5bdc251526b5f95d29543f4f00ac9"
@@ -1360,7 +1360,7 @@
           "name": "REA JavaScript application analyzer",
           "version": "1"
         },
-        "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T125306-a5ce22/output.json",
+        "output_file": "<tmp>",
         "output_bytes": 7533632,
         "progress_events": 39,
         "warnings": [],
@@ -1378,9 +1378,9 @@
         "started_at": "2026-10-14T12:53:09.732Z",
         "duration_ms": 3337,
         "command": [
-          "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+          "<tmp>",
           "analyze-javascript-application",
-          "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-05bNer/pass-20",
+          "<tmp>/era-supervised-05bNer/pass-20",
           "--format",
           "json"
         ],
@@ -1390,7 +1390,7 @@
           "version": "6.4.0"
         },
         "input": {
-          "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-05bNer/pass-20",
+          "path": "<tmp>/era-supervised-05bNer/pass-20",
           "kind": "directory",
           "bytes": null,
           "sha256": "da9f177b2e034fadc61766bc7a45a25df3014786fbd80c3f05d9cbded4c5920a"
@@ -1405,7 +1405,7 @@
           "name": "REA JavaScript application analyzer",
           "version": "1"
         },
-        "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T125309-3138e2/output.json",
+        "output_file": "<tmp>",
         "output_bytes": 10377756,
         "progress_events": 25,
         "warnings": [],
@@ -1423,9 +1423,9 @@
         "started_at": "2026-10-14T12:53:13.102Z",
         "duration_ms": 3460,
         "command": [
-          "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+          "<tmp>",
           "analyze-javascript-application",
-          "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-05bNer/pass-21",
+          "<tmp>/era-supervised-05bNer/pass-21",
           "--format",
           "json"
         ],
@@ -1435,7 +1435,7 @@
           "version": "6.4.0"
         },
         "input": {
-          "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-05bNer/pass-21",
+          "path": "<tmp>/era-supervised-05bNer/pass-21",
           "kind": "directory",
           "bytes": null,
           "sha256": "841d02fb8336393be3afd09e454d310385cc09c9e8fcd42d8a3d8b288d581384"
@@ -1450,7 +1450,7 @@
           "name": "REA JavaScript application analyzer",
           "version": "1"
         },
-        "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T125313-b7bf92/output.json",
+        "output_file": "<tmp>",
         "output_bytes": 8535817,
         "progress_events": 33,
         "warnings": [],
@@ -1468,9 +1468,9 @@
         "started_at": "2026-10-14T12:53:16.594Z",
         "duration_ms": 3427,
         "command": [
-          "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+          "<tmp>",
           "analyze-javascript-application",
-          "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-05bNer/pass-22",
+          "<tmp>/era-supervised-05bNer/pass-22",
           "--format",
           "json"
         ],
@@ -1480,7 +1480,7 @@
           "version": "6.4.0"
         },
         "input": {
-          "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-05bNer/pass-22",
+          "path": "<tmp>/era-supervised-05bNer/pass-22",
           "kind": "directory",
           "bytes": null,
           "sha256": "98ea8e402ad63e652a94676978efa9a52471c91c1d450111028a8cd14324d42a"
@@ -1495,7 +1495,7 @@
           "name": "REA JavaScript application analyzer",
           "version": "1"
         },
-        "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T125316-cf0818/output.json",
+        "output_file": "<tmp>",
         "output_bytes": 8407155,
         "progress_events": 38,
         "warnings": [],
@@ -1513,9 +1513,9 @@
         "started_at": "2026-10-14T12:53:21.491Z",
         "duration_ms": 2100,
         "command": [
-          "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+          "<tmp>",
           "capture-process",
-          "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-05bNer/help-scenario.json",
+          "<tmp>/era-supervised-05bNer/help-scenario.json",
           "--format",
           "json"
         ],
@@ -1525,7 +1525,7 @@
           "version": "6.4.0"
         },
         "input": {
-          "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-05bNer/runtime/bin/era.mjs",
+          "path": "<tmp>/era-supervised-05bNer/runtime/bin/era.mjs",
           "kind": "file",
           "bytes": 135,
           "sha256": "e0c335a6ff9614fbfcc717263b95dc98b95b0bd28efe3310ead6a6bcfb27b81f"
@@ -1540,7 +1540,7 @@
           "name": "REA process capture",
           "version": "3"
         },
-        "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T125321-d9e6d1/output.json",
+        "output_file": "<tmp>",
         "output_bytes": 293713,
         "progress_events": 4,
         "warnings": [],
@@ -1553,7 +1553,7 @@
         }
       }
     ],
-    "report": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/self-analyses/self-20261014T125204-b261bb/report.md"
+    "report": "<tmp>"
   },
   "planning_benchmark": {
     "accuracy_f1": 0.9866518353726363,
@@ -1566,7 +1566,7 @@
     "reliability": 1,
     "rea_runs": 10
   },
-  "instructions_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/cycles/cycle-20261014T125204-f7ba8a/instructions.md",
+  "instructions_file": "<tmp>",
   "evaluation_started_at": "2026-10-14T14:47:12.931Z",
   "evaluation": {
     "accepted": true,
@@ -6013,9 +6013,9 @@
           "started_at": "2026-10-14T14:49:47.991Z",
           "duration_ms": 3212,
           "command": [
-            "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+            "<tmp>",
             "analyze-javascript-application",
-            "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-uJ8shG/pass-1",
+            "<tmp>/era-supervised-uJ8shG/pass-1",
             "--format",
             "json"
           ],
@@ -6025,7 +6025,7 @@
             "version": "6.4.0"
           },
           "input": {
-            "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-uJ8shG/pass-1",
+            "path": "<tmp>/era-supervised-uJ8shG/pass-1",
             "kind": "directory",
             "bytes": null,
             "sha256": "b318a9f8baa0ecae59d54afd90ed5a2ff7ae0599466556d6ac7f746771a92ce8"
@@ -6040,7 +6040,7 @@
             "name": "REA JavaScript application analyzer",
             "version": "1"
           },
-          "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T144947-c465ce/output.json",
+          "output_file": "<tmp>",
           "output_bytes": 7863502,
           "progress_events": 28,
           "warnings": [],
@@ -6058,9 +6058,9 @@
           "started_at": "2026-10-14T14:49:51.238Z",
           "duration_ms": 3514,
           "command": [
-            "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+            "<tmp>",
             "analyze-javascript-application",
-            "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-uJ8shG/pass-2",
+            "<tmp>/era-supervised-uJ8shG/pass-2",
             "--format",
             "json"
           ],
@@ -6070,7 +6070,7 @@
             "version": "6.4.0"
           },
           "input": {
-            "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-uJ8shG/pass-2",
+            "path": "<tmp>/era-supervised-uJ8shG/pass-2",
             "kind": "directory",
             "bytes": null,
             "sha256": "3257825f6f007475860643df8be8f3c529bb90ca59d5eee3de85285d199b0e8f"
@@ -6085,7 +6085,7 @@
             "name": "REA JavaScript application analyzer",
             "version": "1"
           },
-          "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T144951-ad7781/output.json",
+          "output_file": "<tmp>",
           "output_bytes": 7693219,
           "progress_events": 42,
           "warnings": [],
@@ -6103,9 +6103,9 @@
           "started_at": "2026-10-14T14:49:54.781Z",
           "duration_ms": 3190,
           "command": [
-            "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+            "<tmp>",
             "analyze-javascript-application",
-            "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-uJ8shG/pass-3",
+            "<tmp>/era-supervised-uJ8shG/pass-3",
             "--format",
             "json"
           ],
@@ -6115,7 +6115,7 @@
             "version": "6.4.0"
           },
           "input": {
-            "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-uJ8shG/pass-3",
+            "path": "<tmp>/era-supervised-uJ8shG/pass-3",
             "kind": "directory",
             "bytes": null,
             "sha256": "627ac379977bf810874cc22314716240dc962cb66ba5f4b62b0045b1f7fdfb98"
@@ -6130,7 +6130,7 @@
             "name": "REA JavaScript application analyzer",
             "version": "1"
           },
-          "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T144954-cbd27d/output.json",
+          "output_file": "<tmp>",
           "output_bytes": 7541087,
           "progress_events": 29,
           "warnings": [],
@@ -6148,9 +6148,9 @@
           "started_at": "2026-10-14T14:49:58.010Z",
           "duration_ms": 3832,
           "command": [
-            "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+            "<tmp>",
             "analyze-javascript-application",
-            "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-uJ8shG/pass-4",
+            "<tmp>/era-supervised-uJ8shG/pass-4",
             "--format",
             "json"
           ],
@@ -6160,7 +6160,7 @@
             "version": "6.4.0"
           },
           "input": {
-            "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-uJ8shG/pass-4",
+            "path": "<tmp>/era-supervised-uJ8shG/pass-4",
             "kind": "directory",
             "bytes": null,
             "sha256": "18d48ccd0de58184a2735c04a78539c469100a3bb37e23343d50cef5e89ba077"
@@ -6175,7 +6175,7 @@
             "name": "REA JavaScript application analyzer",
             "version": "1"
           },
-          "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T144958-62b874/output.json",
+          "output_file": "<tmp>",
           "output_bytes": 10126096,
           "progress_events": 41,
           "warnings": [],
@@ -6193,9 +6193,9 @@
           "started_at": "2026-10-14T14:50:01.879Z",
           "duration_ms": 3267,
           "command": [
-            "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+            "<tmp>",
             "analyze-javascript-application",
-            "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-uJ8shG/pass-5",
+            "<tmp>/era-supervised-uJ8shG/pass-5",
             "--format",
             "json"
           ],
@@ -6205,7 +6205,7 @@
             "version": "6.4.0"
           },
           "input": {
-            "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-uJ8shG/pass-5",
+            "path": "<tmp>/era-supervised-uJ8shG/pass-5",
             "kind": "directory",
             "bytes": null,
             "sha256": "a2d5042babe41396d8fbed919b221d8beecdccf055a70a29279e7da83f41217a"
@@ -6220,7 +6220,7 @@
             "name": "REA JavaScript application analyzer",
             "version": "1"
           },
-          "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T145001-ce292f/output.json",
+          "output_file": "<tmp>",
           "output_bytes": 8396271,
           "progress_events": 28,
           "warnings": [],
@@ -6238,9 +6238,9 @@
           "started_at": "2026-10-14T14:50:05.174Z",
           "duration_ms": 3404,
           "command": [
-            "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+            "<tmp>",
             "analyze-javascript-application",
-            "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-uJ8shG/pass-6",
+            "<tmp>/era-supervised-uJ8shG/pass-6",
             "--format",
             "json"
           ],
@@ -6250,7 +6250,7 @@
             "version": "6.4.0"
           },
           "input": {
-            "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-uJ8shG/pass-6",
+            "path": "<tmp>/era-supervised-uJ8shG/pass-6",
             "kind": "directory",
             "bytes": null,
             "sha256": "4a0363462b0e26ce089899b5b1b4e5ce256f73f9636c8a5cdc29e4d750460d45"
@@ -6265,7 +6265,7 @@
             "name": "REA JavaScript application analyzer",
             "version": "1"
           },
-          "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T145005-c2b23d/output.json",
+          "output_file": "<tmp>",
           "output_bytes": 8509087,
           "progress_events": 34,
           "warnings": [],
@@ -6283,9 +6283,9 @@
           "started_at": "2026-10-14T14:50:08.614Z",
           "duration_ms": 3240,
           "command": [
-            "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+            "<tmp>",
             "analyze-javascript-application",
-            "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-uJ8shG/pass-7",
+            "<tmp>/era-supervised-uJ8shG/pass-7",
             "--format",
             "json"
           ],
@@ -6295,7 +6295,7 @@
             "version": "6.4.0"
           },
           "input": {
-            "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-uJ8shG/pass-7",
+            "path": "<tmp>/era-supervised-uJ8shG/pass-7",
             "kind": "directory",
             "bytes": null,
             "sha256": "f8a5406559e507e7d69a242ccf2c3d3a15cae9de070bd523cd24d536e4dcdca8"
@@ -6310,7 +6310,7 @@
             "name": "REA JavaScript application analyzer",
             "version": "1"
           },
-          "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T145008-a9ec63/output.json",
+          "output_file": "<tmp>",
           "output_bytes": 7891717,
           "progress_events": 30,
           "warnings": [],
@@ -6328,9 +6328,9 @@
           "started_at": "2026-10-14T14:50:11.882Z",
           "duration_ms": 3164,
           "command": [
-            "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+            "<tmp>",
             "analyze-javascript-application",
-            "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-uJ8shG/pass-8",
+            "<tmp>/era-supervised-uJ8shG/pass-8",
             "--format",
             "json"
           ],
@@ -6340,7 +6340,7 @@
             "version": "6.4.0"
           },
           "input": {
-            "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-uJ8shG/pass-8",
+            "path": "<tmp>/era-supervised-uJ8shG/pass-8",
             "kind": "directory",
             "bytes": null,
             "sha256": "79137f9d4abaa604ab330a58caae840a7846f3fedfe5eb13ff965ac53cb8731b"
@@ -6355,7 +6355,7 @@
             "name": "REA JavaScript application analyzer",
             "version": "1"
           },
-          "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T145011-1f404d/output.json",
+          "output_file": "<tmp>",
           "output_bytes": 7212203,
           "progress_events": 31,
           "warnings": [],
@@ -6373,9 +6373,9 @@
           "started_at": "2026-10-14T14:50:15.072Z",
           "duration_ms": 3365,
           "command": [
-            "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+            "<tmp>",
             "analyze-javascript-application",
-            "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-uJ8shG/pass-9",
+            "<tmp>/era-supervised-uJ8shG/pass-9",
             "--format",
             "json"
           ],
@@ -6385,7 +6385,7 @@
             "version": "6.4.0"
           },
           "input": {
-            "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-uJ8shG/pass-9",
+            "path": "<tmp>/era-supervised-uJ8shG/pass-9",
             "kind": "directory",
             "bytes": null,
             "sha256": "3bbe37cc29d7862413d225d36d41b8fde049334e42e5d3fefdc8f5bdc81e7d59"
@@ -6400,7 +6400,7 @@
             "name": "REA JavaScript application analyzer",
             "version": "1"
           },
-          "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T145015-7708e8/output.json",
+          "output_file": "<tmp>",
           "output_bytes": 8607030,
           "progress_events": 32,
           "warnings": [],
@@ -6418,9 +6418,9 @@
           "started_at": "2026-10-14T14:50:18.475Z",
           "duration_ms": 3224,
           "command": [
-            "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+            "<tmp>",
             "analyze-javascript-application",
-            "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-uJ8shG/pass-10",
+            "<tmp>/era-supervised-uJ8shG/pass-10",
             "--format",
             "json"
           ],
@@ -6430,7 +6430,7 @@
             "version": "6.4.0"
           },
           "input": {
-            "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-uJ8shG/pass-10",
+            "path": "<tmp>/era-supervised-uJ8shG/pass-10",
             "kind": "directory",
             "bytes": null,
             "sha256": "808c67c6fb35d2ff19265a31f6da7842ddb2028f907cf451fe6020c93354b57c"
@@ -6445,7 +6445,7 @@
             "name": "REA JavaScript application analyzer",
             "version": "1"
           },
-          "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T145018-0dbe8f/output.json",
+          "output_file": "<tmp>",
           "output_bytes": 6747572,
           "progress_events": 34,
           "warnings": [],
@@ -6463,9 +6463,9 @@
           "started_at": "2026-10-14T14:50:21.723Z",
           "duration_ms": 3166,
           "command": [
-            "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+            "<tmp>",
             "analyze-javascript-application",
-            "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-uJ8shG/pass-11",
+            "<tmp>/era-supervised-uJ8shG/pass-11",
             "--format",
             "json"
           ],
@@ -6475,7 +6475,7 @@
             "version": "6.4.0"
           },
           "input": {
-            "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-uJ8shG/pass-11",
+            "path": "<tmp>/era-supervised-uJ8shG/pass-11",
             "kind": "directory",
             "bytes": null,
             "sha256": "0dbce5e50d81aad701b13fe82a69864dc54cf02ea2e518922adc0d3270f3f0eb"
@@ -6490,7 +6490,7 @@
             "name": "REA JavaScript application analyzer",
             "version": "1"
           },
-          "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T145021-1217d6/output.json",
+          "output_file": "<tmp>",
           "output_bytes": 6286375,
           "progress_events": 29,
           "warnings": [],
@@ -6508,9 +6508,9 @@
           "started_at": "2026-10-14T14:50:24.919Z",
           "duration_ms": 3409,
           "command": [
-            "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+            "<tmp>",
             "analyze-javascript-application",
-            "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-uJ8shG/pass-12",
+            "<tmp>/era-supervised-uJ8shG/pass-12",
             "--format",
             "json"
           ],
@@ -6520,7 +6520,7 @@
             "version": "6.4.0"
           },
           "input": {
-            "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-uJ8shG/pass-12",
+            "path": "<tmp>/era-supervised-uJ8shG/pass-12",
             "kind": "directory",
             "bytes": null,
             "sha256": "e2b84b28460537d2f29b78fb4485c5ca919cae46091bde3473b032f2490e9b54"
@@ -6535,7 +6535,7 @@
             "name": "REA JavaScript application analyzer",
             "version": "1"
           },
-          "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T145024-d86e35/output.json",
+          "output_file": "<tmp>",
           "output_bytes": 8458929,
           "progress_events": 31,
           "warnings": [],
@@ -6553,9 +6553,9 @@
           "started_at": "2026-10-14T14:50:28.359Z",
           "duration_ms": 3337,
           "command": [
-            "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+            "<tmp>",
             "analyze-javascript-application",
-            "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-uJ8shG/pass-13",
+            "<tmp>/era-supervised-uJ8shG/pass-13",
             "--format",
             "json"
           ],
@@ -6565,7 +6565,7 @@
             "version": "6.4.0"
           },
           "input": {
-            "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-uJ8shG/pass-13",
+            "path": "<tmp>/era-supervised-uJ8shG/pass-13",
             "kind": "directory",
             "bytes": null,
             "sha256": "ccc2b120a56e3b2366308c7ee337a886c2f735a3174c8817394ae367b2b2cbbb"
@@ -6580,7 +6580,7 @@
             "name": "REA JavaScript application analyzer",
             "version": "1"
           },
-          "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T145028-abd404/output.json",
+          "output_file": "<tmp>",
           "output_bytes": 8225285,
           "progress_events": 32,
           "warnings": [],
@@ -6598,9 +6598,9 @@
           "started_at": "2026-10-14T14:50:31.725Z",
           "duration_ms": 3291,
           "command": [
-            "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+            "<tmp>",
             "analyze-javascript-application",
-            "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-uJ8shG/pass-14",
+            "<tmp>/era-supervised-uJ8shG/pass-14",
             "--format",
             "json"
           ],
@@ -6610,7 +6610,7 @@
             "version": "6.4.0"
           },
           "input": {
-            "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-uJ8shG/pass-14",
+            "path": "<tmp>/era-supervised-uJ8shG/pass-14",
             "kind": "directory",
             "bytes": null,
             "sha256": "57e837c95a6b44cb9ad2ae72b425a6f76d08a2f72320c40c13106583e9944c0e"
@@ -6625,7 +6625,7 @@
             "name": "REA JavaScript application analyzer",
             "version": "1"
           },
-          "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T145031-3ca958/output.json",
+          "output_file": "<tmp>",
           "output_bytes": 8753145,
           "progress_events": 32,
           "warnings": [],
@@ -6643,9 +6643,9 @@
           "started_at": "2026-10-14T14:50:35.044Z",
           "duration_ms": 2622,
           "command": [
-            "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+            "<tmp>",
             "analyze-javascript-application",
-            "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-uJ8shG/pass-15",
+            "<tmp>/era-supervised-uJ8shG/pass-15",
             "--format",
             "json"
           ],
@@ -6655,7 +6655,7 @@
             "version": "6.4.0"
           },
           "input": {
-            "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-uJ8shG/pass-15",
+            "path": "<tmp>/era-supervised-uJ8shG/pass-15",
             "kind": "directory",
             "bytes": null,
             "sha256": "8f48db357ae53fa263972a19721aa83bc9117d4bdfe26611a8e7159a4d06eee0"
@@ -6670,7 +6670,7 @@
             "name": "REA JavaScript application analyzer",
             "version": "1"
           },
-          "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T145035-91b36f/output.json",
+          "output_file": "<tmp>",
           "output_bytes": 2380148,
           "progress_events": 24,
           "warnings": [],
@@ -6688,9 +6688,9 @@
           "started_at": "2026-10-14T14:50:37.677Z",
           "duration_ms": 3436,
           "command": [
-            "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+            "<tmp>",
             "analyze-javascript-application",
-            "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-uJ8shG/pass-16",
+            "<tmp>/era-supervised-uJ8shG/pass-16",
             "--format",
             "json"
           ],
@@ -6700,7 +6700,7 @@
             "version": "6.4.0"
           },
           "input": {
-            "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-uJ8shG/pass-16",
+            "path": "<tmp>/era-supervised-uJ8shG/pass-16",
             "kind": "directory",
             "bytes": null,
             "sha256": "5ca1c9e49b17a52709052c82c624b4aa5d380c3ce5646dd405db49c2b17f2a8d"
@@ -6715,7 +6715,7 @@
             "name": "REA JavaScript application analyzer",
             "version": "1"
           },
-          "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T145037-f7a843/output.json",
+          "output_file": "<tmp>",
           "output_bytes": 9252999,
           "progress_events": 27,
           "warnings": [],
@@ -6733,9 +6733,9 @@
           "started_at": "2026-10-14T14:50:41.151Z",
           "duration_ms": 3601,
           "command": [
-            "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+            "<tmp>",
             "analyze-javascript-application",
-            "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-uJ8shG/pass-17",
+            "<tmp>/era-supervised-uJ8shG/pass-17",
             "--format",
             "json"
           ],
@@ -6745,7 +6745,7 @@
             "version": "6.4.0"
           },
           "input": {
-            "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-uJ8shG/pass-17",
+            "path": "<tmp>/era-supervised-uJ8shG/pass-17",
             "kind": "directory",
             "bytes": null,
             "sha256": "c6fce0303f657b72d2f06cad990267a929fbb2d0d8a324688845d98f20900ed6"
@@ -6760,7 +6760,7 @@
             "name": "REA JavaScript application analyzer",
             "version": "1"
           },
-          "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T145041-e305f2/output.json",
+          "output_file": "<tmp>",
           "output_bytes": 8022567,
           "progress_events": 47,
           "warnings": [],
@@ -6778,9 +6778,9 @@
           "started_at": "2026-10-14T14:50:44.785Z",
           "duration_ms": 3932,
           "command": [
-            "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+            "<tmp>",
             "analyze-javascript-application",
-            "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-uJ8shG/pass-18",
+            "<tmp>/era-supervised-uJ8shG/pass-18",
             "--format",
             "json"
           ],
@@ -6790,7 +6790,7 @@
             "version": "6.4.0"
           },
           "input": {
-            "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-uJ8shG/pass-18",
+            "path": "<tmp>/era-supervised-uJ8shG/pass-18",
             "kind": "directory",
             "bytes": null,
             "sha256": "5461df46ba625b2563099c682296b0e6e1238dedc58d6663a039cd4a75370003"
@@ -6805,7 +6805,7 @@
             "name": "REA JavaScript application analyzer",
             "version": "1"
           },
-          "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T145044-fc5d4d/output.json",
+          "output_file": "<tmp>",
           "output_bytes": 10766838,
           "progress_events": 40,
           "warnings": [],
@@ -6823,9 +6823,9 @@
           "started_at": "2026-10-14T14:50:48.756Z",
           "duration_ms": 3539,
           "command": [
-            "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+            "<tmp>",
             "analyze-javascript-application",
-            "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-uJ8shG/pass-19",
+            "<tmp>/era-supervised-uJ8shG/pass-19",
             "--format",
             "json"
           ],
@@ -6835,7 +6835,7 @@
             "version": "6.4.0"
           },
           "input": {
-            "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-uJ8shG/pass-19",
+            "path": "<tmp>/era-supervised-uJ8shG/pass-19",
             "kind": "directory",
             "bytes": null,
             "sha256": "4a190b3cb3dc4ffcb186d9df4fc56a7ee9b5bdc251526b5f95d29543f4f00ac9"
@@ -6850,7 +6850,7 @@
             "name": "REA JavaScript application analyzer",
             "version": "1"
           },
-          "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T145048-632789/output.json",
+          "output_file": "<tmp>",
           "output_bytes": 7533632,
           "progress_events": 39,
           "warnings": [],
@@ -6868,9 +6868,9 @@
           "started_at": "2026-10-14T14:50:52.326Z",
           "duration_ms": 3481,
           "command": [
-            "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+            "<tmp>",
             "analyze-javascript-application",
-            "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-uJ8shG/pass-20",
+            "<tmp>/era-supervised-uJ8shG/pass-20",
             "--format",
             "json"
           ],
@@ -6880,7 +6880,7 @@
             "version": "6.4.0"
           },
           "input": {
-            "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-uJ8shG/pass-20",
+            "path": "<tmp>/era-supervised-uJ8shG/pass-20",
             "kind": "directory",
             "bytes": null,
             "sha256": "da9f177b2e034fadc61766bc7a45a25df3014786fbd80c3f05d9cbded4c5920a"
@@ -6895,7 +6895,7 @@
             "name": "REA JavaScript application analyzer",
             "version": "1"
           },
-          "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T145052-1ff492/output.json",
+          "output_file": "<tmp>",
           "output_bytes": 10377756,
           "progress_events": 25,
           "warnings": [],
@@ -6913,9 +6913,9 @@
           "started_at": "2026-10-14T14:50:55.846Z",
           "duration_ms": 3537,
           "command": [
-            "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+            "<tmp>",
             "analyze-javascript-application",
-            "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-uJ8shG/pass-21",
+            "<tmp>/era-supervised-uJ8shG/pass-21",
             "--format",
             "json"
           ],
@@ -6925,7 +6925,7 @@
             "version": "6.4.0"
           },
           "input": {
-            "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-uJ8shG/pass-21",
+            "path": "<tmp>/era-supervised-uJ8shG/pass-21",
             "kind": "directory",
             "bytes": null,
             "sha256": "841d02fb8336393be3afd09e454d310385cc09c9e8fcd42d8a3d8b288d581384"
@@ -6940,7 +6940,7 @@
             "name": "REA JavaScript application analyzer",
             "version": "1"
           },
-          "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T145055-523216/output.json",
+          "output_file": "<tmp>",
           "output_bytes": 8535817,
           "progress_events": 33,
           "warnings": [],
@@ -6958,9 +6958,9 @@
           "started_at": "2026-10-14T14:50:59.426Z",
           "duration_ms": 3514,
           "command": [
-            "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+            "<tmp>",
             "analyze-javascript-application",
-            "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-uJ8shG/pass-22",
+            "<tmp>/era-supervised-uJ8shG/pass-22",
             "--format",
             "json"
           ],
@@ -6970,7 +6970,7 @@
             "version": "6.4.0"
           },
           "input": {
-            "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-uJ8shG/pass-22",
+            "path": "<tmp>/era-supervised-uJ8shG/pass-22",
             "kind": "directory",
             "bytes": null,
             "sha256": "98ea8e402ad63e652a94676978efa9a52471c91c1d450111028a8cd14324d42a"
@@ -6985,7 +6985,7 @@
             "name": "REA JavaScript application analyzer",
             "version": "1"
           },
-          "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T145059-90a2b4/output.json",
+          "output_file": "<tmp>",
           "output_bytes": 8407155,
           "progress_events": 38,
           "warnings": [],
@@ -7003,9 +7003,9 @@
           "started_at": "2026-10-14T14:51:04.758Z",
           "duration_ms": 2444,
           "command": [
-            "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+            "<tmp>",
             "capture-process",
-            "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-uJ8shG/help-scenario.json",
+            "<tmp>/era-supervised-uJ8shG/help-scenario.json",
             "--format",
             "json"
           ],
@@ -7015,7 +7015,7 @@
             "version": "6.4.0"
           },
           "input": {
-            "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-uJ8shG/runtime/bin/era.mjs",
+            "path": "<tmp>/era-supervised-uJ8shG/runtime/bin/era.mjs",
             "kind": "file",
             "bytes": 135,
             "sha256": "e0c335a6ff9614fbfcc717263b95dc98b95b0bd28efe3310ead6a6bcfb27b81f"
@@ -7030,7 +7030,7 @@
             "name": "REA process capture",
             "version": "3"
           },
-          "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T145104-40f8ef/output.json",
+          "output_file": "<tmp>",
           "output_bytes": 293713,
           "progress_events": 4,
           "warnings": [],
@@ -7043,7 +7043,7 @@
           }
         }
       ],
-      "report": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/self-analyses/self-20261014T144946-9ec5ab/report.md"
+      "report": "<tmp>"
     },
     "candidate_self_analysis": {
       "id": "self-20261014T145107-74fca6",
@@ -7502,9 +7502,9 @@
           "started_at": "2026-10-14T14:51:09.238Z",
           "duration_ms": 3186,
           "command": [
-            "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+            "<tmp>",
             "analyze-javascript-application",
-            "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-3j7do3/pass-1",
+            "<tmp>/era-supervised-3j7do3/pass-1",
             "--format",
             "json"
           ],
@@ -7514,7 +7514,7 @@
             "version": "6.4.0"
           },
           "input": {
-            "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-3j7do3/pass-1",
+            "path": "<tmp>/era-supervised-3j7do3/pass-1",
             "kind": "directory",
             "bytes": null,
             "sha256": "b318a9f8baa0ecae59d54afd90ed5a2ff7ae0599466556d6ac7f746771a92ce8"
@@ -7529,7 +7529,7 @@
             "name": "REA JavaScript application analyzer",
             "version": "1"
           },
-          "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T145109-721531/output.json",
+          "output_file": "<tmp>",
           "output_bytes": 7863502,
           "progress_events": 28,
           "warnings": [],
@@ -7547,9 +7547,9 @@
           "started_at": "2026-10-14T14:51:12.455Z",
           "duration_ms": 3517,
           "command": [
-            "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+            "<tmp>",
             "analyze-javascript-application",
-            "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-3j7do3/pass-2",
+            "<tmp>/era-supervised-3j7do3/pass-2",
             "--format",
             "json"
           ],
@@ -7559,7 +7559,7 @@
             "version": "6.4.0"
           },
           "input": {
-            "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-3j7do3/pass-2",
+            "path": "<tmp>/era-supervised-3j7do3/pass-2",
             "kind": "directory",
             "bytes": null,
             "sha256": "3257825f6f007475860643df8be8f3c529bb90ca59d5eee3de85285d199b0e8f"
@@ -7574,7 +7574,7 @@
             "name": "REA JavaScript application analyzer",
             "version": "1"
           },
-          "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T145112-a84e0d/output.json",
+          "output_file": "<tmp>",
           "output_bytes": 7693219,
           "progress_events": 42,
           "warnings": [],
@@ -7592,9 +7592,9 @@
           "started_at": "2026-10-14T14:51:15.998Z",
           "duration_ms": 3163,
           "command": [
-            "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+            "<tmp>",
             "analyze-javascript-application",
-            "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-3j7do3/pass-3",
+            "<tmp>/era-supervised-3j7do3/pass-3",
             "--format",
             "json"
           ],
@@ -7604,7 +7604,7 @@
             "version": "6.4.0"
           },
           "input": {
-            "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-3j7do3/pass-3",
+            "path": "<tmp>/era-supervised-3j7do3/pass-3",
             "kind": "directory",
             "bytes": null,
             "sha256": "e22cf79f865ab1f516e54fb3cd00680d5634b0055d2913174c6bb63188bc1902"
@@ -7619,7 +7619,7 @@
             "name": "REA JavaScript application analyzer",
             "version": "1"
           },
-          "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T145115-94412c/output.json",
+          "output_file": "<tmp>",
           "output_bytes": 7615751,
           "progress_events": 29,
           "warnings": [],
@@ -7637,9 +7637,9 @@
           "started_at": "2026-10-14T14:51:19.197Z",
           "duration_ms": 3784,
           "command": [
-            "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+            "<tmp>",
             "analyze-javascript-application",
-            "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-3j7do3/pass-4",
+            "<tmp>/era-supervised-3j7do3/pass-4",
             "--format",
             "json"
           ],
@@ -7649,7 +7649,7 @@
             "version": "6.4.0"
           },
           "input": {
-            "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-3j7do3/pass-4",
+            "path": "<tmp>/era-supervised-3j7do3/pass-4",
             "kind": "directory",
             "bytes": null,
             "sha256": "18d48ccd0de58184a2735c04a78539c469100a3bb37e23343d50cef5e89ba077"
@@ -7664,7 +7664,7 @@
             "name": "REA JavaScript application analyzer",
             "version": "1"
           },
-          "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T145119-f684d8/output.json",
+          "output_file": "<tmp>",
           "output_bytes": 10126096,
           "progress_events": 41,
           "warnings": [],
@@ -7682,9 +7682,9 @@
           "started_at": "2026-10-14T14:51:23.014Z",
           "duration_ms": 3229,
           "command": [
-            "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+            "<tmp>",
             "analyze-javascript-application",
-            "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-3j7do3/pass-5",
+            "<tmp>/era-supervised-3j7do3/pass-5",
             "--format",
             "json"
           ],
@@ -7694,7 +7694,7 @@
             "version": "6.4.0"
           },
           "input": {
-            "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-3j7do3/pass-5",
+            "path": "<tmp>/era-supervised-3j7do3/pass-5",
             "kind": "directory",
             "bytes": null,
             "sha256": "a2d5042babe41396d8fbed919b221d8beecdccf055a70a29279e7da83f41217a"
@@ -7709,7 +7709,7 @@
             "name": "REA JavaScript application analyzer",
             "version": "1"
           },
-          "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T145123-bd16ee/output.json",
+          "output_file": "<tmp>",
           "output_bytes": 8396271,
           "progress_events": 28,
           "warnings": [],
@@ -7727,9 +7727,9 @@
           "started_at": "2026-10-14T14:51:26.272Z",
           "duration_ms": 4082,
           "command": [
-            "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+            "<tmp>",
             "analyze-javascript-application",
-            "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-3j7do3/pass-6",
+            "<tmp>/era-supervised-3j7do3/pass-6",
             "--format",
             "json"
           ],
@@ -7739,7 +7739,7 @@
             "version": "6.4.0"
           },
           "input": {
-            "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-3j7do3/pass-6",
+            "path": "<tmp>/era-supervised-3j7do3/pass-6",
             "kind": "directory",
             "bytes": null,
             "sha256": "4a0363462b0e26ce089899b5b1b4e5ce256f73f9636c8a5cdc29e4d750460d45"
@@ -7754,7 +7754,7 @@
             "name": "REA JavaScript application analyzer",
             "version": "1"
           },
-          "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T145126-2f72ea/output.json",
+          "output_file": "<tmp>",
           "output_bytes": 8509087,
           "progress_events": 34,
           "warnings": [],
@@ -7772,9 +7772,9 @@
           "started_at": "2026-10-14T14:51:30.392Z",
           "duration_ms": 5251,
           "command": [
-            "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+            "<tmp>",
             "analyze-javascript-application",
-            "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-3j7do3/pass-7",
+            "<tmp>/era-supervised-3j7do3/pass-7",
             "--format",
             "json"
           ],
@@ -7784,7 +7784,7 @@
             "version": "6.4.0"
           },
           "input": {
-            "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-3j7do3/pass-7",
+            "path": "<tmp>/era-supervised-3j7do3/pass-7",
             "kind": "directory",
             "bytes": null,
             "sha256": "f8a5406559e507e7d69a242ccf2c3d3a15cae9de070bd523cd24d536e4dcdca8"
@@ -7799,7 +7799,7 @@
             "name": "REA JavaScript application analyzer",
             "version": "1"
           },
-          "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T145130-2d2187/output.json",
+          "output_file": "<tmp>",
           "output_bytes": 7891717,
           "progress_events": 30,
           "warnings": [],
@@ -7817,9 +7817,9 @@
           "started_at": "2026-10-14T14:51:35.673Z",
           "duration_ms": 3551,
           "command": [
-            "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+            "<tmp>",
             "analyze-javascript-application",
-            "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-3j7do3/pass-8",
+            "<tmp>/era-supervised-3j7do3/pass-8",
             "--format",
             "json"
           ],
@@ -7829,7 +7829,7 @@
             "version": "6.4.0"
           },
           "input": {
-            "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-3j7do3/pass-8",
+            "path": "<tmp>/era-supervised-3j7do3/pass-8",
             "kind": "directory",
             "bytes": null,
             "sha256": "79137f9d4abaa604ab330a58caae840a7846f3fedfe5eb13ff965ac53cb8731b"
@@ -7844,7 +7844,7 @@
             "name": "REA JavaScript application analyzer",
             "version": "1"
           },
-          "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T145135-526eb7/output.json",
+          "output_file": "<tmp>",
           "output_bytes": 7212203,
           "progress_events": 31,
           "warnings": [],
@@ -7862,9 +7862,9 @@
           "started_at": "2026-10-14T14:51:39.253Z",
           "duration_ms": 3643,
           "command": [
-            "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+            "<tmp>",
             "analyze-javascript-application",
-            "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-3j7do3/pass-9",
+            "<tmp>/era-supervised-3j7do3/pass-9",
             "--format",
             "json"
           ],
@@ -7874,7 +7874,7 @@
             "version": "6.4.0"
           },
           "input": {
-            "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-3j7do3/pass-9",
+            "path": "<tmp>/era-supervised-3j7do3/pass-9",
             "kind": "directory",
             "bytes": null,
             "sha256": "3bbe37cc29d7862413d225d36d41b8fde049334e42e5d3fefdc8f5bdc81e7d59"
@@ -7889,7 +7889,7 @@
             "name": "REA JavaScript application analyzer",
             "version": "1"
           },
-          "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T145139-283809/output.json",
+          "output_file": "<tmp>",
           "output_bytes": 8607030,
           "progress_events": 32,
           "warnings": [],
@@ -7907,9 +7907,9 @@
           "started_at": "2026-10-14T14:51:42.930Z",
           "duration_ms": 3425,
           "command": [
-            "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+            "<tmp>",
             "analyze-javascript-application",
-            "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-3j7do3/pass-10",
+            "<tmp>/era-supervised-3j7do3/pass-10",
             "--format",
             "json"
           ],
@@ -7919,7 +7919,7 @@
             "version": "6.4.0"
           },
           "input": {
-            "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-3j7do3/pass-10",
+            "path": "<tmp>/era-supervised-3j7do3/pass-10",
             "kind": "directory",
             "bytes": null,
             "sha256": "808c67c6fb35d2ff19265a31f6da7842ddb2028f907cf451fe6020c93354b57c"
@@ -7934,7 +7934,7 @@
             "name": "REA JavaScript application analyzer",
             "version": "1"
           },
-          "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T145142-029164/output.json",
+          "output_file": "<tmp>",
           "output_bytes": 6747572,
           "progress_events": 34,
           "warnings": [],
@@ -7952,9 +7952,9 @@
           "started_at": "2026-10-14T14:51:46.380Z",
           "duration_ms": 3040,
           "command": [
-            "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+            "<tmp>",
             "analyze-javascript-application",
-            "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-3j7do3/pass-11",
+            "<tmp>/era-supervised-3j7do3/pass-11",
             "--format",
             "json"
           ],
@@ -7964,7 +7964,7 @@
             "version": "6.4.0"
           },
           "input": {
-            "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-3j7do3/pass-11",
+            "path": "<tmp>/era-supervised-3j7do3/pass-11",
             "kind": "directory",
             "bytes": null,
             "sha256": "0dbce5e50d81aad701b13fe82a69864dc54cf02ea2e518922adc0d3270f3f0eb"
@@ -7979,7 +7979,7 @@
             "name": "REA JavaScript application analyzer",
             "version": "1"
           },
-          "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T145146-e590b7/output.json",
+          "output_file": "<tmp>",
           "output_bytes": 6286375,
           "progress_events": 29,
           "warnings": [],
@@ -7997,9 +7997,9 @@
           "started_at": "2026-10-14T14:51:49.448Z",
           "duration_ms": 3396,
           "command": [
-            "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+            "<tmp>",
             "analyze-javascript-application",
-            "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-3j7do3/pass-12",
+            "<tmp>/era-supervised-3j7do3/pass-12",
             "--format",
             "json"
           ],
@@ -8009,7 +8009,7 @@
             "version": "6.4.0"
           },
           "input": {
-            "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-3j7do3/pass-12",
+            "path": "<tmp>/era-supervised-3j7do3/pass-12",
             "kind": "directory",
             "bytes": null,
             "sha256": "e2b84b28460537d2f29b78fb4485c5ca919cae46091bde3473b032f2490e9b54"
@@ -8024,7 +8024,7 @@
             "name": "REA JavaScript application analyzer",
             "version": "1"
           },
-          "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T145149-ae72a2/output.json",
+          "output_file": "<tmp>",
           "output_bytes": 8458929,
           "progress_events": 31,
           "warnings": [],
@@ -8042,9 +8042,9 @@
           "started_at": "2026-10-14T14:51:52.876Z",
           "duration_ms": 3308,
           "command": [
-            "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+            "<tmp>",
             "analyze-javascript-application",
-            "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-3j7do3/pass-13",
+            "<tmp>/era-supervised-3j7do3/pass-13",
             "--format",
             "json"
           ],
@@ -8054,7 +8054,7 @@
             "version": "6.4.0"
           },
           "input": {
-            "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-3j7do3/pass-13",
+            "path": "<tmp>/era-supervised-3j7do3/pass-13",
             "kind": "directory",
             "bytes": null,
             "sha256": "ccc2b120a56e3b2366308c7ee337a886c2f735a3174c8817394ae367b2b2cbbb"
@@ -8069,7 +8069,7 @@
             "name": "REA JavaScript application analyzer",
             "version": "1"
           },
-          "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T145152-79ea5c/output.json",
+          "output_file": "<tmp>",
           "output_bytes": 8225285,
           "progress_events": 32,
           "warnings": [],
@@ -8087,9 +8087,9 @@
           "started_at": "2026-10-14T14:51:56.214Z",
           "duration_ms": 3421,
           "command": [
-            "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+            "<tmp>",
             "analyze-javascript-application",
-            "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-3j7do3/pass-14",
+            "<tmp>/era-supervised-3j7do3/pass-14",
             "--format",
             "json"
           ],
@@ -8099,7 +8099,7 @@
             "version": "6.4.0"
           },
           "input": {
-            "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-3j7do3/pass-14",
+            "path": "<tmp>/era-supervised-3j7do3/pass-14",
             "kind": "directory",
             "bytes": null,
             "sha256": "57e837c95a6b44cb9ad2ae72b425a6f76d08a2f72320c40c13106583e9944c0e"
@@ -8114,7 +8114,7 @@
             "name": "REA JavaScript application analyzer",
             "version": "1"
           },
-          "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T145156-30d1b0/output.json",
+          "output_file": "<tmp>",
           "output_bytes": 8753145,
           "progress_events": 32,
           "warnings": [],
@@ -8132,9 +8132,9 @@
           "started_at": "2026-10-14T14:51:59.669Z",
           "duration_ms": 2654,
           "command": [
-            "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+            "<tmp>",
             "analyze-javascript-application",
-            "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-3j7do3/pass-15",
+            "<tmp>/era-supervised-3j7do3/pass-15",
             "--format",
             "json"
           ],
@@ -8144,7 +8144,7 @@
             "version": "6.4.0"
           },
           "input": {
-            "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-3j7do3/pass-15",
+            "path": "<tmp>/era-supervised-3j7do3/pass-15",
             "kind": "directory",
             "bytes": null,
             "sha256": "c1ab1f7626dca4037f7b3aac08f1cdaad734a23fef89971ab8a7c68fc4cfa7d8"
@@ -8159,7 +8159,7 @@
             "name": "REA JavaScript application analyzer",
             "version": "1"
           },
-          "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T145159-1ba512/output.json",
+          "output_file": "<tmp>",
           "output_bytes": 4075624,
           "progress_events": 26,
           "warnings": [],
@@ -8177,9 +8177,9 @@
           "started_at": "2026-10-14T14:52:02.338Z",
           "duration_ms": 4409,
           "command": [
-            "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+            "<tmp>",
             "analyze-javascript-application",
-            "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-3j7do3/pass-16",
+            "<tmp>/era-supervised-3j7do3/pass-16",
             "--format",
             "json"
           ],
@@ -8189,7 +8189,7 @@
             "version": "6.4.0"
           },
           "input": {
-            "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-3j7do3/pass-16",
+            "path": "<tmp>/era-supervised-3j7do3/pass-16",
             "kind": "directory",
             "bytes": null,
             "sha256": "5ca1c9e49b17a52709052c82c624b4aa5d380c3ce5646dd405db49c2b17f2a8d"
@@ -8204,7 +8204,7 @@
             "name": "REA JavaScript application analyzer",
             "version": "1"
           },
-          "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T145202-dee1a4/output.json",
+          "output_file": "<tmp>",
           "output_bytes": 9252999,
           "progress_events": 27,
           "warnings": [],
@@ -8222,9 +8222,9 @@
           "started_at": "2026-10-14T14:52:06.794Z",
           "duration_ms": 5689,
           "command": [
-            "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+            "<tmp>",
             "analyze-javascript-application",
-            "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-3j7do3/pass-17",
+            "<tmp>/era-supervised-3j7do3/pass-17",
             "--format",
             "json"
           ],
@@ -8234,7 +8234,7 @@
             "version": "6.4.0"
           },
           "input": {
-            "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-3j7do3/pass-17",
+            "path": "<tmp>/era-supervised-3j7do3/pass-17",
             "kind": "directory",
             "bytes": null,
             "sha256": "c6fce0303f657b72d2f06cad990267a929fbb2d0d8a324688845d98f20900ed6"
@@ -8249,7 +8249,7 @@
             "name": "REA JavaScript application analyzer",
             "version": "1"
           },
-          "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T145206-1866a2/output.json",
+          "output_file": "<tmp>",
           "output_bytes": 8022567,
           "progress_events": 47,
           "warnings": [],
@@ -8267,9 +8267,9 @@
           "started_at": "2026-10-14T14:52:12.519Z",
           "duration_ms": 6764,
           "command": [
-            "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+            "<tmp>",
             "analyze-javascript-application",
-            "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-3j7do3/pass-18",
+            "<tmp>/era-supervised-3j7do3/pass-18",
             "--format",
             "json"
           ],
@@ -8279,7 +8279,7 @@
             "version": "6.4.0"
           },
           "input": {
-            "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-3j7do3/pass-18",
+            "path": "<tmp>/era-supervised-3j7do3/pass-18",
             "kind": "directory",
             "bytes": null,
             "sha256": "5461df46ba625b2563099c682296b0e6e1238dedc58d6663a039cd4a75370003"
@@ -8294,7 +8294,7 @@
             "name": "REA JavaScript application analyzer",
             "version": "1"
           },
-          "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T145212-9215d5/output.json",
+          "output_file": "<tmp>",
           "output_bytes": 10766838,
           "progress_events": 40,
           "warnings": [],
@@ -8312,9 +8312,9 @@
           "started_at": "2026-10-14T14:52:19.336Z",
           "duration_ms": 4004,
           "command": [
-            "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+            "<tmp>",
             "analyze-javascript-application",
-            "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-3j7do3/pass-19",
+            "<tmp>/era-supervised-3j7do3/pass-19",
             "--format",
             "json"
           ],
@@ -8324,7 +8324,7 @@
             "version": "6.4.0"
           },
           "input": {
-            "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-3j7do3/pass-19",
+            "path": "<tmp>/era-supervised-3j7do3/pass-19",
             "kind": "directory",
             "bytes": null,
             "sha256": "4a190b3cb3dc4ffcb186d9df4fc56a7ee9b5bdc251526b5f95d29543f4f00ac9"
@@ -8339,7 +8339,7 @@
             "name": "REA JavaScript application analyzer",
             "version": "1"
           },
-          "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T145219-482879/output.json",
+          "output_file": "<tmp>",
           "output_bytes": 7533632,
           "progress_events": 39,
           "warnings": [],
@@ -8357,9 +8357,9 @@
           "started_at": "2026-10-14T14:52:23.367Z",
           "duration_ms": 3416,
           "command": [
-            "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+            "<tmp>",
             "analyze-javascript-application",
-            "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-3j7do3/pass-20",
+            "<tmp>/era-supervised-3j7do3/pass-20",
             "--format",
             "json"
           ],
@@ -8369,7 +8369,7 @@
             "version": "6.4.0"
           },
           "input": {
-            "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-3j7do3/pass-20",
+            "path": "<tmp>/era-supervised-3j7do3/pass-20",
             "kind": "directory",
             "bytes": null,
             "sha256": "da9f177b2e034fadc61766bc7a45a25df3014786fbd80c3f05d9cbded4c5920a"
@@ -8384,7 +8384,7 @@
             "name": "REA JavaScript application analyzer",
             "version": "1"
           },
-          "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T145223-f30075/output.json",
+          "output_file": "<tmp>",
           "output_bytes": 10377756,
           "progress_events": 25,
           "warnings": [],
@@ -8402,9 +8402,9 @@
           "started_at": "2026-10-14T14:52:26.820Z",
           "duration_ms": 3377,
           "command": [
-            "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+            "<tmp>",
             "analyze-javascript-application",
-            "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-3j7do3/pass-21",
+            "<tmp>/era-supervised-3j7do3/pass-21",
             "--format",
             "json"
           ],
@@ -8414,7 +8414,7 @@
             "version": "6.4.0"
           },
           "input": {
-            "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-3j7do3/pass-21",
+            "path": "<tmp>/era-supervised-3j7do3/pass-21",
             "kind": "directory",
             "bytes": null,
             "sha256": "841d02fb8336393be3afd09e454d310385cc09c9e8fcd42d8a3d8b288d581384"
@@ -8429,7 +8429,7 @@
             "name": "REA JavaScript application analyzer",
             "version": "1"
           },
-          "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T145226-9283f0/output.json",
+          "output_file": "<tmp>",
           "output_bytes": 8535817,
           "progress_events": 33,
           "warnings": [],
@@ -8447,9 +8447,9 @@
           "started_at": "2026-10-14T14:52:30.228Z",
           "duration_ms": 3500,
           "command": [
-            "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+            "<tmp>",
             "analyze-javascript-application",
-            "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-3j7do3/pass-22",
+            "<tmp>/era-supervised-3j7do3/pass-22",
             "--format",
             "json"
           ],
@@ -8459,7 +8459,7 @@
             "version": "6.4.0"
           },
           "input": {
-            "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-3j7do3/pass-22",
+            "path": "<tmp>/era-supervised-3j7do3/pass-22",
             "kind": "directory",
             "bytes": null,
             "sha256": "98ea8e402ad63e652a94676978efa9a52471c91c1d450111028a8cd14324d42a"
@@ -8474,7 +8474,7 @@
             "name": "REA JavaScript application analyzer",
             "version": "1"
           },
-          "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T145230-d944e3/output.json",
+          "output_file": "<tmp>",
           "output_bytes": 8407155,
           "progress_events": 38,
           "warnings": [],
@@ -8492,9 +8492,9 @@
           "started_at": "2026-10-14T14:52:35.421Z",
           "duration_ms": 2165,
           "command": [
-            "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/node_modules/.bin/rea",
+            "<tmp>",
             "capture-process",
-            "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-3j7do3/help-scenario.json",
+            "<tmp>/era-supervised-3j7do3/help-scenario.json",
             "--format",
             "json"
           ],
@@ -8504,7 +8504,7 @@
             "version": "6.4.0"
           },
           "input": {
-            "path": "/private/var/folders/qs/62vwljv134s880r5cx9mbnlc0000gn/T/era-supervised-3j7do3/runtime/bin/era.mjs",
+            "path": "<tmp>/era-supervised-3j7do3/runtime/bin/era.mjs",
             "kind": "file",
             "bytes": 135,
             "sha256": "e0c335a6ff9614fbfcc717263b95dc98b95b0bd28efe3310ead6a6bcfb27b81f"
@@ -8519,7 +8519,7 @@
             "name": "REA process capture",
             "version": "3"
           },
-          "output_file": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/runs/rea-20261014T145235-2c5727/output.json",
+          "output_file": "<tmp>",
           "output_bytes": 295395,
           "progress_events": 4,
           "warnings": [],
@@ -8532,7 +8532,7 @@
           }
         }
       ],
-      "report": "/private/tmp/claude-501/-Users-david-dev-era-agent/e0000427-6653-46be-83de-8b5f72147ff5/scratchpad/era-lab/.era/self-analyses/self-20261014T145107-74fca6/report.md"
+      "report": "<tmp>"
     },
     "candidate_ref": {
       "commit": "3a41fe2fba67ed6190a03f979c4ff079b192305d",

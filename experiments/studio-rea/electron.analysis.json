@@ -2,7 +2,7 @@
   "analysis_id": "analysis-20261014T122321-7ce052",
   "created_at": "2026-10-14T12:23:25.316Z",
   "target": {
-    "path": "/Users/david/dev/era-agent/apps/studio/electron",
+    "path": "<era-repo>/apps/studio/electron",
     "kind": "javascript-app",
     "detection": "directory with package.json or JavaScript sources"
   },
@@ -19,9 +19,9 @@
       "started_at": "2026-10-14T12:23:21.300Z",
       "duration_ms": 3020,
       "command": [
-        "/Users/david/dev/era-agent/node_modules/.bin/rea",
+        "<era-repo>/node_modules/.bin/rea",
         "analyze-javascript-application",
-        "/Users/david/dev/era-agent/apps/studio/electron",
+        "<era-repo>/apps/studio/electron",
         "--format",
         "json"
       ],
@@ -31,7 +31,7 @@
         "version": "6.4.0"
       },
       "input": {
-        "path": "/Users/david/dev/era-agent/apps/studio/electron",
+        "path": "<era-repo>/apps/studio/electron",
         "kind": "directory",
         "bytes": null,
         "sha256": "b79cb1d2d06e62a6904a84f3377267b07d5b6daf9d28bfda52a816a9ef91f8c9"
@@ -46,7 +46,7 @@
         "name": "REA JavaScript application analyzer",
         "version": "1"
       },
-      "output_file": "/Users/david/dev/era-agent/.era/runs/rea-20261014T122321-487411/output.json",
+      "output_file": "<era-repo>/.era/runs/rea-20261014T122321-487411/output.json",
       "output_bytes": 4363098,
       "progress_events": 17,
       "warnings": [],
@@ -139,5 +139,5 @@
       "main.cjs->../scripts/test-ui.cjs"
     ]
   },
-  "report_path": "/Users/david/dev/era-agent/.era/analyses/analysis-20261014T122321-7ce052/report.md"
+  "report_path": "<era-repo>/.era/analyses/analysis-20261014T122321-7ce052/report.md"
 }
