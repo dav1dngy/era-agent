@@ -141,6 +141,13 @@ session's commits and the full suite then passed; the e2e-lab failure did not re
 4. Diagnose the `e2e-lab` intermittent rejection under load.
 5. Package/notarize and test on a clean machine; accessibility pass; independent security review.
 
+## Follow-up verification (2026-10-14, commit 122a1d9)
+
+- `npm test` rerun: 296 tests, 295 pass, 0 fail, 1 skipped (193 s); matches the table above.
+- `tests/e2e-lab.test.js` run as 6 concurrent processes (heavy load): 6/6 passed (3 tests each). The intermittent rejection
+  did **not** reproduce, so it remains undiagnosed; the test already prints the failed guards and candidate failures if it recurs.
+- Ghidra 12.1.4 verified healthy in `rea doctor` once a JDK 21 is on PATH and `GHIDRA_INSTALL_DIR` is set.
+
 ## Starting a new session
 
 Read `CLAUDE.md`, this file, then run `git status`, `git log -3`, `node bin/era.mjs status`. Run the full test suite before and
