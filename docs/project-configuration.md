@@ -52,6 +52,22 @@ labels them `detected`.
 | `maxDiffBytes` | 2,000,000 | larger diffs are rejected |
 | `maxCopyBytes` / `maxCopyFiles` | 200 MB / 20,000 | refuse to copy bigger projects |
 
+#### What can actually cost money
+
+`maxCostUsd` and `maxCostUsdTotal` are ceilings, not charges. ERA itself never bills anything; a charge can only come
+from the coding-agent provider you run.
+
+| Agent | Reports a dollar cost | Effect of the two limits |
+|---|---|---|
+| `claude-code` | yes (`total_cost_usd`, `--max-budget-usd`) | enforced: the run stops when the budget is used up. Real API charges depend on your Claude account or API key |
+| `codex` | no (tokens only) | **not enforceable**. Refused unless `allowUnmeteredAgents` is on; if on, only your provider plan, time and attempt limits cap it |
+| `command`, `custom:*` | no | same as `codex` |
+| `manual` | not applicable | no agent call |
+
+REA runs locally and has no per-use charge. Unmetered agents are off by default (Studio: Settings → Execution → "Agents
+without a dollar cost"; recorded in the audit log as `policy.unmetered_agents`). Remote providers also need per-project
+consent. Whether a given provider plan bills per use is a property of that plan; ERA cannot see it.
+
 Global defaults live in `era.config.json`:
 
 ```json
