@@ -12,7 +12,7 @@ import { spentUsd } from '../orchestration/cycle.js';
 import { runProjectCommand } from './runner.js';
 import { agentCapabilities } from '../agents/coding-agents.js';
 import { assertRemoteConsent, remoteProviders, rolesOf } from '../agents/team.js';
-import { scanSecretContent } from './exposure.js';
+import { exposureFilter, findWithheldNow, removeWithheld, scanSecretContent } from './exposure.js';
 import { copyProject, removeWorkspace, treeDigest, wgit, workspaceChanges } from './workspace.js';
 
 // Raised by a step that cannot continue until a human acts (manual agent).
@@ -168,6 +168,28 @@ export class RunContext {
     return info;
   }
 
+  // Exposure is a property of each INVOCATION, not of the initial copy: build/test/acceptance commands and earlier agents can
+  // recreate withheld instruction files and credential files, and role snapshots are copied later still. Before every agent
+  // run, the directory that agent will see is checked again: withheld files are removed from that view, newly appearing
+  // secret-looking content stops the run (fail closed), and the result is recorded per invocation.
+  enforceInvocationExposure({ cwd, agent, caps, role, phase, attempt }) {
+    const exposure = this.project.exposure ?? { remote_consent: [], allow_secret_content: false };
+    const remote = !!caps.remote;
+    const instructions = !!caps.readsInstructionFiles && exposure.keep_instruction_files !== true;
+    if (!remote && !instructions) return { checked: false };
+    const found = findWithheldNow(cwd, { remote, instructions });
+    removeWithheld(cwd, found);
+    const secrets = remote ? scanSecretContent(cwd) : [];
+    const record = { at: new Date().toISOString(), role, phase, attempt, agent, remote, withheld_before_run: found.map((f) => f.path), secret_content_files: secrets.map((x) => `${x.file} (${x.kind})`) };
+    this.run.exposure_invocations = [...(this.run.exposure_invocations ?? []), record].slice(-200);
+    this.save();
+    this.store.log(this.project.id, { type: 'exposure-checked', run_id: this.run.run_id, role, phase, attempt, agent, withheld_before_run: found.length, secret_content_files: secrets.length });
+    if (secrets.length && !exposure.allow_secret_content) {
+      throw new SafetyError(`Secret-looking content appeared in ${secrets.length} file(s) (${secrets.slice(0, 5).map((x) => `${x.file}: ${x.kind}`).join('; ')}) before the ${role} agent (${agent}) would run; it would be sent to a remote provider. The agent was not started. Remove the secrets, stop the project's commands from generating them, or authorize this with exposure.allow_secret_content (--allow-secret-content).`);
+    }
+    return { checked: true, withheld: found.map((f) => f.path) };
+  }
+
   budget() {
     const pb = this.config.projectLab?.budget ?? {};
     return effectiveBudget({ maxCostUsdPerCycle: this.project.limits.maxCostUsd, maxCostUsdTotal: this.project.limits.maxCostUsdTotal, allowUnmeteredAgents: pb.allowUnmeteredAgents === true });
@@ -212,6 +234,8 @@ export class RunContext {
     const promptFile = this.writeArtifact(`prompts/${role}-${phase}-${attempt}.md`, promptText);
     this.store.log(this.project.id, { type: 'implementer-started', run_id: agentRunId, cycle_id: this.run.run_id, agent: agent.id, role, phase, attempt, read_only: readOnly, images: images.length, budget_usd: agent.metered ? budgetUsd : null });
     const isolation = sandboxAvailable() ? candidateIsolation() : null;
+    // Fresh exposure check of exactly what this agent will see (the live working copy or a role snapshot).
+    this.enforceInvocationExposure({ cwd, agent: agent.id, caps, role, phase, attempt });
     const task = {
       worktree: cwd,
       prompt: promptText,
@@ -265,7 +289,7 @@ export class RunContext {
   snapshot(name) {
     const dir = join(`${this.workspace}.roles`, name);
     removeWorkspace(dir);
-    copyProject(this.workspace, dir, { maxBytes: this.project.limits.maxCopyBytes, maxFiles: this.project.limits.maxCopyFiles });
+    copyProject(this.workspace, dir, { maxBytes: this.project.limits.maxCopyBytes, maxFiles: this.project.limits.maxCopyFiles, exclude: exposureFilter(this.project, this.config) });
     return dir;
   }
 

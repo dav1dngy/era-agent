@@ -1,8 +1,8 @@
 // What a coding agent is allowed to see. Applied when the isolated working copy is made, so a
 // remote provider never receives credential files, and a hostile project cannot smuggle
 // instructions to an agent through the files that agents load automatically.
-import { closeSync, openSync, readFileSync, readSync, statSync } from 'node:fs';
-import { join } from 'node:path';
+import { closeSync, lstatSync, openSync, readdirSync, readFileSync, readSync, statSync, unlinkSync } from 'node:fs';
+import { join, relative } from 'node:path';
 import { SECRET_PATTERNS } from '../safety/secrets.js';
 import { agentCapabilities } from '../agents/coding-agents.js';
 import { rolesOf, rolesProviders } from '../agents/team.js';
@@ -71,4 +71,41 @@ export function scanSecretContent(root, { maxHits = 50 } = {}) {
     if (hits.length >= maxHits) break;
   }
   return hits;
+}
+
+// Directories an agent could read but that hold third-party or VCS data, not project files that a command could have just written.
+const SWEEP_SKIP = new Set(['.git', 'node_modules']);
+
+// Files an agent about to run in `root` must not see, found NOW (the filter applied when the working copy was made says nothing
+// about files that build, test or acceptance commands, or an earlier agent, wrote since). Every directory is searched except
+// .git and node_modules; symlinks are never followed.
+export function findWithheldNow(root, { remote, instructions }) {
+  const found = [];
+  const visit = (dir) => {
+    for (const e of readdirSync(dir, { withFileTypes: true })) {
+      const full = join(dir, e.name);
+      const rel = relative(root, full);
+      if (e.isDirectory()) {
+        if (!SWEEP_SKIP.has(e.name)) visit(full);
+      } else if (e.isFile() || e.isSymbolicLink()) {
+        if (remote && isSensitiveFile(rel)) found.push({ path: rel, reason: 'credential-like file withheld from remote AI providers' });
+        else if (instructions && isInstructionFile(rel)) found.push({ path: rel, reason: 'agent instruction file withheld (project content is untrusted data, not instructions)' });
+      }
+    }
+  };
+  visit(root);
+  return found;
+}
+
+// Removes such files from the view an agent is about to receive. Only regular files and symlinks inside `root` are unlinked.
+export function removeWithheld(root, found) {
+  for (const f of found) {
+    const full = join(root, f.path);
+    if (relative(root, full).startsWith('..')) continue;
+    try {
+      if (lstatSync(full).isFile() || lstatSync(full).isSymbolicLink()) unlinkSync(full);
+    } catch {
+      // already gone
+    }
+  }
 }
