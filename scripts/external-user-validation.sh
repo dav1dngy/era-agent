@@ -97,7 +97,8 @@ run env ERA_STATE_DIR="$ERA_STATE_DIR" "$NODE" bin/era.mjs project modify shop $
 DIGEST_BEFORE="$(cd "$WORK/shop" && find . -type f -not -path './.git/*' | sort | xargs shasum | shasum | cut -c1-16)"
 api POST /api/projects/shop/reject '{"confirm":true}' > "$WORK/reject.json"
 check "reject leaves the original unchanged" bash -c "[ \"\$(cd '$WORK/shop' && find . -type f -not -path './.git/*' | sort | xargs shasum | shasum | cut -c1-16)\" = '$DIGEST_BEFORE' ]"
-if api GET /api/projects/shop | jget "b.latest_run.status" | grep -q rejected; then ok "the rejected run is recorded as rejected"; else bad "the rejected run is recorded as rejected (reject answered: $(cut -c1-200 "$WORK/reject.json"))"; fi
+# Rejecting closes the run (status "cancelled"), discards the isolated copy and applies nothing; "rejected" is the status of a run whose verification failed.
+if api GET /api/projects/shop | jget "b.latest_run.status" | grep -q cancelled; then ok "the declined run is closed and recorded (cancelled, nothing applied)"; else bad "the declined run is closed and recorded (reject answered: $(cut -c1-200 "$WORK/reject.json"))"; fi
 
 printf '\n==============================\n'
 if [ "$FAILS" -eq 0 ]; then echo "EXTERNAL USER VALIDATION: PASS"; exit 0; fi
