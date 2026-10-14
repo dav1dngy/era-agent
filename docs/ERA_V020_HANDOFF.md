@@ -48,6 +48,7 @@ cd /Users/david/dev/era-agent
 npm install                       # root (REA dependency)
 npm install --prefix apps/studio  # Studio deps incl. Electron (downloads Electron)
 node bin/era.mjs status           # branch, REA resolution, providers
+# Ghidra needs: export PATH="/opt/homebrew/opt/openjdk@21/bin:$PATH" GHIDRA_INSTALL_DIR=/opt/homebrew/opt/ghidra/libexec
 node bin/era.mjs agents           # coding agents / reasoning providers / teams
 node bin/era.mjs studio serve --open   # browser mode; prints a URL with a one-time token (keep private)
 node bin/era.mjs studio                # Electron desktop (or: cd apps/studio && npm start)
@@ -64,7 +65,7 @@ cd apps/studio && npm run test:desktop   # Electron scenarios (opens windows, ~1
 | `npm run check` | "checks passed (407 tracked files)" |
 | `npm run test:desktop` (Electron 44.7.1) | **14/14 scenario groups PASS**; REA real, coding agent simulated |
 | `era studio serve` | listens on 127.0.0.1; `/` returns 200; `/api/status` without token returns 401 |
-| REA backend | `era status`: rea-agents 6.4.0 via local dependency; Hopper available, Ghidra/IDA unavailable; `era analyze apps/studio/web/js/api.js` completed and wrote a report |
+| REA backend | `era status`: rea-agents 6.4.0 via local dependency; Hopper available, IDA unavailable; Ghidra 12.1.4 is installed (Homebrew) but only visible to REA when `GHIDRA_INSTALL_DIR` and a JDK on PATH are set, see Install and start; `era analyze apps/studio/web/js/api.js` completed and wrote a report |
 
 Not run this session: `npm run test:package`, `clean-install-test`, the benchmark suite, the live provider validation scripts.
 
