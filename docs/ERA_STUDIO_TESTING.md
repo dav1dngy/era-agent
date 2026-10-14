@@ -1,5 +1,8 @@
 # ERA Studio validation and development handoff
 
+> **Historical record.** This page records the checks of the 2026-10-14 `v0.2.0-dev.1` checkpoint. For the current revision,
+> its test counts and what is real, mocked or unverified, read [SUPPORT_AND_VALIDATION.md](SUPPORT_AND_VALIDATION.md).
+
 Validation date: 2026-10-14 (Europe/Berlin). Platform: macOS arm64,
 Node 24.20.0, Electron 44.7.1 (embedded Node 24.21.0), REA 6.4.0.
 Development branch: `feature/era-v0.2.0`. The checks below were recorded before

@@ -7,10 +7,13 @@ which improves ERA itself. Project Lab never operates on ERA's own installation
 (paths inside it are refused).
 
 > Status: ERA v0.2.0 development (branch `feature/era-v0.2.0`), experimental.
-> Verified on macOS arm64 with scripted *mock* agents, plus real REA and the
-> projects' own tests. No real coding agent (Claude Code, Codex) has been run
-> through Project Lab yet. See [project-lab-testing.md](project-lab-testing.md)
-> for exactly what is real and what is mocked.
+> The automated tests use scripted *mock* agents, real REA and the projects' own
+> tests. Real Codex runs (including one end-to-end modify, one screenshot rebuild
+> and a review) are recorded in [provider-validation.md](provider-validation.md);
+> Claude Code has never been run against the real CLI. See
+> [project-lab-testing.md](project-lab-testing.md) and
+> [SUPPORT_AND_VALIDATION.md](SUPPORT_AND_VALIDATION.md) for exactly what is real,
+> mocked and unverified, per revision.
 
 ## The three modes
 

@@ -73,18 +73,37 @@ All of `src/` is ERA-specific. REA is the `rea-agents@6.4.0` dependency (MIT,
 
 ## Install
 
+There are three different things you can install; pick the one you need.
+
+| You want | Source | Includes ERA Studio |
+|---|---|---|
+| The stable **CLI** (v0.1.0) | the default branch `main`, or the npm tarball built from it | no |
+| The **v0.2.0 development line**: CLI plus ERA Studio (desktop shell or browser) | branch `feature/era-v0.2.0` | yes |
+| A **desktop application** | built locally with `npm run package --prefix apps/studio` (unsigned, macOS arm64). No signed or notarized download is published | yes |
+
+The CLI tarball and the default branch do **not** contain `apps/studio`; following the CLI steps and then running a Studio command fails.
+
 ```bash
-git clone https://github.com/dav1dngy/era-agent.git
-cd era-agent
-npm install          # installs the REA engine (rea-agents 6.4.0)
-npm test
-npm link             # optional: `era` on PATH
-era status
+# CLI only (stable)
+git clone https://github.com/dav1dngy/era-agent.git && cd era-agent
+npm install && npm test && node bin/era.mjs status
+
+# v0.2.0 development line with ERA Studio
+git clone --branch feature/era-v0.2.0 https://github.com/dav1dngy/era-agent.git && cd era-agent
+npm ci && npm ci --prefix apps/studio
+node bin/era.mjs studio doctor        # checks what Studio needs on this machine
+node bin/era.mjs studio app           # desktop shell; or: node bin/era.mjs studio serve --open (browser)
 ```
 
-Requirements: Node.js `^22.19 || ^24.11 || >=26` (REA's supported range; verified on 24.20 only), git. Native decompilation needs Hopper, Ghidra
-12.1.x (`GHIDRA_INSTALL_DIR`) or IDA Pro MCP. ERA needs no API keys. Details and
-troubleshooting: [docs/installation.md](docs/installation.md).
+The remote `feature/era-v0.2.0` branch may be behind the latest local work: fixes described in
+[docs/ERA_V020_REMEDIATION.md](docs/ERA_V020_REMEDIATION.md) are in a clone only once they are published. Put `era` on your PATH
+with `npm link` (optional). Studio has an in-app **Help** page (sidebar, ⌘K, and F1 in the desktop app) that works offline.
+
+Requirements: Node.js `^22.19 || ^24.11 || >=26` (REA's supported range; verified on 24.20 only), git; Python 3 for the Studio terminal.
+Native decompilation needs Hopper, Ghidra 12.1.x (a JDK 21 on `PATH` and `GHIDRA_INSTALL_DIR`; the desktop app imports only your shell's
+`PATH`, so start it from that shell) or IDA Pro MCP. ERA needs no API keys. Details, state locations and
+troubleshooting: [docs/installation.md](docs/installation.md). What has been verified, on which platform and revision:
+[docs/SUPPORT_AND_VALIDATION.md](docs/SUPPORT_AND_VALIDATION.md).
 
 ## Analyze software
 
@@ -215,6 +234,10 @@ node bin/era.mjs studio app
 # Unsigned macOS application: npm run package --prefix apps/studio
 ```
 
+![ERA Studio first launch (real capture; the coding agent in that run is a scripted stand-in)](docs/assets/v0.2.0-dev/01-first-launch-dark.png)
+
+More captures and what is real or simulated: [docs/ERA_STUDIO.md](docs/ERA_STUDIO.md#visual-tour).
+
 CLI users do not need Studio's optional dependencies. macOS arm64 is validated;
 no signed/notarized release is published. Read the [Studio guide](docs/ERA_STUDIO.md),
 [architecture](docs/ERA_STUDIO_ARCHITECTURE.md), [security limits](docs/ERA_STUDIO_SECURITY.md)
@@ -316,18 +339,20 @@ See [SECURITY.md](SECURITY.md).
 
 ## Limitations
 
-* **Experimental.** Five improvement experiments so far. The real coding agent
-  was Claude Code working interactively (`manual` mode). The `claude-code` and
-  `codex` adapters are tested only against fake CLIs.
+* **Experimental.** Improvement-Lab cycles so far were implemented by a coding agent working interactively (`manual` mode), not by
+  the `claude-code` or `codex` adapters. The adapters are tested against scripted CLIs; Codex was additionally validated in real runs
+  (see [docs/provider-validation.md](docs/provider-validation.md)); Claude Code was never validated against the real CLI.
 * Native analysis covers Mach-O only. Hopper's public API exposes no complete
   function bodies, and Hopper occasionally hangs (ERA's watchdog contains it).
 * **REA limits observed:** a fixed JavaScript result budget (ERA splits its
   self-analysis around it); no retained call-argument string literals; CommonJS
   member exports are reported as `default` (ERA infers member names and marks
   them as inferred).
-* `sandbox-exec` is deprecated by Apple but functional. It denies network and
-  writes but **allows reads** outside explicitly denied paths. It is not a
-  confidentiality sandbox: analyze hostile binaries on an isolated host.
+* `sandbox-exec` is deprecated by Apple but functional. For project commands, terminals, the Git panel and Lab candidates the profile
+  denies network and writes, denies signalling other processes, and closes the home directory and the shared temporary folders for reads
+  (toolchains on `PATH`, ERA's own code and the working copy stay readable). Other locations (for example external volumes) remain
+  readable, so it is still not a general confidentiality sandbox: analyze hostile binaries on an isolated host. Runtime capture
+  of a reference binary uses the same profile; the coding-agent CLIs do not run under it.
   There is no sandbox on Linux, so Lab evaluation fails closed there.
 * `era rea …` passthrough runs REA directly: no ERA run records, sandbox,
   watchdog or redaction. Process-group containment does not cover deliberately

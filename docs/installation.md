@@ -10,15 +10,37 @@
 | git | required for self-improvement (worktrees, tags) |
 | Optional: Hopper Disassembler, Ghidra 12.1.x, or IDA Pro MCP | only for native decompilation (`era analyze <mach-o>` decompiles exported functions when `rea providers` reports one available) |
 
+## Choose what to install
+
+| Route | What you get | Contains ERA Studio |
+|---|---|---|
+| Stable CLI: default branch `main` (v0.1.0) or the npm tarball | the `era` command line | **no** |
+| Development line: branch `feature/era-v0.2.0` | CLI plus ERA Studio (desktop shell and browser) | yes |
+| Local desktop build: `npm run package --prefix apps/studio` | an unsigned macOS arm64 `ERA Studio.app` | yes |
+
+Neither the CLI tarball nor `main` contains `apps/studio`. No signed or notarized desktop download is published.
+
 ## Install from source
 
 ```bash
-git clone https://github.com/dav1dngy/era-agent.git
+git clone https://github.com/dav1dngy/era-agent.git      # stable CLI (main)
 cd era-agent
 npm install          # installs rea-agents@6.4.0 (the REA engine)
 npm test             # unit + REA integration tests
 node bin/era.mjs --help
 ```
+
+For ERA Studio clone the development branch instead and install both dependency sets:
+
+```bash
+git clone --branch feature/era-v0.2.0 https://github.com/dav1dngy/era-agent.git && cd era-agent
+npm ci && npm ci --prefix apps/studio
+node bin/era.mjs studio doctor && node bin/era.mjs studio app
+```
+
+Commits not yet pushed to that branch are not in a fresh clone. State lives in `.era/` of a source checkout (CLI and `studio app`) or
+in the packaged app's own data folder under `~/Library/Application Support/` (its `state` subfolder); delete it to reset. To upgrade, `git pull`, `npm ci` and
+`npm ci --prefix apps/studio`; if a run is interrupted use `era project resume <id>` or `era improve recover`.
 
 To put `era` on your PATH:
 

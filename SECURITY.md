@@ -30,16 +30,18 @@ OWASP guidance for agentic AI applications, least privilege and defense in depth
 
 ## Known limitations
 
-* `sandbox-exec` is deprecated by Apple (still functional on macOS 27). The runtime
-  profile allows reads anywhere the user can read: it is not a confidentiality
-  sandbox. REA itself runs unsandboxed as trusted code.
+* `sandbox-exec` is deprecated by Apple (still functional on macOS 27). Since the v0.2.0 audit remediation the profiles deny
+  signalling processes outside the sandbox and reads of the home directory and shared temporary folders (toolchains on `PATH`,
+  ERA's code and the working copy excepted). Locations outside those, such as external volumes, are still readable: it is not a
+  complete confidentiality sandbox. REA itself runs unsandboxed as trusted code. Coding-agent CLIs run under their own isolation.
 * `era rea …` passthrough has none of ERA's protections (sandbox, watchdog,
   records, redaction).
 * Process groups do not contain deliberately detached descendants or GUI
   providers launched by REA (Hopper).
-* An independent audit (docs/ERA_INDEPENDENT_AUDIT.md) found 5 high and 9 medium
-  issues. Their remediation (docs/audit-remediation.md) has not yet been
-  re-reviewed independently.
+* An independent audit of v0.1.0 (docs/ERA_INDEPENDENT_AUDIT.md) found 5 high and 9 medium issues (remediation:
+  docs/audit-remediation.md). A second independent audit of the v0.2.0 development line
+  (docs/ERA_V020_INDEPENDENT_AUDIT.md) found 5 high, 8 medium and 3 low issues; their remediation
+  (docs/ERA_V020_REMEDIATION.md) has not been independently re-reviewed.
 * Coding agents run with your user permissions inside the worktree, restricted
   only by their own mechanisms (Claude Code `acceptEdits`, Codex
   `workspace-write`). Review every change proposal before approving it.

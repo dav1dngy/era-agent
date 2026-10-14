@@ -1,0 +1,35 @@
+{
+  "release": "v0.2.0-dev (development build, 0.2.0-dev.1)",
+  "captured": "2026-10-14",
+  "platform": "macOS 27.0.1 arm64, Electron 44.7.1",
+  "app_code": "commit ece7dbc",
+  "how": "npm run test:desktop --prefix apps/studio (real Electron app, real control plane, real REA 6.4.0, controlled fixture project \"cart\")",
+  "simulated": "The coding agent in these scenarios is a scripted stand-in and no real model was called; the agents list in the UI labels providers Unavailable or Simulated.",
+  "images": [
+    {
+      "file": "01-first-launch-dark.png",
+      "source_capture": "home-empty-dark.png",
+      "sha256": "561940682f470ff66ca1906faa49d302117f845d3af77826d017c114718d44eb",
+      "alt": "First launch: the New Task page with no projects, the status panel (control plane live, REA ready), the agent list (providers unavailable or simulated) and the project-folder field."
+    },
+    {
+      "file": "02-projects-dark.png",
+      "source_capture": "projects-dark.png",
+      "sha256": "fd6321a0273f9b6d02ebe15fed607d2361234dd336ffe4c7b4d7038e871dab79",
+      "alt": "Projects page with one project card (a Modify project), counters for total, running and awaiting approval, search and the New project and Clone repository actions."
+    },
+    {
+      "file": "03-workbench-monaco-dark.png",
+      "source_capture": "workbench-dark.png",
+      "sha256": "5a29346721191f2dfdbcc1b8de80ff4c098e57f49500f3ad60b37e37c496af6b",
+      "alt": "Workbench in Advanced mode: the original project read-only in the file tree and the Monaco editor with syntax highlighting."
+    },
+    {
+      "file": "04-review-diff-approval-dark.png",
+      "source_capture": "review-dark.png",
+      "sha256": "620f169847a71c34bf8cd685faaf4923adc1898253bdb8c38a1cf1acb0500619",
+      "alt": "Changes and approval page: a verified one-file diff in Monaco side by side, with Reject and Approve, and the build and test results below.",
+      "note": "Cropped (top and bottom 300 px removed) to omit a temporary directory path that identifies the test machine; no pixels were edited."
+    }
+  ]
+}

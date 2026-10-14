@@ -13,7 +13,7 @@ specified in the root package, npm, Git and Python 3 for the terminal. Native
 function decompilation additionally needs a REA-compatible provider such as Hopper.
 Sign in to any coding-agent CLI you intend to use; Studio does not store credentials.
 
-From an authorized checkout of `feature/era-v0.2.0`:
+From a checkout of the `feature/era-v0.2.0` branch (the default branch `main` is the v0.1.0 CLI and has no Studio):
 
 ```sh
 npm ci
@@ -169,3 +169,21 @@ development prerelease is created separately and does not replace stable v0.1.0.
 - Native `.app` builds, sandbox, UI and terminal have been validated on macOS arm64;
   Windows/Linux and Intel remain unverified. Accessibility has basic keyboard/focus
   support, not a formal audit. See the testing and security documents before release.
+
+## Visual tour
+
+Real captures of the development build (see [assets/v0.2.0-dev/README.md](assets/v0.2.0-dev/README.md): real app, control plane and REA; the coding
+agent is a scripted stand-in). Workflow: *create a project → describe the check → the agent works in an isolated copy → review the verified diff →
+approve or reject → roll back if needed.*
+
+![First launch of ERA Studio: the New Task page with no projects, workspace status and agent list](assets/v0.2.0-dev/01-first-launch-dark.png)
+
+![Projects page with one Modify project card and counters for running and awaiting approval](assets/v0.2.0-dev/02-projects-dark.png)
+
+![Workbench in Advanced mode with the original project read-only and the Monaco editor](assets/v0.2.0-dev/03-workbench-monaco-dark.png)
+
+![Changes and approval page with a verified one-file diff and the Reject and Approve buttons](assets/v0.2.0-dev/04-review-diff-approval-dark.png)
+
+Not yet captured: Rebuild prerequisites, screenshot comparison, plan approval, rollback and settings. In the app, **Help** (sidebar, ⌘K, F1 in the desktop
+app) explains setup, cost and consent, Rebuild prerequisites, approval and rollback offline.
+
