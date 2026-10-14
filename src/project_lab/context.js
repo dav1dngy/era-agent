@@ -140,6 +140,12 @@ export class RunContext {
     return this.agentFor('implementer');
   }
 
+  // How the implementer can see images ('flag' | 'read-tool' | 'env' | 'none').
+  agentImageSupport() {
+    const a = this.agent();
+    return a ? agentCapabilities(a.id, this.config, { strict: false }).images ?? 'none' : 'none';
+  }
+
   hasRole(role) {
     return !!rolesOf(this.project)[role];
   }
@@ -167,7 +173,7 @@ export class RunContext {
     return effectiveBudget({ maxCostUsdPerCycle: this.project.limits.maxCostUsd, maxCostUsdTotal: this.project.limits.maxCostUsdTotal, allowUnmeteredAgents: pb.allowUnmeteredAgents === true });
   }
 
-  async invokeAgent({ phase, prompt, readOnly = false, attempt = 1, role = 'implementer', cwd = this.workspace }) {
+  async invokeAgent({ phase, prompt, readOnly = false, attempt = 1, role = 'implementer', cwd = this.workspace, images = [] }) {
     const agent = this.agentFor(role);
     if (!agent) throw new Error(`No agent is assigned to the ${role} role.`);
     if (agent.id === 'manual') return { manual: true, agent: 'manual', role };
@@ -188,13 +194,14 @@ export class RunContext {
     if (this._active) throw new SafetyError(`Refusing to start the ${role} agent while the ${this._active.role} agent is still running.`);
     this._active = { role, agent: agent.id };
     try {
-      return await this.runAgentOnce({ agent, caps, phase, prompt, readOnly, attempt, role, cwd });
+      if (images.length && (caps.images ?? 'none') === 'none') throw new Error(`Coding agent "${agent.id}" cannot look at images, so it cannot rebuild from a screenshot. Choose an agent with image support (for example Codex, or Claude Code) in the Agent Command Center.`);
+      return await this.runAgentOnce({ agent, caps, phase, prompt, readOnly, attempt, role, cwd, images });
     } finally {
       this._active = null;
     }
   }
 
-  async runAgentOnce({ agent, caps, phase, prompt, readOnly, attempt, role, cwd }) {
+  async runAgentOnce({ agent, caps, phase, prompt, readOnly, attempt, role, cwd, images = [] }) {
     const events = this.store.events(this.project.id);
     const budget = this.budget();
     const perRunLeft = budget.maxCostUsdPerCycle - spentUsd(events, this.run.run_id);
@@ -203,7 +210,7 @@ export class RunContext {
     const agentRunId = newId('agent');
     const promptText = redactText(prompt);
     const promptFile = this.writeArtifact(`prompts/${role}-${phase}-${attempt}.md`, promptText);
-    this.store.log(this.project.id, { type: 'implementer-started', run_id: agentRunId, cycle_id: this.run.run_id, agent: agent.id, role, phase, attempt, read_only: readOnly, budget_usd: agent.metered ? budgetUsd : null });
+    this.store.log(this.project.id, { type: 'implementer-started', run_id: agentRunId, cycle_id: this.run.run_id, agent: agent.id, role, phase, attempt, read_only: readOnly, images: images.length, budget_usd: agent.metered ? budgetUsd : null });
     const isolation = sandboxAvailable() ? candidateIsolation() : null;
     const task = {
       worktree: cwd,
@@ -214,6 +221,7 @@ export class RunContext {
       phase,
       readOnly,
       timeoutMs: this.project.limits.agentTimeoutMs,
+      images: images.map((i) => ({ path: i.path, name: i.name, mime: i.mime, width: i.width, height: i.height })),
       budgetUsd: agent.metered ? budgetUsd : null,
       // A configured agent command may use the network and its own credentials, but
       // can write only inside its own directory and a private temp directory.

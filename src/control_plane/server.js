@@ -23,12 +23,14 @@ import { analysisService } from './services/analysis.js';
 import { improvementService } from './services/improvement.js';
 import { projectsService } from './services/projects.js';
 import { systemService } from './services/system.js';
+import { UPLOAD_MIME, uploadsService } from './services/uploads.js';
 import { tasksService } from './services/tasks.js';
 import { workbenchService } from './services/workbench.js';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const DEFAULT_WEB_ROOT = resolve(HERE, '..', '..', 'apps', 'studio', 'web');
 const MAX_BODY = 1_000_000;
+const MAX_UPLOAD = 13 * 1024 * 1024;
 const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.mjs': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json', '.svg': 'image/svg+xml', '.png': 'image/png', '.woff2': 'font/woff2', '.ttf': 'font/ttf', '.map': 'application/json' };
 const CSP = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self'; worker-src 'self' blob:; frame-ancestors 'none'; base-uri 'none'; form-action 'none'; object-src 'none'";
 
@@ -58,6 +60,14 @@ export async function createControlPlane({ config, rea, log = nullLogger, versio
   const audit = new AuditLog(config.stateDirAbs);
   const settingsStore = new SettingsStore(config.stateDirAbs, { eraConfig: config });
   const getSettings = () => settingsStore.load();
+  // In-process services (status, approval, AI assist, preflight) see the same unmetered-agent policy as the jobs:
+  // the config file's value OR Studio's explicit setting.
+  const fileAllowsUnmetered = config.projectLab?.budget?.allowUnmeteredAgents === true;
+  const applyPolicy = () => {
+    const allow = fileAllowsUnmetered || getSettings().execution.allowUnmeteredAgents === true;
+    config.projectLab = { ...config.projectLab, budget: { ...config.projectLab.budget, allowUnmeteredAgents: allow } };
+  };
+  applyPolicy();
   const lab = createProjectLab({ config, rea, log, createAgent });
   const jobs = new JobManager({ config, bus, audit, getSettings, ...(eraBin ? { eraBin } : {}), ...(env ? { env } : {}) });
   const ctx = { config, rea, log, version, bus, audit, jobs, lab, createAgent, settings: getSettings, host, port: 0 };
@@ -68,8 +78,23 @@ export async function createControlPlane({ config, rea, log = nullLogger, versio
   ctx.improvement = improvementService(ctx);
   ctx.workbench = workbenchService(ctx);
   ctx.system = systemService(ctx);
+  ctx.uploads = uploadsService(ctx);
   ctx.tasks = tasksService(ctx);
   const vendor = vendorMap(vendorRoots);
+
+  const rawBody = (req, limit) =>
+    new Promise((resolveBody, reject) => {
+      const chunks = [];
+      let size = 0;
+      let tooBig = false;
+      req.on('data', (c) => {
+        size += c.length;
+        if (tooBig) return;
+        if (size > limit) { tooBig = true; chunks.length = 0; reject(new HttpError(413, `The upload is larger than ${Math.round(limit / 1048576)} MB.`)); } else chunks.push(c);
+      });
+      req.on('end', () => { if (!tooBig) resolveBody(Buffer.concat(chunks)); });
+      req.on('error', reject);
+    });
 
   const body = (req) =>
     new Promise((resolveBody, reject) => {
@@ -114,6 +139,8 @@ export async function createControlPlane({ config, rea, log = nullLogger, versio
     const r = settingsStore.update(b);
     if (!r.ok) throw bad('Settings were not applied.', { errors: r.errors });
     audit.record('settings.updated', { changed: r.changed });
+    if (r.changed.includes('execution.allowUnmeteredAgents')) audit.record('policy.unmetered_agents', { enabled: r.settings.execution.allowUnmeteredAgents, note: 'agents that report no dollar cost may now run without a dollar spending cap' });
+    applyPolicy();
     bus.publish('settings.updated', { changed: r.changed });
     return { settings: r.settings, changed: r.changed };
   });
@@ -124,9 +151,10 @@ export async function createControlPlane({ config, rea, log = nullLogger, versio
   route('GET', '/api/projects/:id', async (m) => P.status(m[1]));
   route('PATCH', '/api/projects/:id', async (m, _r, _u, b) => ({ project: P.update(m[1], b) }));
   route('DELETE', '/api/projects/:id', async (m) => P.remove(m[1]));
+  route('GET', '/api/projects/:id/preflight', async (m, _r, u) => lab.preflight(m[1], q(u, 'op', 'modify'), { studio: true, trust: ctx.settings().permissions.trustedExecution }));
   route('POST', '/api/projects/clone', async (_m, _r, _u, b) => ({ job: P.clone(b) }));
   route('POST', '/api/projects/:id/assist', async (m, _r, _u, b) => ctx.workbench.assist(m[1], b));
-  route('POST', '/api/projects/:id/ops/:op', async (m, _r, _u, b) => ({ job: P.startOp(m[1], m[2], b) }));
+  route('POST', '/api/projects/:id/ops/:op', async (m, _r, _u, b) => ({ job: await P.startOp(m[1], m[2], b) }));
   route('POST', '/api/projects/:id/cancel', async (m) => P.cancel(m[1]));
   route('GET', '/api/projects/:id/runs/:run', async (m) => P.runDetail(m[1], m[2] === 'latest' ? null : m[2]));
   route('GET', '/api/projects/:id/runs/:run/patch', async (m) => P.patchText(m[1], m[2] === 'latest' ? null : m[2]));
@@ -147,6 +175,16 @@ export async function createControlPlane({ config, rea, log = nullLogger, versio
   route('POST', '/api/terminals/:id/input', async (m, _r, _u, b) => ctx.workbench.input(m[1], b.data));
   route('POST', '/api/terminals/:id/resize', async (m, _r, _u, b) => ctx.workbench.resize(m[1], b.cols, b.rows));
   route('DELETE', '/api/terminals/:id', async (m) => ctx.workbench.closeTerminal(m[1]));
+
+  // screenshot uploads and run artifacts (images only, by exact name pattern)
+  route('GET', '/api/uploads/:set/:file', async (m) => {
+    const file = ctx.uploads.read(m[1], m[2]);
+    return { __raw: file.bytes, type: file.mime };
+  });
+  route('GET', '/api/projects/:id/runs/:run/artifact', async (m, _r, u) => {
+    const a = P.artifact(m[1], m[2] === 'latest' ? null : m[2], q(u, 'path', ''));
+    return { __raw: a.bytes, type: a.mime };
+  });
 
   // analysis (REA)
   route('GET', '/api/analyses', async () => ({ analyses: ctx.analysis.list() }));
@@ -207,6 +245,15 @@ export async function createControlPlane({ config, rea, log = nullLogger, versio
     if (!pre.ok) return send(res, pre.status, { error: pre.error });
     const auth = checkToken(req, token);
     if (!auth.ok) return send(res, auth.status, { error: auth.error });
+    // Image uploads are the one mutation that is not JSON; they still need the token, Host and Origin checks above.
+    if (req.method === 'POST' && url.pathname === '/api/uploads') {
+      const type = (req.headers['content-type'] ?? '').split(';')[0].trim().toLowerCase();
+      if (!UPLOAD_MIME.includes(type)) return send(res, 415, { error: 'Upload a PNG, JPEG or WebP image.' });
+      const buf = await rawBody(req, MAX_UPLOAD);
+      const saved = ctx.uploads.save(buf, { set: url.searchParams.get('set'), name: url.searchParams.get('name') ?? '' });
+      ctx.audit.record('upload.saved', { set: saved.set, type: saved.type, bytes: saved.bytes });
+      return send(res, 200, saved);
+    }
     const ct = checkMutationContentType(req);
     if (!ct.ok) return send(res, ct.status, { error: ct.error });
 
@@ -237,7 +284,12 @@ export async function createControlPlane({ config, rea, log = nullLogger, versio
       const m = re.exec(url.pathname);
       if (!m) continue;
       const payload = ['POST', 'PUT', 'PATCH'].includes(req.method) ? await body(req) : {};
-      return send(res, 200, await handler(m.map((x, i) => (i ? decodeURIComponent(x) : x)), req, url, payload));
+      const out = await handler(m.map((x, i) => (i ? decodeURIComponent(x) : x)), req, url, payload);
+      if (out?.__raw) {
+        res.writeHead(200, { 'Content-Type': out.type, 'Content-Length': out.__raw.length, 'Cache-Control': 'private, max-age=60', 'X-Content-Type-Options': 'nosniff', 'Content-Security-Policy': "default-src 'none'; sandbox" });
+        return res.end(out.__raw);
+      }
+      return send(res, 200, out);
     }
     return send(res, 404, { error: 'Unknown endpoint' });
   }

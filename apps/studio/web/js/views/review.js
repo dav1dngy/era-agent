@@ -4,6 +4,7 @@ import { Badge, Btn, Callout, Empty, Md, Section, Spinner, duration, short } fro
 import { closeModal, openModal, toast, useStore } from '../store.js';
 import { approvalState, groupFindings } from '../model.js';
 import { languageFor, loadMonaco, monacoTheme } from '../monaco.js';
+import { BehaviorResults, VisualCompare } from './rebuild.js';
 
 export function DiffView({ original, modified, path }) {
   const host = useRef();
@@ -43,6 +44,7 @@ export function ReviewCenter({ id }) {
   const [file, setFile] = useState(null);
   const [diff, setDiff] = useState(null);
   const [tab, setTab] = useState('verification');
+  useEffect(() => { if (data?.finalize?.visual || data?.finalize?.screenshot) setTab('visual'); else if (data?.run.op === 'rebuild') setTab('behaviors'); }, [data?.run.run_id]);
   const [error, setError] = useState(null);
   const load = () => get(`/api/projects/${id}/runs/latest`).then((d) => { setData(d); setError(null); setFile((f) => f ?? d.finalize?.files?.[0]?.path ?? null); }).catch((e) => setError(e.message));
   useEffect(() => { load(); }, [id, s.projects.find((p) => p.id === id)?.status]);
@@ -95,7 +97,9 @@ export function ReviewCenter({ id }) {
       <div class="diff-list" role="listbox" aria-label="Changed files">${fin.files.map((f) => html`<button role="option" aria-selected=${file === f.path} onClick=${() => setFile(f.path)}><span class=${`status-${f.status} mono`}>${f.status}</span><span class="truncate" title=${f.path}>${f.path}</span></button>`)}</div>
       <div style="height:420px">${!diff ? html`<${Spinner} />` : diff.error ? html`<${Callout} kind="bad">${diff.error}<//>` : html`<${DiffView} original=${diff.original} modified=${diff.modified} path=${diff.path} />`}</div>
     </div>
-    <div class="tabs" role="tablist" style="border:0;border-bottom:1px solid var(--border);background:transparent">${[['verification', 'Build & tests'], ['review', 'Agent review'], ['security', 'Security & limits'], ['limits', 'Remaining limitations'], ['report', 'Full report']].map(([k, l]) => html`<button class="tab" role="tab" aria-selected=${tab === k} onClick=${() => setTab(k)}>${l}</button>`)}</div>
+    <div class="tabs" role="tablist" style="border:0;border-bottom:1px solid var(--border);background:transparent">${[...(fin.visual || fin.screenshot ? [['visual', 'Visual comparison']] : []), ...(run.op === 'rebuild' && !fin.screenshot ? [['behaviors', 'Behaviors']] : []), ['verification', 'Build & tests'], ['review', 'Agent review'], ['security', 'Security & limits'], ['limits', 'Remaining limitations'], ['report', 'Full report']].map(([k, l]) => html`<button class="tab" role="tab" aria-selected=${tab === k} onClick=${() => setTab(k)}>${l}</button>`)}</div>
+    ${tab === 'visual' ? html`<${VisualCompare} projectId=${id} runId=${run.run_id} visual=${fin.visual} images=${fin.screenshot} />` : null}
+    ${tab === 'behaviors' ? html`<${BehaviorResults} behaviors=${fin.behaviors} />` : null}
     ${tab === 'verification' ? html`<div class="col">
       ${v ? html`<table class="table"><thead><tr><th>Command</th><th>Result</th><th>Time</th></tr></thead><tbody>${[...v.build, ...v.test, ...v.acceptance].map(cmdRow)}</tbody></table>` : html`<span class="muted">No verification recorded.</span>`}
       ${v?.tests ? html`<div class="muted">${v.tests.passed.length} test(s) passing, ${v.tests.failed.length} failing, ${v.tests.skipped.length} skipped (${v.tests.formats.join(', ')}).</div>` : html`<div class="muted">Test output could not be itemized; regressions were judged by exit code.</div>`}</div>` : null}

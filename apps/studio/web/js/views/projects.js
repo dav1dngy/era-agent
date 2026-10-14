@@ -4,6 +4,7 @@ import { Badge, Btn, Callout, Empty, Md, Section, Spinner, baseName, duration, u
 import { navigate, openModal, closeModal, set, toast, useStore } from '../store.js';
 import { buildPipeline, groupFindings, humanStep, progressPercent, simpleStatus } from '../model.js';
 import { jobLog } from '../main.js';
+import { Checklist, RebuildSetup } from './rebuild.js';
 import { Icon } from '../icons.js';
 
 export function Pipeline({ stages, compact = false }) {
@@ -137,6 +138,16 @@ function CreateProject() {
 // The backend's "next" text names CLI commands; the UI says the same thing in its own terms.
 const hint = (status) => ({ 'awaiting-approval': 'Next: review the change and approve or reject it.', interrupted: 'Next: resume the interrupted run.', failed: 'Next: read the error above, fix the cause, then resume.', 'awaiting-implementation': 'Next: edit the working copy in the workbench, then resume.', rejected: 'Next: see why it was rejected, adjust the task or acceptance criteria and run again.', applied: 'The change is applied. You can roll it back from Changes & approval.' })[status.latest_run?.status] ?? null;
 
+// What would stop (or weaken) the project's default operation, from the control plane's own checks.
+function PreflightPanel({ project, busy }) {
+  const [pf, setPf] = useState(null);
+  const load = () => get(`/api/projects/${project.id}/preflight?op=${project.mode}`).then(setPf).catch(() => setPf(null));
+  useEffect(() => { load(); }, [project.id, project.updated_at, busy]);
+  if (!pf) return null;
+  const problems = pf.checks.some((c) => c.status === 'fail' || c.status === 'warn');
+  return problems ? html`<${Checklist} checks=${pf.checks} onRecheck=${load} />` : html`<details class="checklist-ok"><summary class="muted" style="cursor:pointer">Prerequisites: all ${pf.checks.length} checks passed</summary><${Checklist} checks=${pf.checks} onRecheck=${load} /></details>`;
+}
+
 function RunControls({ project, status, onChange }) {
   const job = status.active_job;
   const [task, setTask] = useState(project.task ?? '');
@@ -151,6 +162,8 @@ function RunControls({ project, status, onChange }) {
       if (err instanceof ApiError && err.status === 403 && /not authorized/.test(err.message)) {
         const ids = (/to ([\w:\-, ]+?) is not authorized/.exec(err.message)?.[1] ?? '').split(',').map((x) => x.trim()).filter(Boolean);
         openModal({ title: 'Authorize sending source code', body: html`<${ConsentBody} project=${project} providers=${ids} op=${op} onDone=${onChange} />` });
+      } else if (err instanceof ApiError && err.status === 409 && err.detail?.checks) {
+        openModal({ title: `Cannot start ${op} yet`, wide: true, body: html`<${Checklist} checks=${err.detail.checks} />`, footer: html`<${Btn} onClick=${closeModal}>Close<//><${Btn} kind="primary" onClick=${() => { closeModal(); navigate(['projects', project.id, 'config']); }}>Open configuration<//>` });
       } else toast(err.message, 'bad', 9000);
     }
   };
@@ -161,7 +174,7 @@ function RunControls({ project, status, onChange }) {
     <div class="row wrap">
       <${Btn} disabled=${busy || !project.source} onClick=${() => start('review')}>Run review<//>
       <${Btn} kind="primary" disabled=${busy || !project.source || !task.trim()} onClick=${() => start('modify')}>Run modify<//>
-      <${Btn} disabled=${busy || !project.reference || !project.destination} onClick=${() => start('rebuild')} title=${project.reference ? '' : 'Needs a reference and a destination'}>Run rebuild<//>
+      <${Btn} disabled=${busy} onClick=${() => start('rebuild')}>Run rebuild<//>
       ${resumable ? html`<${Btn} onClick=${async () => { try { const { job: j } = await post(`/api/projects/${project.id}/ops/resume`, {}); onChange(j); } catch (e) { toast(e.message, 'bad'); } }}>Resume<//>` : null}
       ${busy ? html`<${Btn} kind="danger" onClick=${async () => { await post(`/api/projects/${project.id}/cancel`, {}); toast('Cancellation requested'); }}>Cancel run<//>` : null}
     </div>
@@ -217,6 +230,7 @@ export function ProjectView({ route }) {
     ${tab === 'overview' ? html`
       <div class=${`callout ${summary.tone === 'bad' ? 'bad' : summary.tone === 'ok' ? 'ok' : summary.tone === 'warn' ? 'warn' : ''}`}><b>${summary.text}</b>${latest?.error ? html`<div class="error-text">${latest.error}</div>` : null}${latest?.pause_message ? html`<div>${latest.pause_message}</div>` : null}
         ${project.status === 'awaiting-approval' ? html`<div style="margin-top:8px"><${Btn} kind="primary" onClick=${() => navigate(['projects', id, 'review'])}>Review and approve<//></div>` : null}</div>
+      ${['modify', 'rebuild'].includes(project.mode) ? html`<${PreflightPanel} project=${project} busy=${!!q.data.active_job} />` : null}
       <${Section} title="Run"><${RunControls} project=${project} status=${q.data} onChange=${() => q.reload()} /><//>
       ${advanced ? html`
         <${Section} title="Workflow" actions=${html`<span class="muted">${progressPercent(stages)}% of stages complete</span>`}><${Pipeline} stages=${stages} /><//>
@@ -228,7 +242,7 @@ export function ProjectView({ route }) {
 
     ${tab === 'findings' ? html`<${Findings} findings=${findings} detail=${detail} project=${project} />` : null}
     ${tab === 'review' ? html`<${ReviewCenterLazy} id=${id} />` : null}
-    ${tab === 'config' ? html`<${Config} project=${project} onSaved=${() => q.reload()} />` : null}
+    ${tab === 'config' ? html`${project.mode === 'rebuild' || project.reference ? html`<${RebuildSetup} project=${project} onSaved=${() => q.reload()} />` : null}<${Config} project=${project} onSaved=${() => q.reload()} />` : null}
     ${tab === 'history' ? html`<${History} runs=${q.data.runs} id=${id} spend=${q.data.spend} />` : null}
   </div>`;
 }

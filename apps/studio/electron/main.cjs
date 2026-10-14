@@ -1,6 +1,11 @@
 // ERA Studio desktop shell. A thin, locked-down host: it starts the ERA control plane (loopback only, token-protected),
 // opens ONE window onto it, and exposes a native picker. All behavior lives in the control plane and the web UI.
 'use strict';
+// Renderer mode: ERA starts this same executable to render and score a generated site (see visual-compare.cjs).
+if (process.argv.includes('--era-visual-compare')) {
+  require('./visual-compare.cjs');
+  return;
+}
 const { app, BrowserWindow, Menu, dialog, ipcMain, session, shell } = require('electron');
 const { execFile } = require('node:child_process');
 const { existsSync, mkdirSync } = require('node:fs');

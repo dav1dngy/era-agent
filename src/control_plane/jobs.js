@@ -132,6 +132,9 @@ export class JobManager {
     const spec = this.runtime.get(job.id);
     const env = { ...this.env, ...(spec.env ?? {}), ERA_STATE_DIR: this.config.stateDirAbs };
     delete env.NODE_TEST_CONTEXT;
+    // Studio's setting is the single switch for unmetered agents inside Studio jobs (set or cleared explicitly here).
+    if (this.getSettings().execution.allowUnmeteredAgents) env.ERA_ALLOW_UNMETERED_AGENTS = '1';
+    else delete env.ERA_ALLOW_UNMETERED_AGENTS;
     // Inside the Electron shell, process.execPath is the Electron binary: run it as plain Node for CLI jobs.
     if (process.versions.electron) env.ELECTRON_RUN_AS_NODE = '1';
     let child;

@@ -89,6 +89,12 @@ export function loadConfig(cwd = process.cwd(), env = process.env) {
   const config = deepMerge(DEFAULT_CONFIG, fileConfig);
   if (env.ERA_REA_BIN) config.rea = { ...config.rea, command: env.ERA_REA_BIN };
   if (env.ERA_STATE_DIR) config.stateDir = env.ERA_STATE_DIR;
+  // Agents that report no dollar cost run without a spending cap only when this is allowed explicitly: in the config
+  // file, in the user's own environment, or by the ERA Studio setting that exports it to its jobs. Never inferred.
+  if (env.ERA_ALLOW_UNMETERED_AGENTS === '1') {
+    config.projectLab = { ...config.projectLab, budget: { ...config.projectLab.budget, allowUnmeteredAgents: true, allowUnmeteredSource: 'ERA_ALLOW_UNMETERED_AGENTS' } };
+    config.improvement = { ...config.improvement, budget: { ...config.improvement.budget, allowUnmeteredAgents: true } };
+  }
   config.cwd = cwd;
   config.stateDirAbs = resolve(cwd, config.stateDir);
   return config;

@@ -83,7 +83,24 @@ export function normalizeAcceptance(input = {}) {
     if (!hasExpect && b.capture !== 'reference') throw new Error(`acceptance.behaviors[${i}] needs "expect" ({stdout, exit_code}) or capture: "reference".`);
     return { name: String(b.name ?? `behavior-${i + 1}`), args, stdin: typeof b.stdin === 'string' ? b.stdin : null, capture: b.capture === 'reference' ? 'reference' : null, expect: hasExpect ? { stdout: b.expect.stdout ?? null, exit_code: b.expect.exit_code ?? 0 } : null };
   });
-  return { criteria: list(input.criteria, 'acceptance.criteria'), commands, behaviors };
+  // Visual acceptance for screenshot rebuilds: how the generated site is rendered and how close it must be.
+  let visual = null;
+  if (input.visual !== undefined && input.visual !== null) {
+    const v = input.visual;
+    if (typeof v !== 'object' || Array.isArray(v)) throw new Error('acceptance.visual must be an object.');
+    const threshold = v.threshold === undefined ? 0.75 : Number(v.threshold);
+    if (!Number.isFinite(threshold) || threshold < 0.5 || threshold > 0.99) throw new Error('acceptance.visual.threshold must be a number from 0.5 to 0.99.');
+    const entry = v.entry === undefined ? 'index.html' : String(v.entry);
+    if (!/^[\w./-]{1,120}$/.test(entry) || entry.startsWith('/') || entry.split('/').includes('..') || !/\.html?$/i.test(entry)) throw new Error('acceptance.visual.entry must be a relative .html file inside the new project.');
+    const dim = (x, lo, hi, label) => {
+      if (x === undefined || x === null) return null;
+      const n = Number(x);
+      if (!Number.isInteger(n) || n < lo || n > hi) throw new Error(`${label} must be an integer from ${lo} to ${hi}.`);
+      return n;
+    };
+    visual = { threshold, entry, width: dim(v.width, 320, 1920, 'acceptance.visual.width'), height: dim(v.height, 240, 6000, 'acceptance.visual.height') };
+  }
+  return { criteria: list(input.criteria, 'acceptance.criteria'), commands, behaviors, visual };
 }
 
 export function normalizeProject(input, { existing = null, eraRoot = ERA_ROOT, config = {} } = {}) {

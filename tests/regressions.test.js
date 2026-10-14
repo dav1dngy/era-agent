@@ -9,7 +9,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
-import { existsSync, mkdirSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { removeTree } from '../src/core/util.js';
@@ -131,10 +131,21 @@ test('an interrupted/timed-out run reports the timeout, not a cleanup error', as
   assert.equal(r.ok, false);
 });
 
-test('no era-candidate-tests directory is left behind after the runs above', () => {
-  // Best effort: the escaped writers finish within a second; anything left would be from a failed cleanup.
-  const tmp = process.env.TMPDIR || '/tmp';
-  const left = existsSync(tmp) ? readdirSync(tmp).filter((n) => n.startsWith('era-candidate-tests-')) : [];
-  for (const n of left) rmSync(join(tmp, n), { recursive: true, force: true });
-  assert.ok(true);
+test('after a run whose descendant keeps writing, no candidate temp directory is left behind', async () => {
+  // os.tmpdir() reads TMPDIR on every call, so an isolated TMPDIR lets us see exactly what runTests creates and leaves.
+  const mine = tempDir();
+  const saved = process.env.TMPDIR;
+  process.env.TMPDIR = mine;
+  try {
+    const dir = join(mine, 'project');
+    suiteWithEscapedWriter(dir);
+    const r = await runTests(dir, { isolation: { mode: 'trusted', mechanism: 'none' }, timeoutMs: 60_000 });
+    assert.equal(r.ok, true);
+    await new Promise((res) => setTimeout(res, 800)); // the escaped writer stops after ~500 ms
+    const left = readdirSync(mine).filter((n) => n.startsWith('era-candidate-tests-'));
+    assert.deepEqual(left, [], 'the temp directory was removed even though a descendant was still writing into it');
+  } finally {
+    if (saved === undefined) delete process.env.TMPDIR;
+    else process.env.TMPDIR = saved;
+  }
 });

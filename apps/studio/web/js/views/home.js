@@ -3,6 +3,8 @@ import { ApiError, get, post } from '../api.js';
 import { Badge, Btn, Callout, baseName, when } from '../ui.js';
 import { navigate, openModal, set, state, toast, useStore } from '../store.js';
 import { TASK_EXAMPLES } from '../model.js';
+import { behaviorsFromRows } from '../rebuild-model.js';
+import { BehaviorEditor, Checklist, ReferencePicker } from './rebuild.js';
 import { Icon } from '../icons.js';
 
 const MODES = ['ANALYZE', 'REVIEW', 'MODIFY', 'REBUILD', 'IMPROVE'];
@@ -26,6 +28,10 @@ export function Home() {
   const [reference, setReference] = useState('');
   const [destination, setDestination] = useState('');
   const [authorization, setAuthorization] = useState('');
+  const [runCmd, setRunCmd] = useState('');
+  const [testCmds, setTestCmds] = useState('');
+  const [acceptCmds, setAcceptCmds] = useState('');
+  const [behaviorRows, setBehaviorRows] = useState([]);
   const [teamChoice, setTeamChoice] = useState('auto');
   const [custom, setCustom] = useState({ architect: '', implementer: '', reviewer: '' });
   const [plan, setPlan] = useState(null);
@@ -41,14 +47,16 @@ export function Home() {
     if (pf) { setText(pf.text ?? ''); if (pf.project_id) { setProjectId(pf.project_id); setFolder(state.projects.find((p) => p.id === pf.project_id)?.source ?? ''); } set({ prefill: null }); }
   }, []);
   useEffect(() => { get('/api/agents/teams').then(setTeams).catch(() => {}); get('/api/agents').then((r) => setProviders(r.providers.filter((p) => p.capabilities.automated))).catch(() => {}); }, []);
-  useEffect(() => { setPlan(null); }, [text, mode, projectId, folder, reference, destination, authorization, teamChoice, custom]);
+  useEffect(() => { setPlan(null); }, [text, mode, projectId, folder, reference, destination, authorization, runCmd, testCmds, acceptCmds, behaviorRows, teamChoice, custom]);
 
   const needsRebuild = (mode ?? plan?.mode) === 'REBUILD' || /rebuild|reconstruct|re-?implement/i.test(text);
   const isAnalyze = (mode ?? plan?.mode) === 'ANALYZE';
 
   const request = () => {
     const team = teamChoice === 'auto' ? undefined : teamChoice === 'custom' ? { roles: Object.fromEntries(Object.entries(custom).map(([k, v]) => [k, v || null])) } : { preset: teamChoice };
-    return { text, mode, project_id: projectId || undefined, folder: folder || undefined, target: isAnalyze ? folder || undefined : undefined, reference: reference || undefined, destination: destination || undefined, authorization: authorization || undefined, team };
+    const rebuildish = needsRebuild;
+    // Only what the user filled in is sent, so editing one field never wipes the saved configuration of an existing project.
+    return { text, mode, project_id: projectId || undefined, folder: folder || undefined, target: isAnalyze ? folder || undefined : undefined, reference: reference || undefined, destination: destination || undefined, authorization: authorization || undefined, run_command: rebuildish && runCmd.trim() ? runCmd.trim() : undefined, test_commands: rebuildish && testCmds.trim() ? testCmds : undefined, accept_commands: rebuildish && acceptCmds.trim() ? acceptCmds : undefined, behaviors: rebuildish && behaviorRows.length ? behaviorsFromRows(behaviorRows) : undefined, team };
   };
 
   const doPlan = async () => {
@@ -113,7 +121,7 @@ export function Home() {
         <span class="faint" style="align-self:center;font-size:var(--fs-xs)">${mode ? 'type chosen by you' : text ? 'ERA detects the type from your text; the plan shows it' : ''}</span>
       </div>
       <div class="composer-bar">
-        <select aria-label="Project" value=${projectId} onChange=${(e) => { setProjectId(e.target.value); const p = s.projects.find((x) => x.id === e.target.value); if (p) setFolder(p.source ?? ''); }}>
+        <select aria-label="Project" value=${projectId} onChange=${(e) => { setProjectId(e.target.value); const p = s.projects.find((x) => x.id === e.target.value); if (p) { setFolder(p.source ?? ''); setReference(p.reference ?? ''); setDestination(p.destination ?? ''); setAuthorization(p.authorization ?? ''); } }}>
           <option value="">New project from a folder…</option>
           ${s.projects.map((p) => html`<option value=${p.id}>${p.id} (${p.mode})</option>`)}
         </select>
@@ -123,11 +131,18 @@ export function Home() {
         <${Btn} kind="primary" class="right" disabled=${busy || (!text.trim() && !mode)} onClick=${doPlan}>${busy && !plan ? 'Planning…' : 'Plan task'} <kbd>⌘↵</kbd><//>
       </div>
       ${teamChoice === 'custom' ? html`<div class="row wrap">${['architect', 'implementer', 'reviewer'].map((r) => html`<label class="row"><span class="muted">${r}</span><select aria-label=${r} value=${custom[r]} onChange=${(e) => setCustom({ ...custom, [r]: e.target.value })}><option value="">none</option>${providers.map((p) => html`<option value=${p.id} disabled=${p.state !== 'ready' && p.state !== 'simulated'}>${p.id} (${p.state})</option>`)}</select></label>`)}</div>` : null}
-      ${!projectId ? html`<${PathField} label=${isAnalyze ? 'File or folder to analyze' : 'Project folder'} value=${folder} onInput=${setFolder} placeholder="/path/to/your/project" hint=${isAnalyze ? 'Supported: Mach-O binaries, JavaScript apps and folders, archives. Unsupported targets are reported clearly.' : 'ERA works on an isolated copy; your folder is never changed without your approval.'} />` : html`<div class="muted">Using project <b>${projectId}</b> · ${baseName(folder)}</div>`}
-      ${needsRebuild ? html`<div class="col">
-        <${PathField} label="Authorized reference (application or file)" value=${reference} onInput=${setReference} placeholder="/path/to/reference" />
-        <${PathField} label="New project destination (empty folder)" value=${destination} onInput=${setDestination} placeholder="/path/to/new-project" />
-        <label class="col" style="gap:4px"><span class="muted">Why are you authorized to analyze this reference? (required)</span><textarea class="field" rows="2" value=${authorization} onInput=${(e) => setAuthorization(e.target.value)} aria-label="Authorization statement"></textarea></label>
+      ${!projectId && !needsRebuild ? html`<${PathField} label=${isAnalyze ? 'File or folder to analyze' : 'Project folder'} value=${folder} onInput=${setFolder} placeholder="/path/to/your/project" hint=${isAnalyze ? 'Supported: Mach-O binaries, JavaScript apps and folders, archives. Unsupported targets are reported clearly.' : 'ERA works on an isolated copy; your folder is never changed without your approval.'} />` : projectId ? html`<div class="muted">Using project <b>${projectId}</b> · ${baseName(folder || reference)}</div>` : null}
+      ${needsRebuild ? html`<div class="col rebuild-fields">
+        <div class="col" style="gap:4px"><span class="muted">Authorized reference</span><${ReferencePicker} value=${reference} onChange=${setReference} /></div>
+        <${PathField} label="New project destination (an empty or new folder; nothing is written there until you approve)" value=${destination} onInput=${setDestination} placeholder="/path/to/new-project" />
+        <label class="col" style="gap:4px"><span class="muted">Why are you authorized to analyze this reference? (required)</span><textarea class="field" rows="2" value=${authorization} onInput=${(e) => setAuthorization(e.target.value)} aria-label="Authorization statement" placeholder="For example: I designed and own this page."></textarea></label>
+        <details><summary class="muted" style="cursor:pointer">How will ERA know it worked? (optional extra checks)</summary><div class="col" style="margin-top:var(--space-3)">
+          <p class="muted">Screenshots are compared visually automatically when a renderer is installed. For programs, add expected behaviors or commands; without any check ERA refuses to start, because any output would count as success.</p>
+          <${BehaviorEditor} rows=${behaviorRows} onChange=${setBehaviorRows} screenshot=${/(^|\/)set-[0-9a-f]{8}$|\.(png|jpe?g|webp)$/i.test(reference)} />
+          <label class="col" style="gap:4px"><span class="muted">Command that starts the new program (the behavior arguments are appended)</span><input type="text" value=${runCmd} onInput=${(e) => setRunCmd(e.target.value)} aria-label="Run command" placeholder="node app.js" /></label>
+          <label class="col" style="gap:4px"><span class="muted">Acceptance commands that must succeed (one per line)</span><textarea class="field" rows="2" value=${acceptCmds} onInput=${(e) => setAcceptCmds(e.target.value)} aria-label="Acceptance commands"></textarea></label>
+          <label class="col" style="gap:4px"><span class="muted">The new project's own test commands (one per line)</span><textarea class="field" rows="2" value=${testCmds} onInput=${(e) => setTestCmds(e.target.value)} aria-label="Test commands"></textarea></label>
+        </div></details>
       </div>` : null}
     </div>
 
@@ -135,9 +150,10 @@ export function Home() {
 
     ${plan ? html`<section class="panel" aria-label="Task plan"><header><h3>Plan</h3><${Badge} status=${plan.blockers.length ? 'failed' : 'ready'} label=${plan.blockers.length ? 'Needs input' : 'Ready'} /><span class="muted right">${plan.mode} · ${plan.classification}</span></header>
       <div class="body col">
-        ${plan.blockers.map((b) => html`<${Callout} kind="bad">${b}<//>`)}
+        ${plan.checks?.length ? html`<${Checklist} checks=${plan.checks} />` : plan.blockers.map((x) => html`<${Callout} kind="bad">${x}<//>`)}
+        ${plan.checks?.length ? plan.blockers.filter((x) => !plan.checks.some((c) => x.startsWith(c.message))).map((x) => html`<${Callout} kind="bad">${x}<//>`) : null}
         <div><h4>Steps</h4><ol style="margin:6px 0 0;padding-left:18px">${plan.stages.map((st) => html`<li>${st.label}</li>`)}</ol></div>
-        ${plan.project ? html`<div class="kv"><dt>Project</dt><dd>${plan.project.exists ? 'existing' : 'new'}: <code>${plan.project.id}</code></dd><dt>Source</dt><dd class="mono">${plan.project.source}</dd></div>` : null}
+        ${plan.project ? html`<div class="kv"><dt>Project</dt><dd>${plan.project.exists ? 'existing' : 'new'}: <code>${plan.project.id}</code></dd>${plan.project.source ? html`<dt>Source</dt><dd class="mono">${plan.project.source}</dd>` : null}${plan.project.reference ? html`<dt>Reference</dt><dd class="mono">${plan.project.reference}</dd>` : null}${plan.project.destination ? html`<dt>New project</dt><dd class="mono">${plan.project.destination}</dd>` : null}</div>` : null}
         ${plan.team ? html`<div class="kv"><dt>Agent team</dt><dd>${plan.team.preset ?? 'custom'} <span class="muted">· ${plan.team_note}</span></dd></div>` : html`<div class="muted">${plan.team_note}</div>`}
         ${plan.warnings.map((w) => html`<${Callout} kind="warn">${w}<//>`)}
         ${plan.remote_providers.length ? html`<fieldset style="border:1px solid var(--border);border-radius:var(--radius);padding:var(--space-3)"><legend class="muted">Authorize sending your source code</legend>

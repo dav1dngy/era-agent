@@ -23,7 +23,9 @@ export const DEFAULT_SETTINGS = Object.freeze({
     trustedExecution: false,
   },
   privacy: { defaultRemoteConsent: [], logRetentionDays: 30, runRetentionDays: 0 },
-  execution: { concurrentJobs: 2, commandTimeoutMs: 600_000, agentTimeoutMs: 1_800_000, maxAttempts: 2, maxCostUsd: 5, maxCostUsdTotal: 20 },
+  execution: { concurrentJobs: 2, commandTimeoutMs: 600_000, agentTimeoutMs: 1_800_000, maxAttempts: 2, maxCostUsd: 5, maxCostUsdTotal: 20,
+    // Run agents that cannot report a dollar cost (for example Codex) WITHOUT a dollar spending cap. Off until you turn it on.
+    allowUnmeteredAgents: false },
   advanced: { diagnostics: true, devTools: false, experimental: false },
 });
 
@@ -107,8 +109,8 @@ export function validateSettings(candidate, { eraConfig = {} } = {}) {
   out.privacy = { defaultRemoteConsent: consent, logRetentionDays: int(pr.logRetentionDays, 1, 3650, 'privacy.logRetentionDays'), runRetentionDays: int(pr.runRetentionDays, 0, 3650, 'privacy.runRetentionDays') };
 
   const e = candidate.execution ?? {};
-  unknown(e, ['concurrentJobs', 'commandTimeoutMs', 'agentTimeoutMs', 'maxAttempts', 'maxCostUsd', 'maxCostUsdTotal'], 'execution');
-  out.execution = { concurrentJobs: int(e.concurrentJobs, 1, 4, 'execution.concurrentJobs'), commandTimeoutMs: int(e.commandTimeoutMs, 1000, 3_600_000, 'execution.commandTimeoutMs'), agentTimeoutMs: int(e.agentTimeoutMs, 1000, 14_400_000, 'execution.agentTimeoutMs'), maxAttempts: int(e.maxAttempts, 1, 5, 'execution.maxAttempts'), maxCostUsd: num(e.maxCostUsd, 0, 100, 'execution.maxCostUsd'), maxCostUsdTotal: num(e.maxCostUsdTotal, 0, 1000, 'execution.maxCostUsdTotal') };
+  unknown(e, ['concurrentJobs', 'commandTimeoutMs', 'agentTimeoutMs', 'maxAttempts', 'maxCostUsd', 'maxCostUsdTotal', 'allowUnmeteredAgents'], 'execution');
+  out.execution = { concurrentJobs: int(e.concurrentJobs, 1, 4, 'execution.concurrentJobs'), commandTimeoutMs: int(e.commandTimeoutMs, 1000, 3_600_000, 'execution.commandTimeoutMs'), agentTimeoutMs: int(e.agentTimeoutMs, 1000, 14_400_000, 'execution.agentTimeoutMs'), maxAttempts: int(e.maxAttempts, 1, 5, 'execution.maxAttempts'), maxCostUsd: num(e.maxCostUsd, 0, 100, 'execution.maxCostUsd'), maxCostUsdTotal: num(e.maxCostUsdTotal, 0, 1000, 'execution.maxCostUsdTotal'), allowUnmeteredAgents: bool(e.allowUnmeteredAgents, 'execution.allowUnmeteredAgents') };
 
   const ad = candidate.advanced ?? {};
   unknown(ad, ['diagnostics', 'devTools', 'experimental'], 'advanced');

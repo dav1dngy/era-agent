@@ -16,6 +16,7 @@ import { SafetyError, acquireLock, assertNotCI, lockHolder } from '../safety/pol
 import { assertRemoteConsent, rolesOf } from '../agents/team.js';
 import { nullLogger } from '../core/log.js';
 import { RunContext, Pause } from './context.js';
+import { preflight } from './preflight.js';
 import { assertExternalPath, assertReady, normalizeProject } from './schema.js';
 import { ProjectStore } from './store.js';
 import { runModify } from './modify.js';
@@ -185,6 +186,27 @@ export class ProjectLab {
     run.status = 'running';
     delete run.error;
     return this.execute(project, run);
+  }
+
+  // Everything that would block (or weaken) an operation, as a checklist. Read-only: nothing is started or changed.
+  async preflight(id, op, { trust = false, studio = false, allowRemote = [] } = {}) {
+    const stored = this.store.load(id);
+    // Consent offered with this very request counts (it is recorded when the operation starts).
+    const project = allowRemote.length ? { ...stored, exposure: { ...stored.exposure, remote_consent: [...new Set([...(stored.exposure?.remote_consent ?? []), ...allowRemote])] } } : stored;
+    return preflight({ project, op, config: this.config, rea: this.rea, createAgent: this.createAgent, trust, studio });
+  }
+
+  // Preflight for a project that does not exist yet (or with edits not saved yet): what WOULD be checked if it were created.
+  async preflightDraft(input, { existingId = null, op, trust = false, studio = false, allowRemote = [] } = {}) {
+    let project;
+    try {
+      const existing = existingId ? this.store.load(existingId) : null;
+      project = normalizeProject({ ...input, id: existingId ?? input.id ?? 'draft' }, { existing, config: this.config });
+    } catch (err) {
+      return { op, ok: false, screenshot: false, checks: [{ id: 'config', label: 'Configuration', status: 'fail', message: err.message, fix: 'Correct the value named in the message.' }], blockers: [err.message], warnings: [] };
+    }
+    if (allowRemote.length) project = { ...project, exposure: { ...project.exposure, remote_consent: [...new Set([...(project.exposure?.remote_consent ?? []), ...allowRemote])] } };
+    return preflight({ project, op, config: this.config, rea: this.rea, createAgent: this.createAgent, trust, studio });
   }
 
   runAgent(run) {

@@ -43,6 +43,22 @@ export async function api(method, path, body) {
   return json;
 }
 export const get = (p) => api('GET', p);
+export const patch = (p, b = {}) => api('PATCH', p, b);
+
+// Authenticated binary fetch (an <img src> cannot carry the Authorization header in browser mode).
+export async function getBlob(path) {
+  const res = await fetch(path, { headers: headers() });
+  if (!res.ok) throw new ApiError(res.status, `HTTP ${res.status}`);
+  return res.blob();
+}
+
+// Raw image upload (PNG/JPEG/WebP). `set` groups several screenshots into one reference folder.
+export async function uploadImage(file, set = null) {
+  const res = await fetch(`/api/uploads${set ? `?set=${set}` : ''}&name=${encodeURIComponent(file.name ?? '')}`.replace('/uploads&', '/uploads?'), { method: 'POST', headers: headers({ 'Content-Type': file.type || 'application/octet-stream' }), body: file });
+  const json = await res.json().catch(() => null);
+  if (!res.ok) throw new ApiError(res.status, json?.error ?? `HTTP ${res.status}`, json?.detail);
+  return json;
+}
 export const post = (p, b = {}) => api('POST', p, b);
 export const put = (p, b = {}) => api('PUT', p, b);
 export const del = (p) => api('DELETE', p);

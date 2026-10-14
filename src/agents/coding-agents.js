@@ -11,7 +11,7 @@
 //   implement() -> { ok, exit_code, timed_out, duration_ms, cost_usd, cost_reported, tokens, command,
 //                    stdout_tail, stderr_tail, output }
 import { existsSync, readFileSync, mkdtempSync } from 'node:fs';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { runProcess } from '../core/process.js';
 import { redactText } from '../safety/secrets.js';
@@ -32,7 +32,7 @@ export function providerEnv(source = process.env, passEnv = []) {
 
 function agentEnv(task, { filtered = false, passEnv = [] } = {}) {
   const env = { ...(filtered ? providerEnv(process.env, passEnv) : process.env), ERA_WORKTREE: task.worktree, ERA_CYCLE_ID: task.cycleId };
-  for (const [key, value] of [['ERA_PROPOSAL_FILE', task.proposalFile], ['ERA_INSTRUCTIONS_FILE', task.instructionsFile], ['ERA_PHASE', task.phase], ['ERA_READ_ONLY', task.readOnly ? '1' : undefined]]) {
+  for (const [key, value] of [['ERA_PROPOSAL_FILE', task.proposalFile], ['ERA_INSTRUCTIONS_FILE', task.instructionsFile], ['ERA_PHASE', task.phase], ['ERA_READ_ONLY', task.readOnly ? '1' : undefined], ['ERA_REFERENCE_IMAGES', task.images?.length ? JSON.stringify(task.images) : undefined]]) {
     if (value !== undefined) env[key] = value;
   }
   return env;
@@ -120,6 +120,8 @@ export function claudeCodeAgent({ command = 'claude', model = null, passEnv = []
       const args = ['-p', prompt, '--output-format', 'json', '--permission-mode', task.readOnly ? 'plan' : 'acceptEdits'];
       if (task.budgetUsd !== null && task.budgetUsd !== undefined) args.push('--max-budget-usd', String(task.budgetUsd));
       if (model) args.push('--model', model);
+      // Claude Code reads image files with its own file tool; the directory must be granted explicitly.
+      for (const dir of new Set((task.images ?? []).map((i) => dirname(i.path)))) args.push('--add-dir', dir);
       return args;
     },
     async implement(task) {
@@ -199,6 +201,9 @@ export function codexAgent({ command = null, model = null, passEnv = [] } = {}) 
       // parent directory in reach (found by scripts/validate-providers.mjs). Keep writes inside the working copy.
       if (!task.readOnly) args.push('-c', 'sandbox_workspace_write.exclude_tmpdir_env_var=true', '-c', 'sandbox_workspace_write.exclude_slash_tmp=true');
       if (model) args.push('-m', model);
+      // --image takes a list, so the prompt must be separated from it with "--" or it would be read as another file.
+      for (const img of task.images ?? []) args.push('-i', img.path);
+      if (task.images?.length) args.push('--');
       args.push(prompt);
       return args;
     },
@@ -234,7 +239,9 @@ export function codexAgent({ command = null, model = null, passEnv = [] } = {}) 
 //   metered                 reports a dollar cost ERA can enforce a budget on
 //   remote                  sends project content to a remote service
 //   readsInstructionFiles   loads AGENTS.md / CLAUDE.md style files from its working directory
-const BASE_CAPABILITIES = Object.freeze({ read: true, write: true, execute: true, readOnlyMode: 'none', automated: true, metered: false, remote: false, readsInstructionFiles: false });
+//   images                  how the agent can SEE reference images: 'flag' (native image argument), 'read-tool' (reads image files
+//                           itself), 'env' (a command agent that reads ERA_REFERENCE_IMAGES), 'none'
+const BASE_CAPABILITIES = Object.freeze({ read: true, write: true, execute: true, readOnlyMode: 'none', automated: true, metered: false, remote: false, readsInstructionFiles: false, images: 'none' });
 const REGISTRY = new Map();
 
 export function registerCodingAgent(id, { create, capabilities = {}, description = '' }) {
@@ -245,8 +252,8 @@ export function registerCodingAgent(id, { create, capabilities = {}, description
 
 registerCodingAgent('manual', { create: () => manualAgent, capabilities: { automated: false, metered: true, readOnlyMode: 'none' }, description: 'A human edits the working copy.' });
 registerCodingAgent('command', { create: (config) => commandAgent(config.improvement?.implementerCommand ?? null), capabilities: { readOnlyMode: 'verified' }, description: 'A shell command configured by the user.' });
-registerCodingAgent('claude-code', { create: (config) => claudeCodeAgent(config.agents?.['claude-code'] ?? {}), capabilities: { readOnlyMode: 'native', metered: true, remote: true, readsInstructionFiles: true }, description: 'Anthropic Claude Code CLI.' });
-registerCodingAgent('codex', { create: (config) => codexAgent(config.agents?.codex ?? {}), capabilities: { readOnlyMode: 'native', remote: true, readsInstructionFiles: true }, description: 'OpenAI Codex CLI.' });
+registerCodingAgent('claude-code', { create: (config) => claudeCodeAgent(config.agents?.['claude-code'] ?? {}), capabilities: { readOnlyMode: 'native', metered: true, remote: true, readsInstructionFiles: true, images: 'read-tool' }, description: 'Anthropic Claude Code CLI.' });
+registerCodingAgent('codex', { create: (config) => codexAgent(config.agents?.codex ?? {}), capabilities: { readOnlyMode: 'native', remote: true, readsInstructionFiles: true, images: 'flag' }, description: 'OpenAI Codex CLI.' });
 
 // "custom:<name>" agents are command agents declared in projectLab.customAgents.<name>.
 function customDefinition(id, config) {

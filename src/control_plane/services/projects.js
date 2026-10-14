@@ -6,7 +6,7 @@ import { basename, dirname, relative, resolve } from 'node:path';
 import { SafetyError } from '../../safety/policy.js';
 import { assertRemoteConsent, rolesOf } from '../../agents/team.js';
 import { protectedViolations } from '../../project_lab/workspace.js';
-import { assertExternalPath, assertReady } from '../../project_lab/schema.js';
+import { assertExternalPath } from '../../project_lab/schema.js';
 import { insideAllowedRoots } from '../settings.js';
 import { HttpError, bad, conflict, denied, missing } from '../errors.js';
 import { PathError, listDir, readText, resolveInside } from '../paths.js';
@@ -112,17 +112,10 @@ export function projectsService(ctx) {
   }
 
   // Starts review|modify|rebuild|resume as a supervised CLI job.
-  function startOp(id, op, opts = {}) {
+  async function startOp(id, op, opts = {}) {
     const project = loadProject(id);
     const settings = ctx.settings();
     if (![...OPS, 'resume'].includes(op)) throw bad(`Unknown operation "${op}".`);
-    if (op !== 'resume') {
-      try {
-        assertReady(project, op);
-      } catch (err) {
-        throw bad(err.message);
-      }
-    }
     // Remote providers need the consent stored on the project (given explicitly in the UI), checked before a job exists.
     const consent = [...new Set([...(project.exposure?.remote_consent ?? []), ...(Array.isArray(opts.allow_remote) ? opts.allow_remote : [])])];
     try {
@@ -131,6 +124,11 @@ export function projectsService(ctx) {
       throw denied(err.message);
     }
     if (opts.trust && !settings.permissions.trustedExecution) throw denied('Running project commands outside the sandbox needs Settings → Permissions → Trusted execution.');
+    // One checklist of everything that would block or weaken the run, before any job exists.
+    if (op !== 'resume') {
+      const pf = await lab.preflight(id, op, { studio: true, trust: !!opts.trust || settings.permissions.trustedExecution, allowRemote: Array.isArray(opts.allow_remote) ? opts.allow_remote : [] });
+      if (!pf.ok) throw new HttpError(409, `Cannot start ${op}: ${pf.blockers.join(' ')}`, { checks: pf.checks });
+    }
     const args = ['project', op, id, '--json'];
     if (Array.isArray(opts.allow_remote) && opts.allow_remote.length) args.push('--allow-remote', opts.allow_remote.join(','));
     if (opts.trust) args.push('--trust-project');
@@ -179,7 +177,7 @@ export function projectsService(ctx) {
     return {
       run: { ...runSummary(run), results: slimResults(run.results ?? {}), handoffs: run.handoffs ?? [], exposure: run.exposure ?? null, source_digest: run.source_digest ?? null, applied: run.applied ?? null, rollback: run.rollback ?? null },
       report: shown.report,
-      finalize: fin && { pass: fin.pass, reasons: fin.reasons, warnings: fin.warnings, files: fin.files, stat: fin.stat, patch_sha256: fin.patch_sha256, attempts: fin.attempts, team: fin.team ?? null, review: fin.review ?? null, verification: fin.verification ?? null, behaviors: fin.behaviors ?? null },
+      finalize: fin && { pass: fin.pass, reasons: fin.reasons, warnings: fin.warnings, files: fin.files, stat: fin.stat, patch_sha256: fin.patch_sha256, attempts: fin.attempts, team: fin.team ?? null, review: fin.review ?? null, verification: fin.verification ?? null, behaviors: fin.behaviors ?? null, visual: fin.visual ?? null, screenshot: fin.screenshot ?? null },
       events,
     };
   }
@@ -222,6 +220,21 @@ export function projectsService(ctx) {
     const workspace = lab.store.workDir(id, run.run_id);
     const root = run.op === 'modify' ? project.source : null;
     return { path, status: FILE_STATUS[entry.status] ?? entry.status, original: root ? read(root, path) : '', modified: existsSync(workspace) ? read(workspace, path) : '(working copy no longer exists)' };
+  }
+
+  // Images a run produced or was given (the reference copies and the renderings), by exact path pattern.
+  function artifact(id, runId, path) {
+    loadProject(id);
+    if (!/^(reference-images\/reference-\d+\.(png|jpg|webp)|visual-attempt-\d+\/rendered\.png)$/.test(path)) throw denied('That artifact is not available.');
+    let run;
+    try {
+      run = lab.show(id, { runId }).run;
+    } catch (err) {
+      throw missing(err.message);
+    }
+    const file = resolveInside(lab.store.runDir(id, run.run_id), path);
+    if (!existsSync(file)) throw missing('The artifact does not exist.');
+    return { bytes: readFileSync(file), mime: path.endsWith('.png') ? 'image/png' : path.endsWith('.webp') ? 'image/webp' : 'image/jpeg' };
   }
 
   async function approve(id, body = {}) {
@@ -342,5 +355,5 @@ export function projectsService(ctx) {
     return { ...job, destination: dest };
   }
 
-  return { clone, rootFor, list, status, create, update, remove, startOp, cancel, runDetail, patchText, fileDiff, approve, reject, rollback, tree, readFile, writeFile, view };
+  return { artifact, clone, rootFor, list, status, create, update, remove, startOp, cancel, runDetail, patchText, fileDiff, approve, reject, rollback, tree, readFile, writeFile, view };
 }
