@@ -110,6 +110,23 @@ module.exports = async function testUI({ win, controlPlane, repo }) {
     await screenshot('workbench-dark');
     check('Workbench loads project file in real Monaco');
 
+    // Reachability evidence for the Monaco/DOMPurify advisories (docs/ERA_V020_REMEDIATION.md, L03): untrusted hover Markdown with
+    // HTML goes through the sanitizer bundled in Monaco. Nothing may execute and no event-handler attribute or script may survive.
+    await js(`(() => {
+      const m = window.monaco;
+      window.__xss = 0;
+      m.languages.registerHoverProvider('javascript', { provideHover: () => ({ contents: [{ value: '<img src=x onerror="window.__xss=1"><b onclick="window.__xss=2">bold</b><script>window.__xss=3</script><a href="javascript:window.__xss=4">link</a>', supportHtml: true }] }) });
+      const editor = m.editor.getEditors()[0];
+      editor.focus();
+      editor.setPosition({ lineNumber: 1, column: 1 });
+      editor.trigger('test', 'editor.action.showHover', {});
+    })()`);
+    await dom("!!document.querySelector('.monaco-hover') && document.querySelector('.monaco-hover').textContent.includes('bold')", 'untrusted hover Markdown is rendered');
+    await delay(500);
+    assert.equal(await js('window.__xss'), 0, 'no injected script ran');
+    assert.equal(await js("!!document.querySelector('.monaco-hover [onerror], .monaco-hover [onclick], .monaco-hover script, .monaco-hover a[href^=\"javascript:\"]')"), false, 'no active content survives sanitization');
+    check('Untrusted hover Markdown is sanitized in the real Monaco renderer');
+
     await go('#/analysis', "document.querySelector('h1')?.textContent === 'Analysis'");
     await js(`{const i=document.querySelector('[aria-label="Analysis target path"]'); i.value=${lit(source)}; i.dispatchEvent(new Event('input',{bubbles:true}));}`);
     await click('Inspect target');

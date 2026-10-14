@@ -52,3 +52,24 @@ test('Studio\'s Content-Security-Policy forbids inline script (event handlers) a
     await cp.stop();
   }
 });
+
+// The exception is tied to the exact artifact. A different Monaco or bundled DOMPurify means the analysis above must be redone;
+// a patched DOMPurify means the exception must be removed. (Audit L03, docs/ERA_V020_REMEDIATION.md.)
+const EXCEPTION = { monaco: '0.57.0', dompurify: '3.4.15', patched: [3, 4, 16] };
+const atLeast = (version, min) => { const v = version.split('.').map(Number); for (let i = 0; i < 3; i++) { if (v[i] !== min[i]) return v[i] > min[i]; } return true; };
+
+test('the DOMPurify advisory exception matches the Monaco bundle that ships, and ends when a patched one does', { skip: !present && 'monaco-editor is not installed' }, () => {
+  const pkg = JSON.parse(readFileSync(join(ROOT, 'apps', 'studio', 'node_modules', 'monaco-editor', 'package.json'), 'utf8'));
+  assert.equal(pkg.version, EXCEPTION.monaco, `Monaco is ${pkg.version}, the recorded exception covers ${EXCEPTION.monaco}: re-run the reachability analysis (this file and the "hover Markdown" desktop scenario) and update or remove the exception`);
+  const files = readdirSync(MONACO, { recursive: true }).filter((f) => String(f).endsWith('.js') && readFileSync(join(MONACO, String(f)), 'utf8').includes('afterSanitizeAttributes'));
+  assert.ok(files.length >= 1);
+  for (const f of files) {
+    const bundled = /\.version="(3\.\d+\.\d+)"/.exec(readFileSync(join(MONACO, String(f)), 'utf8'))?.[1];
+    assert.ok(bundled, `${f}: the bundled DOMPurify version could not be read`);
+    assert.equal(atLeast(bundled, EXCEPTION.patched), false, `${f} bundles DOMPurify ${bundled}, which contains the fix: remove the exception and the advisory notes`);
+    assert.equal(bundled, EXCEPTION.dompurify, `${f} bundles DOMPurify ${bundled}, the exception covers ${EXCEPTION.dompurify}`);
+  }
+  const lock = JSON.parse(readFileSync(join(ROOT, 'apps', 'studio', 'package-lock.json'), 'utf8'));
+  assert.equal(lock.packages['node_modules/monaco-editor'].version, EXCEPTION.monaco);
+  assert.equal(lock.packages['node_modules/dompurify'].version, EXCEPTION.dompurify);
+});
