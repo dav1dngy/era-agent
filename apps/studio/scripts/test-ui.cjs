@@ -9,15 +9,17 @@ module.exports = async function testUI({ win, controlPlane, repo }) {
   const source = process.env.ERA_STUDIO_TEST_SOURCE;
   const original = readFileSync(path.join(source, 'src/cart.js'), 'utf8');
   const js = (code) => win.webContents.executeJavaScript(code, true);
-  const api = (method, url, body) => js(`(async () => { const r = await fetch(${JSON.stringify(url)}, {method:${JSON.stringify(method)},headers:{'Content-Type':'application/json'},body:${body === undefined ? 'undefined' : `JSON.stringify(${JSON.stringify(body)})`}}); const data = await r.json(); if (!r.ok) throw Error(r.status + ': ' + JSON.stringify(data)); return data; })()`);
+  // Values reach the page as base64 of their JSON text and are decoded there: only [A-Za-z0-9+/=] is ever spliced into code.
+  const lit = (v) => `JSON.parse(new TextDecoder().decode(Uint8Array.from(atob('${Buffer.from(JSON.stringify(v), 'utf8').toString('base64')}'), (c) => c.charCodeAt(0))))`;
+  const api = (method, url, body) => js(`(async () => { const r = await fetch(${lit(url)}, {method:${lit(method)},headers:{'Content-Type':'application/json'},body:${body === undefined ? 'undefined' : `JSON.stringify(${lit(body)})`}}); const data = await r.json(); if (!r.ok) throw Error(r.status + ': ' + JSON.stringify(data)); return data; })()`);
   const until = async (predicate, label, ms = 30_000) => {
     const end = Date.now() + ms;
     while (Date.now() < end) { if (await predicate()) return; await delay(100); }
     throw Error(`Timed out: ${label}`);
   };
   const dom = (expr, label) => until(() => js(expr), label);
-  const go = async (hash, expr) => { await js(`location.hash = ${JSON.stringify(hash)}`); await dom(expr, hash); };
-  const click = async (label) => { await dom(`[...document.querySelectorAll('button')].some(b => b.textContent.trim() === ${JSON.stringify(label)} && !b.disabled)`, label); await js(`[...document.querySelectorAll('button')].find(b => b.textContent.trim() === ${JSON.stringify(label)} && !b.disabled).click()`); };
+  const go = async (hash, expr) => { await js(`location.hash = ${lit(hash)}`); await dom(expr, hash); };
+  const click = async (label) => { await dom(`[...document.querySelectorAll('button')].some(b => b.textContent.trim() === ${lit(label)} && !b.disabled)`, label); await js(`[...document.querySelectorAll('button')].find(b => b.textContent.trim() === ${lit(label)} && !b.disabled).click()`); };
   const check = (name) => { checks.push({ name, ok: true }); process.stdout.write(`PASS ${name}\n`); };
   const screenshot = async (name) => { await delay(200); writeFileSync(path.join(out, `${name}.png`), (await win.webContents.capturePage()).toPNG()); };
   const finishedJob = async (kind) => {
@@ -30,7 +32,8 @@ module.exports = async function testUI({ win, controlPlane, repo }) {
     await dom("!!document.querySelector('.shell')", 'desktop startup');
     assert.equal(await js("typeof require === 'undefined' && typeof process === 'undefined' && window.eraDesktop.injectedAuth"), true);
     assert.equal((await fetch(`${controlPlane.url}/api/overview`)).status, 401, 'outside requests receive no injected token');
-    assert.equal((await js('window.eraDesktop.version()')).app, '0.2.0-dev.0');
+    // The version the app reports must be the one in its own package.json (a stale build would differ).
+    assert.equal((await js('window.eraDesktop.version()')).app, JSON.parse(readFileSync(path.join(__dirname, '..', 'package.json'), 'utf8')).version);
     assert.equal(win.webContents.getLastWebPreferences().sandbox, true);
     check('Desktop launch, sandbox, isolated preload and authenticated API');
     assert.equal((await api('GET', '/api/overview')).rea.available, true, JSON.stringify((await api('GET', '/api/overview')).rea));
@@ -100,7 +103,7 @@ module.exports = async function testUI({ win, controlPlane, repo }) {
     check('Workbench loads project file in real Monaco');
 
     await go('#/analysis', "document.querySelector('h1')?.textContent === 'Analysis'");
-    await js(`{const i=document.querySelector('[aria-label="Analysis target path"]'); i.value=${JSON.stringify(source)}; i.dispatchEvent(new Event('input',{bubbles:true}));}`);
+    await js(`{const i=document.querySelector('[aria-label="Analysis target path"]'); i.value=${lit(source)}; i.dispatchEvent(new Event('input',{bubbles:true}));}`);
     await click('Inspect target');
     await click('Start analysis');
     const analysis = await finishedJob('analysis');

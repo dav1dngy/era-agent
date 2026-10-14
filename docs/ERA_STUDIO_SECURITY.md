@@ -31,6 +31,16 @@ and tested; they do not establish enterprise compliance or replace an independen
   text, takes a private copy and verifies no modifications. It shares the project lock
   and reserves/reports spend in the project ledger, including conservative unfinished
   reservations. Unmetered providers require the existing explicit configuration opt-in.
+- **Spending policy:** agents that report no dollar cost (Codex) are refused until you turn on
+  *Settings → Execution → Agents without a dollar cost* (default off, audited as `policy.unmetered_agents`).
+  Studio jobs never inherit `ERA_ALLOW_UNMETERED_AGENTS` from the environment; the setting is the single switch. The
+  prerequisite checklist states when a run has no dollar cap.
+- **Screenshot uploads** are accepted only as PNG/JPEG/WebP by content, size-limited, stored privately, and served back
+  by exact name pattern. Metadata is removed before any agent sees an image. Run artifacts are served only for
+  `reference-images/*`, `visual-attempt-N/rendered.png`, `plan.md`, `SPEC.md` and the architect's design.
+- **Visual renderer:** generated sites are rendered in a separate Electron process under ERA's macOS sandbox profile (no
+  network, confined writes), with an in-memory session that cancels every request except files in the site folder. Chromium's
+  own sandbox cannot be nested inside that profile and is disabled for that process only; the profile is the confinement.
 - Native build staging never copies `.era`, unrelated files, credentials or repository
   history. Existing REA attribution, package licenses and Electron notices remain included.
 
@@ -40,7 +50,10 @@ For the `v0.2.0-dev.1` development prerelease, the Studio production dependency
 audit reports two low-severity findings involving Monaco's transitive DOMPurify
 dependency: [GHSA-p98j-92pf-mc4p](https://github.com/advisories/GHSA-p98j-92pf-mc4p)
 and [GHSA-6688-9rhm-gjv2](https://github.com/advisories/GHSA-6688-9rhm-gjv2).
-These remain open; no breaking dependency update was applied for this checkpoint.
+These remain open; no breaking dependency update was applied for this checkpoint. They cannot be fixed by an npm
+override: Monaco's prebuilt bundle contains its own DOMPurify 3.4.15, and no newer Monaco exists. `tests/studio-dependencies.test.js`
+records why they are not reachable here (both need DOMPurify's `IN_PLACE` mode, which Monaco never requests; and Studio's CSP has no
+`unsafe-inline` for scripts, so injected inline handlers do not run, verified in a live page) and fails if a Monaco upgrade changes that.
 The separate root production dependency audit reported zero vulnerabilities.
 Audit severity is not an independent assessment of exploitability in Studio.
 
@@ -55,6 +68,12 @@ commands are user-trusted executables and may need their own credential/network 
 Secret scanning is heuristic, and authorized provider transmission includes eligible
 project context, not just a selected line. Cost caps depend on provider-reported dollar
 usage; tokens alone cannot establish dollar spend. Do not claim a Codex dollar cap.
+
+Provider CLIs (Codex, Claude Code) run under their own sandboxes, which permit **reading files anywhere your user can**.
+In a real validation run Codex found a reference screenshot elsewhere on disk by the file name listed in the specification and
+viewed it. A provider agent can therefore also read other projects' files in ERA's state directory; ERA cannot prevent that
+(it can only withhold credential and instruction files from the working copy it creates). Treat authorizing a remote provider as
+authorizing it to see what your account can see.
 
 Pending work before broad distribution: independent adversarial security audit;
 Developer ID signing/notarization and Gatekeeper validation; clean-machine prerequisite

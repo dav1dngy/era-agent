@@ -34,12 +34,14 @@ Analysis mode (uses the REA engine):
 ERA Project Lab (external, authorized projects; the original is never changed without approval):
   project create <id> --source DIR [--task T] [--mode review|modify|rebuild] [--agent A]
                 [--build CMD]... [--test CMD]... [--accept CMD]... [--accept-fail CMD]...
-                [--agent-command CMD] [--criteria TEXT]... [--protect GLOB]... [--reference PATH --destination DIR
+                [--agent-command CMD] [--criteria TEXT]... [--review-plan] [--protect GLOB]... [--reference PATH --destination DIR
                 --authorization TEXT --run CMD] [--config FILE.json] [--max-cost USD]
                 Multi-agent: [--team claude-only|codex-only|claude+codex|custom]
                 [--architect A] [--implementer A] [--reviewer A] [--review-rounds N] [--block-on high]
                 [--allow-remote claude-code,codex] [--allow-secret-content]
   project team <id>             Roles, capabilities, availability and sign-in of the project's agents
+  project check <id> [--op OP] Everything that would stop or weaken a run (agents, sign-in, spend cap, consent,
+                                acceptance, destination, sandbox), before it starts. modify/rebuild run this first.
   project list                  Projects and their status
   project review <id>           Review: architecture, findings, evidence (read-only)
   project modify <id>           Modify: isolated change, tests, regression check, diff
@@ -47,7 +49,7 @@ ERA Project Lab (external, authorized projects; the original is never changed wi
   project status <id>           State, spend and the next step
   project show <id> [--run R]   The full report of a run
   project approve <id> [--yes]  Apply the verified diff / write the destination
-  project resume <id>           Continue an interrupted, failed or manual run
+  project resume <id> [--approve-plan]  Continue an interrupted, failed or manual run; approves a plan that is waiting
   project cancel <id>           Cancel and remove the run's working copy
   project rollback <id>         Undo an approved change
   (add --json for machine-readable output; --trust-project only for trusted code)

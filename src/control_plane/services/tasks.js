@@ -85,6 +85,7 @@ export function tasksService(ctx) {
     if (input.reference) def.reference = resolve(String(input.reference));
     if (input.destination) def.destination = resolve(String(input.destination));
     if (input.authorization) def.authorization = String(input.authorization);
+    if (input.review_plan !== undefined) def.review_plan = input.review_plan === true;
     const commands = {};
     if (input.run_command) commands.run = String(input.run_command);
     if (input.test_commands) commands.test = lines(input.test_commands);

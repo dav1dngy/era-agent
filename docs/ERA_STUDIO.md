@@ -56,20 +56,28 @@ remote provider is involved.
   findings without applying changes to the source. View findings and export the report.
 - **Modify:** specify a task, tests and acceptance checks; ERA implements in an isolated
   copy, verifies it, and stops for human approval. Inspect the real Monaco diff and
-  test results. Approval is bound to the evaluated artifact. Canceling the approval
+  test results. Optionally (**Pause after planning**, per project or per task) the run stops after the
+  plan and the architect's design so you can read them in the **Plan & design** view and approve the
+  plan before any code is written; a plain resume never approves it. Approval of the change is bound to the evaluated artifact. Canceling the approval
   dialog does nothing; Reject discards the proposed working copy. Rollback reverses
   an applied patch only if integrity checks still pass.
-- **Rebuild:** select an authorized reference, empty destination, authorization and
-  task. Configure acceptance commands when creating the project. Structured reference
-  behavior capture and advanced acceptance definitions remain available through the
-  existing CLI/project configuration; there is no dedicated behavior editor in Studio.
-  REA evidence supports an independent implementation; this is not full source recovery.
-  At least one acceptance check or test command must be configured; Studio does not
-  generate these automatically. Screenshot-to-website reconstruction is not implemented:
-  choosing a JPEG reference does not pass its image content to the coding agent.
-  The New Task Rebuild dialog also has incomplete project setup: starting without
-  a project folder can fail, and it does not save new reference/destination values
-  for an existing project. Use the CLI/project configuration for these values.
+- **Rebuild:** choose an authorized reference (a program, app or folder, **or one or more
+  screenshots of a page**), an empty destination, your authorization statement and a task.
+  A **prerequisite checklist** is shown before anything starts (agent installed and signed in,
+  spending policy, consent to send data, acceptance defined, destination empty, sandbox, renderer,
+  image support) with a fix for each problem; the same checks gate the job (`era project check`
+  on the command line). "How will ERA know it worked?" is configured in plain terms: expected
+  behaviors (arguments, expected output, or "record it by running the reference"), acceptance
+  commands, the new project's own test commands, and for screenshots a visual-similarity threshold.
+  Editing the reference, destination, commands or acceptance of an existing project (Project →
+  Configuration, or the New Task form with that project selected) **saves** them. Without any
+  acceptance check ERA refuses to start, because any output would count as success.
+  Programs go through REA evidence and sandboxed behavior capture; REA is not applicable to
+  screenshots. This is not full source recovery. Screenshot rebuilds are described in
+  [screenshot-rebuild.md](screenshot-rebuild.md): images are validated and stripped of metadata,
+  passed to the agent as images, and the generated page is rendered offline in a sandbox and scored
+  against the screenshot; the review screen shows both side by side. Codex was validated for real;
+  Claude Code's image path was not.
 - **Improve:** configure an ERA Git checkout under Workspaces. View real version and
   experiment history, self-analyze, propose, implement, evaluate, inspect guards/diffs,
   approve or decline, rebase and roll back through the existing Improvement Lab.

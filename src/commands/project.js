@@ -1,12 +1,13 @@
 // `era project …`: ERA Project Lab commands. A thin layer over src/project_lab/lab.js.
 import { readFileSync } from 'node:fs';
 import { createProjectLab } from '../project_lab/lab.js';
+import { assertNotCI } from '../safety/policy.js';
 import { confirm } from './lab.js';
 
 const splitList = (v) => (typeof v === 'string' ? v.split(',').map((x) => x.trim()).filter(Boolean) : []);
 const print = (value, asJson) => process.stdout.write(asJson ? `${JSON.stringify(value, null, 2)}\n` : `${value}\n`);
 
-const EXIT = { complete: 0, 'awaiting-approval': 0, 'awaiting-implementation': 0, applied: 0, rejected: 1, failed: 1, interrupted: 130, cancelled: 130 };
+const EXIT = { complete: 0, 'awaiting-approval': 0, 'awaiting-plan': 0, 'awaiting-implementation': 0, applied: 0, rejected: 1, failed: 1, interrupted: 130, cancelled: 130 };
 
 // Builds a project definition from --config <file> and flags (flags win).
 export function projectInputFromArgs({ positional, flags }) {
@@ -37,6 +38,7 @@ export function projectInputFromArgs({ positional, flags }) {
   if (flags['max-attempts']) limits.maxAttempts = Number(flags['max-attempts']);
   if (Object.keys(limits).length) input.limits = limits;
   if (flags['trust-project']) input.trust_project = true;
+  if (flags['review-plan']) input.review_plan = true;
   // Multi-agent team and data-exposure consent.
   const teamKeys = { architect: flags.architect, implementer: flags.implementer, reviewer: flags.reviewer };
   if (flags.team || Object.values(teamKeys).some(Boolean)) {
@@ -57,6 +59,13 @@ const table = (rows, cols) => {
   const line = (cells) => cells.map((c, i) => String(c).padEnd(w[i])).join('  ');
   return [line(cols.map(([h]) => h)), line(w.map((n) => '-'.repeat(n))), ...rows.map((r) => line(cols.map(([, f]) => f(r) ?? '')))].join('\n');
 };
+
+const MARK = { pass: '✓', warn: '!', fail: '✕', info: 'i' };
+export function renderChecks(pf) {
+  const lines = [`Prerequisites for ${pf.op}: ${pf.ok ? (pf.warnings.length ? `ready, with ${pf.warnings.length} warning(s)` : 'ready') : `${pf.blockers.length} problem(s) must be fixed first`}`];
+  for (const c of pf.checks) lines.push(`  ${MARK[c.status] ?? '·'} ${c.label}: ${c.message}${c.fix && c.status !== 'pass' ? `\n      → ${c.fix}` : ''}`);
+  return lines.join('\n');
+}
 
 function summarize(result) {
   const { project, run } = result;
@@ -112,14 +121,28 @@ export async function run(command, ctx, { positional, flags }) {
       print([`Project ${project.id}: team "${out.preset}"`, ...Object.entries(roles).map(([r, a]) => `  ${r.padEnd(12)} ${a ?? '—'}`), `Authorized to receive source code: ${out.remote_consent.join(', ') || 'nobody'}`, ...rows.map((p) => `  ${p.id.padEnd(12)} ${p.available ? 'available' : 'unavailable'}, ${p.authenticated === true ? 'signed in' : p.authenticated === false ? 'NOT signed in' : 'sign-in unknown'}; ${p.capabilities.remote ? 'REMOTE' : 'local'}; ${p.detail}`)].join('\n'));
       return rows.every((p) => p.ready) ? 0 : 1;
     }
+    case 'check': {
+      const op = flags.op ?? lab.get(need()).mode;
+      const pf = await lab.preflight(need(), op, { trust: opts.trust, allowRemote: opts.allowRemote });
+      if (flags.json) return print(pf, true), pf.ok ? 0 : 2;
+      print(renderChecks(pf));
+      return pf.ok ? 0 : 2;
+    }
     case 'review':
-      return finish(await lab.review(need(), opts));
     case 'modify':
-      return finish(await lab.modify(need(), opts));
-    case 'rebuild':
-      return finish(await lab.rebuild(need(), opts));
+    case 'rebuild': {
+      // Everything that would stop or weaken the run is reported first, as one list, and nothing is started.
+      assertNotCI(); // the refusal in CI comes before anything else
+      const pf = await lab.preflight(need(), sub, { trust: opts.trust, allowRemote: opts.allowRemote });
+      if (!pf.ok) {
+        if (flags.json) print(pf, true);
+        else process.stderr.write(`${renderChecks(pf)}\nNothing was started.\n`);
+        return 2;
+      }
+      return finish(await lab[sub](need(), opts));
+    }
     case 'resume':
-      return finish(await lab.resume(need(), opts));
+      return finish(await lab.resume(need(), { ...opts, approvePlan: !!flags['approve-plan'] }));
     case 'status': {
       const s = lab.status(need());
       if (flags.json) return print(s, true), 0;

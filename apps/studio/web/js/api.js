@@ -44,6 +44,7 @@ export async function api(method, path, body) {
 }
 export const get = (p) => api('GET', p);
 export const patch = (p, b = {}) => api('PATCH', p, b);
+export const getText = async (p) => (await getBlob(p)).text();
 
 // Authenticated binary fetch (an <img src> cannot carry the Authorization header in browser mode).
 export async function getBlob(path) {

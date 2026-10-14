@@ -3,6 +3,32 @@
 All notable changes to ERA. Versions `era-vN` are internal self-improvement
 checkpoints (annotated git tags); `vX.Y.Z` are releases.
 
+## Unreleased (branch `feature/era-v0.2.0`, after v0.2.0-dev.1)
+
+### Fixed
+- **"Unknown run" race:** a status read while a run directory existed but its `run.json` was not yet published
+  failed; such directories are now treated as runs still being created. Reproduced deterministically (half-created
+  directory; a concurrent writer process) and verified to fail on the previous code.
+- **`ENOTEMPTY` on interruption/cleanup:** temp-directory removal could throw while a descendant outside the process
+  group still wrote into it, masking the real result. New never-throwing, retrying `removeTree()` is used by candidate
+  tests, project commands, self-evaluation, benchmarks and working-copy removal; cleanup runs in `finally`.
+- Code-scanning findings on PR #1: values are no longer interpolated into generated code in tests/UI scripts; project tool
+  detection no longer builds a shell command (native PATH search).
+- Desktop test compared the app version with a stale constant; it now reads the app's own `package.json`.
+
+### Rebuild (usable) and screenshot-to-website
+- Prerequisite checklist before any run (`era project check`, `GET /api/projects/:id/preflight`, Studio): agent installed
+  and signed in, spending cap, consent, acceptance, destination, sandbox, renderer, image support; each with a fix. Start is
+  refused with the whole list.
+- Planning a REBUILD no longer crashes; reference/destination/commands/acceptance edited for an existing project are saved.
+  Rebuild setup UI: behavior editor, acceptance and test commands, visual threshold.
+- `allowUnmeteredAgents` is never enabled silently: Studio setting (default off, audited); not inherited from the environment.
+- Screenshot rebuilds: content-validated PNG/JPEG/WebP, metadata stripped, passed to the agent as images (Codex native; Claude
+  Code via its file tool, unvalidated), offline sandboxed render + visual score, copy and external-resource detection, side-by-side
+  review. See `docs/screenshot-rebuild.md`.
+- Optional plan-review gate (`--review-plan`, `--approve-plan`, Studio "Pause after planning") and a Plan & design view.
+- Studio dependency advisories (Monaco/DOMPurify) analysed and tested as unreachable; not fixable by override.
+
 ## v0.2.0-dev.1 — 2026-10-14 (development prerelease)
 
 Development preview from `feature/era-v0.2.0`; stable `main` and v0.1.0 remain

@@ -78,7 +78,9 @@ test('accepted experiment waits for approval, integrates on approval, and can be
   const e = lab.era(['improve', 'evaluate', id, ...TRUST]);
   assert.equal(e.status, 0, e.stderr);
   const decided = lab.cycle(id);
-  assert.equal(decided.status, 'awaiting-approval', decided.evaluation.summary);
+  // On failure say WHY: the failed guards and the candidate's failing tests (a bare "rejected" hides a load-related cause).
+  const why = () => JSON.stringify({ summary: decided.evaluation?.summary, guards: (decided.evaluation?.guards ?? []).filter((g) => !g.ok), candidate_tests: (({ ok, exit_code, timed_out, passed, failed, failures, wall_ms }) => ({ ok, exit_code, timed_out, passed, failed, failures, wall_ms }))(decided.evaluation?.candidateTests ?? {}), evaluate_output: String(e.stdout ?? '').slice(-400) });
+  assert.equal(decided.status, 'awaiting-approval', why());
   assert.equal(lab.git('rev-parse', 'HEAD'), base, 'stable branch untouched before approval');
   assert.ok(existsSync(join(lab.dir, '.era', 'cycles', id, 'change.patch')));
   assert.match(lab.era(['improve', 'show', id]).stdout, /awaiting-approval/);
@@ -97,7 +99,8 @@ test('accepted experiment waits for approval, integrates on approval, and can be
   assert.equal(lab.era(['improve', 'rebase', id]).status, 0);
   assert.equal(lab.cycle(id).status, 'proposed');
   assert.equal(lab.era(['improve', 'evaluate', id, ...TRUST]).status, 0);
-  assert.equal(lab.cycle(id).status, 'awaiting-approval');
+  const reeval = lab.cycle(id);
+  assert.equal(reeval.status, 'awaiting-approval', JSON.stringify({ summary: reeval.evaluation?.summary, failed_guards: (reeval.evaluation?.guards ?? []).filter((g) => !g.ok), candidate_failures: reeval.evaluation?.candidateTests?.failures }));
 
   const a = lab.era(['improve', 'approve', id, '--yes', '--by', 'Maintainer <m@example.test>']);
   assert.equal(a.status, 0, a.stderr);

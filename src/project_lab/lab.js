@@ -27,7 +27,8 @@ import { applyPatch, removeWorkspace, treeDigest, workspaceChanges } from './wor
 
 const FLOWS = { review: runReview, modify: runModify, rebuild: runRebuild };
 const RESUMABLE = ['interrupted', 'failed', 'awaiting-implementation'];
-const CANCELLABLE = ['running', 'interrupted', 'failed', 'awaiting-implementation', 'awaiting-approval', 'rejected'];
+const PLAN_WAIT = 'awaiting-plan';
+const CANCELLABLE = ['running', 'interrupted', 'failed', 'awaiting-implementation', PLAN_WAIT, 'awaiting-approval', 'rejected'];
 
 const alive = (pid) => {
   try {
@@ -112,6 +113,7 @@ export class ProjectLab {
       interrupted: `era project resume ${project.id}`,
       failed: `fix the problem shown by \`era project show ${project.id}\`, then \`era project resume ${project.id}\``,
       'awaiting-implementation': `edit the working copy, then \`era project resume ${project.id}\``,
+      [PLAN_WAIT]: `read the plan, then \`era project resume ${project.id} --approve-plan\` (or cancel)`,
       'awaiting-approval': `review \`era project show ${project.id}\`, then \`era project approve ${project.id}\``,
       rejected: `\`era project show ${project.id}\` for the reasons; \`era project resume ${project.id}\` (manual edits) or \`era project cancel ${project.id}\``,
       complete: `era project show ${project.id}`,
@@ -155,7 +157,7 @@ export class ProjectLab {
     assertReady(project, op);
     if (project.source && !existsSync(project.source)) throw new Error(`The source path no longer exists: ${project.source}`);
     if (project.reference && !existsSync(project.reference)) throw new Error(`The reference path no longer exists: ${project.reference}`);
-    const open = this.store.listRuns(id).filter((r) => ['running', 'awaiting-implementation', 'awaiting-approval'].includes(r.status) && !(r.status === 'running' && !lockHolder(this.store.dir(id))));
+    const open = this.store.listRuns(id).filter((r) => ['running', 'awaiting-implementation', PLAN_WAIT, 'awaiting-approval'].includes(r.status) && !(r.status === 'running' && !lockHolder(this.store.dir(id))));
     if (open.length) throw new Error(`Project "${id}" already has an open run (${open[0].run_id}, ${open[0].status}). ${this.nextAction(project, open[0], false)}`);
     const run = this.store.newRun(project, op);
     run.agent = project.agent ?? this.config.projectLab?.agent ?? 'manual';
@@ -165,11 +167,13 @@ export class ProjectLab {
     return this.execute(project, run);
   }
 
-  async resume(id, { trust = false } = {}) {
+  async resume(id, { trust = false, approvePlan = false } = {}) {
     assertNotCI();
     const project = this.store.load(id);
     const holder = lockHolder(this.store.dir(id));
-    const run = this.store.latestRun(id, (r) => RESUMABLE.includes(r.status) || (r.status === 'running' && !holder) || r.status === 'rejected');
+    const waiting = this.store.latestRun(id, (r) => r.status === PLAN_WAIT);
+    if (waiting && !approvePlan) throw new Error(`Run ${waiting.run_id} is waiting for you to review its plan. Read it, then resume with --approve-plan (or cancel the run).`);
+    const run = this.store.latestRun(id, (r) => RESUMABLE.includes(r.status) || (approvePlan && r.status === PLAN_WAIT) || (r.status === 'running' && !holder) || r.status === 'rejected');
     if (!run) throw new Error(`Project "${id}" has nothing to resume. ${this.nextAction(project, this.store.latestRun(id), false) ?? ''}`.trim());
     if (holder) throw new SafetyError(`Project "${id}" is busy (pid ${holder.pid}, ${holder.owner}).`);
     if (run.status === 'rejected' && this.runAgent(run) !== 'manual') throw new Error(`Run ${run.run_id} was rejected after ${run.attempts.length} attempt(s) by the configured agent. Review \`era project show ${id}\`, adjust the task or acceptance criteria, and start a new run.`);
@@ -183,6 +187,11 @@ export class ProjectLab {
       run.attempts = run.attempts.filter((a) => a.n !== last);
     }
     run.trust_project = trust || run.trust_project;
+    // Approving the plan is an explicit act, recorded; resuming never approves it implicitly.
+    if (approvePlan && run.status === PLAN_WAIT) {
+      run.plan_approved = { at: new Date().toISOString(), by: process.env.USER ?? 'unknown' };
+      this.store.log(id, { type: 'plan-approved', run_id: run.run_id, by: run.plan_approved.by });
+    }
     run.status = 'running';
     delete run.error;
     return this.execute(project, run);

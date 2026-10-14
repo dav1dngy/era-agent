@@ -433,7 +433,11 @@ test('CLI: team flags, consent, the team command and the agents listing', () => 
   // starting without consent for claude-code is refused up front
   const refused = cli(['project', 'modify', 'x']);
   assert.notEqual(refused.status, 0);
-  assert.match(refused.stderr, /to claude-code is not authorized/);
+  // the up-front checklist names the provider and the fix, and nothing was started
+  assert.equal(refused.status, 2);
+  assert.match(refused.stderr, /claude-code .*not been authorized by you/);
+  assert.match(refused.stderr, /--allow-remote claude-code/);
+  assert.match(refused.stderr, /Nothing was started/);
   const team = JSON.parse(cli(['project', 'team', 'x', '--json']).stdout);
   assert.equal(team.preset, 'claude+codex');
   assert.deepEqual(team.providers.map((r) => r.id).sort(), ['claude-code', 'codex']);

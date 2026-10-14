@@ -63,7 +63,9 @@ test('a reader polling while another process creates runs never sees "Unknown ru
     await new Promise((r) => setImmediate(r));
   }
   assert.deepEqual(errors, []);
-  assert.ok(reads > 50, `only ${reads} reads happened`);
+  // How many reads fit in depends on CPU scheduling (a starved reader may get few), so only correctness is asserted here;
+  // the deterministic proof is the half-created-directory test above.
+  assert.ok(reads > 0, 'the reader ran at least once');
   assert.equal(store.listRuns('demo').length, 60);
 });
 

@@ -32,7 +32,7 @@ export function projectsService(ctx) {
   };
 
   // Project data safe to show: paths are the user's own, nothing secret is stored in a project.
-  const view = (p) => ({ id: p.id, mode: p.mode, status: p.status, task: p.task, source: p.source, reference: p.reference, destination: p.destination, agent: p.agent, team: p.team, exposure: p.exposure, commands: p.commands, acceptance: p.acceptance, protected: p.protected, limits: p.limits, authorization: p.authorization, approval: p.approval, created_at: p.created_at, updated_at: p.updated_at });
+  const view = (p) => ({ id: p.id, mode: p.mode, status: p.status, task: p.task, source: p.source, reference: p.reference, destination: p.destination, agent: p.agent, team: p.team, exposure: p.exposure, commands: p.commands, acceptance: p.acceptance, protected: p.protected, limits: p.limits, authorization: p.authorization, review_plan: p.review_plan === true, approval: p.approval, created_at: p.created_at, updated_at: p.updated_at });
 
   const runSummary = (r) => r && { run_id: r.run_id, op: r.op, status: r.status, current_step: r.current_step ?? null, steps: Object.fromEntries(Object.entries(r.steps ?? {}).map(([k, v]) => [k, { status: v.status, started_at: v.started_at ?? null, finished_at: v.finished_at ?? null, duration_ms: v.duration_ms ?? null }])), attempts: r.attempts ?? [], error: r.error ?? null, pause_message: r.pause_message ?? null, team: r.team ?? null, created_at: r.created_at, updated_at: r.updated_at };
 
@@ -132,6 +132,7 @@ export function projectsService(ctx) {
     const args = ['project', op, id, '--json'];
     if (Array.isArray(opts.allow_remote) && opts.allow_remote.length) args.push('--allow-remote', opts.allow_remote.join(','));
     if (opts.trust) args.push('--trust-project');
+    if (op === 'resume' && opts.approve_plan === true) args.push('--approve-plan');
     if (opts.agent) args.push('--agent', String(opts.agent));
     let job;
     try {
@@ -225,7 +226,7 @@ export function projectsService(ctx) {
   // Images a run produced or was given (the reference copies and the renderings), by exact path pattern.
   function artifact(id, runId, path) {
     loadProject(id);
-    if (!/^(reference-images\/reference-\d+\.(png|jpg|webp)|visual-attempt-\d+\/rendered\.png)$/.test(path)) throw denied('That artifact is not available.');
+    if (!/^(reference-images\/reference-\d+\.(png|jpg|webp)|visual-attempt-\d+\/rendered\.png|plan\.md|SPEC\.md|handoffs\/(design|architect-brief)\.md)$/.test(path)) throw denied('That artifact is not available.');
     let run;
     try {
       run = lab.show(id, { runId }).run;
@@ -234,7 +235,7 @@ export function projectsService(ctx) {
     }
     const file = resolveInside(lab.store.runDir(id, run.run_id), path);
     if (!existsSync(file)) throw missing('The artifact does not exist.');
-    return { bytes: readFileSync(file), mime: path.endsWith('.png') ? 'image/png' : path.endsWith('.webp') ? 'image/webp' : 'image/jpeg' };
+    return { bytes: readFileSync(file), mime: path.endsWith('.md') ? 'text/plain; charset=utf-8' : path.endsWith('.png') ? 'image/png' : path.endsWith('.webp') ? 'image/webp' : 'image/jpeg' };
   }
 
   async function approve(id, body = {}) {

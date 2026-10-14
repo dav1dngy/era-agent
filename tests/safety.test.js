@@ -104,10 +104,11 @@ test('a stale lock is taken over by exactly one of many racing processes (no dou
   for (let round = 0; round < 3; round++) {
     const dir = tempDir();
     writeFileSync(join(dir, 'improve.lock'), JSON.stringify({ pid: 2 ** 22 + 777, owner: 'dead', token: 'old' }));
-    const url = new URL('../src/safety/policy.js', import.meta.url).href;
+    // The script is a constant; the values it needs travel in the environment, never inside generated code.
     const done = join(dir, 'tried');
-    const script = `const fs = require('fs'); import('${url}').then(({ acquireLock }) => { let got = false; try { acquireLock(${JSON.stringify(dir)}, 'racer'); got = true; console.log('got'); } catch { console.log('busy'); } fs.appendFileSync(${JSON.stringify(done)}, 'x'); if (got) { const t = setInterval(() => { if (fs.readFileSync(${JSON.stringify(done)}, 'utf8').length >= 6) clearInterval(t); }, 30); } });`;
-    const results = await Promise.all(Array.from({ length: 6 }, () => runProcess(process.execPath, ['-e', script], { timeoutMs: 20_000 })));
+    const script = "const fs = require('fs'); import(process.env.ERA_T_URL).then(({ acquireLock }) => { let got = false; try { acquireLock(process.env.ERA_T_DIR, 'racer'); got = true; console.log('got'); } catch { console.log('busy'); } fs.appendFileSync(process.env.ERA_T_DONE, 'x'); if (got) { const t = setInterval(() => { if (fs.readFileSync(process.env.ERA_T_DONE, 'utf8').length >= 6) clearInterval(t); }, 30); } });";
+    const env = { ...process.env, ERA_T_URL: new URL('../src/safety/policy.js', import.meta.url).href, ERA_T_DIR: dir, ERA_T_DONE: done };
+    const results = await Promise.all(Array.from({ length: 6 }, () => runProcess(process.execPath, ['-e', script], { timeoutMs: 20_000, env })));
     assert.equal(results.filter((r) => r.stdout.trim() === 'got').length, 1, `round ${round}: ${results.map((r) => r.stdout.trim()).join(',')}`);
   }
 });

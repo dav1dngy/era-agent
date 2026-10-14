@@ -174,6 +174,8 @@ export function normalizeProject(input, { existing = null, eraRoot = ERA_ROOT, c
     authorization: authorization ? String(authorization).trim() : null,
     // "sandbox: false" is a maintainer decision that project commands are trusted.
     trust_project: input.trust_project ?? existing?.trust_project ?? false,
+    // Pause after the plan (and the architect's design) so a human can read it before any code is written.
+    review_plan: input.review_plan === undefined ? existing?.review_plan === true : input.review_plan === true,
     approval,
     status: existing?.status ?? 'created',
     created_at: existing?.created_at ?? new Date().toISOString(),

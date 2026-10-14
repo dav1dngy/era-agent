@@ -62,7 +62,7 @@ export const progressPercent = (stages) => {
 export function simpleStatus({ project, job }) {
   const s = project?.latest_run?.status ?? project?.status;
   if (job && ['queued', 'running'].includes(job.status)) return { tone: 'info', text: job.status === 'queued' ? 'Queued' : `Working: ${humanStep(project?.latest_run?.current_step)}` };
-  const table = { 'awaiting-approval': ['warn', 'Ready for your review'], rejected: ['bad', 'The change did not pass verification'], failed: ['bad', 'The run failed'], complete: ['ok', 'Review complete'], applied: ['ok', 'Applied to your project'], cancelled: ['neutral', 'Cancelled'], interrupted: ['warn', 'Interrupted — you can resume it'], 'awaiting-implementation': ['warn', 'Waiting for you to edit the working copy'], 'rolled-back': ['neutral', 'Rolled back'] };
+  const table = { 'awaiting-plan': ['warn', 'Plan ready: read it, then approve it to start'], 'awaiting-approval': ['warn', 'Ready for your review'], rejected: ['bad', 'The change did not pass verification'], failed: ['bad', 'The run failed'], complete: ['ok', 'Review complete'], applied: ['ok', 'Applied to your project'], cancelled: ['neutral', 'Cancelled'], interrupted: ['warn', 'Interrupted — you can resume it'], 'awaiting-implementation': ['warn', 'Waiting for you to edit the working copy'], 'rolled-back': ['neutral', 'Rolled back'] };
   const [tone, text] = table[s] ?? ['neutral', s ? String(s) : 'No runs yet'];
   return { tone, text };
 }

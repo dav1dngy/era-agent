@@ -1,8 +1,8 @@
 // Rebuild screens: prerequisite checklist, reference picker (program/folder or screenshots), configuration form,
 // behavior editor, and the screenshot-vs-rendering comparison. Every status shown comes from the control plane.
 import { html, useEffect, useRef, useState } from '../html.js';
-import { ApiError, get, getBlob, patch, uploadImage } from '../api.js';
-import { Badge, Btn, Callout } from '../ui.js';
+import { ApiError, get, getBlob, getText, patch, uploadImage } from '../api.js';
+import { Badge, Btn, Callout, Md } from '../ui.js';
 import { navigate, toast } from '../store.js';
 import { behaviorsFromRows, checklistSummary, formFromProject, rebuildPayload } from '../rebuild-model.js';
 
@@ -147,6 +147,21 @@ export function VisualCompare({ projectId, runId, visual, images }) {
     <div class="col" style="gap:4px;max-width:520px">${bar('Layout', visual.metrics.layout)}${bar('Edges / structure', visual.metrics.edges)}${bar('Color', visual.metrics.color)}${bar('Brightness', visual.metrics.luminance)}</div>
     <div class="muted" style="font-size:var(--fs-xs)">The score is a heuristic (layout, edges, color and brightness of downscaled images), not a pixel-exact match. Rendered offline in a sandbox; ${visual.blocked_requests.length} network request(s) were blocked${visual.console_errors.length ? `; ${visual.console_errors.length} console error(s)` : ''}.</div>
   </div>`;
+}
+
+// The implementation plan, the architect's design (if an architecture agent ran) and, for rebuilds, the specification.
+export function PlanView({ projectId, runId = 'latest', op }) {
+  const [docs, setDocs] = useState(null);
+  useEffect(() => {
+    let dead = false;
+    const base = `/api/projects/${projectId}/runs/${runId}/artifact?path=`;
+    const want = op === 'rebuild' ? [['SPEC.md', 'Specification']] : [['plan.md', 'Implementation plan'], ['handoffs/design.md', 'Architecture design (from the architecture agent)']];
+    Promise.all(want.map(([path, title]) => getText(`${base}${encodeURIComponent(path)}`).then((text) => ({ title, text })).catch(() => null))).then((r) => !dead && setDocs(r.filter(Boolean)));
+    return () => { dead = true; };
+  }, [projectId, runId, op]);
+  if (!docs) return html`<span class="muted">Loading…</span>`;
+  if (!docs.length) return html`<span class="muted">No plan has been written for this run yet.</span>`;
+  return html`<div class="col">${docs.map((d) => html`<section class="panel"><header><h3>${d.title}</h3></header><div class="body"><${Md} text=${d.text} /></div></section>`)}</div>`;
 }
 
 export function BehaviorResults({ behaviors }) {

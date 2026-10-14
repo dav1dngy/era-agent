@@ -4,7 +4,7 @@ import { Badge, Btn, Callout, Empty, Md, Section, Spinner, baseName, duration, u
 import { navigate, openModal, closeModal, set, toast, useStore } from '../store.js';
 import { buildPipeline, groupFindings, humanStep, progressPercent, simpleStatus } from '../model.js';
 import { jobLog } from '../main.js';
-import { Checklist, RebuildSetup } from './rebuild.js';
+import { Checklist, PlanView, RebuildSetup } from './rebuild.js';
 import { Icon } from '../icons.js';
 
 export function Pipeline({ stages, compact = false }) {
@@ -136,7 +136,7 @@ function CreateProject() {
 }
 
 // The backend's "next" text names CLI commands; the UI says the same thing in its own terms.
-const hint = (status) => ({ 'awaiting-approval': 'Next: review the change and approve or reject it.', interrupted: 'Next: resume the interrupted run.', failed: 'Next: read the error above, fix the cause, then resume.', 'awaiting-implementation': 'Next: edit the working copy in the workbench, then resume.', rejected: 'Next: see why it was rejected, adjust the task or acceptance criteria and run again.', applied: 'The change is applied. You can roll it back from Changes & approval.' })[status.latest_run?.status] ?? null;
+const hint = (status) => ({ 'awaiting-plan': 'Next: read the plan and approve it, or cancel.', 'awaiting-approval': 'Next: review the change and approve or reject it.', interrupted: 'Next: resume the interrupted run.', failed: 'Next: read the error above, fix the cause, then resume.', 'awaiting-implementation': 'Next: edit the working copy in the workbench, then resume.', rejected: 'Next: see why it was rejected, adjust the task or acceptance criteria and run again.', applied: 'The change is applied. You can roll it back from Changes & approval.' })[status.latest_run?.status] ?? null;
 
 // What would stop (or weaken) the project's default operation, from the control plane's own checks.
 function PreflightPanel({ project, busy }) {
@@ -168,9 +168,12 @@ function RunControls({ project, status, onChange }) {
     }
   };
   const latest = status.latest_run;
+  const planWait = latest?.status === 'awaiting-plan' && !busy;
   const resumable = latest && ['interrupted', 'failed', 'awaiting-implementation'].includes(latest.status) && !busy;
   return html`<div class="col">
     <label class="col" style="gap:4px"><span class="muted">Task</span><textarea class="field" rows="2" value=${task} onInput=${(e) => setTask(e.target.value)} aria-label="Task" disabled=${busy}></textarea></label>
+    ${planWait ? html`<${Callout} kind="warn" title="The plan is ready for your review">Read the plan below, then approve it to start the implementation. Nothing has been changed yet.<div class="row" style="margin-top:8px"><${Btn} kind="primary" onClick=${async () => { try { const { job: j } = await post(`/api/projects/${project.id}/ops/resume`, { approve_plan: true }); toast('Plan approved: implementation started', 'ok'); onChange(j); } catch (e) { toast(e.message, 'bad', 9000); } }}>Approve plan and start<//><${Btn} kind="danger" onClick=${async () => { await post(`/api/projects/${project.id}/cancel`, {}); toast('Run cancelled'); onChange(); }}>Cancel run<//></div><//><${PlanView} projectId=${project.id} op="modify" />` : null}
+    <label class="check"><input type="checkbox" checked=${project.review_plan === true} disabled=${busy} onChange=${async (e) => { try { await api_patch(project.id, { review_plan: e.target.checked }); onChange(); } catch (er) { toast(er.message, 'bad'); } }} /><span>Pause after planning so I can read the plan before any code is written <span class="muted">(Modify)</span></span></label>
     <div class="row wrap">
       <${Btn} disabled=${busy || !project.source} onClick=${() => start('review')}>Run review<//>
       <${Btn} kind="primary" disabled=${busy || !project.source || !task.trim()} onClick=${() => start('modify')}>Run modify<//>

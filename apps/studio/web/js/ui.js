@@ -5,7 +5,7 @@ import { closeModal, state } from './store.js';
 export const STATUS = {
   succeeded: ['ok', 'Succeeded'], complete: ['ok', 'Complete'], applied: ['ok', 'Applied'], ready: ['ok', 'Ready'], done: ['ok', 'Done'], approved: ['ok', 'Approved'], integrated: ['ok', 'Integrated'],
   running: ['info', 'Running'], queued: ['neutral', 'Queued'], live: ['ok', 'Live'], connecting: ['warn', 'Connecting'],
-  'awaiting-approval': ['warn', 'Awaiting approval'], 'awaiting-implementation': ['warn', 'Waiting for you'], waiting: ['warn', 'Waiting'], proposed: ['neutral', 'Proposed'], pending: ['neutral', 'Pending'],
+  'awaiting-approval': ['warn', 'Awaiting approval'], 'awaiting-plan': ['warn', 'Plan ready for review'], 'awaiting-implementation': ['warn', 'Waiting for you'], waiting: ['warn', 'Waiting'], proposed: ['neutral', 'Proposed'], pending: ['neutral', 'Pending'],
   failed: ['bad', 'Failed'], rejected: ['bad', 'Rejected'], unavailable: ['bad', 'Unavailable'], offline: ['bad', 'Offline'], stalled: ['bad', 'Stalled'], 'not-signed-in': ['warn', 'Not signed in'],
   cancelled: ['neutral', 'Cancelled'], interrupted: ['warn', 'Interrupted'], 'rolled-back': ['neutral', 'Rolled back'], created: ['neutral', 'Created'], none: ['neutral', 'None'],
   simulated: ['warn', 'Simulated'], manual: ['neutral', 'Manual'], skipped: ['neutral', 'Skipped'], inconclusive: ['warn', 'Inconclusive'], declined: ['neutral', 'Declined'],

@@ -1,9 +1,8 @@
 // Capability detection: what is this project, and how is it built and tested?
 // Everything reported here is derived from files that exist in the project;
 // commands are *candidates* until the project configuration confirms them.
-import { existsSync, readFileSync } from 'node:fs';
-import { extname, join } from 'node:path';
-import { runProcess } from '../core/process.js';
+import { accessSync, constants, existsSync, readFileSync } from 'node:fs';
+import { delimiter, extname, join } from 'node:path';
 import { walkFiles } from './workspace.js';
 
 const LANGUAGES = {
@@ -33,9 +32,19 @@ const readText = (p) => {
   }
 };
 
+// Is `tool` an executable on PATH? Searched directly: no shell is involved, so a tool name taken from a project can never
+// become a shell command. Names that are not plain program names are reported as unavailable.
 async function which(tool) {
-  const r = await runProcess('/bin/sh', ['-c', `command -v ${tool}`], { timeoutMs: 10_000 });
-  return r.exitCode === 0 && r.stdout.trim() !== '';
+  if (!/^[\w.+-]{1,64}$/.test(tool)) return false;
+  for (const dir of (process.env.PATH ?? '').split(delimiter).filter(Boolean)) {
+    try {
+      accessSync(join(dir, tool), constants.X_OK);
+      return true;
+    } catch {
+      // not in this directory
+    }
+  }
+  return false;
 }
 
 export async function detectProject(root) {

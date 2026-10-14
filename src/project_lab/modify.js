@@ -176,6 +176,11 @@ export async function runModify(c) {
     return { text, relevant_files: files, path: join(c.runDir, 'plan.md') };
   });
 
+  // Optional gate: the plan (and the architect's design) are shown to the user before any agent writes code.
+  if (project.review_plan && !c.run.plan_approved) {
+    throw new Pause(`The plan is ready (${join(c.runDir, 'plan.md')}). Read it, then approve it to start the implementation: \`era project resume ${project.id} --approve-plan\`.`, 'awaiting-plan');
+  }
+
   // The verified outcome of the current working copy (used after each attempt and each correction).
   const verifyCurrent = async (impl = null) => {
     const changes = await workspaceChanges(c.workspace, ws.baseline_commit);

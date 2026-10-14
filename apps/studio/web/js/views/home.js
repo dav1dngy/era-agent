@@ -32,6 +32,7 @@ export function Home() {
   const [testCmds, setTestCmds] = useState('');
   const [acceptCmds, setAcceptCmds] = useState('');
   const [behaviorRows, setBehaviorRows] = useState([]);
+  const [reviewPlan, setReviewPlan] = useState(false);
   const [teamChoice, setTeamChoice] = useState('auto');
   const [custom, setCustom] = useState({ architect: '', implementer: '', reviewer: '' });
   const [plan, setPlan] = useState(null);
@@ -56,7 +57,7 @@ export function Home() {
     const team = teamChoice === 'auto' ? undefined : teamChoice === 'custom' ? { roles: Object.fromEntries(Object.entries(custom).map(([k, v]) => [k, v || null])) } : { preset: teamChoice };
     const rebuildish = needsRebuild;
     // Only what the user filled in is sent, so editing one field never wipes the saved configuration of an existing project.
-    return { text, mode, project_id: projectId || undefined, folder: folder || undefined, target: isAnalyze ? folder || undefined : undefined, reference: reference || undefined, destination: destination || undefined, authorization: authorization || undefined, run_command: rebuildish && runCmd.trim() ? runCmd.trim() : undefined, test_commands: rebuildish && testCmds.trim() ? testCmds : undefined, accept_commands: rebuildish && acceptCmds.trim() ? acceptCmds : undefined, behaviors: rebuildish && behaviorRows.length ? behaviorsFromRows(behaviorRows) : undefined, team };
+    return { review_plan: reviewPlan || undefined, text, mode, project_id: projectId || undefined, folder: folder || undefined, target: isAnalyze ? folder || undefined : undefined, reference: reference || undefined, destination: destination || undefined, authorization: authorization || undefined, run_command: rebuildish && runCmd.trim() ? runCmd.trim() : undefined, test_commands: rebuildish && testCmds.trim() ? testCmds : undefined, accept_commands: rebuildish && acceptCmds.trim() ? acceptCmds : undefined, behaviors: rebuildish && behaviorRows.length ? behaviorsFromRows(behaviorRows) : undefined, team };
   };
 
   const doPlan = async () => {
@@ -158,6 +159,7 @@ export function Home() {
         ${plan.warnings.map((w) => html`<${Callout} kind="warn">${w}<//>`)}
         ${plan.remote_providers.length ? html`<fieldset style="border:1px solid var(--border);border-radius:var(--radius);padding:var(--space-3)"><legend class="muted">Authorize sending your source code</legend>
           ${plan.remote_providers.map((id) => html`<label class="check"><input type="checkbox" checked=${!!consent[id]} onChange=${(e) => setConsent({ ...consent, [id]: e.target.checked })} /><span>I authorize ERA to send this project's source code to <b>${id}</b>. Credential files, agent instruction files and secret-looking content are withheld or blocked automatically.</span></label>`)}</fieldset>` : null}
+        <label class="check"><input type="checkbox" checked=${reviewPlan} onChange=${(e) => setReviewPlan(e.target.checked)} /><span>Pause after planning so I can read the plan before any code is written</span></label>
         <div class="row"><${Btn} kind="primary" disabled=${busy || plan.blockers.length > 0 || !allConsented} onClick=${doStart}>${busy ? 'Starting…' : 'Start task'}<//><${Btn} onClick=${() => setPlan(null)}>Edit<//>${plan.blockers.length === 0 && !allConsented ? html`<span class="muted">Tick the authorization above to start.</span>` : null}</div>
       </div></section>` : null}
 
