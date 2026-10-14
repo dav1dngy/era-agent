@@ -56,4 +56,9 @@ simulated coding agent on disposable fixtures. It never approves a user's projec
 Screenshots/results go to ignored `apps/studio/out/validation`. The package test runs
 the generated app outside the repository with temporary state. Build from locked
 sources; never include local state or credentials. Keep the CLI independent of UI
-packages. See `docs/ERA_STUDIO_TESTING.md` for remaining validation gaps.
+packages. See `docs/SUPPORT_AND_VALIDATION.md` for what is verified and what is not.
+
+Fixing a defect: reproduce it with a synthetic fixture first, write the regression test, and check that it **fails on the code before your fix**; do not
+weaken an existing test. Documentation lives once, in `docs/`; the app's Documentation section renders those pages (a fixed allowlist in
+`src/control_plane/services/docs.js`), so a page added there must be added to that list. Screenshots are regenerated with
+`npm run capture:screenshots --prefix apps/studio` and must be reviewed for private data before they are committed; never commit a mock-up as a screenshot.

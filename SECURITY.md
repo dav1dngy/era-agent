@@ -7,6 +7,14 @@ Please report vulnerabilities privately through GitHub's
 Do not open a public issue. Vulnerabilities in the REA engine itself belong to
 <https://github.com/morluto/rea>.
 
+## Privacy
+
+ERA makes no network calls of its own, has no telemetry and needs no account or API key. Project content leaves your machine only when you authorize a
+remote coding agent (Codex, Claude Code) for that project; credential-like files and agent instruction files are withheld, and secret-looking content stops
+the run unless you allow it. The agent's own command-line tool then talks to its provider under its own sign-in. The release process scans tracked files
+and the Git history for credentials, e-mail addresses and local paths (`node scripts/check.mjs`; the history check is described in
+[docs/release-notes-v0.2.0.md](docs/release-notes-v0.2.0.md)).
+
 ## Security model
 
 ERA's practices are informed by the NIST Secure Software Development Framework,

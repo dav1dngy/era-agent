@@ -9,7 +9,7 @@ Start with the status and evidence, then the area you need. Pages marked *histor
 
 ## Using ERA
 * [installation.md](installation.md): choose the CLI, the Studio development line or a local desktop build.
-* [ERA_STUDIO.md](ERA_STUDIO.md): the desktop and browser workbench, with real captures; the app has an offline Help page.
+* [ERA_STUDIO.md](ERA_STUDIO.md): the desktop and browser workbench, with real captures; the app has an offline Documentation section.
 * [project-lab.md](project-lab.md), [project-configuration.md](project-configuration.md), [screenshot-rebuild.md](screenshot-rebuild.md), [multi-agent.md](multi-agent.md), [provider-configuration.md](provider-configuration.md), [improvement-lab.md](improvement-lab.md).
 
 ## Security

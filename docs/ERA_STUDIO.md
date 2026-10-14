@@ -1,10 +1,10 @@
-# ERA Studio v0.2.0 development
+# ERA Studio
 
 ERA Studio is a local desktop and browser client of ERA. It reuses the original
 REA engine, Project Lab, configurable coding agents and Improvement Lab. This is
-an unsigned development build, not a production release or enterprise certification.
-The `v0.2.0-dev.1` GitHub prerelease publishes this development checkpoint without
-merging it into stable `main` or publishing a new npm registry version.
+the v0.2.0 release candidate (`0.2.0-rc.1`): an **unsigned development build** for macOS arm64,
+not a signed or notarized production release and not an enterprise certification. The earlier
+`v0.2.0-dev.0` and `v0.2.0-dev.1` prereleases are development checkpoints; stable `main` stays at v0.1.0 until a release is approved.
 
 ## Install and launch
 
@@ -172,18 +172,29 @@ development prerelease is created separately and does not replace stable v0.1.0.
 
 ## Visual tour
 
-Real captures of the development build (see [assets/v0.2.0-dev/README.md](assets/v0.2.0-dev/README.md): real app, control plane and REA; the coding
-agent is a scripted stand-in). Workflow: *create a project → describe the check → the agent works in an isolated copy → review the verified diff →
-approve or reject → roll back if needed.*
+Real captures of the application, made by `npm run capture:screenshots --prefix apps/studio` ([how, and what is real or simulated](assets/screenshots/README.md): the
+coding agent is a scripted stand-in, everything else is real). Workflow: *create a project, describe the check, the agent works in an isolated copy, review the verified
+diff, approve or reject, roll back if needed.*
 
-![First launch of ERA Studio: the New Task page with no projects, workspace status and agent list](assets/v0.2.0-dev/01-first-launch-dark.png)
+![ERA Studio main workspace: task composer, recent projects, workspace status and agents](assets/screenshots/01-main-workspace.png)
 
-![Projects page with one Modify project card and counters for running and awaiting approval](assets/v0.2.0-dev/02-projects-dark.png)
+![Projects page with a Modify project awaiting approval and a Review project, counters and search](assets/screenshots/02-project-management.png)
 
-![Workbench in Advanced mode with the original project read-only and the Monaco editor](assets/v0.2.0-dev/03-workbench-monaco-dark.png)
+![Reverse-engineering analysis of a JavaScript application with the relationship graph drawn from REA evidence](assets/screenshots/03-reverse-engineering-analysis.png)
 
-![Changes and approval page with a verified one-file diff and the Reject and Approve buttons](assets/v0.2.0-dev/04-review-diff-approval-dark.png)
+![Project Lab overview: Review, Modify and Rebuild with the runs for each mode](assets/screenshots/04-project-lab.png)
 
-Not yet captured: Rebuild prerequisites, screenshot comparison, plan approval, rollback and settings. In the app, **Help** (sidebar, ⌘K, F1 in the desktop
-app) explains setup, cost and consent, Rebuild prerequisites, approval and rollback offline.
+![Agent Command Center: providers, capabilities, data exposure, cost model and team presets](assets/screenshots/05-multi-agent-command-center.png)
 
+![The workbench with the read-only original project and the Monaco code editor](assets/screenshots/06-ide-code-editor.png)
+
+![Changes and approval: a verified diff in Monaco, the test outcomes, and the Approve and Reject buttons](assets/screenshots/07-diff-viewer-and-approval.png)
+
+![Improvement Lab: the ERA checkout, version tags and a real self-analysis](assets/screenshots/08-improvement-lab.png)
+
+![Settings, AI providers: each provider's state and the note that ERA never stores credentials](assets/screenshots/09-settings-ai-providers.png)
+
+![The in-app Documentation section rendering the repository documentation offline](assets/screenshots/10-documentation.png)
+
+Not captured: the Rebuild prerequisite checklist, the screenshot comparison and the plan-approval step. The in-app **Documentation** section (sidebar, ⌘K, F1 in the desktop
+app) renders the repository's own pages offline.

@@ -21,10 +21,10 @@ Labels: **REAL** it ran for real on this revision; **MOCKED** a service was repl
 | Multi-agent (architect, implementer, reviewer) | **MOCKED** roles; real isolation and handoffs | multi-agent tests | no live `claude+codex` run; one provider in several roles is not independent review |
 | Improvement Lab | REAL end to end with real REA and sandbox, in a throwaway clone (4 cycles on this line, 3 accepted); the end-to-end suite uses a fake engine | `experiments/studio-improvement/`, `experiments/remediation/` | approval and tagging were not run on this repository; the Lab needs a branch named `main`, cannot evaluate `apps/studio/`, and is at its REA-run hard cap |
 | Security fixes H01-H05, M01-M03 | REAL | `tests/audit-remediation.test.js`, `tests/audit-control-plane.test.js` fail on the previous code | macOS sandbox only; see the limits in the remediation document |
-| Offline help, keyboard-contained palette | REAL | desktop scenarios with native key events | no screen-reader pass |
+| In-app Documentation (eight sections rendered from the repository pages), keyboard-contained palette | REAL | desktop scenarios, route and parser tests, native key events | no screen-reader pass |
 | CI desktop job, release validation | **UNVERIFIED** on a hosted runner | workflow YAML parses; commands run locally | first hosted run pending |
 | Signing, notarization, clean-machine install | **UNVERIFIED** | not done | an unsigned development build only |
-| Screenshots in the documentation | partial | four real captures ([manifest](assets/v0.2.0-dev/manifest.json)) | Rebuild prerequisites, screenshot comparison, plan approval, rollback and settings not yet captured |
+| Screenshots in the documentation | REAL, ten captures | [gallery and process](assets/screenshots/README.md), [manifest](assets/screenshots/manifest.json) | the coding agent in them is a stand-in; Rebuild checklist, screenshot comparison and plan approval not captured |
 | Independent review of the fixes | **UNVERIFIED** | none | required before a release claim |
 
 Historical records that stay as written: [ERA_STUDIO_TESTING.md](ERA_STUDIO_TESTING.md), [release-notes-v0.2.0-dev.1.md](release-notes-v0.2.0-dev.1.md), [release-readiness.md](release-readiness.md).
