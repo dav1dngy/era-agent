@@ -10,7 +10,7 @@
   },
   "limits": {
     "maxCycles": 6,
-    "maxReaRunsPerCycle": 40,
+    "maxReaRunsPerCycle": 48,
     "commandTimeoutMs": 900000
   },
   "improvement": {

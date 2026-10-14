@@ -1,0 +1,165 @@
+{
+  "analysis_id": "analysis-20261014T122325-28b510",
+  "rea_command": "/Users/david/dev/era-agent/node_modules/.bin/rea analyze-javascript-application /Users/david/dev/era-agent/apps/studio/web --format json",
+  "rea_version": "6.4.0",
+  "coverage": "partial",
+  "statistics": {
+    "relevant_files": 26,
+    "nested_asar_containers": 0,
+    "text_bytes_read": 211578,
+    "invalid_utf8_files": 0,
+    "parsed_javascript_files": 24,
+    "visited_ast_nodes": 31058,
+    "findings": 574,
+    "modules": 0,
+    "parse_failures": 0
+  },
+  "semantic_nodes": 12837,
+  "semantic_relations": 13819,
+  "unknowns": 4482,
+  "imports_external": [
+    "external:htm",
+    "external:preact",
+    "external:preact/hooks"
+  ],
+  "imports_unresolved": [
+    "unresolved:js/views/bottom.js->/vendor/addon-fit.mjs",
+    "unresolved:js/views/bottom.js->/vendor/xterm.mjs"
+  ],
+  "timers": [
+    {
+      "at": "js/api.js:142",
+      "method": "setTimeout",
+      "delay_ms": 1000
+    },
+    {
+      "at": "js/main.js:102",
+      "method": "setInterval",
+      "delay_ms": 15000
+    },
+    {
+      "at": "js/api.js:103",
+      "method": "setTimeout",
+      "delay_ms": null
+    },
+    {
+      "at": "js/store.js:47",
+      "method": "setTimeout",
+      "delay_ms": null
+    },
+    {
+      "at": "js/ui.js:115",
+      "method": "setInterval",
+      "delay_ms": null
+    }
+  ],
+  "listeners": [],
+  "awaited_tasks": [
+    "js/main.js:19",
+    "js/api.js:78",
+    "js/api.js:51",
+    "js/views/improvement.js:8",
+    "js/views/home.js:81",
+    "js/api.js:117",
+    "js/views/workbench.js:135",
+    "js/views/improvement.js:68",
+    "js/main.js:26",
+    "js/views/workbench.js:125",
+    "js/views/home.js:67",
+    "js/views/improvement.js:26",
+    "js/views/workbench.js:56",
+    "js/main.js:91",
+    "js/api.js:35",
+    "js/api.js:58",
+    "js/views/tools.js:14",
+    "js/views/analysis.js:65",
+    "js/views/analysis.js:52",
+    "js/views/workbench.js:31",
+    "js/views/bottom.js:33",
+    "js/views/analysis.js:55",
+    "js/views/home.js:18",
+    "js/api.js:47",
+    "js/api.js:34",
+    "js/views/improvement.js:33",
+    "js/views/workbench.js:52",
+    "js/views/workbench.js:111"
+  ],
+  "call_sites_by_module": [
+    [
+      "js/views/workbench.js",
+      193
+    ],
+    [
+      "js/views/home.js",
+      147
+    ],
+    [
+      "js/app.js",
+      103
+    ],
+    [
+      "js/ui.js",
+      103
+    ],
+    [
+      "js/views/improvement.js",
+      98
+    ],
+    [
+      "js/views/bottom.js",
+      90
+    ],
+    [
+      "js/views/analysis.js",
+      89
+    ],
+    [
+      "js/api.js",
+      74
+    ],
+    [
+      "js/views/agents.js",
+      69
+    ],
+    [
+      "js/main.js",
+      66
+    ],
+    [
+      "js/rebuild-model.js",
+      56
+    ],
+    [
+      "js/model.js",
+      48
+    ],
+    [
+      "js/store.js",
+      38
+    ],
+    [
+      "js/views/context.js",
+      31
+    ],
+    [
+      "js/monaco.js",
+      17
+    ],
+    [
+      "js/views/tools.js",
+      13
+    ],
+    [
+      "js/views/lab.js",
+      8
+    ],
+    [
+      "js/icons.js",
+      1
+    ],
+    [
+      "js/html.js",
+      1
+    ]
+  ]
+}

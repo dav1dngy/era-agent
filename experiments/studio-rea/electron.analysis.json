@@ -1,0 +1,143 @@
+{
+  "analysis_id": "analysis-20261014T122321-7ce052",
+  "created_at": "2026-10-14T12:23:25.316Z",
+  "target": {
+    "path": "/Users/david/dev/era-agent/apps/studio/electron",
+    "kind": "javascript-app",
+    "detection": "directory with package.json or JavaScript sources"
+  },
+  "decompilation": "not applicable",
+  "engine": {
+    "package": "rea-agents",
+    "version": "6.4.0"
+  },
+  "status": "succeeded",
+  "runs": [
+    {
+      "run_id": "rea-20261014T122321-487411",
+      "label": "javascript-application-graph",
+      "started_at": "2026-10-14T12:23:21.300Z",
+      "duration_ms": 3020,
+      "command": [
+        "/Users/david/dev/era-agent/node_modules/.bin/rea",
+        "analyze-javascript-application",
+        "/Users/david/dev/era-agent/apps/studio/electron",
+        "--format",
+        "json"
+      ],
+      "command_source": "local-dependency",
+      "engine": {
+        "package": "rea-agents",
+        "version": "6.4.0"
+      },
+      "input": {
+        "path": "/Users/david/dev/era-agent/apps/studio/electron",
+        "kind": "directory",
+        "bytes": null,
+        "sha256": "b79cb1d2d06e62a6904a84f3377267b07d5b6daf9d28bfda52a816a9ef91f8c9"
+      },
+      "status": "succeeded",
+      "exit_code": 0,
+      "signal": null,
+      "evidence_id": "ev_22024a8630bb2100bf44c64a10a6aaac0e4e08d6da962b5f6ffea386076ea78f",
+      "operation": "analyze_javascript_application",
+      "provider": {
+        "id": "rea-javascript-application",
+        "name": "REA JavaScript application analyzer",
+        "version": "1"
+      },
+      "output_file": "/Users/david/dev/era-agent/.era/runs/rea-20261014T122321-487411/output.json",
+      "output_bytes": 4363098,
+      "progress_events": 17,
+      "warnings": [],
+      "errors": [],
+      "resources": {
+        "real_s": 2.98,
+        "user_s": 2.86,
+        "sys_s": 0.51,
+        "max_rss_bytes": 347209728
+      }
+    }
+  ],
+  "evidence": [
+    {
+      "evidence_id": "ev_22024a8630bb2100bf44c64a10a6aaac0e4e08d6da962b5f6ffea386076ea78f",
+      "operation": "analyze_javascript_application",
+      "provider": "REA JavaScript application analyzer",
+      "subject_sha256": "b79cb1d2d06e62a6904a84f3377267b07d5b6daf9d28bfda52a816a9ef91f8c9",
+      "coverage": "partial",
+      "unknowns": 830,
+      "statistics": {
+        "relevant_files": 4,
+        "nested_asar_containers": 0,
+        "text_bytes_read": 21450,
+        "invalid_utf8_files": 0,
+        "parsed_javascript_files": 4,
+        "visited_ast_nodes": 3592,
+        "findings": 48,
+        "modules": 0,
+        "parse_failures": 0
+      },
+      "limitations": [
+        "CommonJS and ESM binding relationships were recovered from inert syntax and resolved only within the inventoried artifact container.",
+        "Electron API identity follows proven lexical module aliases. Reassigned bindings, dynamic selections, and visibly overwritten namespace members are unresolved; missing findings do not establish absence. Arbitrary call side effects and runtime registration are not evaluated.",
+        "Electron relationships are derived from inert syntax; runtime registration, reachability, defaults, and enforcement remain unproven.",
+        "Graph coverage is incomplete; unavailable facts remain explicit and must not be read as absence.",
+        "JavaScript and HTML were parsed as inert text; bundle bootstrap code was never executed.",
+        "Sender, frame, URL, and origin checks are observations only; REA does not claim that they enforce a complete authorization policy.",
+        "Static imports, entrypoints, workers, endpoints, and storage relationships do not prove runtime execution.",
+        "Static paths and relationships may remain unresolved when expressions are dynamic or obfuscated.",
+        "Webpack/Rspack factories were recovered from AST literals; REA did not invoke push handlers or bundle bootstrap code."
+      ]
+    }
+  ],
+  "facts": [
+    "export:security.cjs#default",
+    "export:security.cjs#sameOrigin",
+    "export:security.cjs#trustedSender",
+    "external:child_process",
+    "external:electron",
+    "external:fs",
+    "external:path",
+    "external:url",
+    "import:main.cjs->security.cjs",
+    "import:main.cjs->visual-compare.cjs",
+    "module:main.cjs",
+    "module:preload.cjs",
+    "module:security.cjs",
+    "module:visual-compare.cjs",
+    "unresolved:main.cjs->../scripts/test-ui.cjs"
+  ],
+  "fact_provenance": {
+    "export:security.cjs#sameOrigin": "inferred: CommonJS module.exports object key (REA semantic graph + source text)",
+    "export:security.cjs#trustedSender": "inferred: CommonJS module.exports object key (REA semantic graph + source text)"
+  },
+  "fact_groups": {
+    "export": [
+      "security.cjs#default",
+      "security.cjs#sameOrigin",
+      "security.cjs#trustedSender"
+    ],
+    "external": [
+      "child_process",
+      "electron",
+      "fs",
+      "path",
+      "url"
+    ],
+    "import": [
+      "main.cjs->security.cjs",
+      "main.cjs->visual-compare.cjs"
+    ],
+    "module": [
+      "main.cjs",
+      "preload.cjs",
+      "security.cjs",
+      "visual-compare.cjs"
+    ],
+    "unresolved": [
+      "main.cjs->../scripts/test-ui.cjs"
+    ]
+  },
+  "report_path": "/Users/david/dev/era-agent/.era/analyses/analysis-20261014T122321-7ce052/report.md"
+}

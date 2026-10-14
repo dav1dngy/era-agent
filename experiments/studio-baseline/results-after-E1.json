@@ -1,0 +1,169 @@
+{
+  "harness": "experiments/studio-baseline/measure.mjs",
+  "measuredAt": "2026-10-14T12:50:50.361Z",
+  "root": "/Users/david/dev/era-agent",
+  "environment": {
+    "hardware": "Apple M1",
+    "cpuCount": 8,
+    "memGb": 8,
+    "os": "darwin 27.0.0 arm64",
+    "node": "v24.20.0",
+    "electron": "44.7.1",
+    "power": "Now drawing from 'Battery Power'",
+    "loadavgBefore": [
+      1.69,
+      2.33,
+      7.5
+    ],
+    "note": "Other desktop apps (Claude, ChatGPT/Codex) were running on this machine; measurements include that background noise.",
+    "loadavgAfter": [
+      1.75,
+      2.28,
+      7.3
+    ]
+  },
+  "runs": 10,
+  "controlPlane": {
+    "startupToListeningMs": {
+      "n": 10,
+      "min": 79.08,
+      "median": 110.06,
+      "p95": 116.55,
+      "max": 116.55,
+      "mean": 106
+    },
+    "startupToFirstApiOkMs": {
+      "n": 10,
+      "min": 1576.97,
+      "median": 1608.93,
+      "p95": 1908.63,
+      "max": 1908.63,
+      "mean": 1633.43
+    },
+    "idle": {
+      "rssMbAtStart": 74.9,
+      "rssMbAfter10s": 74.9,
+      "cpuPercentOver10s": 0
+    },
+    "rssMbAfterLatencyRun": 79.8,
+    "latency": {
+      "/": {
+        "status": 200,
+        "coldMs": 7.62,
+        "warm": {
+          "n": 30,
+          "min": 1.23,
+          "median": 2.48,
+          "p95": 3.07,
+          "max": 3.19,
+          "mean": 2.48
+        }
+      },
+      "/api/overview": {
+        "status": 200,
+        "coldMs": 2.73,
+        "warm": {
+          "n": 30,
+          "min": 0.91,
+          "median": 2.21,
+          "p95": 2.45,
+          "max": 2.99,
+          "mean": 2.08
+        }
+      },
+      "/api/projects": {
+        "status": 200,
+        "coldMs": 2.42,
+        "warm": {
+          "n": 30,
+          "min": 0.76,
+          "median": 2.08,
+          "p95": 2.38,
+          "max": 2.46,
+          "mean": 1.89
+        }
+      },
+      "/api/agents": {
+        "status": 200,
+        "coldMs": 434.68,
+        "warm": {
+          "n": 30,
+          "min": 0.36,
+          "median": 1.63,
+          "p95": 1.97,
+          "max": 2.05,
+          "mean": 1.63
+        }
+      },
+      "/api/improvement": {
+        "status": 200,
+        "coldMs": 78.68,
+        "warm": {
+          "n": 30,
+          "min": 56.64,
+          "median": 58.49,
+          "p95": 59.4,
+          "max": 60.63,
+          "mean": 58.47
+        }
+      },
+      "/api/diagnostics": {
+        "status": 200,
+        "coldMs": 2.08,
+        "warm": {
+          "n": 30,
+          "min": 1.66,
+          "median": 1.69,
+          "p95": 1.78,
+          "max": 2.07,
+          "mean": 1.71
+        }
+      },
+      "/api/tools": {
+        "status": 200,
+        "coldMs": 1.75,
+        "warm": {
+          "n": 30,
+          "min": 0.41,
+          "median": 1.67,
+          "p95": 1.76,
+          "max": 1.79,
+          "mean": 1.61
+        }
+      },
+      "/api/jobs": {
+        "status": 200,
+        "coldMs": 1.82,
+        "warm": {
+          "n": 30,
+          "min": 0.38,
+          "median": 1.67,
+          "p95": 1.87,
+          "max": 1.91,
+          "mean": 1.63
+        }
+      },
+      "/api/settings": {
+        "status": 200,
+        "coldMs": 1.86,
+        "warm": {
+          "n": 30,
+          "min": 1.44,
+          "median": 1.81,
+          "p95": 2.19,
+          "max": 4.52,
+          "mean": 1.9
+        }
+      }
+    },
+    "concurrency8x3WallMs": {
+      "n": 3,
+      "min": 2.99,
+      "median": 3.12,
+      "p95": 3.55,
+      "max": 3.55,
+      "mean": 3.22
+    },
+    "unauthenticatedStatus": 401
+  }
+}
