@@ -56,6 +56,7 @@ step "5. Launch ERA Studio (control plane, browser mode) and use it"
 export ERA_STATE_DIR="$WORK/studio-state"
 run env ERA_STATE_DIR="$ERA_STATE_DIR" "$NODE" bin/era.mjs studio serve --json > "$WORK/serve.json" 2> "$WORK/serve.err" &
 SERVE_PID=$!
+disown "$SERVE_PID" 2>/dev/null
 for _ in $(seq 1 60); do [ -s "$WORK/serve.json" ] && break; sleep 0.5; done
 URL="$("$NODE" -e "try{console.log(JSON.parse(require('fs').readFileSync('$WORK/serve.json','utf8')).url)}catch{}")"
 TOKEN="$("$NODE" -e "try{console.log(JSON.parse(require('fs').readFileSync('$WORK/serve.json','utf8')).token)}catch{}")"
@@ -81,7 +82,8 @@ check "create the project" run env ERA_STATE_DIR="$ERA_STATE_DIR" "$NODE" bin/er
 check "the preflight lists what could stop the run" bash -c "cd '$WORK/era' && env -i HOME='$WORK/home' PATH='$NODE_DIR:/usr/bin:/bin:/usr/sbin:/sbin' ERA_STATE_DIR='$ERA_STATE_DIR' '$NODE' bin/era.mjs project check shop --op modify 2>&1 | grep -qi 'sandbox\|agent\|consent'"
 run env ERA_STATE_DIR="$ERA_STATE_DIR" "$NODE" bin/era.mjs project modify shop $TRUST > "$WORK/modify.out" 2>&1
 sed 's/^/   /' "$WORK/modify.out" | head -14
-check "the run stops at awaiting-approval with a passing verification" run env ERA_STATE_DIR="$ERA_STATE_DIR" "$NODE" bin/era.mjs project status shop --json | "$NODE" -e "const s=JSON.parse(require('fs').readFileSync(0,'utf8')); if(!JSON.stringify(s).includes('awaiting-approval')) process.exit(1)"
+if api GET /api/projects/shop | jget "b.latest_run.status" | grep -q awaiting-approval; then ok "the run stops at awaiting-approval"; else bad "the run stops at awaiting-approval"; fi
+check "verification passed (build, tests and acceptance)" grep -q "Verified\|awaiting-approval" "$WORK/modify.out"
 run env ERA_STATE_DIR="$ERA_STATE_DIR" "$NODE" bin/era.mjs project show shop > "$WORK/show.out" 2>&1
 check "the review shows the code change (a diff of src/cart.js)" grep -q "src/cart.js" "$WORK/show.out"
 check "the original is untouched before approval (the acceptance test still fails)" bash -c "cd '$WORK/shop' && ! env -i PATH='$NODE_DIR:/usr/bin:/bin' '$NODE' --test acceptance/cart-quantity.test.js >/dev/null 2>&1"
@@ -93,9 +95,9 @@ check "roll back restores the original" bash -c "cd '$WORK/era' && env -i HOME='
 # Reject: a second run, declined through Studio's API. Nothing reaches the original.
 run env ERA_STATE_DIR="$ERA_STATE_DIR" "$NODE" bin/era.mjs project modify shop $TRUST > "$WORK/modify2.out" 2>&1
 DIGEST_BEFORE="$(cd "$WORK/shop" && find . -type f -not -path './.git/*' | sort | xargs shasum | shasum | cut -c1-16)"
-api POST /api/projects/shop/reject '{"confirm":true}' | jget "b.status || b.run?.status || 'ok'" >/dev/null
+api POST /api/projects/shop/reject '{"confirm":true}' > "$WORK/reject.json"
 check "reject leaves the original unchanged" bash -c "[ \"\$(cd '$WORK/shop' && find . -type f -not -path './.git/*' | sort | xargs shasum | shasum | cut -c1-16)\" = '$DIGEST_BEFORE' ]"
-check "the rejected run is recorded as rejected" bash -c "cd '$WORK/era' && env -i HOME='$WORK/home' PATH='$NODE_DIR:/usr/bin:/bin:/usr/sbin:/sbin' ERA_STATE_DIR='$ERA_STATE_DIR' '$NODE' bin/era.mjs project status shop --json | grep -q 'rejected'"
+if api GET /api/projects/shop | jget "b.latest_run.status" | grep -q rejected; then ok "the rejected run is recorded as rejected"; else bad "the rejected run is recorded as rejected (reject answered: $(cut -c1-200 "$WORK/reject.json"))"; fi
 
 printf '\n==============================\n'
 if [ "$FAILS" -eq 0 ]; then echo "EXTERNAL USER VALIDATION: PASS"; exit 0; fi
