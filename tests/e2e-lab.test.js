@@ -13,7 +13,8 @@ import { FIXTURES, ROOT, tempDir } from './helpers.js';
 import { sandboxAvailable } from '../src/safety/sandbox.js';
 
 // Without a sandbox (Linux CI), evaluating requires declaring the candidate trusted.
-const TRUST = sandboxAvailable() ? [] : ['--trust-candidate'];
+const SANDBOX = sandboxAvailable();
+const TRUST = SANDBOX ? [] : ['--trust-candidate'];
 
 const skip = (process.env.ERA_E2E_NESTED || process.env.ERA_SKIP_E2E) && 'nested evaluation or ERA_SKIP_E2E';
 const ENGINE = join(FIXTURES, 'fake-rea-engine.mjs');
@@ -31,6 +32,14 @@ function makeLab() {
   writeFileSync(join(dir, 'era.config.json'), JSON.stringify({ limits: { maxCycles: 10, maxReaRunsPerCycle: 50 }, benchmark: { repetitions: 1 }, improvement: { budget: { allowUnmeteredAgents: true } } }));
   const acceptance = JSON.parse(readFileSync(join(dir, 'benchmarks', 'acceptance.json'), 'utf8'));
   writeFileSync(join(dir, 'benchmarks', 'acceptance.json'), JSON.stringify({ ...acceptance, maxTimeRegressionPct: 1000, maxMemoryRegressionPct: 1000 }));
+  // Trusting candidate code does not authorize unsandboxed runtime capture.
+  // Keep these fake-engine orchestration tests portable without relaxing the
+  // production runtime policy; macOS still exercises every benchmark case.
+  if (!SANDBOX) {
+    const manifestPath = join(dir, 'benchmarks', 'datasets', 'manifest.json');
+    const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
+    writeFileSync(manifestPath, JSON.stringify({ ...manifest, cases: manifest.cases.filter((c) => !c.runtime) }));
+  }
   // An untested, unreachable module gives the planner a deterministic finding.
   writeFileSync(join(dir, 'src', 'e2e-untested.js'), 'export function answer() {\n  return 42;\n}\n');
   const git = (...a) => execFileSync('git', a, { cwd: dir, encoding: 'utf8' }).trim();

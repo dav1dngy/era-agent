@@ -80,7 +80,18 @@ test('ledger state follows the latest event per cycle (rebase and re-evaluation)
   assert.equal(awaitingApproval(events).length, 0);
 });
 
-test('approval refuses a branch that moved after evaluation and integrates only the evaluated commit', async () => {
+test('approval refuses a branch that moved after evaluation and integrates only the evaluated commit', async (t) => {
+  // This test approves only its disposable repository. Exercise artifact identity
+  // independently of the host's CI policy, which has its own refusal tests.
+  const ciEnv = { CI: process.env.CI, GITHUB_ACTIONS: process.env.GITHUB_ACTIONS };
+  t.after(() => {
+    for (const [key, value] of Object.entries(ciEnv)) {
+      if (value === undefined) delete process.env[key];
+      else process.env[key] = value;
+    }
+  });
+  delete process.env.CI;
+  delete process.env.GITHUB_ACTIONS;
   const { approveCycle } = await import('../src/orchestration/cycle.js');
   const { loadConfig } = await import('../src/core/config.js');
   const { writeJson } = await import('../src/core/util.js');

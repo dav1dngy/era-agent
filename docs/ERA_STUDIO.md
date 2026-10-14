@@ -3,7 +3,7 @@
 ERA Studio is a local desktop and browser client of ERA. It reuses the original
 REA engine, Project Lab, configurable coding agents and Improvement Lab. This is
 an unsigned development build, not a production release or enterprise certification.
-The `v0.2.0-dev.0` GitHub prerelease publishes this development checkpoint without
+The `v0.2.0-dev.1` GitHub prerelease publishes this development checkpoint without
 merging it into stable `main` or publishing a new npm registry version.
 
 ## Install and launch

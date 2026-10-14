@@ -36,7 +36,7 @@ and tested; they do not establish enterprise compliance or replace an independen
 
 ## Limits and release blockers
 
-For the `v0.2.0-dev.0` development prerelease, the Studio production dependency
+For the `v0.2.0-dev.1` development prerelease, the Studio production dependency
 audit reports two low-severity findings involving Monaco's transitive DOMPurify
 dependency: [GHSA-p98j-92pf-mc4p](https://github.com/advisories/GHSA-p98j-92pf-mc4p)
 and [GHSA-6688-9rhm-gjv2](https://github.com/advisories/GHSA-6688-9rhm-gjv2).

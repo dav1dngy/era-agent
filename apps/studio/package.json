@@ -1,6 +1,6 @@
 {
   "name": "era-studio",
-  "version": "0.2.0-dev.0",
+  "version": "0.2.0-dev.1",
   "private": true,
   "description": "ERA Studio: AI-native desktop workbench for ERA. A thin client of the ERA control plane (src/control_plane).",
   "license": "MIT",

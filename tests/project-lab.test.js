@@ -349,7 +349,11 @@ function cliProject() {
 test('an interrupted run (process killed) is reported as interrupted and resumes without repeating finished steps', async () => {
   const { cwd, env } = cliProject();
   const src = fixture('buggy-app');
-  const e = { ...env };
+  // The sandbox normally provides the mock agent's private TMPDIR. Trusted
+  // execution on other hosts needs an explicit fixture directory for its marker.
+  const agentTmp = join(cwd, 'agent-tmp');
+  mkdirSync(agentTmp);
+  const e = { ...env, ...(!SANDBOX ? { TMPDIR: agentTmp } : {}) };
   const create = cli(['project', 'create', 'cart', '--source', src, '--task', 'Fix the total', '--agent', 'command', '--agent-command', agentCmd('slow-once.mjs'), '--test', 'node --test tests/*.test.js', '--accept-fail', 'node --test acceptance/cart-quantity.test.js', ...(SANDBOX ? [] : ['--trust-project'])], { cwd, env: e });
   assert.equal(create.status, 0, create.stderr);
   const child = spawn(process.execPath, [join(ROOT, 'bin', 'era.mjs'), 'project', 'modify', 'cart', '--json'], { cwd, env: { ...process.env, ERA_REA_BIN: FAKE_ENGINE, ...e }, stdio: 'ignore' });
@@ -359,7 +363,7 @@ test('an interrupted run (process killed) is reported as interrupted and resumes
     const id = readdirSync(dir)[0];
     return id ? JSON.parse(readFileSync(join(dir, id, 'run.json'), 'utf8')) : null;
   };
-  const marker = () => join(env.ERA_STATE_DIR, 'projects', 'cart', 'work', `${stateRun()?.run_id}.tmp`, 'slow-marker');
+  const marker = () => SANDBOX ? join(env.ERA_STATE_DIR, 'projects', 'cart', 'work', `${stateRun()?.run_id}.tmp`, 'slow-marker') : join(agentTmp, 'slow-marker');
   await waitFor(() => stateRun()?.steps?.['implement-1']?.status === 'running' && existsSync(marker()));
   const before = stateRun();
   const agentPid = Number(readFileSync(marker(), 'utf8'));
@@ -609,7 +613,10 @@ test('CLI: create, list, status, show, review, modify, approve (with confirmatio
   const src = fixture('buggy-app');
   const original = treeDigest(src).sha256;
   const run = (...a) => cli(a, { cwd, env });
-  const create = run('project', 'create', 'cart', '--source', src, '--mode', 'modify', '--task', 'Fix the cart total so it accounts for quantity', '--agent', 'command', '--agent-command', agentCmd('fix-cart.mjs'), '--test', 'node --test tests/*.test.js', '--accept-fail', 'node --test acceptance/cart-quantity.test.js', '--criteria', 'total uses quantity', '--protect', 'package.json', ...(SANDBOX ? [] : ['--trust-project']));
+  // This cooperative mock handles both review and implementation. Read-only
+  // violation handling is exercised separately; do not rely on sandbox denial.
+  const command = `if [ "$ERA_READ_ONLY" != "1" ]; then ${agentCmd('fix-cart.mjs')}; fi`;
+  const create = run('project', 'create', 'cart', '--source', src, '--mode', 'modify', '--task', 'Fix the cart total so it accounts for quantity', '--agent', 'command', '--agent-command', command, '--test', 'node --test tests/*.test.js', '--accept-fail', 'node --test acceptance/cart-quantity.test.js', '--criteria', 'total uses quantity', '--protect', 'package.json', ...(SANDBOX ? [] : ['--trust-project']));
   assert.equal(create.status, 0, create.stderr);
   assert.match(create.stdout, /Created project "cart"/);
   assert.equal(run('project', 'create', 'cart', '--source', src).status, 1, 'duplicate ids are refused');

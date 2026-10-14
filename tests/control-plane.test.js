@@ -7,7 +7,7 @@
 import { test as nodeTest } from 'node:test';
 import assert from 'node:assert/strict';
 import { request as httpRequest } from 'node:http';
-import { cpSync, existsSync, mkdirSync, readFileSync, statSync, symlinkSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, readFileSync, realpathSync, statSync, symlinkSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { loadConfig } from '../src/core/config.js';
 import { ReaClient } from '../src/rea_integration/rea-client.js';
@@ -19,7 +19,7 @@ import { EventBus } from '../src/control_plane/events.js';
 import { resolveInside } from '../src/control_plane/paths.js';
 import { treeDigest } from '../src/project_lab/workspace.js';
 import { sandboxAvailable } from '../src/safety/sandbox.js';
-import { FIXTURES, tempDir } from './helpers.js';
+import { FIXTURES, initRepo, tempDir } from './helpers.js';
 
 const NESTED = (process.env.ERA_E2E_NESTED || process.env.ERA_SKIP_E2E) && 'nested evaluation or ERA_SKIP_E2E';
 const test = (name, a, b) => {
@@ -569,7 +569,15 @@ test('tasks: plan reports blockers and consent; starting needs confirmation; com
     assert.equal(noConfirm.status, 400);
     assert.match(noConfirm.json.error, /confirm/);
 
-    const started = await p.api('POST', '/api/tasks', { text: 'Identify the bugs in the cart, fix them and verify', folder: src, confirm: true, new_project_id: 'cart-task' });
+    // Exercise automatic project creation when sandboxed. Otherwise explicitly
+    // trust this known fixture; the composer cannot authorize unsandboxed code.
+    let projectInput = { folder: src, new_project_id: 'cart-task' };
+    if (!SANDBOX) {
+      const registered = await p.api('POST', '/api/projects', newProject(src, { id: 'cart-task' }));
+      assert.equal(registered.status, 200, registered.text);
+      projectInput = { project_id: 'cart-task' };
+    }
+    const started = await p.api('POST', '/api/tasks', { text: 'Identify the bugs in the cart, fix them and verify', ...projectInput, confirm: true });
     assert.equal(started.status, 200, started.text);
     const id = started.json.task.id;
     const end = Date.now() + 120_000;
@@ -579,9 +587,9 @@ test('tasks: plan reports blockers and consent; starting needs confirmation; com
       if (task.status !== 'running' || Date.now() > end) break;
       await new Promise((r) => setTimeout(r, 300));
     }
-    // review succeeded and modify was started automatically; the mock implementer applies the fix but no acceptance
-    // command was configured, so verification still ends in a run that needs a human.
-    assert.equal(task.stages[0].status, 'succeeded');
+    // Review succeeds and automatically starts Modify on the fixture.
+    // The scripted implementer still needs human approval before applying its fix.
+    assert.equal(task.stages[0].status, 'succeeded', task.error);
     assert.ok(task.stages[1].job_id, 'the modify stage was started by the control plane');
     const st = (await p.api('GET', `/api/projects/${task.project_id}`)).json;
     assert.ok(st.runs.some((r) => r.op === 'review') && st.runs.some((r) => r.op === 'modify'));
@@ -624,13 +632,19 @@ test('Improvement Lab: unavailable without an ERA checkout, with a clear reason;
   }
 });
 
-test('Improvement Lab: reads versions and history from the real ERA checkout', async () => {
-  const p = await plane({ settings: { workspaces: { improvementCheckout: process.cwd() } } });
+test('Improvement Lab: reads versions and history from a configured Git checkout', async () => {
+  // Own the version history instead of depending on tags fetched by the CI checkout.
+  const { dir, git } = initRepo();
+  writeFileSync(join(dir, 'package.json'), JSON.stringify({ name: 'era-agent', version: '0.0.0-test' }));
+  git('add', 'package.json');
+  git('commit', '-q', '-m', 'ERA fixture');
+  git('tag', '-a', 'era-v2', '-m', 'era-v2: fixture');
+  const p = await plane({ settings: { workspaces: { improvementCheckout: realpathSync(dir) } } });
   try {
     const o = (await p.api('GET', '/api/improvement')).json;
     assert.equal(o.checkout.available, true, o.checkout.reason);
-    assert.match(o.current_version ?? '', /^era-v\d+$/);
-    assert.ok(o.versions.length >= 1);
+    assert.equal(o.current_version, 'era-v2');
+    assert.deepEqual(o.versions.map((v) => v.tag), ['era-v1', 'era-v2']);
   } finally {
     await p.stop();
   }

@@ -1,4 +1,4 @@
-# ERA v0.2.0-dev.0 — Studio development preview
+# ERA v0.2.0-dev.1 — Studio development preview
 
 This prerelease publishes the current `feature/era-v0.2.0` checkpoint. It does not
 replace stable v0.1.0 or merge into `main`. ERA Studio is an unsigned, local,
@@ -18,6 +18,8 @@ single-user development application, not a production or enterprise-certified ID
   integration with the existing REA and Improvement Lab engines.
 - Workspace restrictions, protected-file handling, unsaved-change prompts,
   subprocess cleanup and provider isolation fixes.
+- CI-portable approval and fake-engine orchestration tests, preserving production
+  approval guards and sandbox requirements.
 
 ## Downloads and requirements
 
@@ -25,7 +27,7 @@ single-user development application, not a production or enterprise-certified ID
   Applications. The app is **not Developer ID signed or notarized**; clean-machine
   Gatekeeper installation remains unverified. Do not disable Gatekeeper globally.
 - **CLI:** Install the attached npm tarball with
-  `npm install -g ./era-agent-0.2.0-dev.0.tgz`. This tarball contains the CLI/core,
+  `npm install -g ./era-agent-0.2.0-dev.1.tgz`. This tarball contains the CLI/core,
   not the Studio interface. No npm registry publication is part of this release.
 - Studio requires Node.js `^22.19.0`, `^24.11.0` or `>=26`, Git and Python 3 for the
   terminal. Coding-agent CLIs and native decompilation providers are separate
@@ -82,7 +84,7 @@ baseline, are not all fulfilled by this development preview.
 - No debugger, external language-server manager, extension marketplace or enterprise
   identity/collaboration features are implemented.
 
-See the [Studio guide](https://github.com/dav1dngy/era-agent/blob/v0.2.0-dev.0/docs/ERA_STUDIO.md),
-[validation evidence](https://github.com/dav1dngy/era-agent/blob/v0.2.0-dev.0/docs/ERA_STUDIO_TESTING.md),
-[security boundaries](https://github.com/dav1dngy/era-agent/blob/v0.2.0-dev.0/docs/ERA_STUDIO_SECURITY.md)
-and [provider validation](https://github.com/dav1dngy/era-agent/blob/v0.2.0-dev.0/docs/provider-validation.md).
+See the [Studio guide](https://github.com/dav1dngy/era-agent/blob/v0.2.0-dev.1/docs/ERA_STUDIO.md),
+[validation evidence](https://github.com/dav1dngy/era-agent/blob/v0.2.0-dev.1/docs/ERA_STUDIO_TESTING.md),
+[security boundaries](https://github.com/dav1dngy/era-agent/blob/v0.2.0-dev.1/docs/ERA_STUDIO_SECURITY.md)
+and [provider validation](https://github.com/dav1dngy/era-agent/blob/v0.2.0-dev.1/docs/provider-validation.md).
