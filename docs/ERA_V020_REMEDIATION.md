@@ -120,3 +120,16 @@ To see a regression test fail on the previous code, check out `e62fe70`'s `src` 
 4. Real-provider validation with explicit authorization: Claude Code sign-in and a `claude+codex` run, and a cost-cap check with a metered agent.
 5. Clean-machine installation test of the documented routes, the five remaining screenshots, and an accessibility pass.
 6. Publish the remediation commits (the remote `feature/era-v0.2.0` branch is still at `52dcf82`, so a fresh clone does not contain them), which requires an explicit decision.
+
+## 6. Addendum: findings while preparing the release (Phase 7)
+
+Preparing the screenshots and the in-app documentation exercised more of the application and found defects beyond the audit; each was fixed with a regression test:
+
+| Defect | Fix | Test |
+|---|---|---|
+| The Content-Security-Policy did not allow `blob:` images, so every authenticated image (`AuthImage`, including the Rebuild screenshot review) was blocked | `img-src 'self' data: blob:` (never for script) | `tests/studio-dependencies.test.js`; the Documentation scenario loads real images |
+| The Settings categories were invisible while the sidebar is collapsed (the default): the sidebar's collapse rules also matched the Settings navigation | rules scoped to `.sidebar` | desktop scenario "Documentation section…" asserts every category is visible |
+| The Improvement Lab listed self-analyses as quoted ids with "Invalid Date" (the API returned bare ids, oldest first) | the API returns records, newest first | `tests/audit-control-plane.test.js` |
+
+New in this phase, with tests: the in-app **Documentation** section (eight sections rendered from the repository's own pages by the control plane from a fixed allowlist; a safe Markdown parser), a repeatable screenshot process (`npm run capture:screenshots --prefix apps/studio`)
+and `scripts/external-user-validation.sh` (a clean-environment walk-through that passed 23 of 23 steps). Release-candidate details: [release-notes-v0.2.0.md](release-notes-v0.2.0.md).

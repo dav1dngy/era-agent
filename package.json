@@ -16,6 +16,7 @@
   ],
   "scripts": {
     "test": "node --test tests/*.test.js",
+    "check:history": "node scripts/scan-history.mjs",
     "lint": "eslint .",
     "check": "node scripts/check.mjs",
     "clean-install-test": "bash scripts/clean-install-test.sh",

@@ -23,10 +23,20 @@ publishes automatically.
 - [ ] `THIRD_PARTY_NOTICES.md` regenerated (`node scripts/third-party-notices.mjs`)
       and REA's MIT notice intact.
 
+## Studio and desktop (v0.2.0 and later)
+
+- [ ] `npm run test:desktop --prefix apps/studio` passes (real Electron; every scenario group), and `npm run test:package --prefix apps/studio` passes on the
+      package built from the commit being released.
+- [ ] `bash scripts/external-user-validation.sh` passes: a fresh clone, a scrubbed environment, install, Studio, REA analysis, a Project Lab task, approval, rollback, rejection.
+- [ ] `npm run capture:screenshots --prefix apps/studio` re-run if the UI changed; every image reviewed for private data; no mock-ups.
+- [ ] The in-app Documentation pages (`src/control_plane/services/docs.js`) are current; `docs/SUPPORT_AND_VALIDATION.md` names the tested revision.
+- [ ] State plainly whether the desktop app is signed and notarized (it is not, unless that was actually done and tested on a clean machine).
+- [ ] Hosted CI is green for the commit, including the Studio desktop job.
+
 ## Repository hygiene
 
-- [ ] Secret scan of the full history: `git log --all -p | grep -E 'gh[pousr]_|sk-ant-|AKIA|PRIVATE KEY'`
-      shows nothing.
+- [ ] `npm run check:history` (every added line in every branch: credentials, e-mail addresses, personal local paths) reports no findings,
+      or each finding has a recorded decision. Synthetic credential-shaped values under `tests/` are counted separately.
 - [ ] No personal data you do not want public: commit author emails
       (`git log --format='%ae' | sort -u`) and absolute paths in evidence files.
 - [ ] The target repository does not already exist, or you intend to push to it.

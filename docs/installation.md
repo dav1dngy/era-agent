@@ -49,6 +49,43 @@ npm link
 era status
 ```
 
+## ERA Studio desktop application (macOS)
+
+| | Development build (what exists) | Signed and notarized production release (does **not** exist yet) |
+|---|---|---|
+| Signature | none (unsigned); not notarized | Developer ID signature, hardened runtime, Apple notarization |
+| Where it comes from | built by you with `npm run package --prefix apps/studio`, or the zip of a release candidate | a download that macOS opens without a warning |
+| Gatekeeper | a build you made yourself opens normally; a copy that was downloaded or transferred may be blocked (see below) | accepted |
+| Platform | macOS on Apple silicon (arm64) is the only validated one | not applicable |
+| Updates | none (no auto-updater) | not applicable |
+
+Nothing in this repository claims or implies a signed or notarized build. Treat the desktop app as a development build.
+
+**Build and install it yourself**
+
+```bash
+git clone --branch feature/era-v0.2.0 https://github.com/dav1dngy/era-agent.git && cd era-agent
+npm ci && npm ci --prefix apps/studio
+npm run package --prefix apps/studio                    # builds apps/studio/out/ERA Studio-darwin-arm64/ERA Studio.app
+npm run test:package --prefix apps/studio               # launches it outside the repository and checks authentication, isolation and REA
+cp -R "apps/studio/out/ERA Studio-darwin-arm64/ERA Studio.app" /Applications/
+open -a "ERA Studio"
+```
+
+The app still needs Node.js (22.19+ or 24.11+), Git and Python 3 on your machine, and optional native decompilers and coding-agent CLIs; it imports your login shell's
+`PATH` (not other variables such as `GHIDRA_INSTALL_DIR`). It keeps its own state in its data folder under `~/Library/Application Support/`.
+
+**Install from a release-candidate zip**
+
+```bash
+shasum -a 256 -c SHA256SUMS                             # in the folder with the zip and the checksum file
+ditto -x -k era-studio-0.2.0-rc.1-darwin-arm64-unsigned.zip /Applications
+open -a "ERA Studio"
+```
+
+If macOS refuses to open it (it is unsigned), allow that single app under *System Settings → Privacy & Security → Open Anyway* (older macOS: right-click → Open).
+This was not verified on a clean machine. Do not disable Gatekeeper globally. Uninstall by deleting the app and its data folder.
+
 ## Using an existing REA installation
 
 If REA is already installed (for example `npm install -g rea-agents@6.4.0`), ERA
