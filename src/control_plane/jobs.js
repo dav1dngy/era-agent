@@ -11,6 +11,7 @@ import { redactText } from '../safety/secrets.js';
 
 const ERA_BIN = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..', 'bin', 'era.mjs');
 const TAIL_LINES = 500;
+const SHUTDOWN_GRACE_MS = 1500;
 
 // The CLI prints its --json result last; anything before it (progress text) is ignored.
 function parseTrailingJson(text) {
@@ -246,6 +247,12 @@ export class JobManager {
     return this.summary(job);
   }
 
+  // Resolves as soon as every listed job has exited (finish() removes it from `children`), or after graceMs.
+  async waitForExit(ids, graceMs) {
+    const deadline = Date.now() + graceMs;
+    while (ids.some((id) => this.children.has(id)) && Date.now() < deadline) await new Promise((r) => setTimeout(r, 25));
+  }
+
   // Server shutdown: stop running jobs gracefully; project runs stay resumable.
   async shutdown() {
     this.closing = true;
@@ -258,7 +265,7 @@ export class JobManager {
       this.jobs.get(id).error ??= 'ERA Studio closed while this job was running.';
       try { process.kill(-child.pid, 'SIGTERM'); } catch { /* already gone */ }
     }
-    if (pending.length) await new Promise((r) => setTimeout(r, 1500));
+    if (pending.length) await this.waitForExit(pending.map(([id]) => id), SHUTDOWN_GRACE_MS);
     for (const [id, child] of pending) {
       if (!this.children.has(id)) continue;
       try { process.kill(-child.pid, 'SIGKILL'); } catch { /* already gone */ }
