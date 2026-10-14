@@ -119,3 +119,82 @@ test('H01 rebuild: SPEC.md changed by a verification command makes the rebuild u
   assert.match(run.results.finalize.reasons.join(' '), /Protected files were changed: SPEC\.md/);
   assert.notEqual(run.status, 'awaiting-approval');
 });
+
+// ---------------------------------------------------------------------------------------------------------------------
+// H02: Rebuild rollback deleted the whole destination after a digest that ignores .git/build/dist/node_modules matched,
+// so work done after approval in those directories was destroyed. Rollback now needs a complete manifest match.
+
+const OK_APP = "app.js=\"process.stdout.write('ok\\n')\"";
+async function approvedRebuild({ agentFiles = [OK_APP] } = {}) {
+  const lab = newLab();
+  const ref = tempDir();
+  writeFileSync(join(ref, 'app.js'), "process.stdout.write('ok\\n');\n");
+  const destination = join(tempDir(), 'out');
+  lab.create({
+    id: 'rb',
+    mode: 'rebuild',
+    reference: ref,
+    destination,
+    task: 'Reimplement app',
+    authorization: 'fixture',
+    agent: 'command',
+    agent_command: write(...agentFiles),
+    commands: { run: 'node app.js' },
+    acceptance: { behaviors: [{ name: 'prints ok', args: [], expect: { stdout: 'ok\n', exit_code: 0 } }] },
+    limits: { maxAttempts: 1 },
+    trust_project: !SANDBOX,
+  });
+  const { run } = await lab.rebuild('rb');
+  assert.equal(run.status, 'awaiting-approval', JSON.stringify(run.results?.finalize?.reasons ?? run.error));
+  await lab.approve('rb', { by: 'tester' });
+  return { lab, destination };
+}
+
+test('H02: an untouched Rebuild destination is rolled back and removed', async () => {
+  const { lab, destination } = await approvedRebuild();
+  assert.ok(existsSync(join(destination, 'app.js')));
+  const r = await lab.rollback('rb');
+  assert.equal(r.restored, true);
+  assert.equal(existsSync(destination), false);
+});
+
+test('H02: later work in .git and build survives, and rollback is refused', async () => {
+  const { lab, destination } = await approvedRebuild();
+  mkdirSync(join(destination, '.git'), { recursive: true });
+  writeFileSync(join(destination, '.git', 'audit-unpublished-history'), 'precious');
+  mkdirSync(join(destination, 'build'), { recursive: true });
+  writeFileSync(join(destination, 'build', 'user-data'), 'precious');
+  await assert.rejects(lab.rollback('rb'), /refusing to delete it[\s\S]*added \.git|added build/);
+  assert.equal(readFileSync(join(destination, '.git', 'audit-unpublished-history'), 'utf8'), 'precious');
+  assert.equal(readFileSync(join(destination, 'build', 'user-data'), 'utf8'), 'precious');
+  assert.ok(existsSync(join(destination, 'app.js')), 'nothing was deleted');
+  assert.equal(lab.get('rb').status, 'applied', 'the project still counts as applied');
+});
+
+test('H02: a file inside an excluded directory that existed at approval is protected too', async () => {
+  const { lab, destination } = await approvedRebuild({ agentFiles: [OK_APP, 'build/generated.txt=from-agent'] });
+  assert.equal(readFileSync(join(destination, 'build', 'generated.txt'), 'utf8'), 'from-agent');
+  writeFileSync(join(destination, 'build', 'generated.txt'), 'edited by the user');
+  await assert.rejects(lab.rollback('rb'), /modified build\/generated\.txt/);
+  assert.equal(readFileSync(join(destination, 'build', 'generated.txt'), 'utf8'), 'edited by the user');
+});
+
+test('H02: a removed or edited ordinary file also refuses the rollback', async () => {
+  const { lab, destination } = await approvedRebuild();
+  writeFileSync(join(destination, 'app.js'), 'changed');
+  await assert.rejects(lab.rollback('rb'), /modified app\.js/);
+  writeFileSync(join(destination, 'extra.txt'), 'new');
+  await assert.rejects(lab.rollback('rb'), /added extra\.txt/);
+});
+
+test('H02: runs approved before manifests existed refuse when excluded directories hold content', async () => {
+  const { lab, destination } = await approvedRebuild();
+  const run = lab.store.loadRun('rb', lab.get('rb').latest_run_id ?? lab.store.latestRun('rb', (r) => r.status === 'applied').run_id);
+  delete run.applied.manifest_file;
+  delete run.applied.manifest_sha256;
+  lab.store.saveRun(run);
+  mkdirSync(join(destination, 'node_modules'), { recursive: true });
+  writeFileSync(join(destination, 'node_modules', 'later.txt'), 'x');
+  await assert.rejects(lab.rollback('rb'), /no complete manifest/);
+  assert.ok(existsSync(join(destination, 'node_modules', 'later.txt')));
+});

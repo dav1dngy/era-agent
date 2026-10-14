@@ -7,7 +7,7 @@
 // the CLI. It never touches ERA's own implementation: it only ever reads the
 // original project, works in isolated copies, and writes to the original only on
 // explicit approval of a verified, reviewable diff.
-import { cpSync, existsSync, lstatSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, lstatSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { basename, join } from 'node:path';
 import { createCodingAgent } from '../agents/coding-agents.js';
 import { InterruptedError, createInterruptGuard } from '../orchestration/interrupt.js';
@@ -23,7 +23,7 @@ import { runModify } from './modify.js';
 import { runRebuild } from './rebuild.js';
 import { runReview } from './review.js';
 import { renderRun } from './report.js';
-import { applyPatch, removeWorkspace, treeDigest, workspaceChanges } from './workspace.js';
+import { applyPatch, fullManifest, manifestDiff, manifestSha256, removeWorkspace, treeDigest, workspaceChanges } from './workspace.js';
 
 const FLOWS = { review: runReview, modify: runModify, rebuild: runRebuild };
 const RESUMABLE = ['interrupted', 'failed', 'awaiting-implementation'];
@@ -374,7 +374,32 @@ export class ProjectLab {
     const dest = assertExternalPath(project.destination, 'destination');
     if (existsSync(dest) && readdirSync(dest).length > 0) throw new SafetyError(`The destination is no longer empty: ${dest}. Choose an empty destination.`);
     cpSync(workspace, dest, { recursive: true, filter: (p) => basename(p) !== '.git' && !lstatSync(p).isSymbolicLink() });
-    return { kind: 'directory', destination: dest, destination_digest: treeDigest(dest).sha256, files: treeDigest(dest).files };
+    // Record exactly what was written, nothing excluded: rollback may delete only a destination that still matches it.
+    const manifest = fullManifest(dest);
+    const manifestFile = join(this.store.runDir(project.id, run.run_id), 'destination-manifest.json');
+    writeFileSync(manifestFile, `${JSON.stringify(manifest, null, 2)}\n`);
+    return { kind: 'directory', destination: dest, destination_digest: treeDigest(dest).sha256, files: treeDigest(dest).files, manifest_file: manifestFile, manifest_sha256: manifestSha256(manifest), manifest_entries: manifest.length };
+  }
+
+  // Throws unless the destination is byte-for-byte what approval wrote: no file added, removed or changed anywhere,
+  // including .git, build, dist and node_modules (later work lives there too).
+  assertDestinationUnchanged(dest, applied) {
+    const names = (d) => [...d.added.map((p) => `added ${p}`), ...d.removed.map((p) => `removed ${p}`), ...d.modified.map((p) => `modified ${p}`)];
+    const refuse = (detail) => new Error(`The destination was modified after it was generated; refusing to delete it (${detail}). Remove it manually if you are sure.`);
+    if (!existsSync(dest)) throw refuse('it no longer exists');
+    if (!applied.manifest_file || !existsSync(applied.manifest_file)) {
+      // Runs approved before the manifest existed: the old digest skips .git/build/dist/node_modules, so it can only be
+      // trusted when none of those directories has any content that could belong to later work.
+      if (treeDigest(dest).sha256 !== applied.destination_digest) throw refuse('its contents changed');
+      const hidden = fullManifest(dest).filter((e) => /(^|\/)(\.git|build|dist|node_modules|\.era|coverage|target)(\/|$)/.test(e.path));
+      if (hidden.length) throw refuse(`this run has no complete manifest and the destination contains ${hidden.slice(0, 5).map((e) => e.path).join(', ')}`);
+      return;
+    }
+    const raw = readFileSync(applied.manifest_file, 'utf8');
+    const expected = JSON.parse(raw);
+    if (manifestSha256(expected) !== applied.manifest_sha256) throw refuse('the recorded manifest was altered');
+    const diff = manifestDiff(expected, fullManifest(dest));
+    if (!diff.same) throw refuse(names(diff).slice(0, 10).join(', ') + (names(diff).length > 10 ? ', …' : ''));
   }
 
   async rollback(id) {
@@ -392,7 +417,7 @@ export class ProjectLab {
         run.rollback = { at: new Date().toISOString(), source_digest: treeDigest(project.source).sha256, restored: treeDigest(project.source).sha256 === run.applied.source_digest_before };
       } else {
         const dest = project.destination;
-        if (!existsSync(dest) || treeDigest(dest).sha256 !== run.applied.destination_digest) throw new Error('The destination was modified after it was generated; refusing to delete it. Remove it manually if you are sure.');
+        this.assertDestinationUnchanged(dest, run.applied);
         rmSync(dest, { recursive: true, force: true });
         run.rollback = { at: new Date().toISOString(), removed: dest, restored: true };
       }

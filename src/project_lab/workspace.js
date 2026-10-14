@@ -47,6 +47,41 @@ export function treeDigest(root) {
   return { sha256: h.digest('hex'), files: files.length, bytes: files.reduce((s, f) => s + (f.size ?? 0), 0) };
 }
 
+// Complete inventory of a directory for deletion safety: EVERY path (nothing is ignored, including .git, build, dist and
+// node_modules), symlinks are recorded and never followed. treeDigest() is a source-copy digest that deliberately skips
+// generated directories; it must never be used to justify deleting a tree.
+export function fullManifest(root) {
+  const entries = [];
+  const visit = (dir) => {
+    for (const name of readdirSync(dir).sort()) {
+      const full = join(dir, name);
+      const rel = relative(root, full);
+      const st = lstatSync(full);
+      if (st.isSymbolicLink()) entries.push({ path: rel, type: 'symlink', target: readlinkSync(full) });
+      else if (st.isDirectory()) {
+        entries.push({ path: rel, type: 'dir' });
+        visit(full);
+      } else if (st.isFile()) entries.push({ path: rel, type: 'file', mode: st.mode & 0o777, size: st.size, sha256: createHash('sha256').update(readFileSync(full)).digest('hex') });
+      else entries.push({ path: rel, type: 'special' });
+    }
+  };
+  visit(root);
+  return entries;
+}
+
+export const manifestSha256 = (entries) => createHash('sha256').update(JSON.stringify(entries)).digest('hex');
+
+// What differs between an expected and the current manifest (paths only).
+export function manifestDiff(expected, actual) {
+  const key = (e) => JSON.stringify(e);
+  const exp = new Map(expected.map((e) => [e.path, key(e)]));
+  const act = new Map(actual.map((e) => [e.path, key(e)]));
+  const added = [...act.keys()].filter((p) => !exp.has(p));
+  const removed = [...exp.keys()].filter((p) => !act.has(p));
+  const modified = [...act.keys()].filter((p) => exp.has(p) && exp.get(p) !== act.get(p));
+  return { added, removed, modified, same: !added.length && !removed.length && !modified.length };
+}
+
 // Copies the project into `dest`, refusing oversized trees, and never following
 // symlinks (links that leave the tree are skipped and reported).
 export function copyProject(src, dest, { maxBytes, maxFiles, exclude = null }) {
