@@ -562,7 +562,9 @@ test('tasks: plan reports blockers and consent; starting needs confirmation; com
     const plan = (await p.api('POST', '/api/tasks/plan', { text: 'Identify the bugs in the cart, fix them and verify', folder: src })).json;
     assert.equal(plan.mode, 'MODIFY');
     assert.deepEqual(plan.stages.map((s) => s.op), ['review', 'modify']);
-    assert.equal(plan.blockers.length, 0, plan.blockers.join(';'));
+    // Without an OS sandbox the only blocker is the (correct) refusal to run project commands unconfined.
+    const planBlockers = SANDBOX ? plan.blockers : plan.blockers.filter((b) => !/No sandbox is available/.test(b));
+    assert.equal(planBlockers.length, 0, plan.blockers.join(';'));
     assert.equal(plan.project.exists, false);
 
     const noConfirm = await p.api('POST', '/api/tasks', { text: 'Identify the bugs in the cart, fix them and verify', folder: src });
@@ -605,10 +607,18 @@ test('tasks: remote providers must be consented to explicitly before a task can 
     const plan = (await p.api('POST', '/api/tasks/plan', { text: 'Fix the cart total', folder: src })).json;
     assert.equal(plan.consent_required, true);
     assert.deepEqual(plan.remote_providers, ['custom:remote']);
-    const refused = await p.api('POST', '/api/tasks', { text: 'Fix the cart total', folder: src, confirm: true });
-    assert.equal(refused.status, 403);
+    // Without a sandbox, start from a trusted registered project so the consent check is what refuses.
+    let input = { folder: src };
+    if (!SANDBOX) {
+      const registered = await p.api('POST', '/api/projects', newProject(src, { id: 'cart-remote', team: { roles: { implementer: 'custom:remote' } } }));
+      assert.equal(registered.status, 200, registered.text);
+      input = { project_id: 'cart-remote' };
+    }
+    const before = (await p.api('GET', '/api/projects')).json.projects.length;
+    const refused = await p.api('POST', '/api/tasks', { text: 'Fix the cart total', ...input, confirm: true });
+    assert.equal(refused.status, 403, refused.text);
     assert.match(refused.json.error, /Authorize sending the source code to custom:remote/);
-    assert.equal((await p.api('GET', '/api/projects')).json.projects.length, 0, 'nothing was created');
+    assert.equal((await p.api('GET', '/api/projects')).json.projects.length, before, 'nothing was created');
   } finally {
     await p.stop();
   }

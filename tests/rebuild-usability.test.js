@@ -179,18 +179,22 @@ test('planning a REBUILD no longer crashes: it creates a project definition, rep
     assert.ok(none.checks.length > 0);
 
     const ready = (await p.api('POST', '/api/tasks/plan', { text: 'Rebuild the reference as a new project', mode: 'REBUILD', reference: ref, destination: dest, authorization: 'I wrote it', run_command: 'node app.js', accept_commands: ['test -f app.js'] })).json;
-    assert.deepEqual(ready.blockers, [], ready.blockers.join(' | '));
+    // Without an OS sandbox the correct refusal to run commands unconfined is the only expected blocker.
+    assert.deepEqual(ready.blockers.filter((b) => SANDBOX || !/No sandbox is available/.test(b)), [], ready.blockers.join(' | '));
     assert.equal(ready.project.exists, false);
     assert.equal(ready.checks.find((c) => c.id === 'acceptance').status, 'pass');
-    // starting needs the confirmation, then really creates and starts it
-    const started = await p.api('POST', '/api/tasks', { text: 'Rebuild the reference as a new project', mode: 'REBUILD', reference: ref, destination: dest, authorization: 'I wrote it', run_command: 'node app.js', accept_commands: ['test -f app.js'], confirm: true });
-    assert.equal(started.status, 200, JSON.stringify(started.json));
-    const proj = (await p.api('GET', `/api/projects/${started.json.task.project_id}`)).json.project;
-    assert.equal(proj.mode, 'rebuild');
-    assert.equal(proj.reference, realpathSync(ref));
-    assert.equal(proj.destination, real(dest));
-    assert.equal(proj.commands.run, 'node app.js');
-    assert.equal(proj.acceptance.commands[0].command, 'test -f app.js');
+    // Starting a brand-new project needs an OS sandbox (the composer cannot authorize unconfined code).
+    if (SANDBOX) {
+      // starting needs the confirmation, then really creates and starts it
+      const started = await p.api('POST', '/api/tasks', { text: 'Rebuild the reference as a new project', mode: 'REBUILD', reference: ref, destination: dest, authorization: 'I wrote it', run_command: 'node app.js', accept_commands: ['test -f app.js'], confirm: true });
+      assert.equal(started.status, 200, JSON.stringify(started.json));
+      const proj = (await p.api('GET', `/api/projects/${started.json.task.project_id}`)).json.project;
+      assert.equal(proj.mode, 'rebuild');
+      assert.equal(proj.reference, realpathSync(ref));
+      assert.equal(proj.destination, real(dest));
+      assert.equal(proj.commands.run, 'node app.js');
+      assert.equal(proj.acceptance.commands[0].command, 'test -f app.js');
+    }
   } finally {
     await p.stop();
   }
