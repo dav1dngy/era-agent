@@ -10,13 +10,13 @@
 // explicitly declares the candidate trusted (--trust-candidate).
 import { existsSync, mkdirSync, realpathSync } from 'node:fs';
 import { homedir } from 'node:os';
-import { join } from 'node:path';
-import { SANDBOX_EXEC, sandboxAvailable } from './sandbox.js';
+import { join, sep } from 'node:path';
+import { SANDBOX_EXEC, SIGNAL_RULES, readConfinement, sandboxAvailable } from './sandbox.js';
 import { SafetyError } from './policy.js';
 
 export const SECRET_ENV = /(TOKEN|SECRET|PASSWORD|PASSWD|API_?KEY|CREDENTIAL|AUTH|COOKIE|SESSION|PRIVATE|^GH_|^GITHUB_|^AWS_|^ANTHROPIC_|^OPENAI_|^NPM_|^SSH_AUTH_SOCK$|^GIT_ASKPASS$)/i;
 
-const SENSITIVE_HOME = ['.ssh', '.aws', '.gnupg', '.config/gh', '.netrc', '.npmrc', '.claude.json', '.claude', '.codex', 'Library/Keychains'];
+const SENSITIVE_HOME = ['.ssh', '.aws', '.gnupg', '.config/gh', '.config/gcloud', '.azure', '.kube', '.docker', '.netrc', '.git-credentials', '.npmrc', '.pypirc', '.cargo/credentials', '.cargo/credentials.toml', '.claude.json', '.claude', '.codex', 'Library/Keychains'];
 
 const real = (p) => {
   mkdirSync(p, { recursive: true });
@@ -30,17 +30,30 @@ export function candidateEnv(base, { tmp, extra = {} }) {
   return { ...env, TMPDIR: tmp, npm_config_cache: join(tmp, 'npm-cache'), ERA_IN_CANDIDATE_SANDBOX: '1', ...extra };
 }
 
-export function candidateProfile({ writable = [], denyRead = [] }) {
+// `network: true` is only for trusted tooling that needs it (for example a
+// user-configured coding-agent command); candidate code never gets it.
+// `readable` names extra read-only inputs. `confineHome: false` keeps the pre-audit read behavior (everything except the
+// listed credential stores) for trusted, user-configured agent CLIs that need their own configuration; every other caller
+// gets the home directory and the shared temporary directories closed, plus the signalling restriction (which always applies).
+export function candidateProfile({ writable = [], denyRead = [], readable = [], network = false, confineHome = true }) {
   const w = writable.map(real);
+  const ro = readable.filter(existsSync).map((p) => realpathSync(p));
   const sensitive = SENSITIVE_HOME.map((p) => join(homedir(), p)).filter(existsSync).map((p) => realpathSync(p));
   const r = [...denyRead.filter(existsSync).map((p) => realpathSync(p)), ...sensitive];
+  const confinement = confineHome ? readConfinement({ allow: [...w, ...ro] }) : null;
+  const q = (list) => list.map((d) => `(subpath ${quote(d)})`).join(' ');
+  // Work areas that live INSIDE a denied directory (a working copy under ERA's state directory) must stay readable.
+  const reopen = [...w, ...ro].filter((d) => r.some((x) => d !== x && d.startsWith(x + sep)));
   return [
     '(version 1)',
     '(allow default)',
-    '(deny network*)',
+    ...(network ? [] : ['(deny network*)']),
+    ...SIGNAL_RULES,
+    ...(confinement ? confinement.before : []),
     '(deny file-write*)',
     `(allow file-write* ${[...w.map((d) => `(subpath ${quote(d)})`), '(literal "/dev/null")', '(regex #"^/dev/(tty|ttys)[0-9a-z]*$")'].join(' ')})`,
-    ...(r.length ? [`(deny file-read* ${r.map((d) => `(subpath ${quote(d)})`).join(' ')})`] : []),
+    ...(r.length ? [`(deny file-read* ${q(r)})`] : []),
+    ...(reopen.length ? [`(allow file-read* ${q(reopen)})`] : []),
   ].join('\n');
 }
 
@@ -58,8 +71,12 @@ export function candidateIsolation({ trust = false } = {}) {
 }
 
 // Returns { command, args, env } for running candidate code under the isolation.
-export function wrapCandidate(isolation, command, args, { writable, denyRead = [], tmp, env = process.env, extraEnv = {} }) {
-  const cleanEnv = candidateEnv(env, { tmp, extra: extraEnv });
+export function wrapCandidate(isolation, command, args, { writable, denyRead = [], readable = [], tmp, env = process.env, extraEnv = {}, network = false, keepEnv = false, confineHome = !keepEnv }) {
+  // keepEnv: trusted, user-configured tooling that needs its own credentials.
+  const cleanEnv = keepEnv ? { ...env, TMPDIR: tmp, ...extraEnv } : candidateEnv(env, { tmp, extra: extraEnv });
+  // A parent `node --test` run sets NODE_TEST_CONTEXT, which turns a nested `node --test`
+  // into a silent reporter that exits 0 (tests would "pass" without running).
+  delete cleanEnv.NODE_TEST_CONTEXT;
   if (isolation.mode !== 'sandbox') return { command, args, env: cleanEnv };
-  return { command: SANDBOX_EXEC, args: ['-p', candidateProfile({ writable: [...writable, tmp], denyRead }), command, ...args], env: cleanEnv };
+  return { command: SANDBOX_EXEC, args: ['-p', candidateProfile({ writable: [...writable, tmp], denyRead, readable, network, confineHome }), command, ...args], env: cleanEnv };
 }

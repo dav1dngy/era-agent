@@ -1,0 +1,21 @@
+diff --git a/src/cart.js b/src/cart.js
+index e46b82d..e9f7cbc 100644
+--- a/src/cart.js
++++ b/src/cart.js
+@@ -3,9 +3,13 @@ function itemCount(items) {
+   return items.reduce((sum, item) => sum + (item.quantity ?? 1), 0);
+ }
+ 
+-// BUG: the quantity of each line item is ignored.
+ function total(items) {
+-  return items.reduce((sum, item) => sum + item.price, 0);
++  return items.reduce((sum, item) => sum + item.price * (item.quantity ?? 1), 0);
+ }
+ 
+-module.exports = { itemCount, total };
++// Applies a discount expression supplied by the shopper, e.g. "total * 0.9".
++function applyDiscount(total, expression) {
++  return eval(expression);
++}
++
++module.exports = { itemCount, total, applyDiscount };

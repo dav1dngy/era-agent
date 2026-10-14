@@ -1,0 +1,45 @@
+{
+  "run_id": "rea-20261014T124115-b7ac1b",
+  "label": "supervised-self:pass-12/22",
+  "started_at": "2026-10-14T12:41:15.585Z",
+  "duration_ms": 3288,
+  "command": [
+    "<tmp>",
+    "analyze-javascript-application",
+    "<tmp>/era-supervised-JVXwgT/pass-12",
+    "--format",
+    "json"
+  ],
+  "command_source": "local-dependency",
+  "engine": {
+    "package": "rea-agents",
+    "version": "6.4.0"
+  },
+  "input": {
+    "path": "<tmp>/era-supervised-JVXwgT/pass-12",
+    "kind": "directory",
+    "bytes": null,
+    "sha256": "e2b84b28460537d2f29b78fb4485c5ca919cae46091bde3473b032f2490e9b54"
+  },
+  "status": "succeeded",
+  "exit_code": 0,
+  "signal": null,
+  "evidence_id": "ev_52abf3fb904b930b03000eb0c8950ec40f8f2b5dadb6144b6f6c532d0d873c2e",
+  "operation": "analyze_javascript_application",
+  "provider": {
+    "id": "rea-javascript-application",
+    "name": "REA JavaScript application analyzer",
+    "version": "1"
+  },
+  "output_file": "<tmp>",
+  "output_bytes": 8458929,
+  "progress_events": 31,
+  "warnings": [],
+  "errors": [],
+  "resources": {
+    "real_s": 3.25,
+    "user_s": 3.58,
+    "sys_s": 0.46,
+    "max_rss_bytes": 425705472
+  }
+}

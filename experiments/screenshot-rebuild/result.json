@@ -1,0 +1,120 @@
+{
+  "validated_at": "2026-10-14T10:07:33.949Z",
+  "provider": "codex",
+  "host": "darwin",
+  "runs": {
+    "with_image": {
+      "with_image": true,
+      "status": "awaiting-approval",
+      "duration_s": 119,
+      "attempts": [
+        {
+          "n": 1,
+          "pass": true,
+          "reasons": []
+        }
+      ],
+      "final_score": 0.9271,
+      "last_attempt_score": [
+        0.9271
+      ],
+      "threshold": 0.75,
+      "metrics": {
+        "score": 0.9271,
+        "luminance": 0.9203,
+        "color": 0.8915,
+        "edges": 0.9108,
+        "layout": 0.9973
+      },
+      "files": [
+        "A index.html"
+      ],
+      "usage": [
+        {
+          "duration_ms": 116116,
+          "usage": {
+            "input": 182019,
+            "output": 3835,
+            "cached_input": null
+          },
+          "ok": true
+        }
+      ],
+      "error": null,
+      "images_sent": true,
+      "metadata_removed": []
+    },
+    "control_1_invalid": {
+      "with_image": false,
+      "status": "awaiting-approval",
+      "duration_s": 210,
+      "attempts": [
+        {
+          "n": 1,
+          "pass": true,
+          "reasons": []
+        }
+      ],
+      "final_score": 0.9614,
+      "last_attempt_score": [
+        0.9614
+      ],
+      "threshold": 0.75,
+      "metrics": {
+        "score": 0.9614,
+        "luminance": 0.9542,
+        "color": 0.9145,
+        "edges": 0.9742,
+        "layout": 0.9997
+      },
+      "files": [
+        "A index.html",
+        "A styles.css"
+      ],
+      "usage": [
+        {
+          "duration_ms": 206999,
+          "usage": {
+            "input": 408959,
+            "output": 5817,
+            "cached_input": null
+          },
+          "ok": true
+        }
+      ],
+      "error": null,
+      "images_sent": false,
+      "metadata_removed": [],
+      "invalid": "The agent found the reference screenshot on disk (its file name was listed in the specification) and viewed it, so this was not a blind control: its page reproduces text only the screenshot contained."
+    },
+    "control_blind": {
+      "agent_ok": true,
+      "duration_s": 167,
+      "tokens": {
+        "input_tokens": 117797,
+        "output_tokens": 6560
+      },
+      "score": 0.1048,
+      "metrics": {
+        "score": 0.1048,
+        "luminance": 0,
+        "color": 0.3121,
+        "edges": 0.0677,
+        "layout": 0.1106
+      },
+      "error": null,
+      "text_contains_reference_content": false
+    }
+  },
+  "codex": {
+    "available": true,
+    "version": "codex-cli 0.160.1",
+    "authenticated": true,
+    "detail": "Logged in using ChatGPT"
+  },
+  "status": "completed",
+  "summary": {
+    "with_image_best": 0.9271,
+    "blind_control": 0.1048
+  }
+}

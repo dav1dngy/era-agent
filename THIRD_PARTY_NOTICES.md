@@ -192,6 +192,27 @@ License summary: MIT (116), ISC (11), Apache-2.0 (7), BSD-3-Clause (7), BlueOak-
 | yaml | 2.9.0 | ISC |
 | zod | 4.4.3 | MIT |
 
+## ERA Studio desktop runtime
+
+Studio is optional; CLI users do not install these dependencies. The desktop bundle
+contains Electron and the local Preact, htm, Monaco, xterm.js and Inter assets.
+Package license texts remain in the distributed node_modules tree; Electron includes
+LICENSE and LICENSES.chromium.html in its distribution. The packager is a development
+build tool (BSD-2-Clause) and is not bundled in the application.
+
+| Package | Version | License |
+|---|---|---|
+| @fontsource-variable/inter | 5.2.8 | OFL-1.1 |
+| @types/trusted-types | 2.0.7 | MIT |
+| @xterm/addon-fit | 0.11.0 | MIT |
+| @xterm/xterm | 6.0.0 | MIT |
+| dompurify | 3.4.15 | (MPL-2.0 OR Apache-2.0) |
+| electron | 44.7.1 | MIT |
+| htm | 3.1.1 | Apache-2.0 |
+| marked | 14.0.0 | MIT |
+| monaco-editor | 0.57.0 | MIT |
+| preact | 10.29.8 | MIT |
+
 ## Evidence files
 
 Files under `tests/fixtures/evidence/` and `experiments/` are outputs of

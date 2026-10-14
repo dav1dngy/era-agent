@@ -6,7 +6,11 @@ import { parseArgs } from '../src/cli.js';
 import { runEra, tempDir, FAKE_REA } from './helpers.js';
 
 test('parseArgs separates positionals, flags, valued flags and repeated --arg', () => {
-  assert.deepEqual(parseArgs(['x', '--json', '--cycles', '2', '--arg', 'a', '--arg', 'b']), { positional: ['x'], flags: { arg: ['a', 'b'], json: true, cycles: '2' } });
+  const none = { build: [], test: [], criteria: [], accept: [], 'accept-fail': [], protect: [] };
+  assert.deepEqual(parseArgs(['x', '--json', '--cycles', '2', '--arg', 'a', '--arg', 'b']), { positional: ['x'], flags: { ...none, arg: ['a', 'b'], json: true, cycles: '2' } });
+  // repeatable flags used by `era project create` are collected into arrays, valued flags take one value
+  const p = parseArgs(['create', 'demo', '--test', 'npm test', '--test', 'npm run lint', '--accept-fail', 'x', '--task', 'Fix it', '--max-cost', '2', '--yes']);
+  assert.deepEqual([p.positional, p.flags.test, p.flags['accept-fail'], p.flags.task, p.flags['max-cost'], p.flags.yes], [['create', 'demo'], ['npm test', 'npm run lint'], ['x'], 'Fix it', '2', true]);
 });
 
 test('help and version', () => {

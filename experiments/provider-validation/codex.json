@@ -1,0 +1,157 @@
+{
+  "provider": "codex",
+  "validated_at": "2026-10-13T22:16:10.615Z",
+  "host": {
+    "platform": "darwin",
+    "release": "27.0.0",
+    "node": "v24.20.0"
+  },
+  "checks": {
+    "write-task": {
+      "status": "pass",
+      "duration_ms": 9469,
+      "note": null,
+      "evidence": {
+        "result": {
+          "ok": true,
+          "exit_code": 0,
+          "timed_out": false,
+          "duration_ms": 9353,
+          "cost_usd": null,
+          "cost_reported": false,
+          "tokens": {
+            "input_tokens": 37161,
+            "output_tokens": 71
+          },
+          "output_tail": "done",
+          "stderr_tail": "Reading additional input from stdin...\n"
+        },
+        "result_txt": "ERA-OK",
+        "git_status": "?? result.txt"
+      }
+    },
+    "workspace-isolation": {
+      "status": "pass",
+      "duration_ms": 0,
+      "note": "a write outside the working copy was requested and did not happen",
+      "evidence": {
+        "requested_escape_write": true,
+        "escape_file_created": false,
+        "canary_intact": true
+      }
+    },
+    "cost-reporting": {
+      "status": "pass",
+      "duration_ms": 0,
+      "note": "no dollar cost reported by this provider; token usage only (ERA treats it as unmetered)",
+      "evidence": {
+        "cost_usd": null,
+        "cost_reported": false,
+        "tokens": {
+          "input_tokens": 37161,
+          "output_tokens": 71
+        }
+      }
+    },
+    "read-only-mode": {
+      "status": "pass",
+      "duration_ms": 4618,
+      "note": null,
+      "evidence": {
+        "result": {
+          "ok": true,
+          "exit_code": 0,
+          "timed_out": false,
+          "duration_ms": 4484,
+          "cost_usd": null,
+          "cost_reported": false,
+          "tokens": {
+            "input_tokens": 15763,
+            "output_tokens": 18
+          },
+          "output_tail": "I’m not allowed to modify files because this workspace is read-only.",
+          "stderr_tail": "Reading additional input from stdin...\n"
+        },
+        "file_created": false
+      }
+    },
+    "review-output": {
+      "status": "pass",
+      "duration_ms": 11170,
+      "note": null,
+      "evidence": {
+        "result": {
+          "ok": true,
+          "exit_code": 0,
+          "timed_out": false,
+          "duration_ms": 11019,
+          "cost_usd": null,
+          "cost_reported": false,
+          "tokens": {
+            "input_tokens": 47916,
+            "output_tokens": 115
+          },
+          "output_tail": "[]",
+          "stderr_tail": "Reading additional input from stdin...\n"
+        },
+        "parsed_array": true,
+        "raw_count": 0,
+        "accepted_after_validation": [],
+        "rejected": []
+      }
+    },
+    "timeout": {
+      "status": "pass",
+      "duration_ms": 22230,
+      "note": null,
+      "evidence": {
+        "result": {
+          "ok": false,
+          "exit_code": null,
+          "timed_out": true,
+          "duration_ms": 20039,
+          "cost_usd": null,
+          "cost_reported": false,
+          "tokens": null,
+          "output_tail": "id\":\"item_0\",\"type\":\"agent_message\",\"text\":\"I’ll run the command and wait for it to finish.\\n\"}}\n{\"type\":\"item.started\",\"item\":{\"id\":\"item_1\",\"type\":\"command_execution\",\"command\":\"/bin/zsh -lc 'sleep 300 # era-validate-timeout-24587'\",\"aggregated_output\":\"\",\"exit_code\":null,\"status\":\"in_progress\"}}\n",
+          "stderr_tail": "Reading additional input from stdin...\nera-watchdog: received SIGTERM; terminating process group\n"
+        },
+        "leftover_processes": 0,
+        "timeout_ms": 20000
+      }
+    },
+    "bad-model-recovery": {
+      "status": "pass",
+      "duration_ms": 3292,
+      "note": "a provider error is reported as a failed attempt, not as success",
+      "evidence": {
+        "ok": false,
+        "exit_code": 1,
+        "timed_out": false,
+        "duration_ms": 3102,
+        "cost_usd": null,
+        "cost_reported": false,
+        "tokens": null,
+        "output_tail": "is not supported when using Codex with a ChatGPT account.\\\"}}\"}\n{\"type\":\"turn.failed\",\"error\":{\"message\":\"{\\\"type\\\":\\\"error\\\",\\\"status\\\":400,\\\"error\\\":{\\\"type\\\":\\\"invalid_request_error\\\",\\\"message\\\":\\\"The 'era-no-such-model-xyz' model is not supported when using Codex with a ChatGPT account.\\\"}}\"}}\n",
+        "stderr_tail": "Reading additional input from stdin...\n"
+      }
+    },
+    "cancellation": {
+      "status": "pass",
+      "duration_ms": 15394,
+      "note": null,
+      "evidence": {
+        "processes_referencing_working_copy_before_cancel": 2,
+        "after_cancel": 0,
+        "run_status": "cancelled",
+        "working_copy_removed": true,
+        "source_untouched": true
+      }
+    }
+  },
+  "available": true,
+  "version": "codex-cli 0.160.1",
+  "authenticated": true,
+  "auth_detail": "Logged in using ChatGPT",
+  "status": "validated"
+}

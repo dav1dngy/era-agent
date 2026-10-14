@@ -78,3 +78,43 @@ jobs:
       - name: Self-improvement is refused in CI
         run: |
           if node bin/era.mjs improve propose; then echo "improve must refuse in CI"; exit 1; fi
+
+  studio-desktop-macos:
+    name: 'ERA Studio desktop (macOS): dependencies, renderer tests, Electron scenarios, package and packaged smoke'
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            apps/studio/package-lock.json
+      - run: npm ci
+      - run: npm ci --prefix apps/studio
+      - run: git config --global user.name ci && git config --global user.email ci@localhost
+      - name: Studio dependency tree matches its lockfile
+        run: npm ls --omit=dev --prefix apps/studio
+      - name: Studio registry signatures
+        run: npm audit signatures --prefix apps/studio
+      - name: 'Studio known vulnerabilities (high and critical block; the documented low DOMPurify entries are tracked in docs/ERA_V020_REMEDIATION.md)'
+        run: npm audit --omit=dev --audit-level=high --prefix apps/studio
+      - name: Electron binary is present (the screenshot renderer and desktop scenarios need it)
+        run: |
+          test -f apps/studio/node_modules/electron/path.txt || node apps/studio/node_modules/electron/install.js
+          test -f apps/studio/node_modules/electron/path.txt
+      - name: Studio renderer and dependency tests must run, not skip
+        run: |
+          node --test tests/studio-dependencies.test.js tests/studio-ui-model.test.js tests/studio-rebuild-model.test.js tests/screenshot-rebuild.test.js tests/control-plane-system.test.js tests/control-plane-jobs.test.js tests/audit-control-plane.test.js tests/audit-remediation.test.js | tee studio-tests.log
+          grep -E '^ℹ fail 0$' studio-tests.log
+          grep -E '^ℹ skipped 0$' studio-tests.log
+      - name: Electron desktop scenarios
+        run: npm run test:desktop --prefix apps/studio
+      - name: Build the unsigned desktop application
+        run: npm run package --prefix apps/studio
+      - name: Packaged application smoke test
+        run: npm run test:package --prefix apps/studio
+

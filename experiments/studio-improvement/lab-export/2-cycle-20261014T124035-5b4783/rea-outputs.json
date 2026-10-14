@@ -1,0 +1,370 @@
+[
+  {
+    "run_id": "rea-20261014T124037-3365bb",
+    "label": "supervised-self:pass-1/22",
+    "status": "succeeded",
+    "evidence_id": "ev_932b9467da3def659de3cf87caa018e706acb01d734e69887ade92cafa09ee89",
+    "output_bytes": 7863502,
+    "output_sha256": "d74cee1dab0cf22d64424a4c33114a9b4adff547a8ea5211b67b35cad1685181"
+  },
+  {
+    "run_id": "rea-20261014T124042-a5db61",
+    "label": "supervised-self:pass-2/22",
+    "status": "succeeded",
+    "evidence_id": "ev_97155d0a5d538c7a083e268924ae150670bb47aa51efce6744d0d27595f4302f",
+    "output_bytes": 7693219,
+    "output_sha256": "625df47fdfed5474ded43e42bd16e0df2146759a8c944d8e8dfea040c760ea16"
+  },
+  {
+    "run_id": "rea-20261014T124045-7fd35b",
+    "label": "supervised-self:pass-3/22",
+    "status": "succeeded",
+    "evidence_id": "ev_7ce862cfcf64132280f73163530b4c4cf125da54e84e4c478d66f50c4a1f395d",
+    "output_bytes": 7541087,
+    "output_sha256": "15607df98cf3989275b5c0135428423bd12e7aa133f8690bde28659ec588c6ac"
+  },
+  {
+    "run_id": "rea-20261014T124049-345c94",
+    "label": "supervised-self:pass-4/22",
+    "status": "succeeded",
+    "evidence_id": "ev_0c2948e333d7e750542581d87995e044c0b9a02ba96149aced5b36cdda864767",
+    "output_bytes": 10126096,
+    "output_sha256": "fd4e6b82e8d8715d5d5d6d85bde801d73171ad936e3607b766f1fa29e2ca2757"
+  },
+  {
+    "run_id": "rea-20261014T124052-2de2a5",
+    "label": "supervised-self:pass-5/22",
+    "status": "succeeded",
+    "evidence_id": "ev_4eaaca2a0f064e3699a97c8b371588a15124581bf727294b14e7bd287e738d52",
+    "output_bytes": 8396271,
+    "output_sha256": "7d338f3a4b7d561bd3b365075bcda63eced9db4971914843484032cb52f62677"
+  },
+  {
+    "run_id": "rea-20261014T124056-d2e064",
+    "label": "supervised-self:pass-6/22",
+    "status": "succeeded",
+    "evidence_id": "ev_99fe840408f41eddac19e5dac5878a4734fcf2fead749dd2184646b5aa302009",
+    "output_bytes": 8509087,
+    "output_sha256": "9c719f3b3412b12f891255c28887c8c51d9234619aaef8f89d877a0b992aad97"
+  },
+  {
+    "run_id": "rea-20261014T124059-9e5d4d",
+    "label": "supervised-self:pass-7/22",
+    "status": "succeeded",
+    "evidence_id": "ev_7b1a8eca13138caf46e9d8d02819c2e0183979398ce1ba12c07a47c598eedd79",
+    "output_bytes": 7891717,
+    "output_sha256": "5a05efc86390b20618972aa52c4b7a09d8ce212c6083faee9f015e444fc8102a"
+  },
+  {
+    "run_id": "rea-20261014T124102-f7274a",
+    "label": "supervised-self:pass-8/22",
+    "status": "succeeded",
+    "evidence_id": "ev_5c36504b183b57b51fdc9867ea5fd0d7c13f2f685153a5f725e97cbdb4bade61",
+    "output_bytes": 7212203,
+    "output_sha256": "0a08b4203f6d63579df6a2093dc9c772e515b0289fb6b3e916d50ca7f5c17714"
+  },
+  {
+    "run_id": "rea-20261014T124105-8b342c",
+    "label": "supervised-self:pass-9/22",
+    "status": "succeeded",
+    "evidence_id": "ev_a319e7732ecda9554321bc3c03f8a6b8cd352e96099f386c72b4c912480be325",
+    "output_bytes": 8607030,
+    "output_sha256": "dd92e44b68a607d7a716c6fe2bd1a25970a9de69b930e257a2ccfea6731e0e5c"
+  },
+  {
+    "run_id": "rea-20261014T124109-a91d22",
+    "label": "supervised-self:pass-10/22",
+    "status": "succeeded",
+    "evidence_id": "ev_f49bb758e277dafecadac72ccbec1ae05498aaf597e05ef85e9ac2493963518a",
+    "output_bytes": 6747572,
+    "output_sha256": "cf029e74ac67c599a32962d639c17f479909ff26c76f053f61245888c003026e"
+  },
+  {
+    "run_id": "rea-20261014T124112-0a08d9",
+    "label": "supervised-self:pass-11/22",
+    "status": "succeeded",
+    "evidence_id": "ev_efdfb8b8bc899a82be14af98f08ec5b73fd408472b0df9cd9079cd1cba981813",
+    "output_bytes": 6286375,
+    "output_sha256": "3c0b6775d6286834793418227a5d862e9c42df3a12380ddc5769c0e5601d5cb9"
+  },
+  {
+    "run_id": "rea-20261014T124115-b7ac1b",
+    "label": "supervised-self:pass-12/22",
+    "status": "succeeded",
+    "evidence_id": "ev_52abf3fb904b930b03000eb0c8950ec40f8f2b5dadb6144b6f6c532d0d873c2e",
+    "output_bytes": 8458929,
+    "output_sha256": "1ef95f7ea6fd86e4760d69427f09dad08c5c5e81366f81eaaa8e73cd95ba0c44"
+  },
+  {
+    "run_id": "rea-20261014T124118-11a4c0",
+    "label": "supervised-self:pass-13/22",
+    "status": "succeeded",
+    "evidence_id": "ev_900b529cbc39c53a599c0b334201429a0a2e5becf136a98437de8bb7c85d1835",
+    "output_bytes": 8225285,
+    "output_sha256": "d7edf938f7bf47ab95b3245cebc5b599cfecc9bb39438bd38ffa37de9ea3babd"
+  },
+  {
+    "run_id": "rea-20261014T124122-60d115",
+    "label": "supervised-self:pass-14/22",
+    "status": "succeeded",
+    "evidence_id": "ev_2f96460e18af139ff6792dd1237be8396511fdfbdeb377f7e8d33bd98d088a13",
+    "output_bytes": 8753145,
+    "output_sha256": "9ce159331c5e0761b65ca65d27853fdf5649b35566f0793ff22721735f6bba6a"
+  },
+  {
+    "run_id": "rea-20261014T124125-8df729",
+    "label": "supervised-self:pass-15/22",
+    "status": "succeeded",
+    "evidence_id": "ev_4518b5013fbf12b7c08d3e67bc3c62c09ab0d3a56bb6d18740cbe19ee4d373cb",
+    "output_bytes": 2380148,
+    "output_sha256": "87783a87e3c085fb0c5906bc89c63dd0db3f1a70e4a9d1a4d4e5e6320c6e2c16"
+  },
+  {
+    "run_id": "rea-20261014T124127-fd1b64",
+    "label": "supervised-self:pass-16/22",
+    "status": "succeeded",
+    "evidence_id": "ev_46af4ad4169e2fd26e89f6533d7c4d50b547698273b8b928e95e38757cbf9489",
+    "output_bytes": 9252999,
+    "output_sha256": "052de9caffb8ca0cb9d66abf6d0291771c3eade74ead40b7d96f9fb66cb1c881"
+  },
+  {
+    "run_id": "rea-20261014T124131-109d73",
+    "label": "supervised-self:pass-17/22",
+    "status": "succeeded",
+    "evidence_id": "ev_4929b4138fabcfd372d496508f76dfc958e4ee514ad0832edacbc708c5164d9b",
+    "output_bytes": 8022567,
+    "output_sha256": "843e162a98051abb946899b17ebe4011af4c466e566f1c5c7200ef2a952eec1e"
+  },
+  {
+    "run_id": "rea-20261014T124134-80c19a",
+    "label": "supervised-self:pass-18/22",
+    "status": "succeeded",
+    "evidence_id": "ev_ad6a2e694e494ee6806d469c4181b45e643f2bc0f04d28db426da02911adc821",
+    "output_bytes": 10766838,
+    "output_sha256": "b74093b91b92af2b31bb5bf3f1be14478464c0dcbb15cbd7195c539d4332c9fe"
+  },
+  {
+    "run_id": "rea-20261014T124138-3614af",
+    "label": "supervised-self:pass-19/22",
+    "status": "succeeded",
+    "evidence_id": "ev_02e3ee6e11dd734bc9aa209edc9eda5bcfc2bacae821bb36efd71e00af1c79ca",
+    "output_bytes": 7533632,
+    "output_sha256": "71c05539357b6cce80ba3cbfb94cbc19c2ae2ec90ebdd5e68dd935bc0a6601b7"
+  },
+  {
+    "run_id": "rea-20261014T124142-10d110",
+    "label": "supervised-self:pass-20/22",
+    "status": "succeeded",
+    "evidence_id": "ev_a4e3af96d550c261735a00c05bcd334d7ab786c30a4500671bc089cc6a5f9df6",
+    "output_bytes": 10377756,
+    "output_sha256": "17a54f4655db0ca3b4a3ae1ed87bb72bb4915b1ca94ca35a7f1d424c2001a228"
+  },
+  {
+    "run_id": "rea-20261014T124145-b2142b",
+    "label": "supervised-self:pass-21/22",
+    "status": "succeeded",
+    "evidence_id": "ev_03d35a18350a6f0273fa2feac8cac640243b71efa7349a21270b19e4370ff802",
+    "output_bytes": 8535817,
+    "output_sha256": "b3f234a2cdbb9ec6a5a504a76904b1b3e1533d64c7e97399ceed136b1d3e55f2"
+  },
+  {
+    "run_id": "rea-20261014T124149-9c3e54",
+    "label": "supervised-self:pass-22/22",
+    "status": "succeeded",
+    "evidence_id": "ev_b6f65a245deaebed2cf5017187c7c68cfd44f08cb7cbf04c1a9168d9cd3c1bdd",
+    "output_bytes": 8407155,
+    "output_sha256": "c7691f3eaabcf83cc87b15fac17ce985fa19345b9f7567a127af63f42b835b09"
+  },
+  {
+    "run_id": "rea-20261014T124154-278a16",
+    "label": "supervised-self:runtime-help",
+    "status": "succeeded",
+    "evidence_id": "ev_3f49207acc2c024f263d7831f512a38d91303389b88aa3e956126254bd33dc0e",
+    "output_bytes": 293713,
+    "output_sha256": "acf84846d0fd2bc79709cb16994b4f32530b851207cca6e3955b719e1bf81df5"
+  },
+  {
+    "run_id": "rea-20261014T124857-d270ba",
+    "label": "supervised-self:pass-1/22",
+    "status": "succeeded",
+    "evidence_id": "ev_49aa6b8e1d227ab03f7032b50f584232ca2bd9513b9e853dfde28360fccc96a1",
+    "output_bytes": 7863502,
+    "output_sha256": "cccc3f6f910585f4e25d8ecacc2062bcc21d00e9442387909b71f2b19dc7cd7f"
+  },
+  {
+    "run_id": "rea-20261014T124900-04f294",
+    "label": "supervised-self:pass-2/22",
+    "status": "succeeded",
+    "evidence_id": "ev_e0a0deb65b27f410e83031c1b2ff5465296bb7deff553a52811dff5fea7adb23",
+    "output_bytes": 7693219,
+    "output_sha256": "0204dc6c3b2b542d25892c4917be541427d3e5b425c56fbc6d2af0a51621c41a"
+  },
+  {
+    "run_id": "rea-20261014T124903-fe052d",
+    "label": "supervised-self:pass-3/22",
+    "status": "succeeded",
+    "evidence_id": "ev_879293ca274faa8fab6e0c2f670a778a25832607bfa57b6df5779cde6531b2ca",
+    "output_bytes": 7541087,
+    "output_sha256": "8e4b5b010342c6ac7d1b4582bc8e808e43673cf62268cb002335f6ea8719f535"
+  },
+  {
+    "run_id": "rea-20261014T124906-6b9a4d",
+    "label": "supervised-self:pass-4/22",
+    "status": "succeeded",
+    "evidence_id": "ev_6d2d37d9bfaa5f40beaed3a1a20a095e5494df5480f313d222b685c6fec02912",
+    "output_bytes": 10126096,
+    "output_sha256": "1c2566701b01362318da0807650e9cb2cc1690a18baa1f2be691b26ac7cfb0b4"
+  },
+  {
+    "run_id": "rea-20261014T124910-79ea4c",
+    "label": "supervised-self:pass-5/22",
+    "status": "succeeded",
+    "evidence_id": "ev_2486de6c7ca0bac88c3471e09de5b35e032220e26c9198a308de66ca68f93599",
+    "output_bytes": 8396271,
+    "output_sha256": "7b153e6fca6c4d740be290909f6916b5ac8abb3078061ade377c95d88d2733c7"
+  },
+  {
+    "run_id": "rea-20261014T124913-e1b543",
+    "label": "supervised-self:pass-6/22",
+    "status": "succeeded",
+    "evidence_id": "ev_61656ec1aff36e38f0402523892b0e0218e5cc33449dbba9ab73f0b0b1731fee",
+    "output_bytes": 8509087,
+    "output_sha256": "a0bc031d098b595606a325df0258f6c5b0567d8cccf54b2bb3228615ed7771ea"
+  },
+  {
+    "run_id": "rea-20261014T124917-a155dc",
+    "label": "supervised-self:pass-7/22",
+    "status": "succeeded",
+    "evidence_id": "ev_914e7e49b149607a8b9b329b3f4d5118867c5476595acae2f8f4295ebda13901",
+    "output_bytes": 7891717,
+    "output_sha256": "44d864fa3e5770080835810ec098240421ae885a01d03506e35198e5ebd88fe9"
+  },
+  {
+    "run_id": "rea-20261014T124920-1b67a2",
+    "label": "supervised-self:pass-8/22",
+    "status": "succeeded",
+    "evidence_id": "ev_3c62ff65381fdb4ae5e99450f3df087df31d2368bb1f985d47d9903573b86e3a",
+    "output_bytes": 7212203,
+    "output_sha256": "e3c7d3f7415927ec1c49a913aea37d1d4c8c7d92559355fe46a1e7ea76a0e738"
+  },
+  {
+    "run_id": "rea-20261014T124923-0c2e7d",
+    "label": "supervised-self:pass-9/22",
+    "status": "succeeded",
+    "evidence_id": "ev_1a5ce2fe4e60d03653e7ad5b9fd0c5c2c484264b8f125e4c1db9361b502c1064",
+    "output_bytes": 8607030,
+    "output_sha256": "0936d5fa878a28cad0b14a7c58beb260eda95bd0bee4df45b7ebcb2f2348daec"
+  },
+  {
+    "run_id": "rea-20261014T124926-03393b",
+    "label": "supervised-self:pass-10/22",
+    "status": "succeeded",
+    "evidence_id": "ev_5cdbcdd2944784f7361cc7e1b4a47ef2764b446f06f0c26f86a6f6674ffbc191",
+    "output_bytes": 6747572,
+    "output_sha256": "2bda8023e72a517b02b708e04a38310ce917e3c5a826f6663e9d66bc3bd78f39"
+  },
+  {
+    "run_id": "rea-20261014T124929-665071",
+    "label": "supervised-self:pass-11/22",
+    "status": "succeeded",
+    "evidence_id": "ev_87b5e029e3fff2750dc40dbc54cb536ad649aad2a88818405e5da09dad9445a8",
+    "output_bytes": 6286375,
+    "output_sha256": "d86f2f38e9e5b3ad3993e6201637bf62e464720f4e24fa90e36c3366748e4639"
+  },
+  {
+    "run_id": "rea-20261014T124932-e5987f",
+    "label": "supervised-self:pass-12/22",
+    "status": "succeeded",
+    "evidence_id": "ev_6fed43aae7a3099acf5b341e0422a7acf589699fef676824832d237c96cf6c54",
+    "output_bytes": 8458929,
+    "output_sha256": "aed89079a988b9189fd26f011d6854e54cd6238baf716fb3f14f5901a750dd18"
+  },
+  {
+    "run_id": "rea-20261014T124936-15c93b",
+    "label": "supervised-self:pass-13/22",
+    "status": "succeeded",
+    "evidence_id": "ev_2231f3e33f3257ad46860aee79ccaec56591671764efee6a53d3ac118cc3b78b",
+    "output_bytes": 8322534,
+    "output_sha256": "bfcd4cf5f68b541c3542e21fbbfa95dde4cc179be026b573600c81e6fd7be42a"
+  },
+  {
+    "run_id": "rea-20261014T124939-b1b49f",
+    "label": "supervised-self:pass-14/22",
+    "status": "succeeded",
+    "evidence_id": "ev_cf1a105db43962ceef4f8550a0ef640ca86f05ec77f2370f9144885127e78e9d",
+    "output_bytes": 8753145,
+    "output_sha256": "d49c968020bf7609705aa7254af4f9a3fb7feda3e331101f00b1aea641dbf047"
+  },
+  {
+    "run_id": "rea-20261014T124942-f0e566",
+    "label": "supervised-self:pass-15/22",
+    "status": "succeeded",
+    "evidence_id": "ev_80c2a95982e0f396d98988cabe703288d1c17cd1a11867cb4a9dca5679cb13e1",
+    "output_bytes": 3308431,
+    "output_sha256": "474993fdd6fe341f9a865b99b7d95e6c98e8088fd851842f8f2d1eedfab8f9f3"
+  },
+  {
+    "run_id": "rea-20261014T124945-ae9c7d",
+    "label": "supervised-self:pass-16/22",
+    "status": "succeeded",
+    "evidence_id": "ev_81ebdf606c45440987d5b69a1fcd98ee0c3e9053d8900844030643aba84be45e",
+    "output_bytes": 9252999,
+    "output_sha256": "e6b47c8af94ed404c1a950d958e385e870618c14dee8edad50edc905f6788a0e"
+  },
+  {
+    "run_id": "rea-20261014T124948-22bfbc",
+    "label": "supervised-self:pass-17/22",
+    "status": "succeeded",
+    "evidence_id": "ev_b851992d86d4a506e306883a377c61f8aff40c53c5cc9dff2786a56bc99ae50d",
+    "output_bytes": 8022567,
+    "output_sha256": "525285285754e4524066b8d8655dd26c03dd61622f656e754dc0c5bbeb78ece2"
+  },
+  {
+    "run_id": "rea-20261014T124952-89bc14",
+    "label": "supervised-self:pass-18/22",
+    "status": "succeeded",
+    "evidence_id": "ev_513ec11db1abde28624e72997dffaa25f94e2fae6f8c7890382b67c4e1487dbd",
+    "output_bytes": 10766838,
+    "output_sha256": "51b3c8c68637246b29c3374ddb36ab3027333ed724953705e5eb789c24c0bc80"
+  },
+  {
+    "run_id": "rea-20261014T124955-d529c1",
+    "label": "supervised-self:pass-19/22",
+    "status": "succeeded",
+    "evidence_id": "ev_2727305302e70c381dbfc1023acf14a3f2d93112c9043a099f44ee171b1c48c6",
+    "output_bytes": 7533632,
+    "output_sha256": "a630a39a6776f603023843dee07c6d0abcb9d9d9d4d6a60b08bc366fc7302ecb"
+  },
+  {
+    "run_id": "rea-20261014T124959-ad1e32",
+    "label": "supervised-self:pass-20/22",
+    "status": "succeeded",
+    "evidence_id": "ev_5d8e03ff2d69b11905be56ab82e7d1b0f6f47bbc75c7b2433ae78d3d938c2506",
+    "output_bytes": 10377756,
+    "output_sha256": "43d6be8364a0593f9c51346250c25c758dc76372f5204efaffb3efbe370360d3"
+  },
+  {
+    "run_id": "rea-20261014T125002-d20dc6",
+    "label": "supervised-self:pass-21/22",
+    "status": "succeeded",
+    "evidence_id": "ev_42db3afea5d16137fb0b3a42f7edffa3a4e71c0128fa769c080b1e5c2349ccdf",
+    "output_bytes": 8535817,
+    "output_sha256": "00ce56bd7aa13e175579c7cd34102a5a221e189493ca60ac244e2b956e344098"
+  },
+  {
+    "run_id": "rea-20261014T125005-ead283",
+    "label": "supervised-self:pass-22/22",
+    "status": "succeeded",
+    "evidence_id": "ev_4ed477e1333405c9893777dde4b0c0199803d80974ab65b62af3108eca16ebc5",
+    "output_bytes": 8407155,
+    "output_sha256": "9db9fb5d2ea7bca7c1301be971fddc96e6c2ea4ea7641a496ffe458c0dde4276"
+  },
+  {
+    "run_id": "rea-20261014T125010-fd86ad",
+    "label": "supervised-self:runtime-help",
+    "status": "succeeded",
+    "evidence_id": "ev_56ca088b580444726df913e20b24e20b8ccbb28bba81bc8db4aa1edf4aa944bb",
+    "output_bytes": 295415,
+    "output_sha256": "52254c1062bd382aaeecb43430014ded414bbbbe954cec9ee3083f54246d43f0"
+  }
+]

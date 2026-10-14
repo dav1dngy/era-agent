@@ -1,0 +1,82 @@
+/* ERA design system: tokens. Precision Dark is the primary theme, Executive Light the secondary. */
+@font-face { font-family: 'Inter'; src: url('/vendor/inter.woff2') format('woff2'); font-weight: 100 900; font-style: normal; font-display: swap; }
+
+:root {
+  --font-ui: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --font-mono: 'SF Mono', Menlo, Consolas, monospace;
+  --fs-base: 13px;
+  --fs-xs: calc(var(--fs-base) - 2px);
+  --fs-sm: calc(var(--fs-base) - 1px);
+  --fs-md: var(--fs-base);
+  --fs-lg: calc(var(--fs-base) + 2px);
+  --fs-xl: calc(var(--fs-base) + 7px);
+  --fs-2xl: calc(var(--fs-base) + 13px);
+  --lh: 1.5;
+  --radius-sm: 6px;
+  --radius: 8px;
+  --radius-lg: 14px;
+  --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px; --space-5: 24px; --space-6: 32px;
+  --row-h: 36px;
+  --ctl-h: 34px;
+  --topbar-h: 54px;
+  --sidebar-w: 240px;
+  --sidebar-w-collapsed: 70px;
+  --context-w: 320px;
+  --bottom-h: 260px;
+  --shadow-pop: 0 8px 30px rgba(0, 0, 0, .35);
+  --ease: cubic-bezier(.2, .0, .2, 1);
+  --dur: 120ms;
+}
+
+:root[data-density="compact"] { --row-h: 24px; --ctl-h: 26px; --space-3: 8px; --space-4: 12px; --space-5: 18px; }
+
+/* Precision Dark */
+:root, :root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #090909;
+  --surface-1: #171717;
+  --surface-2: #1e1e1e;
+  --surface-3: #272727;
+  --border: #2c2c2c;
+  --border-strong: #3b3b3b;
+  --text: #f2f2f2;
+  --text-muted: #a6a6a6;
+  --text-faint: #858585;
+  --success: #52b788; --success-bg: rgba(82, 183, 136, .13);
+  --warning: #d9a441; --warning-bg: rgba(217, 164, 65, .13);
+  --danger: #dc6b66; --danger-bg: rgba(220, 107, 102, .13);
+  --info: var(--accent); --info-bg: var(--accent-bg);
+  --diff-add: rgba(82, 183, 136, .16); --diff-del: rgba(220, 107, 102, .16);
+  --scrim: rgba(0, 0, 0, .55);
+}
+/* Executive Light */
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f5f5f4;
+  --surface-1: #ffffff;
+  --surface-2: #f8f8f7;
+  --surface-3: #eeeeec;
+  --border: #e2e2df;
+  --border-strong: #cececa;
+  --text: #191919;
+  --text-muted: #62625f;
+  --text-faint: #747470;
+  --success: #1f7a52; --success-bg: rgba(31, 122, 82, .1);
+  --warning: #96650b; --warning-bg: rgba(150, 101, 11, .1);
+  --danger: #b4403b; --danger-bg: rgba(180, 64, 59, .09);
+  --diff-add: rgba(31, 122, 82, .14); --diff-del: rgba(180, 64, 59, .14);
+  --shadow-pop: 0 8px 30px rgba(20, 25, 35, .16);
+  --scrim: rgba(20, 25, 35, .35);
+}
+
+/* Accent (restrained; default blue) */
+:root, :root[data-accent="blue"] { --accent: #5b9dff; --accent-hover: #7bb0ff; --accent-bg: rgba(91, 157, 255, .13); --on-accent: #08111f; }
+:root[data-accent="teal"] { --accent: #3fb6a8; --accent-hover: #5cc8bb; --accent-bg: rgba(63, 182, 168, .13); --on-accent: #04130f; }
+:root[data-accent="violet"] { --accent: #9c8cff; --accent-hover: #b0a3ff; --accent-bg: rgba(156, 140, 255, .14); --on-accent: #0d0a22; }
+:root[data-accent="amber"] { --accent: #d9a441; --accent-hover: #e6b658; --accent-bg: rgba(217, 164, 65, .14); --on-accent: #1a1203; }
+:root[data-theme="light"][data-accent="blue"] { --accent: #2a64d1; --accent-hover: #1f55b8; --accent-bg: rgba(42, 100, 209, .1); --on-accent: #ffffff; }
+:root[data-theme="light"][data-accent="teal"] { --accent: #12806f; --accent-hover: #0d6b5c; --accent-bg: rgba(18, 128, 111, .1); --on-accent: #ffffff; }
+:root[data-theme="light"][data-accent="violet"] { --accent: #5b45d6; --accent-hover: #4a35bd; --accent-bg: rgba(91, 69, 214, .1); --on-accent: #ffffff; }
+:root[data-theme="light"][data-accent="amber"] { --accent: #96650b; --accent-hover: #7d540a; --accent-bg: rgba(150, 101, 11, .1); --on-accent: #ffffff; }
+
+@media (prefers-reduced-motion: reduce) { :root { --dur: 0ms; } }

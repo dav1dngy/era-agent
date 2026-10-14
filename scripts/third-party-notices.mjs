@@ -16,6 +16,11 @@ try {
   for (const p of [process.env.REA_LICENSE_FILE].filter(Boolean)) if (existsSync(p)) reaLicense = readFileSync(p, 'utf8');
 }
 if (!reaLicense) throw new Error('REA LICENSE not found: run `npm install` first or set REA_LICENSE_FILE.');
+const studioLock = JSON.parse(readFileSync('apps/studio/package-lock.json', 'utf8'));
+const studioRows = Object.entries(studioLock.packages)
+  .filter(([k, v]) => k.startsWith('node_modules/') && (!v.dev || k === 'node_modules/electron'))
+  .map(([k, v]) => ({ name: k.slice(k.lastIndexOf('node_modules/') + 13), version: v.version, license: v.license ?? 'UNKNOWN' }))
+  .sort((a, b) => a.name.localeCompare(b.name));
 const counts = rows.reduce((m, r) => ({ ...m, [r.license]: (m[r.license] ?? 0) + 1 }), {});
 const out = `# Third-party notices
 
@@ -42,6 +47,18 @@ License summary: ${Object.entries(counts).sort((a, b) => b[1] - a[1]).map(([l, n
 | Package | Version | License |
 |---|---|---|
 ${rows.map((r) => `| ${r.name} | ${r.version} | ${r.license} |`).join('\n')}
+
+## ERA Studio desktop runtime
+
+Studio is optional; CLI users do not install these dependencies. The desktop bundle
+contains Electron and the local Preact, htm, Monaco, xterm.js and Inter assets.
+Package license texts remain in the distributed node_modules tree; Electron includes
+LICENSE and LICENSES.chromium.html in its distribution. The packager is a development
+build tool (BSD-2-Clause) and is not bundled in the application.
+
+| Package | Version | License |
+|---|---|---|
+${studioRows.map((r) => `| ${r.name} | ${r.version} | ${r.license} |`).join('\n')}
 
 ## Evidence files
 

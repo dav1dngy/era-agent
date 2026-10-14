@@ -1,0 +1,338 @@
+// Regression tests for the findings of the independent audit (docs/ERA_V020_INDEPENDENT_AUDIT.md), one section per finding.
+// Each test reproduces the failure the audit demonstrated with a synthetic fixture and asserts the corrected behavior.
+//
+// REAL    Project Lab workflows, git, patches, the project's own commands, the macOS sandbox where available.
+// FAKE    the REA engine (tests/fixtures/fake-rea-engine.mjs).
+// MOCK    coding agents: tiny scripts (tests/fixtures/audit/write-files.mjs). No model is called.
+import { test as nodeTest } from 'node:test';
+import assert from 'node:assert/strict';
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { loadConfig } from '../src/core/config.js';
+import { ReaClient } from '../src/rea_integration/rea-client.js';
+import { createProjectLab } from '../src/project_lab/lab.js';
+import { sandboxAvailable } from '../src/safety/sandbox.js';
+import { FIXTURES, tempDir } from './helpers.js';
+
+const NESTED = (process.env.ERA_E2E_NESTED || process.env.ERA_SKIP_E2E) && 'nested evaluation or ERA_SKIP_E2E';
+const test = (name, a, b) => {
+  const opts = typeof a === 'function' ? {} : a;
+  const fn = typeof a === 'function' ? a : b;
+  return nodeTest(name, { ...opts, skip: opts.skip || NESTED || false }, fn);
+};
+delete process.env.CI;
+delete process.env.GITHUB_ACTIONS;
+
+const FAKE_ENGINE = join(FIXTURES, 'fake-rea-engine.mjs');
+const WRITE = join(FIXTURES, 'audit', 'write-files.mjs');
+const SANDBOX = sandboxAvailable();
+const write = (...specs) => `node ${WRITE} ${specs.join(' ')}`;
+
+function newLab({ createAgent, customAgents = {} } = {}) {
+  const config = loadConfig(tempDir(), { ERA_STATE_DIR: tempDir() });
+  config.projectLab = { ...config.projectLab, customAgents, budget: { ...config.projectLab.budget, allowUnmeteredAgents: true } };
+  const client = new ReaClient({ command: FAKE_ENGINE, stateDir: config.stateDirAbs, measureResources: false });
+  return createProjectLab({ config, rea: client, createAgent });
+}
+
+function plainProject(files = { 'protected.txt': 'original\n', 'readme.txt': 'hello\n' }) {
+  const dir = join(tempDir(), 'proj');
+  mkdirSync(dir, { recursive: true });
+  for (const [name, text] of Object.entries(files)) writeFileSync(join(dir, name), text);
+  return dir;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// H01: verification must judge, and approval must bind, the FINAL working copy, including files the project's own
+// build/test commands change. Audit reproduction: a test command rewrote a protected file after the agent had added
+// candidate.txt; the stale file list passed and approval wrote the protected file into the original project.
+
+const modifyProject = (src, over = {}) => ({
+  id: 'audit',
+  mode: 'modify',
+  source: src,
+  task: 'Add candidate.txt',
+  agent: 'command',
+  agent_command: write('candidate.txt=new'),
+  protected: ['protected.txt'],
+  trust_project: !SANDBOX,
+  ...over,
+});
+
+test('H01 modify: a protected file changed by a verification command makes the run unapprovable', async () => {
+  const lab = newLab();
+  const src = plainProject();
+  lab.create(modifyProject(src, { commands: { test: [write('--when=candidate.txt', 'protected.txt=CHANGED_DURING_TEST')] } }));
+  const { run } = await lab.modify('audit');
+  const fin = run.results.finalize;
+  assert.equal(fin.pass, false, 'the final diff touches a protected file');
+  assert.match(fin.reasons.join(' '), /Protected files were changed: protected\.txt/);
+  assert.notEqual(run.status, 'awaiting-approval');
+  await assert.rejects(lab.approve('audit', { by: 'tester' }), /no run awaiting approval|did not pass|only runs awaiting approval/);
+  assert.equal(readFileSync(join(src, 'protected.txt'), 'utf8'), 'original\n', 'the original protected file is untouched');
+  assert.equal(existsSync(join(src, 'candidate.txt')), false);
+});
+
+test('H01 modify: files created by verification commands count against the changed-file limit', async () => {
+  const lab = newLab();
+  const src = plainProject();
+  lab.create(modifyProject(src, { protected: [], limits: { maxChangedFiles: 2 }, commands: { test: [write('--when=candidate.txt', 'gen/a.txt=1', 'gen/b.txt=2', 'gen/c.txt=3')] } }));
+  const { run } = await lab.modify('audit');
+  assert.equal(run.results.finalize.pass, false);
+  assert.match(run.results.finalize.reasons.join(' '), /4 files changed \(limit 2\)/);
+});
+
+test('H01 modify: a harmless change made by a verification command is reported but does not block a valid candidate', async () => {
+  const lab = newLab();
+  const src = plainProject();
+  lab.create(modifyProject(src, { protected: ['protected.txt'], commands: { test: [write('--when=candidate.txt', 'generated/report.txt=ok')] } }));
+  const { run } = await lab.modify('audit');
+  const fin = run.results.finalize;
+  assert.equal(fin.pass, true, fin.reasons.join('; '));
+  assert.ok(fin.files.some((f) => f.path === 'generated/report.txt'));
+  assert.match(fin.warnings.join(' '), /commands changed the working copy: .*generated\/report\.txt/);
+  const applied = await lab.approve('audit', { by: 'tester' });
+  assert.equal(applied.applied.kind, 'patch');
+  assert.equal(readFileSync(join(src, 'candidate.txt'), 'utf8'), 'new');
+});
+
+test('H01 rebuild: SPEC.md changed by a verification command makes the rebuild unapprovable', async () => {
+  const lab = newLab();
+  const ref = tempDir();
+  writeFileSync(join(ref, 'app.js'), "process.stdout.write('ok\\n');\n");
+  lab.create({
+    id: 'rb',
+    mode: 'rebuild',
+    reference: ref,
+    destination: join(tempDir(), 'out'),
+    task: 'Reimplement app',
+    authorization: 'fixture',
+    agent: 'command',
+    agent_command: write("app.js=\"process.stdout.write('ok\\n')\"", 'candidate.txt=1'),
+    commands: { run: 'node app.js', test: [write('--when=candidate.txt', 'SPEC.md=tampered')] },
+    acceptance: { behaviors: [{ name: 'prints ok', args: [], expect: { stdout: 'ok\n', exit_code: 0 } }] },
+    limits: { maxAttempts: 1 },
+    trust_project: !SANDBOX,
+  });
+  const { run } = await lab.rebuild('rb');
+  assert.equal(run.results.finalize.pass, false, JSON.stringify(run.results.finalize.reasons));
+  assert.match(run.results.finalize.reasons.join(' '), /Protected files were changed: SPEC\.md/);
+  assert.notEqual(run.status, 'awaiting-approval');
+});
+
+// ---------------------------------------------------------------------------------------------------------------------
+// H02: Rebuild rollback deleted the whole destination after a digest that ignores .git/build/dist/node_modules matched,
+// so work done after approval in those directories was destroyed. Rollback now needs a complete manifest match.
+
+const OK_APP = "app.js=\"process.stdout.write('ok\\n')\"";
+async function approvedRebuild({ agentFiles = [OK_APP] } = {}) {
+  const lab = newLab();
+  const ref = tempDir();
+  writeFileSync(join(ref, 'app.js'), "process.stdout.write('ok\\n');\n");
+  const destination = join(tempDir(), 'out');
+  lab.create({
+    id: 'rb',
+    mode: 'rebuild',
+    reference: ref,
+    destination,
+    task: 'Reimplement app',
+    authorization: 'fixture',
+    agent: 'command',
+    agent_command: write(...agentFiles),
+    commands: { run: 'node app.js' },
+    acceptance: { behaviors: [{ name: 'prints ok', args: [], expect: { stdout: 'ok\n', exit_code: 0 } }] },
+    limits: { maxAttempts: 1 },
+    trust_project: !SANDBOX,
+  });
+  const { run } = await lab.rebuild('rb');
+  assert.equal(run.status, 'awaiting-approval', JSON.stringify(run.results?.finalize?.reasons ?? run.error));
+  await lab.approve('rb', { by: 'tester' });
+  return { lab, destination };
+}
+
+test('H02: an untouched Rebuild destination is rolled back and removed', async () => {
+  const { lab, destination } = await approvedRebuild();
+  assert.ok(existsSync(join(destination, 'app.js')));
+  const r = await lab.rollback('rb');
+  assert.equal(r.restored, true);
+  assert.equal(existsSync(destination), false);
+});
+
+test('H02: later work in .git and build survives, and rollback is refused', async () => {
+  const { lab, destination } = await approvedRebuild();
+  mkdirSync(join(destination, '.git'), { recursive: true });
+  writeFileSync(join(destination, '.git', 'audit-unpublished-history'), 'precious');
+  mkdirSync(join(destination, 'build'), { recursive: true });
+  writeFileSync(join(destination, 'build', 'user-data'), 'precious');
+  await assert.rejects(lab.rollback('rb'), /refusing to delete it[\s\S]*added \.git|added build/);
+  assert.equal(readFileSync(join(destination, '.git', 'audit-unpublished-history'), 'utf8'), 'precious');
+  assert.equal(readFileSync(join(destination, 'build', 'user-data'), 'utf8'), 'precious');
+  assert.ok(existsSync(join(destination, 'app.js')), 'nothing was deleted');
+  assert.equal(lab.get('rb').status, 'applied', 'the project still counts as applied');
+});
+
+test('H02: a file inside an excluded directory that existed at approval is protected too', async () => {
+  const { lab, destination } = await approvedRebuild({ agentFiles: [OK_APP, 'build/generated.txt=from-agent'] });
+  assert.equal(readFileSync(join(destination, 'build', 'generated.txt'), 'utf8'), 'from-agent');
+  writeFileSync(join(destination, 'build', 'generated.txt'), 'edited by the user');
+  await assert.rejects(lab.rollback('rb'), /modified build\/generated\.txt/);
+  assert.equal(readFileSync(join(destination, 'build', 'generated.txt'), 'utf8'), 'edited by the user');
+});
+
+test('H02: a removed or edited ordinary file also refuses the rollback', async () => {
+  const { lab, destination } = await approvedRebuild();
+  writeFileSync(join(destination, 'app.js'), 'changed');
+  await assert.rejects(lab.rollback('rb'), /modified app\.js/);
+  writeFileSync(join(destination, 'extra.txt'), 'new');
+  await assert.rejects(lab.rollback('rb'), /added extra\.txt/);
+});
+
+test('H02: runs approved before manifests existed refuse when excluded directories hold content', async () => {
+  const { lab, destination } = await approvedRebuild();
+  const run = lab.store.loadRun('rb', lab.get('rb').latest_run_id ?? lab.store.latestRun('rb', (r) => r.status === 'applied').run_id);
+  delete run.applied.manifest_file;
+  delete run.applied.manifest_sha256;
+  lab.store.saveRun(run);
+  mkdirSync(join(destination, 'node_modules'), { recursive: true });
+  writeFileSync(join(destination, 'node_modules', 'later.txt'), 'x');
+  await assert.rejects(lab.rollback('rb'), /no complete manifest/);
+  assert.ok(existsSync(join(destination, 'node_modules', 'later.txt')));
+});
+
+// ---------------------------------------------------------------------------------------------------------------------
+// H05: the command sandbox allowed signalling unrelated processes and reading unrelated project content.
+
+import { spawn } from 'node:child_process';
+import { homedir } from 'node:os';
+import { candidateIsolation } from '../src/safety/candidate-sandbox.js';
+import { runProjectCommand } from '../src/project_lab/runner.js';
+
+const sandboxOnly = SANDBOX ? false : 'needs the macOS sandbox';
+const alive = (pid) => {
+  try {
+    process.kill(pid, 0);
+    return true;
+  } catch {
+    return false;
+  }
+};
+const sandboxed = (command, cwd) => runProjectCommand({ command, cwd, timeoutMs: 30_000, isolation: candidateIsolation() });
+
+test('H05: a sandboxed command cannot signal an unrelated process', { skip: sandboxOnly }, async () => {
+  const sentinel = spawn(process.execPath, ['-e', 'setInterval(() => {}, 1000)'], { stdio: 'ignore' });
+  try {
+    await new Promise((r) => setTimeout(r, 300));
+    const cwd = tempDir();
+    const r = await sandboxed(`kill -TERM ${sentinel.pid}; echo rc=$?`, cwd);
+    await new Promise((res) => setTimeout(res, 300));
+    assert.equal(alive(sentinel.pid), true, `the external process must survive (command output: ${r.stdout}${r.stderr_tail})`);
+    assert.doesNotMatch(r.stdout, /rc=0/);
+  } finally {
+    sentinel.kill('SIGKILL');
+  }
+});
+
+test('H05: a sandboxed command can still manage its own children and process group', { skip: sandboxOnly }, async () => {
+  const r = await sandboxed('sleep 30 & C=$!; kill -TERM $C; wait $C 2>/dev/null; echo child-done; (sleep 30 & sleep 30 & wait) & P=$!; sleep 0.2; kill -TERM $P; echo group-ok', tempDir());
+  assert.match(r.stdout, /child-done/);
+  assert.match(r.stdout, /group-ok/);
+});
+
+test('H05: unrelated project content in shared temp locations and the home directory is unreadable', { skip: sandboxOnly }, async () => {
+  const sibling = tempDir('era-sibling-');
+  writeFileSync(join(sibling, 'private.txt'), 'SIBLING_SECRET');
+  const shared = join('/private/tmp', `era-audit-${process.pid}.txt`);
+  writeFileSync(shared, 'SHARED_TMP_SECRET');
+  try {
+    const cwd = tempDir();
+    writeFileSync(join(cwd, 'own.txt'), 'OWN_OK');
+    const homeFile = join(homedir(), '.zshrc');
+    const r = await sandboxed(`cat ${sibling}/private.txt; cat ${shared}; ${existsSync(homeFile) ? `cat ${homeFile};` : ''} cat own.txt`, cwd);
+    assert.doesNotMatch(r.stdout, /SIBLING_SECRET|SHARED_TMP_SECRET/);
+    assert.match(r.stdout, /OWN_OK/, 'its own working copy stays readable');
+    if (existsSync(homeFile)) assert.doesNotMatch(r.stdout, new RegExp(readFileSync(homeFile, 'utf8').split('\n').find((l) => l.trim().length > 12)?.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') ?? '(?!)'));
+    assert.match(r.stderr_tail, /Operation not permitted|Permission denied/);
+  } finally {
+    rmSync(shared, { force: true });
+  }
+});
+
+test('H05: normal toolchain commands keep working inside the sandbox', { skip: sandboxOnly }, async () => {
+  const cwd = tempDir();
+  const r = await sandboxed('node -e "require(\'fs\').writeFileSync(\'out.txt\', String(6*7)); console.log(\'node-ok\')" && git --version && cat out.txt', cwd);
+  assert.equal(r.exit_code, 0, r.stderr_tail);
+  assert.match(r.stdout, /node-ok/);
+  assert.match(r.stdout, /git version/);
+  assert.match(r.stdout, /42/);
+});
+
+// ---------------------------------------------------------------------------------------------------------------------
+// H03: credential files and agent instruction files were withheld only when the working copy was made. Baseline and
+// verification commands (and earlier agents) could recreate them, and the remote agent then saw them. Exposure is now
+// enforced before EVERY agent invocation, on the directory that agent actually sees.
+
+const LIST = join(FIXTURES, 'audit', 'list-agent.mjs');
+const REMOTE_AGENT = { remote: { command: `node ${LIST}`, remote: true, capabilities: { readsInstructionFiles: true } } };
+const SYNTHETIC_AWS_KEY = `AKIA${'ABCDEFGHIJKLMNOP'}`;
+
+const seenBy = (lab, run, role, phase, attempt) => JSON.parse(readFileSync(join(lab.store.runDir('audit', run.run_id), 'agent', `${role}-${phase}-${attempt}.txt`), 'utf8').trim().split('\n').pop()).files;
+const exposureProject = (src, over = {}) => ({ ...modifyProject(src), agent: 'custom:remote', agent_command: undefined, protected: [], exposure: { remote_consent: ['custom:remote'] }, ...over });
+
+test('H03: files regenerated by baseline commands are not visible to the remote implementer', async () => {
+  const lab = newLab({ customAgents: REMOTE_AGENT });
+  const src = plainProject({ 'readme.txt': 'hi\n', 'AGENTS.md': '# original instructions\n' });
+  lab.create(exposureProject(src, { commands: { test: [write('AGENTS.md="# regenerated by the build"', '.env=API_KEY=abc')] } }));
+  const { run } = await lab.modify('audit');
+  assert.ok(['awaiting-approval', 'rejected'].includes(run.status), `${run.status}: ${run.error ?? ''}`);
+  const files = seenBy(lab, run, 'implementer', 'implement', 1);
+  assert.deepEqual(files.filter((f) => /AGENTS\.md|\.env/.test(f)), [], `the agent was shown: ${files.join(', ')}`);
+  assert.ok(files.includes('readme.txt'), 'ordinary project files are still visible');
+  const record = run.exposure_invocations.find((e) => e.role === 'implementer');
+  assert.deepEqual(record.withheld_before_run.sort(), ['.env', 'AGENTS.md'], 'the per-invocation record lists what was withheld at run time');
+});
+
+test('H03: files regenerated between attempts are withheld again before the next invocation', async () => {
+  const lab = newLab({ customAgents: REMOTE_AGENT });
+  const src = plainProject({ 'readme.txt': 'hi\n' });
+  lab.create(exposureProject(src, {
+    commands: { test: [write('--when=candidate.txt', 'AGENTS.md=injected', 'config/.env.production=SECRET=1')] },
+    acceptance: { commands: [{ name: 'second', command: 'test -f second.txt', baseline: 'fail' }] },
+    limits: { maxAttempts: 2 },
+  }));
+  const { run } = await lab.modify('audit');
+  assert.equal(run.attempts.length, 2, JSON.stringify(run.attempts));
+  for (const n of [1, 2]) {
+    const files = seenBy(lab, run, 'implementer', 'implement', n);
+    assert.deepEqual(files.filter((f) => /AGENTS\.md|\.env/.test(f)), [], `attempt ${n}: ${files.join(', ')}`);
+  }
+  const second = run.exposure_invocations.filter((e) => e.role === 'implementer').at(-1);
+  assert.deepEqual(second.withheld_before_run.sort(), ['AGENTS.md', 'config/.env.production']);
+});
+
+test('H03: the architect\'s role snapshot is filtered too', async () => {
+  const lab = newLab({ customAgents: REMOTE_AGENT });
+  const src = plainProject({ 'readme.txt': 'hi\n' });
+  lab.create(exposureProject(src, { team: { roles: { architect: 'custom:remote', implementer: 'custom:remote' } }, exposure: { remote_consent: ['custom:remote'] }, commands: { test: [write('CLAUDE.md=injected', '.env=KEY=1')] } }));
+  const { run } = await lab.modify('audit');
+  const files = seenBy(lab, run, 'architect', 'architecture', 1);
+  assert.deepEqual(files.filter((f) => /CLAUDE\.md|\.env/.test(f)), [], files.join(', '));
+});
+
+test('H03: secret-looking content that appears after the copy stops the run before the remote agent starts', async () => {
+  const lab = newLab({ customAgents: REMOTE_AGENT });
+  const src = plainProject({ 'readme.txt': 'hi\n' });
+  lab.create(exposureProject(src, { commands: { test: [write(`generated.txt="key ${SYNTHETIC_AWS_KEY}"`)] } }));
+  const { run } = await lab.modify('audit');
+  assert.equal(run.status, 'failed', run.status);
+  assert.match(run.error, /Secret-looking content appeared in 1 file\(s\).*generated\.txt: AWS access key.*not started/s);
+  assert.equal(existsSync(join(lab.store.runDir('audit', run.run_id), 'agent')), false, 'no agent output exists: the agent never ran');
+});
+
+test('H03: a local (non-remote, non-instruction-reading) agent is not subject to the sweep', async () => {
+  const lab = newLab({ customAgents: { local: { command: `node ${LIST}` } } });
+  const src = plainProject({ 'readme.txt': 'hi\n' });
+  lab.create(exposureProject(src, { agent: 'custom:local', exposure: { remote_consent: [] }, commands: { test: [write('.env=KEY=1')] } }));
+  const { run } = await lab.modify('audit');
+  assert.ok(seenBy(lab, run, 'implementer', 'implement', 1).includes('.env'), 'unchanged behavior for local agents');
+  assert.equal(run.exposure_invocations, undefined);
+});

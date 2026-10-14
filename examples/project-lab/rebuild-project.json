@@ -1,0 +1,18 @@
+{
+  "id": "greeter",
+  "mode": "rebuild",
+  "reference": "/path/to/the/authorized/reference/program",
+  "destination": "/path/to/new/empty/directory",
+  "task": "Reimplement the greeting and checksum behavior of the reference program",
+  "authorization": "I wrote this program / I have the owner's written permission to analyze it.",
+  "agent": "claude-code",
+  "commands": { "run": "node greet.js", "test": ["node --test tests/*.test.js"] },
+  "acceptance": {
+    "behaviors": [
+      { "name": "default-name", "args": [], "capture": "reference" },
+      { "name": "alice", "args": ["alice"], "capture": "reference" },
+      { "name": "fixed-expectation", "args": ["x"], "expect": { "stdout": "Hello, x! checksum=177693\n", "exit_code": 0 } }
+    ]
+  },
+  "limits": { "maxAttempts": 2, "maxCostUsd": 3 }
+}

@@ -1,0 +1,15 @@
+diff --git a/src/cart.js b/src/cart.js
+index e46b82d..c4e36f2 100644
+--- a/src/cart.js
++++ b/src/cart.js
+@@ -3,9 +3,8 @@ function itemCount(items) {
+   return items.reduce((sum, item) => sum + (item.quantity ?? 1), 0);
+ }
+ 
+-// BUG: the quantity of each line item is ignored.
+ function total(items) {
+-  return items.reduce((sum, item) => sum + item.price, 0);
++  return items.reduce((sum, item) => sum + item.price * (item.quantity ?? 1), 0);
+ }
+ 
+ module.exports = { itemCount, total };

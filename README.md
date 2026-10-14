@@ -4,28 +4,69 @@
 **Reverse. Analyze. Evolve. Repeat.**
 
 ERA is an open-source reverse-engineering agent built on the original
-**[Reverse Engineer Anything (REA)](https://github.com/morluto/rea)** engine. It
-adds three things REA does not provide:
+**[Reverse Engineer Anything (REA)](https://github.com/morluto/rea)** engine. REA does the
+reverse engineering; ERA adds the workflow around it:
 
-1. **Analysis Mode**: one command (`era analyze`) that routes a target to the
-   right REA workflow, records every REA execution, normalizes REA Evidence into
-   facts, and writes a report. Untrusted executables run in a sandbox.
-2. **ERA Improvement Lab**: a controlled, evidence-driven system in which REA
-   reverse engineers ERA itself. Findings become hypotheses, a configurable
-   coding agent implements one in an isolated git worktree, and tests,
-   ground-truth benchmarks and a second REA self-analysis decide. A maintainer
-   approves integration.
-3. **Measurement**: hand-written ground-truth benchmarks, version comparison and
-   ERA-vs-direct-REA overhead.
+1. **Analysis Mode**: one command (`era analyze`) routes a target to the right REA
+   workflow, records every REA execution, normalizes REA Evidence into facts and writes a
+   report. Untrusted executables run in a sandbox.
+2. **ERA Studio**: a desktop and browser workbench for all of it, with a Monaco editor,
+   diff viewer, terminal and an in-app [Documentation](#documentation) section.
+3. **ERA Project Lab**: Review, Modify and Rebuild for projects you are authorized to work
+   on. A coding agent works in an isolated copy; you approve a verified diff, and can roll it back.
+4. **Multi-Agent Engineering**: architect, implementer and reviewer roles across Codex,
+   Claude Code and your own command agents, with consent, cost and exposure controls.
+5. **ERA Improvement Lab**: a controlled system in which REA reverse engineers ERA itself;
+   a maintainer approves what is integrated.
+6. **Measurement**: hand-written ground-truth benchmarks, version comparison and
+   ERA-versus-direct-REA overhead.
 
-Every reverse-engineering fact ERA reports comes from a recorded REA execution.
-ERA never re-implements REA, and everything REA offers stays available through
-`era rea …`.
+Every reverse-engineering fact ERA reports comes from a recorded REA execution. ERA never
+re-implements REA, and everything REA offers stays available through `era rea …`.
+[ERA and REA](#era-and-rea) separates what REA provides from what ERA adds.
 
-> **Status: v0.1.0, experimental.** Verified on macOS 27 (arm64), Node 24 and REA
-> 6.4.0. See [what works](#what-works), [limitations](#limitations) and the
-> [validation report](docs/validation.md). ERA is not production-ready and has no
-> security certification.
+> **Status: v0.2.0.** The previous release is v0.1.0 (the CLI, still available). The desktop app is an
+> **unsigned development build** for macOS arm64 that you build from source; there is no signed or notarized download. Verified on macOS 27 (arm64), Node 24 and REA 6.4.0: see
+> [what is verified](docs/SUPPORT_AND_VALIDATION.md), the [release notes](docs/release-notes-v0.2.0.md),
+> [limitations](#limitations) and the [security summary](docs/ERA_V020_REMEDIATION.md). An independent
+> audit found release-blocking issues that are fixed; those fixes have not been independently
+> re-reviewed. ERA has no security certification.
+
+## ERA Studio
+
+ERA Studio is the local desktop and browser interface to ERA's backend. Everything it shows comes from
+the same control plane the command line uses; the screenshots below are real captures
+(see [how they are made](docs/assets/screenshots/README.md): the coding agent in them is a scripted
+stand-in, everything else is real).
+
+![ERA Studio main workspace: task composer, recent projects, workspace status and agents](docs/assets/screenshots/01-main-workspace.png)
+
+* **Analyze** software with the original REA engine and read the evidence, facts and structure.
+* **Review, Modify, Rebuild** projects in an isolated copy, with tests, regression detection and a verified diff.
+* **Edit and inspect** with Monaco, a side-by-side diff viewer, Git status and a sandboxed terminal.
+* **Configure agents**: Codex, Claude Code and custom command agents, with per-project consent and cost caps.
+* **Stay in control**: nothing reaches your project without your approval; approved changes can be rolled back.
+* **Improve ERA itself** through the Improvement Lab, and **read the docs offline** inside the app.
+
+| | |
+|---|---|
+| ![Reverse-engineering analysis with the relationship graph drawn from REA evidence](docs/assets/screenshots/03-reverse-engineering-analysis.png) | ![A verified diff in the Monaco diff viewer with the test results and the Approve and Reject buttons](docs/assets/screenshots/07-diff-viewer-and-approval.png) |
+| **Analysis**: REA evidence and structure | **Diff and approval**: verified change, tests, your decision |
+| ![The Agent Command Center with providers, capabilities, data exposure and cost model](docs/assets/screenshots/05-multi-agent-command-center.png) | ![The Improvement Lab with the ERA checkout, version tags and a real self-analysis](docs/assets/screenshots/08-improvement-lab.png) |
+| **Multi-agent**: providers, consent, cost | **Improvement Lab**: ERA analyzing itself |
+
+All ten views, including project management, Project Lab, the editor, settings and the documentation: [screenshot gallery](docs/assets/screenshots/README.md).
+
+```bash
+git clone --branch v0.2.0 https://github.com/dav1dngy/era-agent.git && cd era-agent
+npm ci && npm ci --prefix apps/studio
+node bin/era.mjs studio doctor         # what Studio needs on this machine
+node bin/era.mjs studio app            # desktop shell; `studio serve --open` runs it in a browser
+```
+
+macOS arm64 is the validated platform. Windows and Linux Studio, a debugger, an extension marketplace and SSO/RBAC are not provided.
+Start with [Getting started](docs/getting-started.md), the [Studio guide](docs/ERA_STUDIO.md), [installation](docs/installation.md) and
+[troubleshooting](docs/troubleshooting.md); the same pages are in the app under **Documentation**.
 
 ---
 
@@ -45,6 +86,7 @@ Verified on macOS 27 arm64, Node 24.20, REA 6.4.0, Hopper 6.6.0-demo:
 | Every original REA command, MCP server, agent setup | `era rea …`, `era rea mcp`, `era rea setup` | passthrough | ✅ (real MCP session tested) |
 | Improvement Lab: self-analysis, experiments, approval, rebase, rollback, cancel, recover | `era self-analyze`, `era improve …`, `era rollback` | REA self-analysis | ✅ |
 | Coding agents | `era improve implement --agent …` | — | `manual` ✅ real; `claude-code`, `codex`, `command` ✅ adapters tested with fake CLIs, not run against real models |
+| **Project Lab**: review, modify or rebuild an authorized *external* project in an isolated copy, with human approval and rollback | `era project …` | REA for JavaScript projects and for Rebuild references | ✅ with scripted *mock* agents + the projects' own tests; **real Codex** validated (small tasks); **Claude Code not validated** (signed out on the dev machine) |
 | Benchmarks, version comparison, REA overhead | `era benchmark [--versions …] [--rea-baseline]` | via `era analyze` / direct REA | ✅ |
 | Status, history, JSONL logs, static dashboard | `era status`, `era history`, `era dashboard` | `providers` | ✅ |
 
@@ -64,6 +106,9 @@ Linux, Mach-O inspection, Hopper and the runtime sandbox are unavailable.
 | Ground-truth benchmarks and version comparison | — | ✅ |
 | Self-analysis and the Improvement Lab | — | ✅ |
 | Coding-agent and reasoning-provider adapters | — | ✅ |
+| ERA Studio (desktop and browser workbench) | — | ✅ |
+| Project Lab: Review, Modify, Rebuild with approval and rollback | — | ✅ |
+| Multi-Agent Engineering (architect, implementer, reviewer) | — | ✅ |
 
 All of `src/` is ERA-specific. REA is the `rea-agents@6.4.0` dependency (MIT,
 © morluto). See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md),
@@ -72,18 +117,35 @@ All of `src/` is ERA-specific. REA is the `rea-agents@6.4.0` dependency (MIT,
 
 ## Install
 
+There are three different things you can install; pick the one you need.
+
+| You want | Source | Includes ERA Studio |
+|---|---|---|
+| **ERA with Studio** (v0.2.0): CLI plus the desktop shell and the browser workbench | the default branch `main`, or the tag `v0.2.0` | yes |
+| **The CLI only** | the `era-agent-0.2.0.tgz` attached to the release (v0.2.0), or the tag `v0.1.0` for the previous CLI-only release | no |
+| A **desktop application** | built locally with `npm run package --prefix apps/studio` (unsigned, macOS arm64). No signed or notarized download is published | yes |
+
+The CLI tarball and the tag `v0.1.0` do **not** contain `apps/studio`; installing only the CLI and then running a Studio command fails.
+
 ```bash
-git clone https://github.com/dav1dngy/era-agent.git
-cd era-agent
-npm install          # installs the REA engine (rea-agents 6.4.0)
-npm test
-npm link             # optional: `era` on PATH
-era status
+# CLI only (the previous CLI-only release, v0.1.0)
+git clone --branch v0.1.0 https://github.com/dav1dngy/era-agent.git && cd era-agent
+npm install && npm test && node bin/era.mjs status
+
+# v0.2.0 with ERA Studio
+git clone --branch v0.2.0 https://github.com/dav1dngy/era-agent.git && cd era-agent
+npm ci && npm ci --prefix apps/studio
+node bin/era.mjs studio doctor        # checks what Studio needs on this machine
+node bin/era.mjs studio app           # desktop shell; or: node bin/era.mjs studio serve --open (browser)
 ```
 
-Requirements: Node.js `^22.19 || ^24.11 || >=26` (REA's supported range; verified on 24.20 only), git. Native decompilation needs Hopper, Ghidra
-12.1.x (`GHIDRA_INSTALL_DIR`) or IDA Pro MCP. ERA needs no API keys. Details and
-troubleshooting: [docs/installation.md](docs/installation.md).
+Put `era` on your PATH with `npm link` (optional). Studio has an in-app **Documentation** section (sidebar, ⌘K, and F1 in the desktop app) that works offline.
+
+Requirements: Node.js `^22.19 || ^24.11 || >=26` (REA's supported range; verified on 24.20 only), git; Python 3 for the Studio terminal.
+Native decompilation needs Hopper, Ghidra 12.1.x (a JDK 21 on `PATH` and `GHIDRA_INSTALL_DIR`; the desktop app imports only your shell's
+`PATH`, so start it from that shell) or IDA Pro MCP. ERA needs no API keys. Details, state locations and
+troubleshooting: [docs/installation.md](docs/installation.md). What has been verified, on which platform and revision:
+[docs/SUPPORT_AND_VALIDATION.md](docs/SUPPORT_AND_VALIDATION.md).
 
 ## Analyze software
 
@@ -199,6 +261,53 @@ the negative native figures are run-to-run Hopper variance.
 
 Methodology: [docs/benchmark-methodology.md](docs/benchmark-methodology.md).
 
+## ERA Project Lab
+
+Project Lab applies ERA to **external projects you are authorized to work on**. Three modes:
+
+* **Review**: read-only architecture, security and maintainability review with evidence, severity and file:line locations (REA for JavaScript projects, static checks, an optional read-only coding-agent review whose findings are accepted only if they point at real files, lines and quoted code).
+* **Modify**: "fix this bug", "add search", "refactor": ERA establishes a baseline with the project's own tests, plans, lets a configured coding agent change an **isolated copy**, re-runs the tests, detects regressions (including deleted tests), and produces a reviewable diff. You approve before anything touches the original; `rollback` undoes it.
+* **Rebuild**: from an authorized reference (for example a program you wrote or may analyze), ERA gathers REA evidence and observed behavior, writes a specification (no decompiled code is handed to the implementer), has an agent build an independent project, and compares it with the reference behavior.
+
+```bash
+era project create demo --source ~/code/shop --mode modify --task "Fix the cart total" \
+    --test "npm test --silent" --accept-fail "node --test acceptance/cart.test.js" --agent claude-code
+era project modify demo && era project show demo
+era project approve demo        # confirmation, then the verified diff is applied
+era project rollback demo
+```
+
+### Multi-agent engineering
+
+Modify can coordinate **several coding agents by role**: an architecture agent designs (read-only),
+an implementation agent changes the isolated copy, an independent review agent inspects the
+verified diff (read-only), and the implementer makes bounded corrections that ERA re-tests.
+ERA itself runs the tests, validates the review findings against the real code and decides; you
+approve. Roles are configuration (`claude-only`, `codex-only`, `claude+codex`, or any agent per role),
+and remote providers need your explicit, recorded consent before any source code is sent.
+
+```bash
+era agents                                   # providers, capabilities, availability, sign-in
+era project create demo --source ~/code/shop --task "Fix the cart total" --team codex-only \
+    --allow-remote codex --accept-fail "node --test acceptance/cart.test.js"
+era project team demo && era project modify demo
+```
+
+**Validated for real:** OpenAI Codex (all roles, including a real end-to-end run and a real review
+that caught a planted flaw). **Not validated:** Claude Code. The CLI on the development machine was
+not signed in, so every Claude-specific path was tested only against scripted agents. Evidence and
+gaps: [provider-validation.md](docs/provider-validation.md); design and security:
+[multi-agent.md](docs/multi-agent.md); setup: [provider-configuration.md](docs/provider-configuration.md);
+tests: [multi-agent-testing.md](docs/multi-agent-testing.md).
+
+Per-project state, locks, limits and cost caps; cancellation, interruption and resume;
+a sandbox for the project's own code. Docs: [project-lab.md](docs/project-lab.md),
+[project-configuration.md](docs/project-configuration.md),
+[project-lab-testing.md](docs/project-lab-testing.md). **Limits:** macOS-focused sandbox;
+Project Lab has run with scripted mock agents and, for Codex only, real multi-agent runs on small
+projects (Claude Code is not validated); it does not recover source code and does not support
+arbitrary formats.
+
 ## Connect AI agents
 
 ERA keeps three roles separate: REA does the reverse engineering, a **coding
@@ -237,28 +346,78 @@ adapters are tested only against fake CLIs in this release.
 | Coding agent | `manual` | `command`, `claude-code` (`claude -p`, `--max-budget-usd`), `codex` (`codex exec -s workspace-write`) |
 | Reasoning provider | `none` (local, deterministic) | `command` (for example a local model), `claude-code`; remote providers need `reasoning.allowRemote` **and** `--allow-remote` |
 
+## Configuration
+
+ERA needs no API keys and never stores provider credentials; each coding-agent CLI keeps its own sign-in. Settings come from, in order of precedence,
+environment variables ([`.env.example`](.env.example) lists them), `era.config.json` in the working directory, and defaults.
+
+```bash
+era status                      # environment, REA resolution, native providers, agents
+era agents                      # coding agents, reasoning providers and team presets
+era project check <id>          # everything that would stop or weaken a run, with fixes
+```
+
+Reference: [providers](docs/provider-configuration.md) (Claude Code, Codex, custom command agents, spending and consent),
+[projects](docs/project-configuration.md) (commands, acceptance checks, protected paths, limits), [installation](docs/installation.md#configuration).
+Studio stores its own settings (theme, mode, permissions, consent, cost caps) under *Settings*.
+
 ## Security
 
 Authorized targets only. Analyzed artifacts and REA output are untrusted data,
 fenced in prompts and never followed as instructions. Runtime capture is
 sandboxed. Secrets are redacted from logs and prompts. Least-privilege CI with
 SHA-pinned actions, CodeQL, dependency audit, SBOM and provenance attestation.
-See [SECURITY.md](SECURITY.md).
+See [SECURITY.md](SECURITY.md), [Studio security](docs/ERA_STUDIO_SECURITY.md) and the
+[audit remediation](docs/ERA_V020_REMEDIATION.md). Remote coding agents receive project content only with your per-project
+consent, and credential-like files are withheld. Nothing is sent anywhere by default: remote consent is empty, unmetered agents are
+refused, and there is no telemetry.
+
+## Testing
+
+```bash
+npm test                              # node:test suite, about 3 minutes (real REA and sandbox where available)
+npm run lint && npm run check         # ESLint; syntax, secret and local-path scan of tracked files
+npm run test:desktop --prefix apps/studio   # real Electron scenarios
+npm run package --prefix apps/studio && npm run test:package --prefix apps/studio   # unsigned app and its smoke test
+npm run clean-install-test            # the packed CLI, installed in an empty project
+```
+
+[docs/testing.md](docs/testing.md) explains what is real and what is mocked; [docs/SUPPORT_AND_VALIDATION.md](docs/SUPPORT_AND_VALIDATION.md) records results per platform and revision.
+
+## Troubleshooting
+
+[docs/troubleshooting.md](docs/troubleshooting.md) covers installation and launch, native analysis (Ghidra, Hopper), agents and approvals,
+and the Improvement Lab; it is also under **Documentation → Troubleshooting** in the app.
+
+## Documentation
+
+| Topic | Page |
+|---|---|
+| Getting started, installation | [getting-started](docs/getting-started.md), [installation](docs/installation.md) |
+| ERA Studio | [Studio guide](docs/ERA_STUDIO.md), [architecture](docs/ERA_STUDIO_ARCHITECTURE.md) |
+| REA integration and reverse engineering | [REA integration](docs/rea-integration.md), [what ERA adds](docs/original-rea-analysis.md) |
+| Project Lab | [project-lab](docs/project-lab.md), [configuration](docs/project-configuration.md), [screenshot rebuild](docs/screenshot-rebuild.md) |
+| Multi-Agent Engineering | [multi-agent](docs/multi-agent.md), [providers](docs/provider-configuration.md) |
+| Improvement Lab | [improvement-lab](docs/improvement-lab.md), [self-improvement](docs/self-improvement.md) |
+| Security and privacy | [SECURITY.md](SECURITY.md), [Studio security](docs/ERA_STUDIO_SECURITY.md) |
+| Evidence, audits, releases | [support and validation](docs/SUPPORT_AND_VALIDATION.md), [audit](docs/ERA_V020_INDEPENDENT_AUDIT.md), [remediation](docs/ERA_V020_REMEDIATION.md), [release notes](docs/release-notes-v0.2.0.md), [index](docs/index.md) |
 
 ## Limitations
 
-* **Experimental.** Five improvement experiments so far. The real coding agent
-  was Claude Code working interactively (`manual` mode). The `claude-code` and
-  `codex` adapters are tested only against fake CLIs.
+* **Experimental.** Improvement-Lab cycles so far were implemented by a coding agent working interactively (`manual` mode), not by
+  the `claude-code` or `codex` adapters. The adapters are tested against scripted CLIs; Codex was additionally validated in real runs
+  (see [docs/provider-validation.md](docs/provider-validation.md)); Claude Code was never validated against the real CLI.
 * Native analysis covers Mach-O only. Hopper's public API exposes no complete
   function bodies, and Hopper occasionally hangs (ERA's watchdog contains it).
 * **REA limits observed:** a fixed JavaScript result budget (ERA splits its
   self-analysis around it); no retained call-argument string literals; CommonJS
   member exports are reported as `default` (ERA infers member names and marks
   them as inferred).
-* `sandbox-exec` is deprecated by Apple but functional. It denies network and
-  writes but **allows reads** outside explicitly denied paths. It is not a
-  confidentiality sandbox: analyze hostile binaries on an isolated host.
+* `sandbox-exec` is deprecated by Apple but functional. For project commands, terminals, the Git panel and Lab candidates the profile
+  denies network and writes, denies signalling other processes, and closes the home directory and the shared temporary folders for reads
+  (toolchains on `PATH`, ERA's own code and the working copy stay readable). Other locations (for example external volumes) remain
+  readable, so it is still not a general confidentiality sandbox: analyze hostile binaries on an isolated host. Runtime capture
+  of a reference binary uses the same profile; the coding-agent CLIs do not run under it.
   There is no sandbox on Linux, so Lab evaluation fails closed there.
 * `era rea …` passthrough runs REA directly: no ERA run records, sandbox,
   watchdog or redaction. Process-group containment does not cover deliberately
@@ -276,8 +435,8 @@ See [SECURITY.md](SECURITY.md).
 
 ## Roadmap
 
-* **v0.2.0**: ERA Studio (graphical interface), visualized analyses, an
-  interactive experiment dashboard and benchmark comparison, onboarding.
+* **v0.2.0**: ERA Studio, Project Lab and configurable multi-agent engineering. Next: independent re-review of the
+  audit fixes, broader platform validation, and (for a distributed app) signing and notarization.
 * **v0.3.0**: multi-agent verification, advanced workflows, team collaboration,
   role-based permissions.
 

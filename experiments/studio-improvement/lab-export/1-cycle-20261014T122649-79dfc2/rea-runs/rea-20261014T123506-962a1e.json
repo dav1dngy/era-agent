@@ -1,0 +1,45 @@
+{
+  "run_id": "rea-20261014T123506-962a1e",
+  "label": "supervised-self:runtime-help",
+  "started_at": "2026-10-14T12:35:06.485Z",
+  "duration_ms": 2120,
+  "command": [
+    "<tmp>",
+    "capture-process",
+    "<tmp>/era-supervised-Vnwk9x/help-scenario.json",
+    "--format",
+    "json"
+  ],
+  "command_source": "local-dependency",
+  "engine": {
+    "package": "rea-agents",
+    "version": "6.4.0"
+  },
+  "input": {
+    "path": "<tmp>/era-supervised-Vnwk9x/runtime/bin/era.mjs",
+    "kind": "file",
+    "bytes": 135,
+    "sha256": "e0c335a6ff9614fbfcc717263b95dc98b95b0bd28efe3310ead6a6bcfb27b81f"
+  },
+  "status": "succeeded",
+  "exit_code": 0,
+  "signal": null,
+  "evidence_id": "ev_f11f29efd5619b6c214eccbc7a3bb109f17d2440a5a2b0259fe6d5af9c7f6e39",
+  "operation": "capture_process_scenario",
+  "provider": {
+    "id": "rea-process",
+    "name": "REA process capture",
+    "version": "3"
+  },
+  "output_file": "<tmp>",
+  "output_bytes": 293713,
+  "progress_events": 4,
+  "warnings": [],
+  "errors": [],
+  "resources": {
+    "real_s": 2.08,
+    "user_s": 1.88,
+    "sys_s": 0.71,
+    "max_rss_bytes": 353255424
+  }
+}

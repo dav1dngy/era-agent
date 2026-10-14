@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Northwind Coffee</title>
+  <style>
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; font-family: Arial, Helvetica, sans-serif; background: #f5f3ff; color: #514e77; }
+    .page { width: calc(100% - 30px); }
+    header { height: 132px; padding: 0 128px; background: #2c2865; display: flex; align-items: center; justify-content: space-between; }
+    .brand { color: #fff; font-size: 48px; font-weight: 700; letter-spacing: .5px; text-decoration: none; }
+    nav { display: flex; gap: 56px; align-items: center; }
+    nav a { color: #d8d3f4; font-size: 32px; text-decoration: none; }
+    .hero { padding: 192px 128px 144px; color: white; background: linear-gradient(115deg, #4038a4 0%, #6857ed 100%); }
+    h1 { margin: 0; font-size: 112px; line-height: 1.05; letter-spacing: -1px; font-weight: 700; }
+    .hero p { margin: 32px 0 64px; color: #e3dfff; font-size: 42px; line-height: 1.1; }
+    .shop { display: inline-flex; align-items: center; justify-content: center; height: 94px; padding: 0 60px; border-radius: 16px; background: #ffd66b; color: #2e2867; font-size: 34px; font-weight: 700; text-decoration: none; }
+    .features { padding: 112px 128px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 56px; }
+    .card { min-height: 280px; padding: 56px; border-radius: 24px; background: #fff; box-shadow: 0 12px 36px rgba(41, 33, 99, .10); }
+    .card h2 { margin: 0 0 24px; color: #4338ad; font-size: 48px; line-height: 1.1; letter-spacing: -1px; }
+    .card p { margin: 0; font-size: 34px; line-height: 1.4; letter-spacing: -.6px; }
+    .scrollbar { position: fixed; top: 0; right: 0; bottom: 0; width: 30px; background: #fafafa; border-left: 2px solid #e8e8e8; }
+    .scrollbar::after { content: ''; position: absolute; top: 6px; left: 6px; right: 6px; height: 87.4%; border-radius: 12px; background: #c2c2c2; }
+    @media (min-width: 1000px) and (max-width: 2559px) {
+      .page { width: calc(100% - 1.171875vw); }
+      header { height: 5.15625vw; padding: 0 5vw; }
+      .brand { font-size: 1.875vw; }
+      nav { gap: 2.1875vw; }
+      nav a { font-size: 1.25vw; }
+      .hero { padding: 7.5vw 5vw 5.625vw; }
+      h1 { font-size: 4.375vw; letter-spacing: -.0390625vw; }
+      .hero p { margin: 1.25vw 0 2.5vw; font-size: 1.640625vw; }
+      .shop { height: 3.671875vw; padding: 0 2.34375vw; border-radius: .625vw; font-size: 1.328125vw; }
+      .features { padding: 4.375vw 5vw; gap: 2.1875vw; }
+      .card { min-height: 10.9375vw; padding: 2.1875vw; border-radius: .9375vw; }
+      .card h2 { margin-bottom: .9375vw; font-size: 1.875vw; }
+      .card p { font-size: 1.328125vw; }
+      .scrollbar { width: 1.171875vw; }
+    }
+    @media (max-width: 999px) {
+      .page { width: 100%; }
+      header { height: auto; padding: 24px; gap: 24px; flex-wrap: wrap; }
+      .brand { font-size: 25px; }
+      nav { gap: 24px; flex-wrap: wrap; }
+      nav a { font-size: 16px; }
+      .hero { padding: 70px 24px; }
+      h1 { font-size: clamp(38px, 7vw, 70px); }
+      .hero p { font-size: 23px; line-height: 1.3; margin: 28px 0 36px; }
+      .hero p br { display: none; }
+      .shop { height: 58px; font-size: 20px; padding: 0 30px; border-radius: 10px; }
+      .features { grid-template-columns: 1fr; padding: 40px 24px; gap: 24px; }
+      .card { min-height: 0; padding: 30px; border-radius: 16px; }
+      .card h2 { font-size: 28px; margin-bottom: 16px; }
+      .card p { font-size: 20px; }
+      .scrollbar { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <a class="brand" href="#">Northwind Coffee</a>
+      <nav aria-label="Main navigation">
+        <a href="#menu">Menu</a>
+        <a href="#stores">Stores</a>
+        <a href="#our-story">Our story</a>
+        <a href="#contact">Contact</a>
+      </nav>
+    </header>
+    <main>
+      <section class="hero">
+        <h1>Small-batch coffee,<br>roasted every morning</h1>
+        <p>Order beans, brewing gear and subscriptions from a roastery<br>you can visit.</p>
+        <a class="shop" href="#menu">Shop the roast</a>
+      </section>
+      <section class="features" id="menu" aria-label="Coffee and brewing essentials">
+        <article class="card">
+          <h2>Single origin</h2>
+          <p>Traceable lots from twelve farms, roasted light to medium.</p>
+        </article>
+        <article class="card">
+          <h2>Subscriptions</h2>
+          <p>Fresh beans every two weeks. Pause or skip any time.</p>
+        </article>
+        <article class="card">
+          <h2>Brewing gear</h2>
+          <p>Grinders, kettles and filters we use in our own bar.</p>
+        </article>
+      </section>
+    </main>
+  </div>
+  <div class="scrollbar" aria-hidden="true"></div>
+</body>
+</html>

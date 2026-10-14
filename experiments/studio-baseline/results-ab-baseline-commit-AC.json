@@ -1,0 +1,49 @@
+{
+  "harness": "experiments/studio-baseline/measure.mjs",
+  "measuredAt": "2026-10-14T14:55:22.072Z",
+  "root": "<tmp>",
+  "environment": {
+    "hardware": "Apple M1",
+    "cpuCount": 8,
+    "memGb": 8,
+    "os": "darwin 27.0.0 arm64",
+    "node": "v24.20.0",
+    "electron": "44.7.1",
+    "power": "Now drawing from 'AC Power'",
+    "loadavgBefore": [
+      3.08,
+      4.84,
+      5.07
+    ],
+    "note": "Other desktop apps (Claude, ChatGPT/Codex) were running on this machine; measurements include that background noise.",
+    "loadavgAfter": [
+      3.49,
+      4.66,
+      4.98
+    ]
+  },
+  "runs": 10,
+  "electronSmoke": {
+    "smokeWallMs": {
+      "n": 10,
+      "min": 4080.28,
+      "median": 4336.08,
+      "p95": 7961.66,
+      "max": 7961.66,
+      "mean": 4704.56
+    },
+    "allOk": true,
+    "note": "--smoke = process start, PATH fix, control plane start, hidden window load, shell rendered, one API call, clean quit."
+  },
+  "electronRunning": {
+    "after12s": {
+      "processes": 5,
+      "rssMb": 408
+    },
+    "after22s": {
+      "processes": 5,
+      "rssMb": 398.7
+    },
+    "treeCpuPercentOver10s": 0.3
+  }
+}

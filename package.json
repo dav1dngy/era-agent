@@ -1,6 +1,6 @@
 {
   "name": "era-agent",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "ERA is an AI-powered reverse-engineering agent that analyzes software, verifies its findings, and evolves its own implementation through controlled recursive self-improvement.",
   "type": "module",
   "bin": {
@@ -16,6 +16,7 @@
   ],
   "scripts": {
     "test": "node --test tests/*.test.js",
+    "check:history": "node scripts/scan-history.mjs",
     "lint": "eslint .",
     "check": "node scripts/check.mjs",
     "clean-install-test": "bash scripts/clean-install-test.sh",

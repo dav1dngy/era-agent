@@ -13,7 +13,8 @@ import { FIXTURES, ROOT, tempDir } from './helpers.js';
 import { sandboxAvailable } from '../src/safety/sandbox.js';
 
 // Without a sandbox (Linux CI), evaluating requires declaring the candidate trusted.
-const TRUST = sandboxAvailable() ? [] : ['--trust-candidate'];
+const SANDBOX = sandboxAvailable();
+const TRUST = SANDBOX ? [] : ['--trust-candidate'];
 
 const skip = (process.env.ERA_E2E_NESTED || process.env.ERA_SKIP_E2E) && 'nested evaluation or ERA_SKIP_E2E';
 const ENGINE = join(FIXTURES, 'fake-rea-engine.mjs');
@@ -31,6 +32,14 @@ function makeLab() {
   writeFileSync(join(dir, 'era.config.json'), JSON.stringify({ limits: { maxCycles: 10, maxReaRunsPerCycle: 50 }, benchmark: { repetitions: 1 }, improvement: { budget: { allowUnmeteredAgents: true } } }));
   const acceptance = JSON.parse(readFileSync(join(dir, 'benchmarks', 'acceptance.json'), 'utf8'));
   writeFileSync(join(dir, 'benchmarks', 'acceptance.json'), JSON.stringify({ ...acceptance, maxTimeRegressionPct: 1000, maxMemoryRegressionPct: 1000 }));
+  // Trusting candidate code does not authorize unsandboxed runtime capture.
+  // Keep these fake-engine orchestration tests portable without relaxing the
+  // production runtime policy; macOS still exercises every benchmark case.
+  if (!SANDBOX) {
+    const manifestPath = join(dir, 'benchmarks', 'datasets', 'manifest.json');
+    const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
+    writeFileSync(manifestPath, JSON.stringify({ ...manifest, cases: manifest.cases.filter((c) => !c.runtime) }));
+  }
   // An untested, unreachable module gives the planner a deterministic finding.
   writeFileSync(join(dir, 'src', 'e2e-untested.js'), 'export function answer() {\n  return 42;\n}\n');
   const git = (...a) => execFileSync('git', a, { cwd: dir, encoding: 'utf8' }).trim();
@@ -69,7 +78,9 @@ test('accepted experiment waits for approval, integrates on approval, and can be
   const e = lab.era(['improve', 'evaluate', id, ...TRUST]);
   assert.equal(e.status, 0, e.stderr);
   const decided = lab.cycle(id);
-  assert.equal(decided.status, 'awaiting-approval', decided.evaluation.summary);
+  // On failure say WHY: the failed guards and the candidate's failing tests (a bare "rejected" hides a load-related cause).
+  const why = () => JSON.stringify({ summary: decided.evaluation?.summary, guards: (decided.evaluation?.guards ?? []).filter((g) => !g.ok), candidate_tests: (({ ok, exit_code, timed_out, passed, failed, failures, wall_ms }) => ({ ok, exit_code, timed_out, passed, failed, failures, wall_ms }))(decided.evaluation?.candidateTests ?? {}), evaluate_output: String(e.stdout ?? '').slice(-400) });
+  assert.equal(decided.status, 'awaiting-approval', why());
   assert.equal(lab.git('rev-parse', 'HEAD'), base, 'stable branch untouched before approval');
   assert.ok(existsSync(join(lab.dir, '.era', 'cycles', id, 'change.patch')));
   assert.match(lab.era(['improve', 'show', id]).stdout, /awaiting-approval/);
@@ -88,7 +99,8 @@ test('accepted experiment waits for approval, integrates on approval, and can be
   assert.equal(lab.era(['improve', 'rebase', id]).status, 0);
   assert.equal(lab.cycle(id).status, 'proposed');
   assert.equal(lab.era(['improve', 'evaluate', id, ...TRUST]).status, 0);
-  assert.equal(lab.cycle(id).status, 'awaiting-approval');
+  const reeval = lab.cycle(id);
+  assert.equal(reeval.status, 'awaiting-approval', JSON.stringify({ summary: reeval.evaluation?.summary, failed_guards: (reeval.evaluation?.guards ?? []).filter((g) => !g.ok), candidate_failures: reeval.evaluation?.candidateTests?.failures }));
 
   const a = lab.era(['improve', 'approve', id, '--yes', '--by', 'Maintainer <m@example.test>']);
   assert.equal(a.status, 0, a.stderr);

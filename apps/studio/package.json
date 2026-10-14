@@ -1,0 +1,29 @@
+{
+  "name": "era-studio",
+  "version": "0.2.0",
+  "private": true,
+  "description": "ERA Studio: AI-native desktop workbench for ERA. A thin client of the ERA control plane (src/control_plane).",
+  "license": "MIT",
+  "type": "commonjs",
+  "main": "electron/main.cjs",
+  "scripts": {
+    "start": "electron .",
+    "serve": "node ../../bin/era.mjs studio serve --open",
+    "package": "node scripts/package-mac.cjs",
+    "test:desktop": "node scripts/test-desktop.cjs",
+    "test:package": "node scripts/test-package.cjs",
+    "capture:screenshots": "node scripts/capture-screenshots.cjs"
+  },
+  "dependencies": {
+    "@fontsource-variable/inter": "5.2.8",
+    "@xterm/addon-fit": "0.11.0",
+    "@xterm/xterm": "6.0.0",
+    "htm": "3.1.1",
+    "monaco-editor": "0.57.0",
+    "preact": "10.29.8"
+  },
+  "devDependencies": {
+    "@electron/packager": "^20.3.0",
+    "electron": "44.7.1"
+  }
+}

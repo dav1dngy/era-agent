@@ -10,6 +10,9 @@ import { newId, sha256File, fileInfo, writeJson, writeText } from '../core/util.
 import { nullLogger } from '../core/log.js';
 import { redactText } from '../safety/secrets.js';
 
+// `rea providers` costs a Node start plus provider probes (about 0.9 s on the Studio baseline), and Studio polls it.
+const STATUS_TTL_MS = 30_000;
+
 const PACKAGE_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
 
 // The rea-agents dependency may be nested (era-agent/node_modules) or hoisted
@@ -54,7 +57,7 @@ function splitStderr(stderr) {
 }
 
 export class ReaClient {
-  constructor({ command = null, timeoutMs = 600_000, measureResources = true, stateDir, env = process.env, log = nullLogger } = {}) {
+  constructor({ command = null, timeoutMs = 600_000, measureResources = true, statusTtlMs = STATUS_TTL_MS, stateDir, env = process.env, log = nullLogger } = {}) {
     const resolved = resolveReaCommand(command, env);
     this.command = resolved.command;
     this.commandSource = resolved.source;
@@ -64,6 +67,9 @@ export class ReaClient {
     this.env = env;
     this.log = log;
     this._version = undefined;
+    this.statusTtlMs = statusTtlMs;
+    this._status = null;
+    this._statusInflight = null;
     this.runCount = 0;
   }
 
@@ -79,7 +85,24 @@ export class ReaClient {
     return this._version;
   }
 
-  async status() {
+  // Cached for statusTtlMs and shared by concurrent callers, so polling and parallel requests spawn one `rea providers`.
+  // Only a successful probe is cached; `fresh` forces a new probe (it still joins one that is already running).
+  async status({ fresh = false } = {}) {
+    if (!fresh && this._status && Date.now() - this._status.at < this.statusTtlMs) return this._status.value;
+    if (this._statusInflight) return this._statusInflight;
+    const probe = this._probeStatus()
+      .then((value) => {
+        if (value.available && value.probe_status === 'succeeded') this._status = { at: Date.now(), value };
+        return value;
+      })
+      .finally(() => {
+        this._statusInflight = null;
+      });
+    this._statusInflight = probe;
+    return probe;
+  }
+
+  async _probeStatus() {
     const version = await this.version();
     if (!version) return { available: false, command: this.command, source: this.commandSource, error: this._versionError };
     const { record, result } = await this.run('providers', [], { label: 'status:providers', persist: false });

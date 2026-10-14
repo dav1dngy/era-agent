@@ -1,0 +1,143 @@
+{
+  "analysis_id": "analysis-20261014T122321-7ce052",
+  "rea_command": "<era-repo>/node_modules/.bin/rea analyze-javascript-application <era-repo>/apps/studio/electron --format json",
+  "rea_version": "6.4.0",
+  "coverage": "partial",
+  "statistics": {
+    "relevant_files": 4,
+    "nested_asar_containers": 0,
+    "text_bytes_read": 21450,
+    "invalid_utf8_files": 0,
+    "parsed_javascript_files": 4,
+    "visited_ast_nodes": 3592,
+    "findings": 48,
+    "modules": 0,
+    "parse_failures": 0
+  },
+  "semantic_nodes": 2530,
+  "semantic_relations": 2377,
+  "unknowns": 830,
+  "imports_external": [
+    "external:child_process",
+    "external:electron",
+    "external:fs",
+    "external:path",
+    "external:url"
+  ],
+  "imports_unresolved": [
+    "unresolved:main.cjs->../scripts/test-ui.cjs"
+  ],
+  "timers": [
+    {
+      "at": "visual-compare.cjs:122",
+      "method": "setTimeout",
+      "delay_ms": 20000
+    },
+    {
+      "at": "visual-compare.cjs:154",
+      "method": "setTimeout",
+      "delay_ms": null
+    },
+    {
+      "at": "visual-compare.cjs:129",
+      "method": "setTimeout",
+      "delay_ms": 10000
+    },
+    {
+      "at": "main.cjs:145",
+      "method": "setTimeout",
+      "delay_ms": 45000
+    },
+    {
+      "at": "visual-compare.cjs:123",
+      "method": "setTimeout",
+      "delay_ms": 700
+    }
+  ],
+  "listeners": [
+    {
+      "at": "visual-compare.cjs:119",
+      "event": "will-navigate"
+    },
+    {
+      "at": "main.cjs:194",
+      "event": "window-all-closed"
+    },
+    {
+      "at": "main.cjs:166",
+      "event": "web-contents-created"
+    },
+    {
+      "at": "main.cjs:167",
+      "event": "will-attach-webview"
+    },
+    {
+      "at": "main.cjs:201",
+      "event": "activate"
+    },
+    {
+      "at": "main.cjs:146",
+      "event": "did-finish-load"
+    },
+    {
+      "at": "main.cjs:126",
+      "event": "will-redirect"
+    },
+    {
+      "at": "main.cjs:195",
+      "event": "will-quit"
+    },
+    {
+      "at": "visual-compare.cjs:121",
+      "event": "console-message"
+    },
+    {
+      "at": "main.cjs:109",
+      "event": "will-prevent-unload"
+    },
+    {
+      "at": "main.cjs:160",
+      "event": "did-fail-load"
+    },
+    {
+      "at": "main.cjs:123",
+      "event": "will-navigate"
+    }
+  ],
+  "awaited_tasks": [
+    "main.cjs:148",
+    "main.cjs:63",
+    "main.cjs:62",
+    "main.cjs:173",
+    "main.cjs:90",
+    "main.cjs:182",
+    "main.cjs:69",
+    "visual-compare.cjs:130",
+    "main.cjs:60",
+    "visual-compare.cjs:122",
+    "main.cjs:184",
+    "visual-compare.cjs:124",
+    "main.cjs:181",
+    "main.cjs:174",
+    "main.cjs:68",
+    "main.cjs:61"
+  ],
+  "call_sites_by_module": [
+    [
+      "main.cjs",
+      151
+    ],
+    [
+      "visual-compare.cjs",
+      150
+    ],
+    [
+      "preload.cjs",
+      4
+    ],
+    [
+      "security.cjs",
+      2
+    ]
+  ]
+}

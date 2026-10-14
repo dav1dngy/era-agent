@@ -30,6 +30,24 @@ export const DEFAULT_CONFIG = Object.freeze({
     implementerTimeoutMs: 1_800_000,
     budget: { maxCostUsdPerCycle: 5, maxCostUsdTotal: 20, allowUnmeteredAgents: false },
   },
+  projectLab: {
+    // Coding agent for Project Lab: manual | command | claude-code | codex. null = "manual".
+    agent: null,
+    // Shell command for the "command" agent (cwd = isolated working copy).
+    agentCommand: null,
+    commandTimeoutMs: 600_000,
+    agentTimeoutMs: 1_800_000,
+    maxAttempts: 2,
+    // Per-project spending caps (USD). Metered agents only; unmetered agents need opt-in.
+    budget: { maxCostUsdPerRun: 5, maxCostUsdTotal: 20, allowUnmeteredAgents: false },
+    // Multi-agent teams. Data only: add presets or declare local command agents without touching code.
+    //   presets:       { "name": { "architect": "<agent>", "implementer": "<agent>", "reviewer": "<agent>" } }
+    //   customAgents:  { "name": { "command": "...", "remote": false, "capabilities": {...} } }  → agent id "custom:name"
+    //   agentOverrides:{ "<agent id>": { "remote": true } }  → adjust the declared capabilities of an adapter
+    presets: {},
+    customAgents: {},
+    agentOverrides: {},
+  },
   agents: {
     'claude-code': { command: 'claude', model: null },
     codex: { command: null, model: null },
@@ -71,6 +89,12 @@ export function loadConfig(cwd = process.cwd(), env = process.env) {
   const config = deepMerge(DEFAULT_CONFIG, fileConfig);
   if (env.ERA_REA_BIN) config.rea = { ...config.rea, command: env.ERA_REA_BIN };
   if (env.ERA_STATE_DIR) config.stateDir = env.ERA_STATE_DIR;
+  // Agents that report no dollar cost run without a spending cap only when this is allowed explicitly: in the config
+  // file, in the user's own environment, or by the ERA Studio setting that exports it to its jobs. Never inferred.
+  if (env.ERA_ALLOW_UNMETERED_AGENTS === '1') {
+    config.projectLab = { ...config.projectLab, budget: { ...config.projectLab.budget, allowUnmeteredAgents: true, allowUnmeteredSource: 'ERA_ALLOW_UNMETERED_AGENTS' } };
+    config.improvement = { ...config.improvement, budget: { ...config.improvement.budget, allowUnmeteredAgents: true } };
+  }
   config.cwd = cwd;
   config.stateDirAbs = resolve(cwd, config.stateDir);
   return config;

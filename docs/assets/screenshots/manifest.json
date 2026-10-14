@@ -1,0 +1,130 @@
+{
+  "generated_by": "npm run capture:screenshots --prefix apps/studio",
+  "app": {
+    "name": "ERA Studio",
+    "version": "0.2.0-dev.1",
+    "commit": "5d11c20"
+  },
+  "platform": "darwin arm64",
+  "electron": "44.7.1",
+  "resolution": "2880x1800 (a 1440x900 window at device scale 2)",
+  "theme": "dark",
+  "real": "The Electron application, the control plane, REA 6.4.0, the project commands, git and the verification are real, run on controlled fixture projects.",
+  "simulated": "The coding agent is a scripted stand-in (no model was called). Providers appear exactly as the demo workspace configures them.",
+  "privacy": "Visible text was checked against the home directory, the user name, user directory paths, credential patterns and the access token before each capture; fixture projects live under a neutral path. Images are unedited.",
+  "images": [
+    {
+      "file": "01-main-workspace.png",
+      "title": "Main workspace",
+      "alt": "ERA Studio main workspace: a task composer, the recent projects, the workspace status (control plane live, REA ready) and the agent list",
+      "route": "#/home",
+      "mode": "simple",
+      "width": 2880,
+      "height": 1800,
+      "bytes": 242108,
+      "sha256": "29e6acbe2fea0237c703b0e996e15aecd882cd5f4d64a168a787ba6c03314f56"
+    },
+    {
+      "file": "02-project-management.png",
+      "title": "Project management",
+      "alt": "Projects page listing a Modify project awaiting approval and a Review project, with counters and search",
+      "route": "#/projects",
+      "mode": "simple",
+      "width": 2880,
+      "height": 1800,
+      "bytes": 177211,
+      "sha256": "ee86d55a25aa7d95ffc10f69623e95719bc16126a0ffde8924075ce495066a8f"
+    },
+    {
+      "file": "03-reverse-engineering-analysis.png",
+      "title": "Reverse-engineering analysis",
+      "alt": "Analysis of a JavaScript application with the original REA engine: status, report tabs and the relationship graph drawn from REA evidence",
+      "route": "#/analysis/<id>",
+      "mode": "advanced",
+      "width": 2880,
+      "height": 1800,
+      "bytes": 256126,
+      "sha256": "dd43b508011383aea35ef33efb9e053fa60023e13ea1d576a31fc56416b31f9c",
+      "note": "Real REA 6.4.0 run on a JavaScript application (a copy of Studio's own web UI; decompilation skipped)."
+    },
+    {
+      "file": "04-project-lab.png",
+      "title": "Project Lab",
+      "alt": "Project Lab overview: Review, Modify and Rebuild with the projects and runs for each mode",
+      "route": "#/lab",
+      "mode": "advanced",
+      "width": 2880,
+      "height": 1800,
+      "bytes": 181527,
+      "sha256": "32741d05358e24eaf90b4e45be52fcd032ae3cd9257b7147b01b14c80ef5e78f"
+    },
+    {
+      "file": "05-multi-agent-command-center.png",
+      "title": "Multi-agent command center",
+      "alt": "Agent command center with the provider list, each provider marked unavailable or simulated, and the role assignment",
+      "route": "#/agents",
+      "mode": "advanced",
+      "width": 2880,
+      "height": 1800,
+      "bytes": 348605,
+      "sha256": "e87cbb14fb0fa85819f8d6378fc42682c70786c97a8f8bcd5c08c5d901137cff",
+      "note": "Providers are shown as the controlled demo workspace configures them: Codex and Claude Code are pointed at commands that do not exist (so they are Unavailable) and a scripted stand-in is marked Simulated."
+    },
+    {
+      "file": "06-ide-code-editor.png",
+      "title": "IDE: code editor",
+      "alt": "The workbench with the file tree of the original project (read-only) and the Monaco code editor showing a JavaScript file",
+      "route": "#/workbench/<project>?file=src/cart.js",
+      "mode": "advanced",
+      "width": 2880,
+      "height": 1800,
+      "bytes": 189954,
+      "sha256": "a2d838d95a189555d3453ace14ada0c930484d1c8f955b63d889a3c18374b69e"
+    },
+    {
+      "file": "07-diff-viewer-and-approval.png",
+      "title": "IDE: diff viewer and approval",
+      "alt": "Changes and approval: a verified one-file diff side by side in Monaco, the test results, and the Approve and Reject buttons",
+      "route": "#/projects/<project>/review",
+      "mode": "advanced",
+      "width": 2880,
+      "height": 1800,
+      "bytes": 297065,
+      "sha256": "75734ed40ba824eb8dd6cac35bd4888c563ffe2cb8906945b713d1b138b0e596",
+      "note": "The coding agent that produced this change is a scripted stand-in; the build, tests and verification are real."
+    },
+    {
+      "file": "08-improvement-lab.png",
+      "title": "Improvement Lab",
+      "alt": "Improvement Lab: the ERA checkout, its version tags, a real self-analysis of ERA by REA, and the controlled experiment cycles",
+      "route": "#/improvement",
+      "mode": "advanced",
+      "width": 2880,
+      "height": 1800,
+      "bytes": 310119,
+      "sha256": "81719c6cfff4679f9d545200bab683740bd2bafd18c2678335b9bec3bc9eda75"
+    },
+    {
+      "file": "09-settings-ai-providers.png",
+      "title": "Settings: AI providers",
+      "alt": "Settings, AI Providers: each provider with its state, version and description, and the note that ERA never stores provider credentials",
+      "route": "#/settings/providers",
+      "mode": "advanced",
+      "width": 2880,
+      "height": 1800,
+      "bytes": 316762,
+      "sha256": "1203f970a67cc0cb753418d2526ef11e9ef3f54855756b1fcbb2cc7a3c15a397"
+    },
+    {
+      "file": "10-documentation.png",
+      "title": "Documentation",
+      "alt": "The in-app Documentation section: eight topic sections on the left, the Getting started page rendered from the repository documentation, and the page outline",
+      "route": "#/docs/getting-started",
+      "mode": "advanced",
+      "width": 2880,
+      "height": 1800,
+      "bytes": 421697,
+      "sha256": "827aad9a024eae8baed6a023af368f717dadc987e35dc4cb1c617740d7130c0d"
+    }
+  ]
+}

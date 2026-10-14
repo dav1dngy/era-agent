@@ -1,8 +1,9 @@
 // Testing Engine (protected path): runs the node:test suite of a checkout.
-import { mkdtempSync, rmSync } from 'node:fs';
+import { mkdtempSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { runProcess } from '../core/process.js';
+import { removeTree } from '../core/util.js';
 
 export function parseTapSummary(text) {
   const num = (key) => {
@@ -41,8 +42,13 @@ export async function runTests(dir, { timeoutMs = 900_000, env = process.env, is
     tmp = mkdtempSync(join(tmpdir(), 'era-candidate-tests-'));
     ({ command, args, env: runEnv } = wrapCandidate(isolation, command, args, { writable: [dir], denyRead, tmp, env: cleanEnv, extraEnv: { ERA_SKIP_REA: '1', ERA_SKIP_E2E: '1' } }));
   }
-  const r = await runProcess(command, args, { cwd: dir, timeoutMs, env: runEnv, watchdog: true });
-  if (tmp) rmSync(tmp, { recursive: true, force: true });
+  let r;
+  try {
+    r = await runProcess(command, args, { cwd: dir, timeoutMs, env: runEnv, watchdog: true });
+  } finally {
+    // Cleanup is best-effort and must never mask the real result (or a clean interruption).
+    if (tmp) removeTree(tmp);
+  }
   const summary = parseTapSummary(r.stdout);
   const ok = r.exitCode === 0 && summary.failed === 0 && (summary.passed ?? 0) > 0;
   const failures = [...r.stdout.matchAll(/^not ok \d+ - (.+)$/gm)].map((m) => m[1]);

@@ -1,7 +1,8 @@
 // Benchmark Engine (protected path). Runs `era analyze` from the checkout under
 // test as a subprocess, under identical conditions, and scores its facts with
 // the evaluator's own scoring code and ground truth.
-import { readFileSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { readFileSync, mkdtempSync, writeFileSync } from 'node:fs';
+import { removeTree } from '../core/util.js';
 import { join, resolve } from 'node:path';
 import { tmpdir } from 'node:os';
 import { runProcess } from '../core/process.js';
@@ -84,7 +85,7 @@ export async function runBenchmark({ codeRoot, datasetsDir, repetitions = 3, rea
       });
     }
   } finally {
-    rmSync(stateDir, { recursive: true, force: true });
+    removeTree(stateDir);
   }
   const mean = (k) => results.reduce((s, r) => s + r[k], 0) / results.length;
   const totalReps = results.reduce((s, r) => s + r.repetitions, 0);
@@ -164,7 +165,7 @@ export async function runReaBaseline({ datasetsDir, repetitions = 3, reaCommand 
       results.push({ id: c.id, repetitions, median_wall_ms: median(walls), failures });
     }
   } finally {
-    rmSync(work, { recursive: true, force: true });
+    removeTree(work);
   }
   return { created_at: new Date().toISOString(), repetitions, cases: results, aggregate: { total_median_wall_ms: results.reduce((s, r) => s + r.median_wall_ms, 0), failures: results.reduce((s, r) => s + r.failures, 0) } };
 }
@@ -200,7 +201,7 @@ export async function runSupervisedBenchmark({ datasetsDir, extractors, repetiti
         writeFileSync(manifest, JSON.stringify({ target: { path: c.targetPath, kind: c.kind }, evidence_files: evidenceFiles, source_root: analysis?.target?.staged_as ?? c.targetPath }));
         for (const x of extractors) {
           const tmp = mkdtempSync(join(work, 'tmp-'));
-          const cmd = wrapCandidate(isolation, process.execPath, [join(x.codeRoot, 'bin', 'era.mjs'), 'extract', '--manifest', manifest, '--json'], { writable: [], denyRead: truthDirs, tmp, extraEnv: { ERA_LOG: 'off' } });
+          const cmd = wrapCandidate(isolation, process.execPath, [join(x.codeRoot, 'bin', 'era.mjs'), 'extract', '--manifest', manifest, '--json'], { writable: [], readable: [x.codeRoot, work, c.targetPath], denyRead: truthDirs, tmp, extraEnv: { ERA_LOG: 'off' } });
           const r = await runProcess(cmd.command, cmd.args, { cwd: tmp, env: cmd.env, timeoutMs, measureResources: true, watchdog: true });
           let facts = null;
           try {
@@ -228,7 +229,7 @@ export async function runSupervisedBenchmark({ datasetsDir, extractors, repetiti
       }
     }
   } finally {
-    rmSync(work, { recursive: true, force: true });
+    removeTree(work);
   }
   return extractors.map((x) => summarize(x.label, cases, samples[x.label], repetitions, { ...provenance, mode: 'supervised', isolation: isolation.mechanism }));
 }

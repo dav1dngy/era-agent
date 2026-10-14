@@ -5,7 +5,8 @@ import { createInterface } from 'node:readline/promises';
 import { selfAnalyze, planPasses } from '../self_analysis/self-analyze.js';
 import { proposeCycle, implementCycle, evaluateCycle, abandonCycle, approveCycle, declineCycle, rebaseCycle, recoverState, loadCycle, renderCycleReport } from '../orchestration/cycle.js';
 import * as vm from '../orchestration/versions.js';
-import { createCodingAgent, selectedAgentId, CODING_AGENT_IDS } from '../agents/coding-agents.js';
+import { createCodingAgent, selectedAgentId, agentCapabilities, codingAgentIds } from '../agents/coding-agents.js';
+import { presetTable } from '../agents/team.js';
 import { createReasoningProvider, REASONING_PROVIDER_IDS } from '../agents/reasoning.js';
 import { effectiveLimits, effectiveBudget, SafetyError } from '../safety/policy.js';
 import { createInterruptGuard } from '../orchestration/interrupt.js';
@@ -27,7 +28,7 @@ async function approverName(root, flags) {
 
 // Integration into the stable branch needs an explicit human decision: an
 // interactive "yes", or --yes when no terminal is attached.
-async function confirm(question, flags) {
+export async function confirm(question, flags) {
   if (flags.yes) return true;
   if (!process.stdin.isTTY) throw new SafetyError('Approval needs confirmation: run in a terminal or pass --yes (only on behalf of a maintainer who reviewed the change).');
   const rl = createInterface({ input: process.stdin, output: process.stdout });
@@ -186,9 +187,12 @@ async function loop(ctx, base, flags) {
 
 async function agents(ctx, { flags }) {
   const rows = [];
-  for (const id of CODING_AGENT_IDS) {
+  const customIds = Object.keys(ctx.config.projectLab?.customAgents ?? {}).map((n) => `custom:${n}`);
+  for (const id of [...codingAgentIds(), ...customIds]) {
     const a = createCodingAgent(id, ctx.config);
-    rows.push({ role: 'coding-agent', id, metered: a.metered, ...(await a.probe()), description: a.description });
+    const probe = await a.probe();
+    const auth = probe.available && typeof a.auth === 'function' ? await a.auth() : { authenticated: null, detail: null };
+    rows.push({ role: 'coding-agent', id, metered: a.metered, ...probe, authenticated: auth.authenticated, auth_detail: auth.detail, capabilities: agentCapabilities(id, ctx.config), description: a.description });
   }
   for (const id of REASONING_PROVIDER_IDS) {
     const p = createReasoningProvider(id, ctx.config);
@@ -197,10 +201,16 @@ async function agents(ctx, { flags }) {
   const rea = await ctx.rea.status();
   rows.push({ role: 'reverse-engineering-engine', id: 'rea', available: rea.available, version: rea.version ?? null, detail: rea.command, description: 'Original REA engine (all reverse-engineering operations)' });
   const budget = effectiveBudget(ctx.config.improvement.budget);
-  if (flags.json) return print({ selected: { coding_agent: selectedAgentId(ctx.config), reasoning_provider: ctx.config.reasoning?.provider ?? 'none' }, budget, rows }, true), 0;
+  if (flags.json) return print({ selected: { coding_agent: selectedAgentId(ctx.config), reasoning_provider: ctx.config.reasoning?.provider ?? 'none' }, budget, team_presets: presetTable(ctx.config), rows }, true), 0;
   print(`Selected coding agent: ${selectedAgentId(ctx.config)}; reasoning provider: ${ctx.config.reasoning?.provider ?? 'none'}; remote reasoning ${ctx.config.reasoning?.allowRemote ? 'allowed by config (still needs --allow-remote)' : 'disabled'}`);
   print(`Agent budget: $${budget.maxCostUsdPerCycle}/cycle, $${budget.maxCostUsdTotal} total, unmetered agents ${budget.allowUnmeteredAgents ? 'allowed' : 'refused'}`);
-  for (const r of rows) print(`  ${r.role.padEnd(26)} ${r.id.padEnd(12)} ${r.available ? 'available  ' : 'unavailable'} ${r.version ?? r.detail ?? ''}`);
+  for (const r of rows) {
+    const auth = r.authenticated === true ? 'signed in    ' : r.authenticated === false ? 'NOT signed in' : '             ';
+    const caps = r.capabilities ? `${r.capabilities.remote ? 'remote' : 'local'}, read-only:${r.capabilities.readOnlyMode}` : '';
+    print(`  ${r.role.padEnd(26)} ${r.id.padEnd(12)} ${r.available ? 'available  ' : 'unavailable'} ${auth} ${(r.version ?? r.detail ?? '').slice(0, 28).padEnd(28)} ${caps}`);
+    if (r.authenticated === false) print(`  ${''.padEnd(26)} ${r.auth_detail}`);
+  }
+  print(`Team presets: ${Object.entries(presetTable(ctx.config)).map(([n, r]) => `${n} (architect ${r.architect}, implementer ${r.implementer}, reviewer ${r.reviewer})`).join('; ')}`);
   return 0;
 }
 

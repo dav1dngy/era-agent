@@ -1,6 +1,19 @@
 import { createHash, randomBytes } from 'node:crypto';
-import { createReadStream, mkdirSync, renameSync, writeFileSync, statSync } from 'node:fs';
+import { createReadStream, mkdirSync, renameSync, rmSync, writeFileSync, statSync } from 'node:fs';
 import { dirname } from 'node:path';
+
+// Removes a directory tree and NEVER throws. A descendant that outlived its process group (for example a process
+// that left the session) can still be creating files while we delete, which makes a recursive remove fail with
+// ENOTEMPTY/EBUSY. Node retries those errors; if the directory still cannot be removed the failure is returned
+// (and logged by the caller if it cares) instead of replacing the real outcome of the operation being cleaned up.
+export function removeTree(dir, { retries = 12, delayMs = 100 } = {}) {
+  try {
+    rmSync(dir, { recursive: true, force: true, maxRetries: retries, retryDelay: delayMs });
+    return { ok: true, error: null };
+  } catch (err) {
+    return { ok: false, error: `${err.code ?? err.name}: ${err.message}` };
+  }
+}
 
 export function newId(prefix) {
   const ts = new Date().toISOString().replace(/[-:]/g, '').replace(/\..+/, '');

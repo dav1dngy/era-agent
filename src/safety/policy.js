@@ -1,7 +1,7 @@
 // Safety Controller. This module is a protected path: experiments that modify
 // it (or the benchmark datasets, acceptance criteria and evaluator) are rejected
 // automatically, so ERA cannot loosen its own constraints.
-import { closeSync, existsSync, openSync, readFileSync, unlinkSync, mkdirSync, statSync, writeSync } from 'node:fs';
+import { existsSync, linkSync, readFileSync, renameSync, unlinkSync, mkdirSync, statSync, writeFileSync } from 'node:fs';
 import { randomBytes } from 'node:crypto';
 import { join } from 'node:path';
 
@@ -119,40 +119,73 @@ export function clearStaleLock(stateDir) {
   return true;
 }
 
-// Single-writer lock. Created exclusively (O_EXCL) with an ownership token, so
-// two processes can never both hold it; a lock whose holder died is taken over.
-// Release only removes the lock if this holder still owns it.
+// Single-writer lock. The lock file is created atomically WITH its content
+// (write a private file, then link() it into place: link fails with EEXIST if the
+// lock exists), so a competing process can never observe a half-written lock and
+// mistake it for a stale one. A lock whose holder died is taken over; release only
+// removes the lock if this holder still owns it (ownership token).
 export function acquireLock(stateDir, owner) {
   mkdirSync(stateDir, { recursive: true, mode: 0o700 });
   const lockFile = join(stateDir, 'improve.lock');
   const token = randomBytes(12).toString('hex');
   const body = JSON.stringify({ pid: process.pid, owner, token, at: new Date().toISOString() });
-  for (let attempt = 0; attempt < 2; attempt++) {
-    try {
-      const fd = openSync(lockFile, 'wx', 0o600);
-      writeSync(fd, body);
-      closeSync(fd);
-      return () => {
-        if (readLock(lockFile)?.token === token) {
+  const mine = `${lockFile}.${process.pid}.${token}`;
+  writeFileSync(mine, body, { mode: 0o600 });
+  try {
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        linkSync(mine, lockFile);
+        return () => {
+          if (readLock(lockFile)?.token === token) {
+            try {
+              unlinkSync(lockFile);
+            } catch {
+              // already removed
+            }
+          }
+        };
+      } catch (err) {
+        if (err.code !== 'EEXIST') throw err;
+        const holder = readLock(lockFile);
+        if (holder && isAlive(holder.pid)) throw new SafetyError(`Another ERA operation holds the lock (pid ${holder.pid}, ${holder.owner}).`);
+        // The holder is dead (or the file is unreadable): take over. The stale lock is moved
+        // aside atomically and inspected, because between our read and now another process
+        // may already have replaced it with a live lock, which must then be put back.
+        const aside = `${lockFile}.stale.${process.pid}.${token}`;
+        try {
+          renameSync(lockFile, aside);
+        } catch {
+          continue; // somebody else removed it first; retry
+        }
+        const moved = readLock(aside);
+        if (moved && moved.token !== holder?.token && isAlive(moved.pid)) {
           try {
-            unlinkSync(lockFile);
+            linkSync(aside, lockFile);
+          } catch {
+            // an even newer lock exists; that one wins
+          }
+          try {
+            unlinkSync(aside);
           } catch {
             // already removed
           }
+          throw new SafetyError(`Another ERA operation holds the lock (pid ${moved.pid}, ${moved.owner}).`);
         }
-      };
-    } catch (err) {
-      if (err.code !== 'EEXIST') throw err;
-      const holder = readLock(lockFile);
-      if (holder && isAlive(holder.pid)) throw new SafetyError(`Another ERA operation holds the lock (pid ${holder.pid}, ${holder.owner}).`);
-      try {
-        unlinkSync(lockFile);
-      } catch {
-        // another process took it over first; the retry will see its lock
+        try {
+          unlinkSync(aside);
+        } catch {
+          // already removed
+        }
       }
     }
+    throw new SafetyError('Could not acquire the ERA lock.');
+  } finally {
+    try {
+      unlinkSync(mine);
+    } catch {
+      // already removed
+    }
   }
-  throw new SafetyError('Could not acquire the ERA lock.');
 }
 
 function isAlive(pid) {

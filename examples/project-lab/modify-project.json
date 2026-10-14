@@ -1,0 +1,19 @@
+{
+  "id": "my-app",
+  "mode": "modify",
+  "source": "/path/to/your/project",
+  "task": "Fix the login bug: users with a trailing space in their email cannot sign in",
+  "agent": "claude-code",
+  "commands": {
+    "build": ["npm run build --silent"],
+    "test": ["npm test --silent"]
+  },
+  "acceptance": {
+    "criteria": ["Signing in with 'user@example.com ' works", "No existing behavior changes"],
+    "commands": [
+      { "name": "reproduce-login-bug", "command": "node --test tests-extra/login-trailing-space.test.js", "baseline": "fail" }
+    ]
+  },
+  "protected": ["package.json", "package-lock.json", "tests/**"],
+  "limits": { "maxAttempts": 2, "maxCostUsd": 3, "commandTimeoutMs": 300000 }
+}

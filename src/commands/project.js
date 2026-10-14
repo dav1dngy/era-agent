@@ -1,0 +1,190 @@
+// `era project …`: ERA Project Lab commands. A thin layer over src/project_lab/lab.js.
+import { readFileSync } from 'node:fs';
+import { createProjectLab } from '../project_lab/lab.js';
+import { assertNotCI } from '../safety/policy.js';
+import { confirm } from './lab.js';
+
+const splitList = (v) => (typeof v === 'string' ? v.split(',').map((x) => x.trim()).filter(Boolean) : []);
+const print = (value, asJson) => process.stdout.write(asJson ? `${JSON.stringify(value, null, 2)}\n` : `${value}\n`);
+
+const EXIT = { complete: 0, 'awaiting-approval': 0, 'awaiting-plan': 0, 'awaiting-implementation': 0, applied: 0, rejected: 1, failed: 1, interrupted: 130, cancelled: 130 };
+
+// Builds a project definition from --config <file> and flags (flags win).
+export function projectInputFromArgs({ positional, flags }) {
+  let input = {};
+  if (flags.config) {
+    try {
+      input = JSON.parse(readFileSync(String(flags.config), 'utf8'));
+    } catch (err) {
+      throw new Error(`Cannot read --config ${flags.config}: ${err.message}`, { cause: err });
+    }
+  }
+  const set = (key, value) => {
+    if (value !== undefined && value !== true && value !== false) input[key] = value;
+  };
+  set('id', positional[1] ?? flags.id);
+  for (const k of ['mode', 'source', 'reference', 'destination', 'task', 'agent', 'authorization']) set(k, flags[k]);
+  set('agent_command', flags['agent-command']);
+  const list = (v) => (Array.isArray(v) && v.length ? v : undefined);
+  if (list(flags.build) || list(flags.test) || flags.run) input.commands = { ...input.commands, ...(list(flags.build) ? { build: flags.build } : {}), ...(list(flags.test) ? { test: flags.test } : {}), ...(flags.run ? { run: flags.run } : {}) };
+  if (list(flags.criteria) || list(flags.accept) || list(flags['accept-fail'])) {
+    const a = input.acceptance ?? {};
+    input.acceptance = { ...a, criteria: [...(a.criteria ?? []), ...(flags.criteria ?? [])], commands: [...(a.commands ?? []), ...(flags.accept ?? []).map((command) => ({ command })), ...(flags['accept-fail'] ?? []).map((command) => ({ command, baseline: 'fail' }))] };
+  }
+  if (list(flags.protect)) input.protected = [...(input.protected ?? []), ...flags.protect];
+  const limits = { ...input.limits };
+  if (flags['max-cost']) limits.maxCostUsd = Number(flags['max-cost']);
+  if (flags['timeout-ms']) limits.commandTimeoutMs = Number(flags['timeout-ms']);
+  if (flags['max-attempts']) limits.maxAttempts = Number(flags['max-attempts']);
+  if (Object.keys(limits).length) input.limits = limits;
+  if (flags['trust-project']) input.trust_project = true;
+  if (flags['review-plan']) input.review_plan = true;
+  // Multi-agent team and data-exposure consent.
+  const teamKeys = { architect: flags.architect, implementer: flags.implementer, reviewer: flags.reviewer };
+  if (flags.team || Object.values(teamKeys).some(Boolean)) {
+    const roles = { ...input.team?.roles, ...Object.fromEntries(Object.entries(teamKeys).filter(([, v]) => typeof v === 'string')) };
+    const review = { ...input.team?.review, ...(flags['review-rounds'] !== undefined ? { rounds: Number(flags['review-rounds']) } : {}), ...(flags['block-on'] ? { block_on: String(flags['block-on']) } : {}) };
+    input.team = { ...input.team, ...(typeof flags.team === 'string' ? { preset: flags.team } : {}), roles, ...(Object.keys(review).length ? { review } : {}) };
+  }
+  const consent = splitList(flags['allow-remote']);
+  if (consent.length || flags['allow-secret-content'] || flags['keep-instruction-files']) {
+    input.exposure = { ...input.exposure, ...(consent.length ? { remote_consent: [...(input.exposure?.remote_consent ?? []), ...consent] } : {}), ...(flags['allow-secret-content'] ? { allow_secret_content: true } : {}), ...(flags['keep-instruction-files'] ? { keep_instruction_files: true } : {}) };
+  }
+  return input;
+}
+
+const table = (rows, cols) => {
+  if (!rows.length) return '(none)';
+  const w = cols.map(([h, f]) => Math.max(h.length, ...rows.map((r) => String(f(r) ?? '').length)));
+  const line = (cells) => cells.map((c, i) => String(c).padEnd(w[i])).join('  ');
+  return [line(cols.map(([h]) => h)), line(w.map((n) => '-'.repeat(n))), ...rows.map((r) => line(cols.map(([, f]) => f(r) ?? '')))].join('\n');
+};
+
+const MARK = { pass: '✓', warn: '!', fail: '✕', info: 'i' };
+export function renderChecks(pf) {
+  const lines = [`Prerequisites for ${pf.op}: ${pf.ok ? (pf.warnings.length ? `ready, with ${pf.warnings.length} warning(s)` : 'ready') : `${pf.blockers.length} problem(s) must be fixed first`}`];
+  for (const c of pf.checks) lines.push(`  ${MARK[c.status] ?? '·'} ${c.label}: ${c.message}${c.fix && c.status !== 'pass' ? `\n      → ${c.fix}` : ''}`);
+  return lines.join('\n');
+}
+
+function summarize(result) {
+  const { project, run } = result;
+  const lines = [`${project.id}: ${run.op} run ${run.run_id} → ${run.status}`];
+  if (run.error) lines.push(`Error: ${run.error}`);
+  if (run.pause_message) lines.push(run.pause_message);
+  const fin = run.results.finalize;
+  if (fin) lines.push(fin.pass ? `Verified: ${fin.files.length} file(s) changed in the isolated copy; nothing has been applied.` : `Rejected: ${fin.reasons.join(' ')}`);
+  if (run.results.findings) lines.push(`Findings: ${Object.entries(run.results.findings.counts).map(([k, v]) => `${v} ${k}`).join(', ')}`);
+  return lines.join('\n');
+}
+
+export async function run(command, ctx, { positional, flags }) {
+  const lab = createProjectLab({ config: ctx.config, rea: ctx.rea, log: ctx.log });
+  const sub = positional[0];
+  const id = positional[1] ?? flags.id;
+  const need = () => {
+    if (!id) throw new Error(`Usage: era project ${sub} <id>`);
+    return id;
+  };
+  const opts = { trust: !!flags['trust-project'], agent: flags.agent ?? null, allowRemote: splitList(flags['allow-remote']) };
+  const finish = (result) => {
+    if (flags.json) print({ project_id: result.project.id, run_id: result.run.run_id, op: result.run.op, status: result.run.status, error: result.run.error ?? null, results: result.run.results, attempts: result.run.attempts }, true);
+    else {
+      print(flags.brief ? summarize(result) : result.report);
+      print(`\n${summarize(result)}\nReport: ${ctx.config.stateDirAbs}/projects/${result.project.id}/runs/${result.run.run_id}/report.md`);
+      const next = lab.status(result.project.id).next;
+      if (next) print(`Next: ${next}`);
+    }
+    return EXIT[result.run.status] ?? 1;
+  };
+
+  switch (sub) {
+    case 'create': {
+      const project = lab.create(projectInputFromArgs({ positional, flags }));
+      if (flags.json) return print(project, true), 0;
+      print(`Created project "${project.id}" (${project.mode}). Next: era project ${project.mode} ${project.id}`);
+      return 0;
+    }
+    case 'list': {
+      const rows = lab.list();
+      if (flags.json) return print(rows, true), 0;
+      print(table(rows, [['ID', (r) => r.id], ['MODE', (r) => r.mode], ['STATUS', (r) => r.status], ['APPROVAL', (r) => r.approval], ['TARGET', (r) => r.source ?? r.reference]]));
+      return 0;
+    }
+    case 'team': {
+      const { detectTeam } = await import('../agents/team.js');
+      const project = lab.get(need());
+      const roles = project.team?.roles ?? { architect: null, implementer: project.agent ?? ctx.config.projectLab?.agent ?? 'manual', reviewer: null };
+      const rows = await detectTeam({ roles }, ctx.config);
+      const out = { project: project.id, preset: project.team?.preset ?? 'single', roles, review: project.team?.review ?? null, remote_consent: project.exposure.remote_consent, providers: rows };
+      if (flags.json) return print(out, true), 0;
+      print([`Project ${project.id}: team "${out.preset}"`, ...Object.entries(roles).map(([r, a]) => `  ${r.padEnd(12)} ${a ?? '—'}`), `Authorized to receive source code: ${out.remote_consent.join(', ') || 'nobody'}`, ...rows.map((p) => `  ${p.id.padEnd(12)} ${p.available ? 'available' : 'unavailable'}, ${p.authenticated === true ? 'signed in' : p.authenticated === false ? 'NOT signed in' : 'sign-in unknown'}; ${p.capabilities.remote ? 'REMOTE' : 'local'}; ${p.detail}`)].join('\n'));
+      return rows.every((p) => p.ready) ? 0 : 1;
+    }
+    case 'check': {
+      const op = flags.op ?? lab.get(need()).mode;
+      const pf = await lab.preflight(need(), op, { trust: opts.trust, allowRemote: opts.allowRemote });
+      if (flags.json) return print(pf, true), pf.ok ? 0 : 2;
+      print(renderChecks(pf));
+      return pf.ok ? 0 : 2;
+    }
+    case 'review':
+    case 'modify':
+    case 'rebuild': {
+      // Everything that would stop or weaken the run is reported first, as one list, and nothing is started.
+      assertNotCI(); // the refusal in CI comes before anything else
+      const pf = await lab.preflight(need(), sub, { trust: opts.trust, allowRemote: opts.allowRemote });
+      if (!pf.ok) {
+        if (flags.json) print(pf, true);
+        else process.stderr.write(`${renderChecks(pf)}\nNothing was started.\n`);
+        return 2;
+      }
+      return finish(await lab[sub](need(), opts));
+    }
+    case 'resume':
+      return finish(await lab.resume(need(), { ...opts, approvePlan: !!flags['approve-plan'] }));
+    case 'status': {
+      const s = lab.status(need());
+      if (flags.json) return print(s, true), 0;
+      const r = s.latest_run;
+      print([`Project ${s.project.id}: ${s.project.mode}, status ${s.project.status}, approval ${s.project.approval.status}`, `Agent: ${s.project.agent}; spend: $${s.spend.agent_usd.toFixed(4)} of $${s.spend.limit_usd}`, r ? `Latest run ${r.run_id} (${r.op}): ${r.status}${r.current_step ? `, step ${r.current_step}` : ''}${r.attempts.length ? `, ${r.attempts.length} attempt(s)` : ''}${r.error ? `\n  error: ${r.error}` : ''}${r.pause_message ? `\n  ${r.pause_message}` : ''}` : 'No runs yet.', s.next ? `Next: ${s.next}` : ''].filter(Boolean).join('\n'));
+      return 0;
+    }
+    case 'show': {
+      const s = lab.show(need(), { runId: flags.run ?? null });
+      if (flags.json) return print({ project: s.project, run: s.run }, true), 0;
+      print(s.report);
+      return 0;
+    }
+    case 'approve': {
+      const s = lab.show(need());
+      const fin = s.run.results.finalize;
+      if (s.run.status !== 'awaiting-approval' || !fin) throw new Error(`Nothing to approve: latest run is ${s.run.status}.`);
+      print(`${s.run.op === 'modify' ? 'Apply to the ORIGINAL project' : 'Write to'} ${s.run.op === 'modify' ? s.project.source : s.project.destination}:\n${fin.stat || fin.files.map((f) => `${f.status} ${f.path}`).join('\n')}\n`);
+      const by = flags.by ?? `${process.env.USER ?? 'unknown'}`;
+      if (!(await confirm(`Approve ${s.run.run_id} for project ${s.project.id} as ${by}?`, flags))) return print('Not approved; nothing changed.'), 1;
+      const r = await lab.approve(s.project.id, { by, runId: s.run.run_id });
+      if (flags.json) return print(r, true), 0;
+      print(`Applied ${r.op} run ${r.run_id}. Undo with: era project rollback ${s.project.id}`);
+      return 0;
+    }
+    case 'rollback': {
+      const r = await lab.rollback(need());
+      print(flags.json ? r : `Rolled back run ${r.run_id}${r.restored ? ' (original restored)' : ''}.`, !!flags.json);
+      return 0;
+    }
+    case 'cancel': {
+      const r = await lab.cancel(need());
+      print(flags.json ? r : `Cancelled run ${r.run_id}; its working copy was removed.`, !!flags.json);
+      return 0;
+    }
+    case 'delete': {
+      need();
+      if (!(await confirm(`Delete project ${id} and all its runs? (the original project is not touched)`, flags))) return print('Not deleted.'), 1;
+      print(lab.remove(id), true);
+      return 0;
+    }
+    default:
+      throw new Error(`Unknown project command "${sub ?? ''}". Use: create, list, review, modify, rebuild, status, show, approve, cancel, resume, rollback, delete. See \`era --help\`.`);
+  }
+}
